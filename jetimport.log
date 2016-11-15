@@ -1,0 +1,95 @@
+2015.11.16 14:12:17:JetImport null
+2015.11.16 14:12:58:JetImport trunk
+2015.11.17 17:57:16:Authentication Successful
+2015.11.17 18:21:12:Authentication Successful
+2015.11.17 18:26:10:Authentication Successful
+2015.11.17 18:28:25:Authentication Successful
+2015.11.17 18:31:02:Authentication Failure (response received)
+2015.11.17 18:31:29:Authentication Failure (response received)
+2015.11.17 18:31:58:Authentication Failure (response received)
+2015.11.17 18:33:53:Authentication Successful
+2015.11.17 18:51:32:Authentication Successful
+2015.11.18 14:03:12:Authentication Successful
+2015.11.18 14:03:34:Could not build url: https://merchant-api.jet.com/api/merchant-skus/{sku}
+2015.11.18 14:03:34:Illegal character in path at index 47: https://merchant-api.jet.com/api/merchant-skus/{sku}
+2015.11.18 14:14:10:Authentication Successful
+2015.11.18 14:14:16:Jet API Error Response
+2015.11.18 14:22:46:Authentication Successful
+2015.11.18 14:28:21:Authentication Successful
+2015.11.18 14:28:21:Failed to add product
+2015.11.18 14:28:21:Jet API Error Response
+2015.11.18 14:28:21:"Minimum value is 1000000L. Path: /jet_browse_node_id"
+2015.11.18 14:28:21:"Minimum number of items is 1. Path: /standard_product_codes"
+2015.11.18 14:28:21:"Minimum value is 0.01M. Path: /shipping_weight_pounds"
+2015.11.18 14:28:21:"Minimum value is 0.01M. Path: /package_length_inches"
+2015.11.18 14:28:21:"Minimum value is 0.01M. Path: /package_width_inches"
+2015.11.18 14:28:21:"Minimum value is 0.01M. Path: /package_height_inches"
+2015.11.18 14:28:21:"Minimum value is 0.01M. Path: /display_length_inches"
+2015.11.18 14:28:21:"Minimum value is 0.01M. Path: /display_width_inches"
+2015.11.18 14:28:21:"Minimum value is 0.01M. Path: /display_height_inches"
+2015.11.18 14:28:21:"Minimum value is 0.01M. Path: /map_price"
+2015.11.18 14:28:21:"Property exclude_from_fee_adjustment is not defined in schema. Path: "
+2015.11.18 14:40:57:Authentication Successful
+2015.11.18 14:40:57:Failed to add product
+2015.11.18 14:40:57:Jet API Error Response
+2015.11.18 14:40:57:"start_selling_date is not in valid format."
+2015.11.18 14:41:26:Authentication Successful
+2015.11.18 14:41:26:Failed to add product
+2015.11.18 14:41:26:Jet API Error Response
+2015.11.18 14:41:26:"start_selling_date is not in valid format."
+2015.11.18 14:43:50:Authentication Successful
+2015.11.18 14:44:42:Authentication Successful
+2015.11.18 14:44:42:Failed to add product
+2015.11.18 14:44:42:Jet API Error Response
+2015.11.18 14:44:42:"start_selling_date is not in valid format."
+2015.11.18 14:46:15:Authentication Successful
+2015.11.18 14:46:15:Failed to add product
+2015.11.18 14:46:15:Jet API Error Response
+2015.11.18 14:46:15:"start_selling_date is not in valid format."
+2015.11.18 14:46:57:Authentication Successful
+2015.11.18 14:46:57:Failed to add product: Wrist Wraps + Lifting Straps Combo (2 Pairs) for WEIGHT LIFTING TRAINING WRIS... (response received)
+2015.11.18 14:48:07:Authentication Successful
+2015.11.18 14:48:34:Authentication Successful
+2015.11.18 14:49:57:Authentication Successful
+2015.11.18 17:19:17:Authentication Successful
+2015.11.18 17:19:38:Authentication Successful
+2015.11.18 17:20:05:Authentication Successful
+2015.11.18 17:20:30:Authentication Successful
+2015.11.18 17:21:42:Authentication Successful
+2015.11.18 17:22:33:Authentication Successful
+2015.11.18 17:24:08:Authentication Successful
+2015.11.18 17:24:08:Failed to add product
+2015.11.18 17:24:08:Jet API Error Response
+2015.11.18 17:24:08:"Required property is missing. Path: /main_image_url"
+2015.11.18 17:26:25:Authentication Successful
+2015.11.18 17:26:25:Failed to add product
+2015.11.18 17:26:25:Jet API Error Response
+2015.11.18 17:26:25:"Images may not come from the ecx.images-amazon.com domain."
+2015.11.18 17:29:45:Authentication Successful
+2015.11.18 17:29:45:Add Success
+2015.11.18 17:32:17:Authentication Successful
+2015.11.18 17:32:18:Failed to add product
+2015.11.18 17:32:18:Jet API Error Response
+2015.11.18 17:32:18:"Exclusive minimum value is 0M. Path: /price"
+2015.11.18 17:32:59:Authentication Successful
+2015.11.18 17:32:59:Add Success
+2015.11.18 17:34:29:Authentication Successful
+2015.11.18 17:34:30:Failed to add product: Wrist Wraps + Lifting Straps Combo (2 Pairs) for WEIGHT LIFTING TRAINING WRIS... (response received)
+2015.11.18 18:03:48:Authentication Successful
+2015.11.18 18:03:48:Retrieval Success
+2015.11.18 18:11:59:Authentication Successful
+2015.11.18 18:11:59:Retrieval Success
+2015.11.18 18:52:20:Authentication Successful
+2015.11.18 18:58:44:Authentication Successful
+2015.11.18 18:59:48:Authentication Successful
+2015.11.18 19:00:14:Authentication Successful
+2015.11.18 19:00:51:Authentication Successful
+2015.11.18 19:01:01:Authentication Successful
+2015.11.18 19:02:40:Authentication Successful
+2015.11.18 19:02:57:Authentication Successful
+2015.11.18 19:03:46:Authentication Successful
+2015.11.18 19:05:07:Authentication Successful
+2015.11.18 19:05:07:Add Success
+2015.11.18 20:34:17:Authentication Successful
+2015.11.19 15:29:20:Authentication Successful
+2016.02.02 13:00:22:Authentication Successful

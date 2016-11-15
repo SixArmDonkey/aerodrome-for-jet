@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!--
+Configuration Settings for the JetImport Application
+
+
+Variable Placeholders
+=====================
+{sku} - The product SKU
+-->
+
+<config>
+
+  <!-- Log file name -->
+  <log>/mnt/work/java/libs/JetImport/jetimport.log</log>
+
+  <!-- HTTP Client Configuration -->
+  <client>
+    <!-- Socket read timeout in milliseconds -->
+    <readTimeout>10000</readTimeout>
+
+    <!-- Accept Header Value -->
+    <!-- text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 -->
+    <accept>
+      <![CDATA[
+      application/json
+      ]]>
+    </accept>
+
+    <!-- Accept-Language Header Value -->
+    <acceptLanguage>
+      <![CDATA[
+      en-US,en;q=0.5
+      ]]>
+    </acceptLanguage>
+
+    <!-- Toggle self-signed certificate rejection -->
+    <allowUntrustedSSL>true</allowUntrustedSSL>
+  </client>
+
+  <!-- Jet.com API Configuration -->
+  <!-- Currently, your authentication details reside here: -->
+  <!-- https://partner.jet.com/dashboard/start -->
+  <jet>
+    <!-- The Hostname for the Jet API (no trailing slash) -->
+    <host>https://merchant-api.jet.com</host>
+
+    <!-- Your Jet API Username -->
+    <username>D3C26BFFC8BBE6A98AB43030C6F7A2F9D47CF5F1</username>
+
+    <!-- Your Jet API Password -->
+    <password>ljo4T7YUHG9tZVhS39Wjw1vAHuZj1dGScg2ocleUnZg8</password>
+
+    <!-- Jet API Merchant Id -->
+    <merchantId>6519757b68a14505ab5201be07c37b19</merchantId>
+
+    <!-- Jet API Endpoint URI's -->
+    <uri>
+      <!-- Retrieve authentication token -->
+      <!-- https://developer.jet.com/security -->
+      <token>/api/Token</token>
+
+      <!-- Authentication testing endpoint -->
+      <!--
+       Jet API provides the test endpoint to be used just for the checking
+       of Security arrangement, that is, /api/authcheck. Upon obtaining a
+       valid bearer token, the Jet API user may access this endpoint and,
+       given the expected response has been obtained, the user may start
+       using other Jet API functions that require authorization.
+      -->
+      <authTest>/api/authcheck</authTest>
+
+      <!-- Product-related endpoints -->
+      <!-- https://developer.jet.com/docs/services/5565ca949a274a12b0b3a2a3/operations/5565d4be9a274a12b0b3a2ae -->
+      <products>
+        <!-- Get Commands -->
+        <get>
+          <!-- Get a SKU/Product -->
+          <sku>/api/merchant-skus/{sku}</sku>
+
+          <!-- Get some price data -->
+          <price>/api/merchant-skus/{sku}/price</price>
+        </get>
+
+        <!-- Put commands -->
+        <put>
+          <!-- Add a new SKU/Product -->
+          <sku>/api/merchant-skus/{sku}</sku>
+
+          <!-- Add image url's to the product -->
+          <image>/api/merchant-skus/{sku}/image</image>
+
+          <!-- Add some price data -->
+          <price>/api/merchant-skus/{sku}/price</price>
+
+          <!-- Add inventory to the product -->
+          <inventory>/api/merchant-skus/{sku}/inventory</inventory>
+
+          <!-- Add shipping exceptions -->
+          <shipException>/api/merchant-skus/{sku}/shippingexception</shipException>
+        </put>
+
+        <!-- Delete Commands -->
+        <delete>
+
+        </delete>
+      </products>
+    </uri>
+  </jet>
+</config>
