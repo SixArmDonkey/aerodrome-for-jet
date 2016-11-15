@@ -13,7 +13,7 @@ Variable Placeholders
 <config>
 
   <!-- Log file name -->
-  <log>/mnt/work/java/libs/JetImport/jetimport.log</log>
+  <log>jetimport.log</log>
 
   <!-- HTTP Client Configuration -->
   <client>
@@ -47,13 +47,13 @@ Variable Placeholders
     <host>https://merchant-api.jet.com</host>
 
     <!-- Your Jet API Username -->
-    <username>D3C26BFFC8BBE6A98AB43030C6F7A2F9D47CF5F1</username>
+    <username></username>
 
     <!-- Your Jet API Password -->
-    <password>ljo4T7YUHG9tZVhS39Wjw1vAHuZj1dGScg2ocleUnZg8</password>
+    <password></password>
 
     <!-- Jet API Merchant Id -->
-    <merchantId>6519757b68a14505ab5201be07c37b19</merchantId>
+    <merchantId></merchantId>
 
     <!-- Jet API Endpoint URI's -->
     <uri>
