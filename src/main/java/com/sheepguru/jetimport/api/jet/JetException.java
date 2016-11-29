@@ -1,5 +1,5 @@
 
-package com.sheepguru.jetimport.jet;
+package com.sheepguru.jetimport.api.jet;
 
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIResponse;

@@ -1,5 +1,5 @@
 
-package com.sheepguru.jetimport.jet;
+package com.sheepguru.jetimport.api.jet.product;
 
 /**
  * The product status retrieved from Jet

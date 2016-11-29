@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sheepguru.jetimport.jet;
+package com.sheepguru.jetimport.api.jet.product;
 
 /**
  * Product Code Type used with the ProductCodes

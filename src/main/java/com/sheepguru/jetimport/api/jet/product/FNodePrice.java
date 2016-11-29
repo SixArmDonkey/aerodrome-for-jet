@@ -1,6 +1,8 @@
 
-package com.sheepguru.jetimport.jet;
+package com.sheepguru.jetimport.api.jet.product;
 
+import com.sheepguru.jetimport.api.jet.Jsonable;
+import com.sheepguru.jetimport.api.jet.Utils;
 import javax.json.Json;
 import javax.json.JsonObject;
 

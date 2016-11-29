@@ -2,7 +2,9 @@
 package com.sheepguru.jetimport.api;
 
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -45,6 +47,23 @@ public class APIResponse
    */
   private String charset = "";
 
+  
+  /**
+   * Clone an api response 
+   * @param <T> some class that extends APIResponse
+   * @param that Some response to clone 
+   * @param type The class 
+   * @return A copy of that 
+   * @throws java.lang.Exception 
+   */
+  public static <T extends APIResponse> T copyFrom( final APIResponse that, Class<T> type ) 
+    throws NoSuchMethodException, InstantiationException, InvocationTargetException, IllegalArgumentException, IllegalAccessException 
+  {    
+    T r = type.getConstructor( ProtocolVersion.class, StatusLine.class, List.class ).newInstance( that.protocolVersion, that.status, that.headers );
+    r.setContent( that.content, that.charset );
+    return r;    
+  }
+  
 
   /**
    * Create a new Response instance.
@@ -53,7 +72,7 @@ public class APIResponse
    * @param status status line
    * @param headers response headers
    */
-  APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers )
+  public APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers )
   {
     protocolVersion = pv;
     this.status = status;

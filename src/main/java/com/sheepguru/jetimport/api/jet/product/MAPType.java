@@ -1,5 +1,5 @@
 
-package com.sheepguru.jetimport.jet;
+package com.sheepguru.jetimport.api.jet.product;
 
 /**
  * The type of rule that indicates how Jet member savings are allowed to be

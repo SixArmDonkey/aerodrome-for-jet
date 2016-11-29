@@ -1,8 +1,6 @@
 
-package com.sheepguru.jetimport.jet;
+package com.sheepguru.jetimport.api.jet;
 
-import com.sheepguru.jetimport.api.APIException;
-import com.sheepguru.jetimport.Settings;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,7 +23,7 @@ import java.util.Locale;
  *
  * @author John Quinn
  */
-public class JetConfig
+public class DefaultJetConfig implements JetConfig
 {
   //..Sure,
 
@@ -101,9 +99,24 @@ public class JetConfig
   private final String uriGetProductPrice;
 
   /**
-   * If untrusted ssl is allowed
+   * Read timeout 
    */
-  private final boolean allowUntrustedSSL;
+  private long readTimeout = 10000L;
+  
+  /**
+   * The request accept header value 
+   */
+  private String acceptHeaderValue = "application/json";
+  
+  /**
+   * The request accept language header value 
+   */
+  private String acceptLanguageHeaderValue = "en-US,en;q=0.5";
+  
+  /**
+   * If untrusted SSL is allowed
+   */
+  private boolean allowUntrustedSSL = false;
 
   /**
    * The authentication token
@@ -120,70 +133,190 @@ public class JetConfig
   private String tokenType = "";
 
   /**
-   *
+   * When the authorization token expires.
+   * This is dependent on what the API returns upon authentication 
    */
   private Date tokenExpires = new Date();
-
-
-
+  
   /**
-   * Create a new JetConfig instance
-   * @throws Exception if the configuration file/Settings class
-   * has not been initialized
+   * Authentication header value 
+   * TokenType + ' ' + Token 
    */
-  public JetConfig() throws Exception
+  private String authHeaderValue = "";
+  
+  
+
+  
+  /**
+   * Create a JetConfigImpl Instance.
+   * This is a config object used for the jet api.
+   * @param merchantId Jet.com merchant id
+   * @param host Hostname
+   * @param user Username
+   * @param pass Password
+   * @param allowUntrustedSSL Toggle untrusted ssl
+   * @param uriToken uri for logging in 
+   * @param uriAuthTest uri for testing login state
+   * @param uriAddProduct uri for adding a product
+   * @param uriAddProductImage uri for adding a product image
+   * @param uriAddProductPrice uri for adding a product price 
+   * @param uriAddProductInventory uri for adding product inventory 
+   * @param uriAddProductShipException uri for adding a shipping exception
+   * @param uriGetProduct uri for retrieving a product
+   * @param uriGetProductPrice uri for retrieving a product price 
+   * @throws IllegalArgumentException  
+   */
+  public DefaultJetConfig(
+    final String merchantId,
+    final String host,
+    final String user,
+    final String pass,
+    final String uriToken,
+    final String uriAuthTest,
+    final String uriAddProduct,
+    final String uriAddProductImage,
+    final String uriAddProductPrice,
+    final String uriAddProductInventory,
+    final String uriAddProductShipException,
+    final String uriGetProduct,
+    final String uriGetProductPrice
+  ) throws IllegalArgumentException
   {
-    host = Settings.get( "jet.host", "" );
-    user = Settings.get( "jet.username", "" );
-    pass = Settings.get( "jet.password", "" );
-    uriToken = Settings.get( "jet.uri.token", "" );
-    uriAuthTest = Settings.get( "jet.uri.authTest", "" );
-    allowUntrustedSSL = Settings.get( "client.allowUntrustedSSL", false );
-    merchantId = Settings.get( "jet.merchantId", "" );
-    uriAddProduct = Settings.get( "jet.uri.products.put.sku", "" );
-    uriAddProductImage = Settings.get( "jet.uri.products.put.image", "" );
-    uriAddProductPrice = Settings.get( "jet.uri.products.put.price", "" );
-    uriAddProductInventory = Settings.get( "jet.uri.products.put.inventory", "" );
-    uriAddProductShipException = Settings.get( "jet.uri.products.put.shipException", "" );
-    uriGetProduct = Settings.get( "jet.uri.products.get.sku", "" );
-    uriGetProductPrice = Settings.get( "jet.uri.products.get.price", "" );
-
-    if ( host.isEmpty())
-      throw new Exception( "jet.host cannot be empty" );
-    else if ( user.isEmpty())
-      throw new Exception( "jet.username cannot be empty" );
-    else if ( pass.isEmpty())
-      throw new Exception( "jet.password cannot be empty" );
-    else if ( uriToken.isEmpty())
-      throw new Exception( "jet.uri.token cannot be empty" );
-    else if ( uriAuthTest.isEmpty())
-      throw new Exception( "jet.uri.authTest cannot be empty" );
-    else if ( merchantId.isEmpty())
-      throw new Exception( "jet.merchantId cannot be empty" );
-    else if ( uriAddProduct.isEmpty())
-      throw new Exception( "jet.uri.products.put.sku cannot be empty" );
-    else if ( uriAddProductImage.isEmpty())
-      throw new Exception( "jet.uri.products.put.image cannot be empty" );
-    else if ( uriAddProductPrice.isEmpty())
-      throw new Exception( "jet.uri.products.put.price cannot be empty" );
-    else if ( uriAddProductInventory.isEmpty())
-      throw new Exception( "jet.uri.products.put.inventory cannot be empty" );
-    else if ( uriAddProductShipException.isEmpty())
-      throw new Exception( "jet.uri.products.put.shipException cannot be empty" );
-    else if ( uriGetProduct.isEmpty())
-      throw new Exception( "jet.uri.products.get,sku cannot be empty" );
-    else if ( uriGetProductPrice.isEmpty())
-      throw new Exception( "jet.uri.products.get.price cannot be empty" );
+    if ( host == null || host.isEmpty())
+      throw new IllegalArgumentException( "jet.host cannot be empty" );
+    else if ( user == null || user.isEmpty())
+      throw new IllegalArgumentException( "jet.username cannot be empty" );
+    else if ( pass == null || pass.isEmpty())
+      throw new IllegalArgumentException( "jet.password cannot be empty" );
+    else if ( uriToken == null || uriToken.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.token cannot be empty" );
+    else if ( uriAuthTest == null || uriAuthTest.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.authTest cannot be empty" );
+    else if ( merchantId == null || merchantId.isEmpty())
+      throw new IllegalArgumentException( "jet.merchantId cannot be empty" );
+    else if ( uriAddProduct == null || uriAddProduct.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.products.put.sku cannot be empty" );
+    else if ( uriAddProductImage == null || uriAddProductImage.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.products.put.image cannot be empty" );
+    else if ( uriAddProductPrice == null || uriAddProductPrice.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.products.put.price cannot be empty" );
+    else if ( uriAddProductInventory == null || uriAddProductInventory.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.products.put.inventory cannot be empty" );
+    else if ( uriAddProductShipException == null || uriAddProductShipException.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.products.put.shipException cannot be empty" );
+    else if ( uriGetProduct == null|| uriGetProduct.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.products.get,sku cannot be empty" );
+    else if ( uriGetProductPrice == null || uriGetProductPrice.isEmpty())
+      throw new IllegalArgumentException( "jet.uri.products.get.price cannot be empty" );
+    
+    this.host = host;
+    this.user = user;
+    this.pass = pass;
+    this.uriToken = uriToken;
+    this.uriAuthTest = uriAuthTest;
+    this.merchantId = merchantId;
+    this.uriAddProduct = uriAddProduct;
+    this.uriAddProductImage = uriAddProductImage;
+    this.uriAddProductInventory = uriAddProductInventory;
+    this.uriAddProductPrice = uriAddProductPrice;
+    this.uriAddProductShipException = uriAddProductShipException;
+    this.uriGetProduct = uriGetProduct;
+    this.uriGetProductPrice = uriGetProductPrice;    
   }
-
-
+  
+  
+  /**
+   * Set the socket read timeout in milliseconds
+   * @param timeout millis
+   */
+  @Override
+  public void setReadTimeout( long timeout )
+  {
+    readTimeout = timeout;
+  }
+  
+  /**
+   * Retrieve the read timeout in milliseconds 
+   * @return 
+   */
+  @Override
+  public long getReadTimeout()
+  {
+    return readTimeout;
+  }
+  
+  
+  /**
+   * Set the default accept header value for requests
+   * @param value value 
+   * @throws IllegalArgumentException if value is null or empty 
+   */
+  @Override
+  public void setAcceptHeader( final String value ) 
+    throws IllegalArgumentException
+  {
+    if ( value == null || value.isEmpty())
+      throw new IllegalArgumentException( "value cannot be empty" );
+    
+    acceptHeaderValue = value;
+  }
+  
+  
+  /**
+   * Retrieve the request accept header value 
+   * @return value 
+   */
+  @Override
+  public String getAcceptHeaderValue()
+  {
+    return acceptHeaderValue;
+  }
+  
+  
+  /**
+   * Set the default accept language header value for requests
+   * @param value value 
+   * @throws IllegalArgumentException if value is null or empty 
+   */
+  @Override
+  public void setAcceptLanguageHeader( final String value ) 
+    throws IllegalArgumentException
+  {
+    if ( value == null || value.isEmpty())
+      throw new IllegalArgumentException( "value cannot be empty" );
+    
+    acceptLanguageHeaderValue = value;
+  }
+  
+  /**
+   * Retrieve the request accept language header value 
+   * @return value 
+   */
+  @Override
+  public String getAcceptLanguageHeaderValue()
+  {
+    return acceptLanguageHeaderValue;
+  }
+  
   /**
    * Retrieve if self signed certificates are allowed
    * @return allow untrusted SSL certificates
    */
+  @Override
   public boolean getAllowUntrustedSSL()
   {
     return allowUntrustedSSL;
+  }
+  
+
+  /**
+   * Set allow untrusted ssl (default false)
+   * @param allow toggle
+   */
+  @Override
+  public void setAllowUntrustedSSL( final boolean allow )
+  {
+    allowUntrustedSSL = allow;
   }
 
 
@@ -191,6 +324,7 @@ public class JetConfig
    * Retrieve the Jet API merchant id
    * @return your merchant id
    */
+  @Override
   public String getMerchantId()
   {
     return merchantId;
@@ -201,6 +335,7 @@ public class JetConfig
    * Retrieve the Jet API host name
    * @return host
    */
+  @Override
   public String getHost()
   {
     return host;
@@ -211,6 +346,7 @@ public class JetConfig
    * Retrieve the configured Jet.com API username
    * @return username
    */
+  @Override
   public String getUsername()
   {
     return user;
@@ -221,6 +357,7 @@ public class JetConfig
    * Retrieve the Jet.com API password
    * @return password
    */
+  @Override
   public String getPassword()
   {
     return pass;
@@ -231,6 +368,7 @@ public class JetConfig
    * Retrieve the URL used for authenticating a username/password
    * @return URL
    */
+  @Override
   public String getAuthenticationURL()
   {
     return buildURL( uriToken );
@@ -241,6 +379,7 @@ public class JetConfig
    * Retrieve the URL used for testing an authentication token
    * @return URL
    */
+  @Override
   public String getAuthTestURL()
   {
     return buildURL ( uriAuthTest );
@@ -252,6 +391,7 @@ public class JetConfig
    * @param sku Unique product SKU
    * @return URL
    */
+  @Override
   public String getGetProductURL( final String sku )
   {
     return buildURL( uriGetProduct.replace( "{sku}", sku ));
@@ -263,6 +403,7 @@ public class JetConfig
    * @param sku Unique product SKU
    * @return URL
    */
+  @Override
   public String getGetProductPriceURL( final String sku )
   {
     return buildURL( uriGetProductPrice.replace( "{sku}", sku ));
@@ -274,6 +415,7 @@ public class JetConfig
    * @param sku Unique product SKU
    * @return URL
    */
+  @Override
   public String getAddProductURL( final String sku )
   {
     return buildURL( uriAddProduct.replace( "{sku}", sku ));
@@ -285,6 +427,7 @@ public class JetConfig
    * @param sku Unique product SKU
    * @return URL
    */
+  @Override
   public String getAddProductImageUrl( final String sku )
   {
     return buildURL( uriAddProductImage.replace( "{sku}", sku ));
@@ -296,6 +439,7 @@ public class JetConfig
    * @param sku Unique product SKU
    * @return URL
    */
+  @Override
   public String getAddProductPriceUrl( final String sku )
   {
     return buildURL( uriAddProductPrice.replace( "{sku}", sku ));
@@ -307,6 +451,7 @@ public class JetConfig
    * @param sku Unique product SKU
    * @return URL
    */
+  @Override
   public String getAddProductInventoryUrl( final String sku )
   {
     return buildURL( uriAddProductInventory.replace( "{sku}", sku ));
@@ -318,6 +463,7 @@ public class JetConfig
    * @param sku Unique product SKU
    * @return URL
    */
+  @Override
   public String getAddProductShipExceptioUrl( final String sku )
   {
     return buildURL( uriAddProductShipException.replace( "{sku}", sku ));
@@ -333,6 +479,7 @@ public class JetConfig
    *
    * @param token Token
    */
+  @Override
   public void setToken( final String token )
   {
     if ( token.trim().isEmpty())
@@ -347,6 +494,7 @@ public class JetConfig
    * if any.
    * @return token
    */
+  @Override
   public String getToken()
   {
     return token;
@@ -357,6 +505,7 @@ public class JetConfig
    * Retrieve the token type
    * @return Token type
    */
+  @Override
   public String getTokenType()
   {
     return tokenType;
@@ -367,8 +516,9 @@ public class JetConfig
    * Return the date/time when the auth token expires
    * @return Expires
    */
+  @Override
   public Date getTokenExpires()
-  {
+  {    
     return tokenExpires;
   }
 
@@ -378,12 +528,13 @@ public class JetConfig
    * @param token Auth token (id_token)
    * @param tokenType Token type (token_type)
    * @param expires Token expiration (expires_on)
-   * @throws IllegalArgumentException If expires cannot be converted
-   * @throws APIException IF there's an api esxception
+   * @throws IllegalArgumentException If anything is empty or 
+   * expires cannot be converted
    */
+  @Override
   public void setAuthenticationData( final String token,
     final String tokenType, final String expires )
-    throws IllegalArgumentException, APIException
+    throws IllegalArgumentException
   {
     if ( token == null || token.trim().isEmpty())
       throw new IllegalArgumentException( "token can't be empty" );
@@ -400,17 +551,32 @@ public class JetConfig
 
     this.token = token;
     this.tokenType = tokenType;
+    authHeaderValue = tokenType + ' ' + token;
   }
 
 
   /**
    * Reset any of the stored authentication tokens
    */
+  @Override
   public void clearAuthenticationData()
   {
     token = "";
     tokenType = "";
     tokenExpires = new Date();
+    authHeaderValue = "";
+  }
+  
+  
+  /**
+   * Retrieve the authorization header value to send with each request.
+   * This can only be called following a call to setAuthenticationData().
+   * @return Authentication header value 
+   */
+  @Override
+  public String getAuthorizationHeaderValue()
+  {
+    return authHeaderValue;
   }
 
 
@@ -423,12 +589,34 @@ public class JetConfig
    * after the login process has completed.
    *
    * @return is authenticated.
-   * @see JetConfig#setToken(java.lang.String)
+   * @see DefaultJetConfig#setToken(java.lang.String)
    */
+  @Override
   public boolean isAuthenticated()
   {
     Date d = new Date();
     return !token.isEmpty() && d.before( tokenExpires );
+  }
+  
+  
+  /**
+   * Throws a JetAuthException with a unique message based on different configuration states.
+   * 
+   * If token is empty, this says "Not authenticated"
+   * If token is not empty and tokenExpires is an instance of Date, this will say that the token is expired 
+   * else this says unknown error
+   * 
+   * @throws JetAuthException based on above description
+   */
+  @Override
+  public void testConfigurationData() throws JetAuthException
+  {
+    if ( token.isEmpty())
+      throw new JetAuthException( "Not authenticated (not logged in to Jet.com API)" );
+    else if ( tokenExpires instanceof Date && tokenExpires.before( new Date()))
+      throw new JetAuthException( "Authorization expired at " + tokenExpires.toString());
+    else if ( !( tokenExpires instanceof Date ))
+      throw new JetAuthException( "Missing tokenExpires Date property.  Cannot verify authentication" );
   }
 
 

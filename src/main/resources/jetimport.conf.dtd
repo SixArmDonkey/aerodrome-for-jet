@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+    TODO define vocabulary identification
+    PUBLIC ID: -//vendor//vocabulary//EN
+    SYSTEM ID: http://server/path/jetimport.conf.dtd
+
+-->
+
+<!--
+    An example how to use this DTD from your XML document:
+
+    <?xml version="1.0"?>
+
+    <!DOCTYPE config SYSTEM "jetimport.conf.dtd">
+
+    <config>
+    ...
+    </config>
+-->
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT config (log|client|jet)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT log (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT client (readTimeout|accept|acceptLanguage|allowUntrustedSSL)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT readTimeout (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT accept (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT acceptLanguage (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT allowUntrustedSSL (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT jet (host|username|password|merchantId|uri)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT host (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT username (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT password (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT merchantId (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT uri (token|authTest|products)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT token (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT authTest (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT products (get|put|delete)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT get (sku|price)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT sku (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT price (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT put (sku|image|price|inventory|shipException)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT image (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT inventory (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT shipException (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT delete EMPTY>

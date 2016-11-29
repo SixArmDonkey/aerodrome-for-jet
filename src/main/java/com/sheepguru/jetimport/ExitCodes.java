@@ -59,4 +59,9 @@ public interface ExitCodes
    * A generic API failure code 
    */
   public static final int E_API_FAILURE = 9;
+  
+  /**
+   * Some command line argument failure 
+   */
+  public static final int E_CLI_FAILURE = 10;
 }

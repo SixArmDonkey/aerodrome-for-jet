@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sheepguru.jetimport.jet;
+package com.sheepguru.jetimport;
 
+import com.sheepguru.jetimport.api.jet.JetAPI;
 import com.sheepguru.jetimport.api.APIException;
+import com.sheepguru.jetimport.api.jet.JetAPI;
 import static com.sheepguru.jetimport.ExitCodes.E_AUTH_FAILURE;
 import com.sheepguru.log.ParseLog;
 import java.util.List;
@@ -38,6 +40,7 @@ public class JetWorker
 
   /**
    * Log in to the Jet API
+   * @throws JetAuthException if there is a problem authenticating 
    */
   public void authenticate()
   {
@@ -48,10 +51,10 @@ public class JetWorker
         System.exit( E_AUTH_FAILURE );
       }
       ParseLog.write( "Authentication Successful" );
-    } catch( APIException e ) {
-      ParseLog.error( e.getMessage(), e.getPrevious());
+    } catch( APIException e ) {      
+      //throw new JetAuthException( "Authentication API Failure", e );      
     } catch( Exception e ) {
-      ParseLog.error( "Failed to initialize jet configuration", e );
+      //throw new JetAuthException( "Failed to initialize Jet configuration", e );
     }
   }
 
@@ -59,6 +62,7 @@ public class JetWorker
   /**
    * Write a list of errors to the log
    * @param errors error list 
+   * @deprecated
    */
   protected void logErrors( List<String> errors )
   {

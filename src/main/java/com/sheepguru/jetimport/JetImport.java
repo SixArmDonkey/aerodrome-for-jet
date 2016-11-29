@@ -1,16 +1,19 @@
 
 package com.sheepguru.jetimport;
 
-import com.sheepguru.args.ArgumentReader;
 import com.sheepguru.jetimport.api.APIException;
-import com.sheepguru.jetimport.jet.JetAPI;
-import com.sheepguru.jetimport.jet.JetConfig;
-import com.sheepguru.jetimport.jet.JetProduct;
-import com.sheepguru.jetimport.jet.JetProductRec;
-import com.sheepguru.jetimport.jet.JetWorker;
-import com.sheepguru.log.ParseLog;
+import com.sheepguru.jetimport.api.jet.JetAPI;
+import com.sheepguru.jetimport.api.jet.JetAuthException;
+import com.sheepguru.jetimport.api.jet.JetConfig;
+import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.configuration2.XMLConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 
 /**
@@ -27,37 +30,36 @@ import java.io.FileNotFoundException;
 public class JetImport implements ExitCodes
 {
   /**
-   * Jet API Instance
+   * Filename of the config file stored in the jar.
    */
-  private static JetAPI jet;
-
+  public static final String DEFAULT_CONFIG_FILENAME = "jetimport.conf.xml";
+  
+  
   /**
    * The main method
    * @param args Command line arguments
    */
   public static void main ( final String[] args )
   {
-    //..Init the settings
-    initSettings( args );
-
-    //..Init the log
-    initLog();
-
-    //..Say hello
-    System.out.println( "JetImport " + Settings.getBuildVersion());
-
-    //..Init the Jet API
-    initJet();
-
-    //..Create the jet worker
-    //final JetWorker worker = new JetWorker( jet );
-    final JetProduct product = new JetProduct( jet );
-
-    //..Authenticate the worker
-    product.authenticate();
-
-    JetProductRec rec = product.get( "5396C91F1E300AFE" );
-    System.out.println( rec.toJSON());
+    //..Say hello 
+    System.out.println( "JetImport Build " + CLIArgs.getBuildVersion());
+    
+    
+    //..Build the jet configuration 
+    final JetConfig jetConfig = initSettings( getCLIArgs( args ));
+    
+    //..Get an api instance 
+    final JetAPI api = getJetAPI( jetConfig );
+    
+    //..Authenticate and store the token in the jet config object 
+    authenticate( api );
+    
+    
+    
+    
+/*    
+    //JetProductRec rec = product.get( "5396C91F1E300AFE" );
+    //System.out.println( rec.toJSON());
 
     /*
     JetProductRec prod = new JetProductRec();
@@ -77,70 +79,217 @@ public class JetImport implements ExitCodes
 
   }
 
+  
+  
+  /**
+   * Parse the cli arguments or exit.
+   * @param args cli args
+   * @return  parsed args 
+   */
+  private static CLIArgs getCLIArgs( final String[] args )
+  {
+    try {
+      return new CLIArgs( args );
+    } catch( ParseException e ) {      
+      System.err.println( "" );
+      System.err.println( e );
+      System.exit( E_CLI_FAILURE );
+    }
+    
+    //..Unreachable
+    return null;
+  }
+  
+  
+  /**
+   * Retrieve a JetAPI instance 
+   * @param jetConfig config 
+   * @return api 
+   */
+  private static JetAPI getJetAPI( final JetConfig jetConfig )
+  {
+    try {
+      final JetAPI api = new JetAPI( jetConfig );
+      api.setAccept( jetConfig.getAcceptHeaderValue());
+      api.setAcceptLanguages( jetConfig.getAcceptLanguageHeaderValue());
+      api.setReadTimeout( jetConfig.getReadTimeout());
+      
+      return api;
+    } catch( APIException e ) {
+      System.err.println( e );
+      System.exit( E_API_FAILURE );
+    }
+    
+    //..Unreachable 
+    return null;
+  }
+
+  
 
   /**
    * Initialize the settings class
    * @param args Command line args
+   * @return jet configuration 
    */
-  private static void initSettings( final String[] args )
+  private static JetConfig initSettings( final CLIArgs args )
   {
+    //..Get the configuration filename 
+    final String filename = getConfigFilename( args );
+    
+    try {         
+      //..Access the configuration file 
+      //..Build the base immutable configuration parts
+      return buildJetConfig( getXMLConfiguration( filename )); 
+    } catch( Exception e ) {
+      System.err.println( "Failed to parse XML file: " + filename );
+      System.err.println( e );
+      System.exit( E_CONFIG_FAILURE );      
+    }
+    
+    //..Never reached
+    return null;
+  }
+  
+  
+  /**
+   * Builds the JetConfig object for all the Jet API commands 
+   * @param config jetimport.conf.xml instance
+   * @return jet config 
+   */
+  private static JetConfig buildJetConfig( final XMLConfiguration config )
+  {
+    final JetConfig cfg = ( new JetConfigBuilder())
+      .setMerchantId( 
+        config.getString( "jet.merchantId", "" ))   
+
+      .setHost( 
+        config.getString( "jet.host", "" ))
+
+      .setUser( 
+        config.getString( "jet.username", "" ))
+
+      .setPass( 
+        config.getString( "jet.password", "" ))
+
+      .setUriToken( 
+        config.getString( "jet.uri.token", "" ))
+            
+      .setUriAddProduct( 
+        config.getString( "jet.uri.products.put.sku", "" ))
+
+      .setUriAddProductImage( 
+        config.getString( "jet.uri.products.put.image", "" ))
+
+      .setUriAddProductInventory( 
+        config.getString( "jet.uri.products.put.inventory", "" ))
+
+      .setUriAddProductPrice( 
+        config.getString( "jet.uri.products.put.price", "" ))
+
+      .setUriAddProductShipException( 
+        config.getString( "jet.uri.products.put.shipException", "" ))
+
+      .setUriAuthTest( 
+        config.getString( "jet.uri.authTest", "" ))
+
+      .setUriGetProduct( 
+        config.getString( "jet.uri.products.get.sku", "" ))
+
+      .setUriGetProductPrice( 
+        config.getString( "jet.uri.products.get.price", "" ))
+              
+      .build();
+      
+    //..Set the optional parts with sane defaults.
+    cfg.setAllowUntrustedSSL( config.getBoolean( "client.allowUntrustedSSL", false ));
+    cfg.setAcceptHeader( config.getString( "client.accept", "application/json" ));
+    cfg.setAcceptLanguageHeader( config.getString( "client.acceptLanguage", "en-US,en;q=0.5" ));
+    cfg.setReadTimeout( config.getLong( "client.readTimeout", 10000L ));   
+
+    return cfg;
+  }
+  
+  
+  /**
+   * Retrieve an xml configuration instance 
+   * @param filename filename 
+   * @return instance 
+   * @throws ConfigurationException 
+   */
+  private static XMLConfiguration getXMLConfiguration( final String filename )
+    throws ConfigurationException
+  {
+    return (new FileBasedConfigurationBuilder<>(XMLConfiguration.class))
+      .configure(( new Parameters()).xml()
+        .setFileName( filename )
+        .setValidating( false )
+      ).getConfiguration();
+  }
+
+  
+  /**
+   * Retrieve the configuration filename to use 
+   * @param args
+   * @return 
+   */
+  private static String getConfigFilename( final CLIArgs args )
+  {
+    //..try for a cli filename 
+    if ( !args.getConfigFilename().isEmpty())
+    {
+      File f = new File( args.getConfigFilename());
+      if ( !f.exists())
+      {
+        System.err.println( "Specified configuration file: " 
+          + f.toString() + " does not exist" );
+        System.exit( E_CONFIG_NOT_FOUND );
+      }
+      else
+      {
+        return f.toString();
+      }
+    }
+        
+    //..Attempt to locate the file elsewhere.
+    ConfigLocator locator = new ConfigLocator( DEFAULT_CONFIG_FILENAME );
     try {
-      Settings.create( new ArgumentReader( args ));
+      return locator.getFile( true ).toString();
     } catch( FileNotFoundException e ) {
-      System.err.println( "Failed to locate jetimport.conf.xml" );
+      //..File not found 
       System.err.println( e );
       System.exit( E_CONFIG_NOT_FOUND );
-    } catch( Exception e ) {
-      System.exit( E_CONFIG_FAILURE );
-    }
-  }
-
-
+    } catch( IOException e ) {
+      System.err.println( e );
+      System.exit( E_JAR_EXTRACT_FAILURE );
+    } 
+    
+    //..This should never happen.
+    System.err.println( "Config file could not be located" );
+    System.exit( E_CONFIG_NOT_FOUND );
+    
+    //..Compiler complained about not having this.
+    return null;
+  }  
+  
+  
   /**
-   * Initialize the Parse and Verbose Logging
-   * @throws Exception
+   * Authenticate the user or exit
+   * @param api Jet api instance 
    */
-  private static void initLog()
-  {
-    String file = "[Not Specified]";
-    try {
-      file = Settings.get( "log", "" );
-      File f = new File( file );
-      if ( !f.exists())
-        f.createNewFile();
-
-      ParseLog.error = file;
-      ParseLog.msg = file;
-    } catch( Exception e ) {
-      System.err.println( "Failed to initialize log.  Please check your config file" );
-      System.err.println( "Failed to load log at: " + file );
-    }
-  }
-
-
-  /**
-   * Import a csv file
-   */
-  private static void importFromCSV()
-  {
-
-  }
-
-
-  /**
-   * Initialize the Jet API object
-   */
-  private static void initJet()
+  private static void authenticate( final JetAPI api )
   {
     try {
-     jet = new JetAPI( new JetConfig());
-    } catch( APIException e ) {
-      ParseLog.error( "Failed to create a JetAPI instance", e );
+      if ( !api.login())
+      {
+        System.err.println( "Failed to authenticate" );
+        System.exit( E_AUTH_FAILURE );
+      }
+      else
+        System.out.println( "Ok, you're logged in." );
+    } catch( APIException | JetAuthException e ) {
+      System.err.println( e );
       System.exit( E_API_FAILURE );
-    } catch( Exception e ) {
-      ParseLog.error( "Jet Configuration Failure", e );
-      System.exit( E_CONFIG_FAILURE );
-    }
-
+    }    
   }
+  
 }

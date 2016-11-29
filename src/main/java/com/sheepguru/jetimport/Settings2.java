@@ -1,8 +1,15 @@
 
 package com.sheepguru.jetimport;
 
-import com.sheepguru.jetimport.jet.JetConfig;
+import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.args.ArgumentReader;
+import static com.sheepguru.jetimport.ExitCodes.E_CONFIG_FAILURE;
+import static com.sheepguru.jetimport.ExitCodes.E_FILE_NOT_FOUND;
+import static com.sheepguru.jetimport.ExitCodes.E_JAR_EXTRACT_FAILURE;
+import static com.sheepguru.jetimport.ExitCodes.E_JET_CONFIG_FAILURE;
+import static com.sheepguru.jetimport.ExitCodes.E_MISSING_RESOURCES;
+import static com.sheepguru.jetimport.ExitCodes.E_NO_RUN_MODE;
+import static com.sheepguru.jetimport.ExitCodes.E_SUCCESS;
 import com.sheepguru.xml.XMLSettings;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +30,7 @@ import java.util.jar.Manifest;
  *
  * @author John Quinn
  */
-public class Settings implements ExitCodes
+public class Settings2 implements ExitCodes
 {
   /**
    * Various application run modes.
@@ -199,7 +206,7 @@ public class Settings implements ExitCodes
     try {
       check();
     } catch( Exception e ) {
-      System.err.println( "Settings must be initialized prior to usign the JetConfig object" );
+      System.err.println( "Settings must be initialized prior to using the JetConfig object" );
       System.err.println( e );
       System.exit( E_CONFIG_FAILURE );
     }

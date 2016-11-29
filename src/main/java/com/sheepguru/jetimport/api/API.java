@@ -130,7 +130,7 @@ public class API
    * @param host The host name
    * @param allowUntrustedSSL Toggle allowing untrusted SSL
    * certificates to be used
-   * @throws APIException
+   * @throws APIException If there is a problem creating the client or strategy
    */
   public API( String host, final boolean allowUntrustedSSL )
     throws APIException
@@ -505,7 +505,7 @@ public class API
    * Create a new HttpClient to use
    * @return
    * @throws IllegalArgumentException
-   * @throws APIException
+   * @throws APIException If there is a problem creating the client or strategy
    */
   private CloseableHttpClient getClient()
       throws IllegalArgumentException, APIException
@@ -620,7 +620,9 @@ public class API
         String charset = "UTF-8";
 
         try {
-          charset = ContentType.getOrDefault( entity ).getCharset().displayName();
+          java.nio.charset.Charset cs = ContentType.getOrDefault( entity ).getCharset();
+          if ( cs != null )
+            charset = cs.displayName();          
         } catch( ParseException | UnsupportedCharsetException e ) {
           //..No nothing, use defaults
         }
