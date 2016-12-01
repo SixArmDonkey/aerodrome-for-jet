@@ -48,13 +48,13 @@ Variable Placeholders
     <host>https://merchant-api.jet.com</host>
 
     <!-- Your Jet API Username -->
-    <username>ED2F2460719E3EE2961130FB97F73A659547BA1C</username>
+    <username></username>
 
     <!-- Your Jet API Password -->
-    <password>qUlvcZEVPidBWW7X1x+k/Qhw6uYDazJJqW0R2QQlpR5S</password>
+    <password></password>
 
     <!-- Jet API Merchant Id -->
-    <merchantId>b8ab64c6e2ba469698ffdae26946553d</merchantId>
+    <merchantId></merchantId>
 
     <!-- Jet API Endpoint URI's -->
     <uri>
