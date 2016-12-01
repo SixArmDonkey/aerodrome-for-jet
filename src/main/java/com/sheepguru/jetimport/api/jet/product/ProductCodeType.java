@@ -5,6 +5,7 @@
  */
 package com.sheepguru.jetimport.api.jet.product;
 
+
 /**
  * Product Code Type used with the ProductCodes
  *
@@ -28,6 +29,25 @@ public enum ProductCodeType
    */
   private final int sort;
 
+  
+  /**
+   * Attempt to retrieve a ProductCodeType by text value 
+   * @param text value 
+   * @return code 
+   * @throws IllegalArgumentException if text is not found 
+   */
+  public static ProductCodeType fromString( final String text )
+    throws IllegalArgumentException
+  {
+    for ( final ProductCodeType c : values())
+    {
+      if ( c.getType().equalsIgnoreCase( text ))
+        return c;
+    }
+    
+    throw new IllegalArgumentException( "Invalid value " + text );
+  }  
+  
   /**
    * Create a new ProductCodeType instance
    * @param type Jet constant value

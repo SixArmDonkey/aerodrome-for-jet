@@ -1,6 +1,7 @@
 
 package com.sheepguru.jetimport.api.jet.product;
 
+
 /**
  * CPSIA Cautionary Statements
  * @author John Quinn
@@ -20,6 +21,24 @@ public enum CPSIA
    */
   private String text = "";
 
+  /**
+   * Attempt to retrieve a CPSIA by text value 
+   * @param text value 
+   * @return tax code 
+   * @throws IllegalArgumentException if text is not found 
+   */
+  public static CPSIA fromString( final String text )
+    throws IllegalArgumentException
+  {
+    for ( final CPSIA c : values())
+    {
+      if ( c.getText().equalsIgnoreCase( text ))
+        return c;
+    }
+    
+    throw new IllegalArgumentException( "Invalid value " + text );
+  }  
+  
   /**
    * Create a new CPSIA instance
    * @param s Jet constant value 

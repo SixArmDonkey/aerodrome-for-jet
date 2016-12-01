@@ -1,10 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.sheepguru.jetimport.api;
 
+import org.apache.http.client.utils.URIBuilder;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,42 +9,31 @@ import java.net.URI;
 import java.nio.charset.UnsupportedCharsetException;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.RedirectException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.ConnectionKeepAliveStrategy;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
@@ -63,233 +49,89 @@ public class API
    * The download size to specify (in bytes) if the length is not specified.
    * This can be overridden by setMaxDownloadSize()
    */
-  private final static int MAX_DOWNLOAD_SIZE = 1024 * 2048;
-
+  private final static long MAX_DOWNLOAD_SIZE = 1024 * 2048;
+  
   /**
-   * The idle connection monitor thread
+   * Valid methods 
    */
-  private static IdleConnectionMonitorThread monitor = null;
-
-  /**
-   * The user agent string to use
-   */
-  protected String userAgent = "Mozilla/5.0 (compatible; JetImport/1.0; +http://www.sheepguru.com)";
-
-  /**
-   * The socket read timeout
-   */
-  protected long readTimeout = 5000L;
-
-  /**
-   * Types of encodings that are acceptable
-   */
-  protected String accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-
-  /**
-   * Accepted languages
-   */
-  protected String acceptLanguage = "en-US,en;q=0.5";
-
-  /**
-   * If untrusted SSL connections should be allowed
-   */
-  private final boolean allowUntrustedSSL;
-
-  /**
-   * The HTTP Client connection manager
-   */
-  private final PoolingHttpClientConnectionManager pool = new PoolingHttpClientConnectionManager();
-
-  /**
-   * The host name without scheme
-   */
-  private final String host;
-
-  /**
-   * Port being used 
-   */
-  private final int port;
-
-  /**
-   * The scheme string
-   */
-  private final String scheme;
-
-  /**
-   * The HttpClient to use
-   */
-  private final CloseableHttpClient client;
+  public static enum REQUEST_TYPE { GET, POST, PUT, DELETE };
 
   /**
    * Client context
    */
   private final HttpContext context = HttpClientContext.create();
+  
+  /**
+   * Max download size
+   */
+  private final AtomicLong maxDownloadSize = new AtomicLong(MAX_DOWNLOAD_SIZE );
+  
+  /**
+   * The http client to use 
+   */
+  private final APIHttpClient client;
+  
+  /**
+   * Lock the host to whatever is specified in the client 
+   */
+  private final AtomicBoolean lockHost = new AtomicBoolean( true );
+
 
   /**
    * Create a new API instance
-   * @param host The host name
-   * @param allowUntrustedSSL Toggle allowing untrusted SSL
-   * certificates to be used
-   * @throws APIException If there is a problem creating the client or strategy
+   * @param client The HttpClient to use 
    */
-  public API( String host, final boolean allowUntrustedSSL )
-    throws APIException
+  public API( final APIHttpClient client )
   {
-    int port;
-    host = host.toLowerCase();
-    if ( host.startsWith( "https://" ))
-    {
-      host = host.replace( "https://", "" );
-      port = 443;
-      scheme = "https";
-    }
-    else if ( host.startsWith( "http://" ))
-    {
-      host = host.replace( "http://", "" );
-      port = 80;
-      scheme = "http";
-    }
-    else
-      throw new IllegalArgumentException( "Invalid hostname scheme" );
-
-    if ( host.trim().isEmpty())
-      throw new IllegalArgumentException( "host cannot be empty" );
-
-    this.allowUntrustedSSL = allowUntrustedSSL;
-
-    this.host = host;
-    this.port = port;
-
-    pool.setMaxTotal( 200 );
-    pool.setDefaultMaxPerRoute( 20 );
-
-    client = getClient();
+    if ( client == null )
+      throw new IllegalArgumentException( "client cannot be null" );
+    
+    this.client = client;
   }
-
-
+  
+  
   /**
-   * Set the user agent string to use
-   * @param ua User agent string
+   * Set the max download size in bytes
+   * @param bytes bytes
+   * @throws IllegalArgumentException if bytes is less than zero
    */
-  public void setUserAgent( final String ua )
+  public void setMaxDownloadSize( final long bytes )
+    throws IllegalArgumentException
   {
-    if ( ua == null )
-      throw new IllegalArgumentException( "ua cannot be null" );
-
-    userAgent = ua;
+    if ( bytes < 0 )
+      throw new IllegalArgumentException( "bytes cannot be less than zero" );
+    
+    maxDownloadSize.set( bytes );
   }
-
-
+  
+  
   /**
-   * Retrieve the user agent
-   * @return User agent
+   * Retrieve the max download size in bytes
+   * @return max 
    */
-  public String getUserAgent()
+  public long getMaxDownloadSize()
   {
-    return userAgent;
+    return maxDownloadSize.get();
   }
-
-
+  
+  
   /**
-   * Sets the socket read timeout in milliseconds
-   * @param timeout milliseconds
+   * Toggle overwriting the host to whatever is specified in the client.
+   * @param lockHost enable
    */
-  public void setReadTimeout( final long timeout )
+  public void setLockHost( final boolean lockHost )
   {
-    if ( timeout < 1 )
-      throw new IllegalArgumentException( "timeout must be greater than zero" );
-
-    readTimeout = timeout;
+    this.lockHost.set( lockHost );
   }
-
-
+  
+  
   /**
-   * Retrieve the current socket read timeout value
-   * @return milliseconds
+   * If the host is overwritten by the client.
+   * @return overwrite host 
    */
-  public long getReadTimeout()
+  public boolean isLockHost()
   {
-    return readTimeout;
-  }
-
-
-  /**
-   * Set the accept request header value
-   * @param accept Accept header value
-   */
-  public void setAccept( final String accept )
-  {
-    if ( accept.trim().isEmpty())
-      throw new IllegalArgumentException( "Accept cannot be empty" );
-
-    this.accept = accept;
-  }
-
-
-  /**
-   * Retrieve the accept header value
-   * @return accept header value
-   */
-  public String getAccept()
-  {
-    return accept;
-  }
-
-
-  /**
-   * Set the value for the Accept-Language request header
-   * @param accept value
-   */
-  public void setAcceptLanguages( final String accept )
-  {
-    if ( accept.trim().isEmpty())
-      throw new IllegalArgumentException( "Accept cannot be empty" );
-
-    acceptLanguage = accept;
-  }
-
-
-  /**
-   * Retrieve the Accept-Language header value
-   * @return value
-   */
-  public String getAcceptLanguages()
-  {
-    return acceptLanguage;
-  }
-
-
-  /**
-   * Shutdown the underlying connection manager
-   */
-  public final void shutdownConnectionManager()
-  {
-    try {
-      client.close();
-    } catch( IOException e ) {
-      //..do nothing
-    }
-
-    //..Shutdown the monitor thread
-    if ( monitor != null )
-      monitor.shutdown();
-
-    //..Shutdown the connection pool
-    pool.shutdown();
-  }
-
-
-  /**
-   * Start the IdleConnectionMonitorThread Thread
-   */
-  public final void startConnectionMonitor()
-  {
-    //..Start the connection monitor
-    if ( monitor == null )
-    {
-      monitor = new IdleConnectionMonitorThread( pool );
-      monitor.start();
-    }
+    return lockHost.get();
   }
 
 
@@ -312,19 +154,11 @@ public class API
    * @return The response
    * @throws APIException If something goes wrong
    */
-  public APIResponse get( final String url, final Map<String,String> headers ) throws APIException
+  public APIResponse get( final String url, final Map<String,String> headers ) 
+    throws APIException
   {
-    //..Prepare the uri
-    final URI uri = stringToURI( url );
-
-    //..Prepare the request
-    final HttpGet get = new HttpGet( uri );
-
-    //..Add any extra headers
-    addHeaders( get, headers );
-
     //..Execute
-    return executeRequest( get );
+    return executeRequest( createRequest( REQUEST_TYPE.GET, url, headers ));
   }
 
 
@@ -335,8 +169,8 @@ public class API
    * @return response
    * @throws APIException If something goes wrong
    */
-  public APIResponse post( final String url, final List<NameValuePair> formData )
-      throws APIException
+  public APIResponse post( final String url, 
+    final List<NameValuePair> formData ) throws APIException
   {
     return post( url, formData, null, null );
   }
@@ -350,8 +184,8 @@ public class API
    * @return response
    * @throws APIException If something goes wrong
    */
-  public APIResponse post( final String url, final List<NameValuePair> formData, final Map<String,File> files )
-      throws APIException
+  public APIResponse post( final String url, final List<NameValuePair> formData, 
+    final Map<String,File> files ) throws APIException
   {
     return post( url, formData, files, null );
   }
@@ -366,17 +200,15 @@ public class API
    * @return response
    * @throws APIException If something goes wrong
    */
-  public APIResponse post( final String url, final List<NameValuePair> formData, final Map<String,File> files, final Map<String,String> headers )
+  public APIResponse post( final String url, final List<NameValuePair> formData, 
+      final Map<String,File> files, final Map<String,String> headers )
       throws APIException
   {
-    //..Create the post request
-    final HttpPost post = new HttpPost( stringToURI( url ));
-
-    //..Add any additional headers
-    addHeaders( post, headers );
-
+    final HttpPost post = (HttpPost)createRequest( 
+      REQUEST_TYPE.POST, url, headers );
+    
     //..Create a multi-part form data entity
-    MultipartEntityBuilder b = MultipartEntityBuilder.create();
+    final MultipartEntityBuilder b = MultipartEntityBuilder.create();
 
     //..Set the mode
     b.setMode( HttpMultipartMode.BROWSER_COMPATIBLE );
@@ -384,12 +216,15 @@ public class API
     //..Check for input files
     if ( files != null )
     {
-      for ( String name : files.keySet())
+      for ( final String name : files.keySet())
       {
         //..Ensure the file exists
-        File f = files.get( name );
+        final File f = files.get( name );
         if ( !f.exists())
-          throw new IllegalArgumentException( f + " does not exist; cannot upload non-existent file." );
+        {
+          throw new IllegalArgumentException( 
+            f + " does not exist; cannot upload non-existent file." );
+        }
 
         //..Add the form part
         b.addPart( name, new FileBody( f ));
@@ -399,7 +234,7 @@ public class API
     //..Check for non-file form data
     if ( formData != null )
     {
-      for ( NameValuePair pair : formData )
+      for ( final NameValuePair pair : formData )
       {
         //..Add the text
         b.addTextBody( pair.getName(), pair.getValue());
@@ -437,14 +272,12 @@ public class API
    * @return response
    * @throws APIException if something goes wrong
    */
-  public APIResponse post( final String url, final String payload, final Map<String,String> headers )
-    throws APIException
+  public APIResponse post( final String url, final String payload, 
+    final Map<String,String> headers ) throws APIException
   {
     //..Get the post request
-    final HttpPost post = new HttpPost( stringToURI( url ));
-
-    //..Add some headers
-    addHeaders( post, headers );
+    final HttpPost post = (HttpPost)createRequest( 
+      REQUEST_TYPE.POST, url, headers );
 
     //..Add the payload
     try {
@@ -480,124 +313,125 @@ public class API
    * @return response
    * @throws APIException
    */
-  public APIResponse put( final String url, final String payload, final Map<String,String> headers )
-      throws APIException
+  public APIResponse put( final String url, final String payload, 
+    final Map<String,String> headers ) throws APIException
   {
     //..Create the new put request
-    HttpPut put = new HttpPut( stringToURI( url ));
-
-    //..Add any extra headers
-    addHeaders( put, headers );
+    final HttpPut put = (HttpPut)createRequest( 
+      REQUEST_TYPE.PUT, url, headers );
 
     //..Set the put payload
     try {
       put.setEntity( new StringEntity( payload ));
     } catch( UnsupportedEncodingException e ) {
-      throw new APIException( "Unsupported payload encoding, cannot create StringEntity", e );
+      throw new APIException( 
+        "Unsupported payload encoding, cannot create StringEntity", e );
     }
 
     //..Execute the request
     return executeRequest( put );
   }
 
-
+  
   /**
-   * Create a new HttpClient to use
-   * @return
-   * @throws IllegalArgumentException
-   * @throws APIException If there is a problem creating the client or strategy
+   * A factory method for creating a new request and adding headers 
+   * @param type Type of request
+   * @param url URL 
+   * @param headers Some headers
+   * @return the request 
+   * @throws APIException  
    */
-  private CloseableHttpClient getClient()
-      throws IllegalArgumentException, APIException
+  private HttpUriRequest createRequest( REQUEST_TYPE type, 
+    final String url, final Map<String,String> headers ) throws APIException
   {
+    switch( type )
+    {
+      case GET:
+        //..Prepare the request
+        final HttpGet get = new HttpGet( stringToURI( url ));
 
-    //..Build the client
-    HttpClientBuilder builder = HttpClients.custom()
+        //..Add any extra headers
+        addHeaders( get, headers );
+        
+      return get;
+      
+      
+      case POST:
+        //..Create the post request
+        final HttpPost post = new HttpPost( stringToURI( url ));
 
-        //..Set the client connection manager
-        .setConnectionManager( pool )
+        //..Add any additional headers
+        addHeaders( post, headers );          
 
-        //..Set the user agent
-        .setUserAgent( userAgent )
+      return post;
 
-        //..Enable support for things like 301/302 redirects
-        .setRedirectStrategy(
-            new DefaultRedirectHandler(
-                userAgent, new RobotDirectives( "*", 1000L )))
+      
+      case PUT:
+        final HttpPut put = new HttpPut( stringToURI( url ));
 
-        //..Keep the connection alive for some time
-        .setKeepAliveStrategy( new ConnectionKeepAliveStrategy() {
-          @Override
-          public long getKeepAliveDuration( HttpResponse hr, HttpContext hc ) {
-            return readTimeout;
-          }})
+        //..Add any extra headers
+        addHeaders( put, headers );
+      return put;
+      
 
-        //..Add the user agent intercept for setting the user agent
-        //..Don't know if this is still necessary
-        .addInterceptorFirst( new HttpRequestInterceptor() {
-          @Override
-          public void process( HttpRequest hr, HttpContext hc )
-              throws HttpException, IOException {
-            //..Set the ua header
-            hr.setHeader( HTTP.USER_AGENT, userAgent );
-          }})
-
-        //..Add a few headers for what types of encoding to accept, etc.
-        .addInterceptorFirst( new HttpRequestInterceptor() {
-          @Override
-          public void process( HttpRequest hr, HttpContext hc )
-              throws HttpException, IOException {
-            hr.setHeader( "Accept", accept );
-            hr.setHeader( "Accept-Language", acceptLanguage );
-            hr.setHeader( "Accept-Encoding", "" );
-          }});
-
-    if ( allowUntrustedSSL )
-      return setClientToSelfSigned( builder ).build();
-    else
-      return builder.build();
-  }
-
-
-  /**
-   * Create a HTTP client that uses a self-signed and always trusted
-   * SSL strategy.
-   *
-   * @param custom The client builder
-   *
-   * @return builder with unsafe SSL strategy
-   *
-   * @throws APIException If there is a problem creating the client or strategy
-   */
-  private HttpClientBuilder setClientToSelfSigned( final HttpClientBuilder custom ) throws APIException
-  {
-    SSLContextBuilder builder = new SSLContextBuilder();
-    try {
-      builder.loadTrustMaterial( null, new TrustSelfSignedStrategy());
-      SSLConnectionSocketFactory sf = new SSLConnectionSocketFactory( builder.build());
-      return custom.setSSLSocketFactory( sf );
-    } catch( NoSuchAlgorithmException | KeyStoreException | KeyManagementException e ) {
-      throw new APIException( "Failed to create self-signed trust strategy and/or SSL-enabled HTTP Client", e );
+      case DELETE:
+        final HttpDelete del = new HttpDelete( stringToURI( url ));
+        addHeaders( del, headers );
+      return del;
+        
+      default:
+        throw new NotImplementedException( "not implemented yet" );          
     }
   }
 
 
   /**
-   * Convert a string representing a URL into a URI object
-   * @param url The URL
-   * @return The URI object
+   * Convert a string representing a URI into a URI object.
+   * This combines url with the host, port and scheme from the defined host
+   * in the constructor.
+   * @param uri The URI (path/fragment/querystring)
+   * @return The URI object representing the full address
    * @throws APIException If there is a problem building the URI
    */
   private URI stringToURI( final String url ) throws APIException
   {
     try {
-      return new URIBuilder( url ).build();
+      final URIBuilder b = new URIBuilder( url );
+      
+      //..Overwrite the host if necessary 
+      if ( isLockHost() && client.getHost().getHost() != null )
+      {
+        b.setHost( client.getHost().getHost())
+        .setPort( client.getHost().getPort())
+        .setScheme( client.getHost().getScheme());
+      }
+      
+      //...done 
+      return b.build();
     } catch( Exception e ) {
       throw new APIException( "Could not build url: " + url, e );
     }
   }
 
 
+  /**
+   * Adds headers to an HttpRequest
+   * @param hr request object
+   * @param headers headers to add (can be null)
+   */
+  private void addHeaders( final HttpRequest hr, 
+    final Map<String,String> headers )
+  {
+    if ( headers == null )
+      return;
+
+    for ( final String key : headers.keySet())
+    {
+      hr.addHeader( key, headers.get( key ));
+    }
+  }    
+
+  
   /**
    * Prepare the response entity for usage
    * @param response HTTP Response
@@ -606,7 +440,8 @@ public class API
    * @throws BrowserException
    * @throws RedirectException if a redirect needs to happen
    */
-  private APIResponse processResponse( final HttpResponse response, final HttpUriRequest get ) throws APIException
+  private APIResponse processResponse( final HttpResponse response, 
+    final HttpUriRequest get ) throws APIException
   {
     if ( response == null )
       throw new APIException( "Endpoint response was null" );
@@ -620,7 +455,9 @@ public class API
         String charset = "UTF-8";
 
         try {
-          java.nio.charset.Charset cs = ContentType.getOrDefault( entity ).getCharset();
+          java.nio.charset.Charset cs = ContentType.getOrDefault( entity )
+              .getCharset();
+          
           if ( cs != null )
             charset = cs.displayName();          
         } catch( ParseException | UnsupportedCharsetException e ) {
@@ -629,21 +466,14 @@ public class API
 
         if (( charset == null ) || ( charset.isEmpty())) charset = "UTF-8";
 
-        //..Set up the input stream
-        InputStream in = entity.getContent();
-
         //..Process the stream
-        try {
+        try ( final InputStream in = entity.getContent()) {
           return processEntity( createResponseObject( response ), in, charset );
         } catch( RuntimeException e ) {
           //..Abort
           get.abort();
 
           throw new APIException( e.getMessage(), e );
-        } finally {
-          try {
-            in.close();
-          } catch( Exception ignore ) {}
         }
       }
       else
@@ -651,7 +481,8 @@ public class API
         return createResponseObject( response );
       }
     } catch( IOException e ) {
-      throw new APIException( "Failed to retrieve entity content (IOException)", e );
+      throw new APIException( 
+        "Failed to retrieve entity content (IOException)", e );
     } finally {
       try {
         EntityUtils.consume( entity );
@@ -681,8 +512,8 @@ public class API
    * @param entity
    * @throws BrowserException
    */
-  private APIResponse processEntity( final APIResponse res, final InputStream in, final String charset )
-     throws APIException
+  private APIResponse processEntity( final APIResponse res, 
+     final InputStream in, final String charset ) throws APIException
   {
     //..Buffer dat ish
     try ( BufferedInputStream content = new BufferedInputStream( in ))
@@ -697,7 +528,8 @@ public class API
       int bytesRead;
 
       //..Create a new html buffer to store the data
-      final StringBuilder htmlBuffer = new StringBuilder( res.getContentLength());
+      final StringBuilder htmlBuffer = new StringBuilder( 
+         res.getContentLength());
 
       //..Read the bytes
       while (( bytesRead = content.read( bytes )) != -1 )
@@ -709,7 +541,7 @@ public class API
         htmlBuffer.append( new String( bytes, 0, bytesRead, charset ));
 
         //..Break on max download size
-        if ( totalBytes >= MAX_DOWNLOAD_SIZE )
+        if ( totalBytes >= getMaxDownloadSize())
           break;
       }
 
@@ -718,28 +550,12 @@ public class API
 
     } catch( IOException e ) {
       //..Oh noes!
-      throw new APIException( "Failed to process content stream.  " + e.getMessage(), e );
+      throw new APIException( "Failed to process content stream.  " 
+        + e.getMessage(), e );
     }
 
     //..Return the results
     return res;
-  }
-
-
-  /**
-   * Adds headers to an HttpRequest
-   * @param hr request object
-   * @param headers headers to add (can be null)
-   */
-  private void addHeaders( final HttpRequest hr, final Map<String,String> headers )
-  {
-    if ( headers != null )
-    {
-      for ( String key : headers.keySet())
-      {
-        hr.addHeader( key, headers.get( key ));
-      }
-    }
   }
 
 
@@ -749,10 +565,13 @@ public class API
    * @return response
    * @throws APIException If the request failed
    */
-  private APIResponse executeRequest( final HttpUriRequest hr ) throws APIException
+  private APIResponse executeRequest( final HttpUriRequest hr ) 
+    throws APIException
   {
     //..Execute and process the response
-    try ( CloseableHttpResponse response = client.execute( hr, context )) {
+    try ( final CloseableHttpResponse response = client.getClient()
+      .execute( hr, context )) 
+    {
       return processResponse( response, hr );
     } catch( IOException e ) {
       throw new APIException( "Failed to make request", e );

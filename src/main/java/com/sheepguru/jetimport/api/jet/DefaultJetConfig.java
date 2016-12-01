@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
@@ -101,22 +102,22 @@ public class DefaultJetConfig implements JetConfig
   /**
    * Read timeout 
    */
-  private long readTimeout = 10000L;
+  private final long readTimeout;
   
   /**
    * The request accept header value 
    */
-  private String acceptHeaderValue = "application/json";
+  private final String acceptHeaderValue;
   
   /**
    * The request accept language header value 
    */
-  private String acceptLanguageHeaderValue = "en-US,en;q=0.5";
+  private final String acceptLanguageHeaderValue;
   
   /**
    * If untrusted SSL is allowed
    */
-  private boolean allowUntrustedSSL = false;
+  private final boolean allowUntrustedSSL;
 
   /**
    * The authentication token
@@ -154,6 +155,9 @@ public class DefaultJetConfig implements JetConfig
    * @param host Hostname
    * @param user Username
    * @param pass Password
+   * @param readTimeout The read timeout in milliseconds
+   * @param acceptHeaderValue The accept header value
+   * @param acceptLanguageHeaderValue The acceptLanguageHeaderValue value 
    * @param allowUntrustedSSL Toggle untrusted ssl
    * @param uriToken uri for logging in 
    * @param uriAuthTest uri for testing login state
@@ -171,6 +175,10 @@ public class DefaultJetConfig implements JetConfig
     final String host,
     final String user,
     final String pass,
+    final long readTimeout,
+    final String acceptHeaderValue,
+    final String acceptLanguageHeaderValue,
+    final boolean allowUntrustedSSL,
     final String uriToken,
     final String uriAuthTest,
     final String uriAddProduct,
@@ -208,6 +216,12 @@ public class DefaultJetConfig implements JetConfig
       throw new IllegalArgumentException( "jet.uri.products.get,sku cannot be empty" );
     else if ( uriGetProductPrice == null || uriGetProductPrice.isEmpty())
       throw new IllegalArgumentException( "jet.uri.products.get.price cannot be empty" );
+    else if ( readTimeout < 0 )
+      throw new IllegalArgumentException( "readTimeout cannot be less than zero" );
+    else if ( acceptHeaderValue == null || acceptHeaderValue.isEmpty())
+      throw new IllegalArgumentException( "acceptHeaderValue cannot be null or empty" );
+    else if ( acceptLanguageHeaderValue == null || acceptLanguageHeaderValue.isEmpty())
+      throw new IllegalArgumentException( "acceptLanguageHeaderValue cannot be null or empty" );
     
     this.host = host;
     this.user = user;
@@ -222,18 +236,12 @@ public class DefaultJetConfig implements JetConfig
     this.uriAddProductShipException = uriAddProductShipException;
     this.uriGetProduct = uriGetProduct;
     this.uriGetProductPrice = uriGetProductPrice;    
+    this.readTimeout = readTimeout;
+    this.acceptHeaderValue = acceptHeaderValue;
+    this.acceptLanguageHeaderValue = acceptLanguageHeaderValue;
+    this.allowUntrustedSSL = allowUntrustedSSL;
   }
   
-  
-  /**
-   * Set the socket read timeout in milliseconds
-   * @param timeout millis
-   */
-  @Override
-  public void setReadTimeout( long timeout )
-  {
-    readTimeout = timeout;
-  }
   
   /**
    * Retrieve the read timeout in milliseconds 
@@ -245,21 +253,6 @@ public class DefaultJetConfig implements JetConfig
     return readTimeout;
   }
   
-  
-  /**
-   * Set the default accept header value for requests
-   * @param value value 
-   * @throws IllegalArgumentException if value is null or empty 
-   */
-  @Override
-  public void setAcceptHeader( final String value ) 
-    throws IllegalArgumentException
-  {
-    if ( value == null || value.isEmpty())
-      throw new IllegalArgumentException( "value cannot be empty" );
-    
-    acceptHeaderValue = value;
-  }
   
   
   /**
@@ -273,20 +266,6 @@ public class DefaultJetConfig implements JetConfig
   }
   
   
-  /**
-   * Set the default accept language header value for requests
-   * @param value value 
-   * @throws IllegalArgumentException if value is null or empty 
-   */
-  @Override
-  public void setAcceptLanguageHeader( final String value ) 
-    throws IllegalArgumentException
-  {
-    if ( value == null || value.isEmpty())
-      throw new IllegalArgumentException( "value cannot be empty" );
-    
-    acceptLanguageHeaderValue = value;
-  }
   
   /**
    * Retrieve the request accept language header value 
@@ -308,17 +287,6 @@ public class DefaultJetConfig implements JetConfig
     return allowUntrustedSSL;
   }
   
-
-  /**
-   * Set allow untrusted ssl (default false)
-   * @param allow toggle
-   */
-  @Override
-  public void setAllowUntrustedSSL( final boolean allow )
-  {
-    allowUntrustedSSL = allow;
-  }
-
 
   /**
    * Retrieve the Jet API merchant id
@@ -532,7 +500,7 @@ public class DefaultJetConfig implements JetConfig
    * expires cannot be converted
    */
   @Override
-  public void setAuthenticationData( final String token,
+  public synchronized void setAuthenticationData( final String token,
     final String tokenType, final String expires )
     throws IllegalArgumentException
   {
@@ -559,7 +527,7 @@ public class DefaultJetConfig implements JetConfig
    * Reset any of the stored authentication tokens
    */
   @Override
-  public void clearAuthenticationData()
+  public synchronized void clearAuthenticationData()
   {
     token = "";
     tokenType = "";

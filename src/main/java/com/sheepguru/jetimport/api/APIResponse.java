@@ -46,7 +46,8 @@ public class APIResponse
    * APIResponse charset
    */
   private String charset = "";
-
+  
+  
   
   /**
    * Clone an api response 
@@ -54,7 +55,10 @@ public class APIResponse
    * @param that Some response to clone 
    * @param type The class 
    * @return A copy of that 
-   * @throws java.lang.Exception 
+   * @throws java.lang.NoSuchMethodException 
+   * @throws java.lang.InstantiationException 
+   * @throws java.lang.reflect.InvocationTargetException 
+   * @throws java.lang.IllegalAccessException 
    */
   public static <T extends APIResponse> T copyFrom( final APIResponse that, Class<T> type ) 
     throws NoSuchMethodException, InstantiationException, InvocationTargetException, IllegalArgumentException, IllegalAccessException 

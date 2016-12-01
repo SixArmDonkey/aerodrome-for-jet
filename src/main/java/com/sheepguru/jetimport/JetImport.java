@@ -2,13 +2,24 @@
 package com.sheepguru.jetimport;
 
 import com.sheepguru.jetimport.api.APIException;
+import com.sheepguru.jetimport.api.APIHttpClient;
 import com.sheepguru.jetimport.api.jet.JetAPI;
+import com.sheepguru.jetimport.api.jet.JetAPIAuth;
 import com.sheepguru.jetimport.api.jet.JetAuthException;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
+import com.sheepguru.jetimport.api.jet.JetException;
+import com.sheepguru.jetimport.api.jet.product.JetAPIProduct;
+import com.sheepguru.jetimport.api.jet.product.JetProduct;
+import com.sheepguru.jetimport.api.jet.product.MAPType;
+import com.sheepguru.jetimport.api.jet.product.ProductCode;
+import com.sheepguru.jetimport.api.jet.product.ProductCodeType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
@@ -36,49 +47,125 @@ public class JetImport implements ExitCodes
   
   
   /**
+   * Print and exit.
+   * @param message Message
+   * @param code Return value 
+   * @param e Exception
+   */
+  private static void fail( final String message, final int code, final Exception e )
+  {
+    System.err.println( "FATAL EXCEPTION (" + String.valueOf( code ) + ")" );
+    System.err.println( message );
+    
+    if ( e != null )
+    {
+      if ( e instanceof JetException )
+      {
+        for ( final String m : ((JetException) e).getMessages())
+        {
+          System.err.println( m );
+        }
+      }
+      System.err.println( e );
+      if ( e.getCause() != null )
+        System.err.println( e.getCause());
+      e.printStackTrace( System.err );    
+    }
+  }
+  
+  
+  /**
    * The main method
    * @param args Command line arguments
    */
-  public static void main ( final String[] args )
+  public static void main( final String[] args )
   {
     //..Say hello 
     System.out.println( "JetImport Build " + CLIArgs.getBuildVersion());
-    
-    
+        
     //..Build the jet configuration 
     final JetConfig jetConfig = initSettings( getCLIArgs( args ));
     
-    //..Get an api instance 
-    final JetAPI api = getJetAPI( jetConfig );
+    //..Create a http client to use based on the jet config 
+    final APIHttpClient client = getHttpClient( jetConfig );
+            
+    //..Try to authenticate
+    try {
+      //..Get an auth request 
+      final JetAPIAuth auth = new JetAPIAuth( client, jetConfig );
+      
+      //..Perform the login and retrieve a token
+      //  This token is stored in the jet config and will automatically be 
+      //  added to any requests that use the config object.
+      if ( auth.login())
+        System.out.println( "Ok, you're logged in" );
+      
+      
+    } catch( APIException e ) {
+      fail( "Failed to create HttpClient", E_API_FAILURE, e );
+    } catch( JetAuthException e ) { 
+      fail( "Failed to authenticate", E_AUTH_FAILURE, e );
+    }
+      
     
-    //..Authenticate and store the token in the jet config object 
-    authenticate( api );
-    
-    
-    
-    
-/*    
-    //JetProductRec rec = product.get( "5396C91F1E300AFE" );
-    //System.out.println( rec.toJSON());
-
-    /*
-    JetProductRec prod = new JetProductRec();
-    prod.setMerchantSku( "5396C91F1E300AFE" );
-    prod.setAsin( "B010YF4K6A" );
-    prod.setTitle( "TITLE UPDATE - Wrist Wraps + Lifting Straps Combo (2 Pairs) for WEIGHT LIFTING TRAINING WRIS..." );
-    prod.setProductDescription( "Thank you for your business. Wrist wraps are a useful piece of equipment to own. While they aren't going to add lot of the pounds to your total workout but, they can make a useful difference on each and every lift. WARNING Users of this equipment are subject to personal injury These products have a degree of Protection but are not warranted to protect the user from injury. � 2 Pairs For the Price of 1! Grip Power Pads Authentic Wrist wraps perfect for supporting your wrist while power lifting, dead lifts, or during squats. � Features Elastic 1 Or 2 Size Thumb Loops and Extended Length Velcro Closure. � A - Grade quality, and very comfortable Protect Your Wrists With Wrist Wraps to Avoid Serious Injury and Pain From Your Workout! � One size fits all. Washable and Sold in pairs. Deluxe Classic Heavy Duty Neoprene Extra Padded Cotton Weight Lifting Straps. These deluxe lifting straps have extra heavy duty neoprene padding to cushion your wrist and hand while facilitating heavy lifting. DO NOT compare these to the average straps that have no padding. The Heavy Lift Straps will improve your gripping strength dramatically! Durable Stitching, Extra Padding Neoprene At CARPAL TUNNEL Section Of You Hand, Soft Neoprene Padding" );
+    JetProduct prod = new JetProduct();
+    prod.setMerchantSku( "VIC!47520" );
+    prod.setTitle( "8\" Chefs Knife with Fibrox Handle" );
+    prod.setProductDescription( "The Victorinox 47520 8\" Chefs Knife with Fibrox handle is a great chefs knife with a 2\" wide blade at the handle. The cutting edge is thin and extremely sharp. The blade is 8\" long." );
     prod.setMultipackQuantity( 1 );
-    prod.setMsrp( 29.95F );
-    prod.setMainImageUrl( "http://www.sheepguru.com/gpp/B010YF4K6A.jpg" );
-    prod.setSwatchImageUrl( "http://www.sheepguru.com/gpp/B010YF4K6A-swatch.jpg" );
-    prod.setPrice( 29.95F );
+    prod.setMsrp( 44.99F );
+    prod.setPrice( 44.99F );
+    prod.setMainImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/image/650x650/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
+    prod.setSwatchImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/thumbnail/65x65/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
+    prod.setBrand( "Victorinox" );
+    
+    prod.setProductCode( new ProductCode( "046928475209", ProductCodeType.UPC ));
 
-
-    product.add( prod );
-*/
+    try {
+      final JetAPIProduct product = new JetAPIProduct( client, jetConfig );
+      
+      product.add( prod );    
+      
+      
+      final JetProduct res = product.getProduct( "VIC!47520" );
+      System.out.println( res.toJSON() );
+      
+    } catch( Exception e ) {
+      fail( "Failed to add product", E_API_FAILURE, e );
+    }
 
   }
 
+  
+  /**
+   * Retrieve the HttpClient instance 
+   * @param jetConfig config to use 
+   * @return client  
+   */
+  private static APIHttpClient getHttpClient( final JetConfig jetConfig )
+  {
+    if ( jetConfig == null )
+      throw new IllegalArgumentException( "jetConfig cannot be null" );
+    
+    try {
+      return new APIHttpClient.Builder()
+        .setHost( jetConfig.getHost())
+        .setAllowgzip( true )
+        .setAccept( jetConfig.getAcceptHeaderValue())
+        .setAcceptLanguages( jetConfig.getAcceptLanguageHeaderValue())
+        .setAllowUntrustedSSL( jetConfig.getAllowUntrustedSSL())
+        .setAllowgzip( true )
+        .setReadTimeout( jetConfig.getReadTimeout())
+        .build();    
+    } catch( APIException e ) {
+      fail( "Failed to create HttpClient", E_API_FAILURE, e );
+    } catch( URISyntaxException e ) {
+      fail( "Invalid host url", E_CONFIG_FAILURE, e );
+    }
+    
+    //..unreachable
+    return null;
+  }
   
   
   /**
@@ -90,41 +177,14 @@ public class JetImport implements ExitCodes
   {
     try {
       return new CLIArgs( args );
-    } catch( ParseException e ) {      
-      System.err.println( "" );
-      System.err.println( e );
-      System.exit( E_CLI_FAILURE );
+    } catch( ParseException e ) { 
+      fail( "Invalid command line arguments", E_CLI_FAILURE, e );
     }
     
     //..Unreachable
     return null;
   }
-  
-  
-  /**
-   * Retrieve a JetAPI instance 
-   * @param jetConfig config 
-   * @return api 
-   */
-  private static JetAPI getJetAPI( final JetConfig jetConfig )
-  {
-    try {
-      final JetAPI api = new JetAPI( jetConfig );
-      api.setAccept( jetConfig.getAcceptHeaderValue());
-      api.setAcceptLanguages( jetConfig.getAcceptLanguageHeaderValue());
-      api.setReadTimeout( jetConfig.getReadTimeout());
       
-      return api;
-    } catch( APIException e ) {
-      System.err.println( e );
-      System.exit( E_API_FAILURE );
-    }
-    
-    //..Unreachable 
-    return null;
-  }
-
-  
 
   /**
    * Initialize the settings class
@@ -141,9 +201,7 @@ public class JetImport implements ExitCodes
       //..Build the base immutable configuration parts
       return buildJetConfig( getXMLConfiguration( filename )); 
     } catch( Exception e ) {
-      System.err.println( "Failed to parse XML file: " + filename );
-      System.err.println( e );
-      System.exit( E_CONFIG_FAILURE );      
+      fail( "Failed to parse XML file: " + filename, E_CONFIG_FAILURE, e );
     }
     
     //..Never reached
@@ -198,13 +256,19 @@ public class JetImport implements ExitCodes
       .setUriGetProductPrice( 
         config.getString( "jet.uri.products.get.price", "" ))
               
+      .setAcceptHeader( 
+        config.getString( "client.accept", "application/json,text/html,"
+          + "application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" ))
+            
+      .setAcceptLanguageHeader( 
+        config.getString( "client.acceptLanguage", "en-US,en;q=0.5" ))
+            
+      .setReadTimeout( 
+        config.getLong( "client.readTimeout", 10000L ))
+            
+      .setAllowUntrustedSSL( 
+        config.getBoolean( "client.allowUntrustedSSL", false ))          
       .build();
-      
-    //..Set the optional parts with sane defaults.
-    cfg.setAllowUntrustedSSL( config.getBoolean( "client.allowUntrustedSSL", false ));
-    cfg.setAcceptHeader( config.getString( "client.accept", "application/json" ));
-    cfg.setAcceptLanguageHeader( config.getString( "client.acceptLanguage", "en-US,en;q=0.5" ));
-    cfg.setReadTimeout( config.getLong( "client.readTimeout", 10000L ));   
 
     return cfg;
   }
@@ -237,12 +301,11 @@ public class JetImport implements ExitCodes
     //..try for a cli filename 
     if ( !args.getConfigFilename().isEmpty())
     {
-      File f = new File( args.getConfigFilename());
+      final File f = new File( args.getConfigFilename());
       if ( !f.exists())
       {
-        System.err.println( "Specified configuration file: " 
-          + f.toString() + " does not exist" );
-        System.exit( E_CONFIG_NOT_FOUND );
+        fail( "Specified configuration file: " 
+          + f.toString() + " does not exist", E_CONFIG_NOT_FOUND, null );
       }
       else
       {
@@ -251,45 +314,20 @@ public class JetImport implements ExitCodes
     }
         
     //..Attempt to locate the file elsewhere.
-    ConfigLocator locator = new ConfigLocator( DEFAULT_CONFIG_FILENAME );
+    final ConfigLocator locator = new ConfigLocator( DEFAULT_CONFIG_FILENAME );
     try {
       return locator.getFile( true ).toString();
     } catch( FileNotFoundException e ) {
       //..File not found 
-      System.err.println( e );
-      System.exit( E_CONFIG_NOT_FOUND );
+      fail( "", E_CONFIG_NOT_FOUND, e );
     } catch( IOException e ) {
-      System.err.println( e );
-      System.exit( E_JAR_EXTRACT_FAILURE );
+      fail( "", E_JAR_EXTRACT_FAILURE, e );
     } 
     
     //..This should never happen.
-    System.err.println( "Config file could not be located" );
-    System.exit( E_CONFIG_NOT_FOUND );
+    fail( "Config file could not be located", E_CONFIG_NOT_FOUND, null );
     
     //..Compiler complained about not having this.
     return null;
   }  
-  
-  
-  /**
-   * Authenticate the user or exit
-   * @param api Jet api instance 
-   */
-  private static void authenticate( final JetAPI api )
-  {
-    try {
-      if ( !api.login())
-      {
-        System.err.println( "Failed to authenticate" );
-        System.exit( E_AUTH_FAILURE );
-      }
-      else
-        System.out.println( "Ok, you're logged in." );
-    } catch( APIException | JetAuthException e ) {
-      System.err.println( e );
-      System.exit( E_API_FAILURE );
-    }    
-  }
-  
 }

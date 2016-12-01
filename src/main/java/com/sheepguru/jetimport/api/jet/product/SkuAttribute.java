@@ -40,9 +40,18 @@ public class SkuAttribute implements Jsonable
    * next field.
    * @param unit If the attribute_value requires a unit, then you pass the
    * unit here.
+   * @throws IllegalArgumentException if any of the above rules are broken
    */
   public SkuAttribute( final int id, final String val, final String unit )
+    throws IllegalArgumentException
   {
+    if ( id <= 0 )
+      throw new IllegalArgumentException( "id must be greater than zero" );
+    else if ( val == null || val.isEmpty())
+      throw new IllegalArgumentException( "val cannot be null or empty" );
+    else if ( unit == null )
+      throw new IllegalArgumentException( "unit cannot be null" );
+      
     this.id = id;
     this.val = val;
     this.unit = unit;

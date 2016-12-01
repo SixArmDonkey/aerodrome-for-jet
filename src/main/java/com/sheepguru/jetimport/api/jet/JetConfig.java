@@ -18,13 +18,6 @@ import java.util.Locale;
 public interface JetConfig 
 {
   /**
-   * Set the socket read timeout in milliseconds
-   * @param timeout millis
-   */
-  public void setReadTimeout( long timeout );
-  
-  
-  /**
    * Retrieve the read timeout in milliseconds 
    * @return 
    */
@@ -32,28 +25,10 @@ public interface JetConfig
   
   
   /**
-   * Set the default accept header value for requests
-   * @param value value 
-   * @throws IllegalArgumentException if value is null or empty 
-   */
-  public void setAcceptHeader( final String value ) 
-    throws IllegalArgumentException;
-  
-  
-  /**
    * Retrieve the request accept header value 
    * @return value 
    */
   public String getAcceptHeaderValue();
-  
-  
-  /**
-   * Set the default accept language header value for requests
-   * @param value value 
-   * @throws IllegalArgumentException if value is null or empty 
-   */
-  public void setAcceptLanguageHeader( final String value ) 
-    throws IllegalArgumentException;
   
   
   /**
@@ -68,13 +43,6 @@ public interface JetConfig
    * @return allow untrusted SSL certificates
    */
   public boolean getAllowUntrustedSSL();
-
-  
-  /**
-   * Set allow untrusted ssl (default false)
-   * @param allow toggle
-   */
-  public void setAllowUntrustedSSL( final boolean allow );
 
   
   /**
