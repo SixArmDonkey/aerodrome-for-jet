@@ -14,7 +14,13 @@ Variable Placeholders
 <config>
 
   <!-- Log file name -->
-  <log>jetimport.log</log>
+  <log>
+    <!-- Full classname of the Log implementation -->
+    <class>org.apache.commons.logging.impl.Jdk14Logger</class>
+    
+    <!-- Logging properties file -->
+    <properties></properties>
+  </log>
 
   <!-- HTTP Client Configuration -->
   <client>
@@ -45,7 +51,7 @@ Variable Placeholders
   <!-- https://partner.jet.com/dashboard/start -->
   <jet>
     <!-- The Hostname for the Jet API (no trailing slash) -->
-    <host>https://merchant-api.jet.com</host>
+    <host>https://merchant-api.jet.com/api</host>
 
     <!-- Your Jet API Username -->
     <username></username>
@@ -60,7 +66,7 @@ Variable Placeholders
     <uri>
       <!-- Retrieve authentication token -->
       <!-- https://developer.jet.com/security -->
-      <token>/api/Token</token>
+      <token>/Token</token>
 
       <!-- Authentication testing endpoint -->
       <!--
@@ -70,7 +76,7 @@ Variable Placeholders
        given the expected response has been obtained, the user may start
        using other Jet API functions that require authorization.
       -->
-      <authTest>/api/authcheck</authTest>
+      <authTest>/authcheck</authTest>
 
       <!-- Product-related endpoints -->
       <!-- https://developer.jet.com/docs/services/5565ca949a274a12b0b3a2a3/operations/5565d4be9a274a12b0b3a2ae -->
@@ -78,28 +84,28 @@ Variable Placeholders
         <!-- Get Commands -->
         <get>
           <!-- Get a SKU/Product -->
-          <sku>/api/merchant-skus/{sku}</sku>
+          <sku>/merchant-skus/{sku}</sku>
 
           <!-- Get some price data -->
-          <price>/api/merchant-skus/{sku}/price</price>
+          <price>/merchant-skus/{sku}/price</price>
         </get>
 
         <!-- Put commands -->
         <put>
           <!-- Add a new SKU/Product -->
-          <sku>/api/merchant-skus/{sku}</sku>
+          <sku>/merchant-skus/{sku}</sku>
 
           <!-- Add image url's to the product -->
-          <image>/api/merchant-skus/{sku}/image</image>
+          <image>/merchant-skus/{sku}/image</image>
 
           <!-- Add some price data -->
-          <price>/api/merchant-skus/{sku}/price</price>
+          <price>/merchant-skus/{sku}/price</price>
 
           <!-- Add inventory to the product -->
-          <inventory>/api/merchant-skus/{sku}/inventory</inventory>
+          <inventory>/merchant-skus/{sku}/inventory</inventory>
 
           <!-- Add shipping exceptions -->
-          <shipException>/api/merchant-skus/{sku}/shippingexception</shipException>
+          <shipException>/merchant-skus/{sku}/shippingexception</shipException>
         </put>
 
         <!-- Delete Commands -->

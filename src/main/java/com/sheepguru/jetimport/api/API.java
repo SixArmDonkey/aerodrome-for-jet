@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -75,6 +77,11 @@ public class API
    * Lock the host to whatever is specified in the client 
    */
   private final AtomicBoolean lockHost = new AtomicBoolean( true );
+  
+  /**
+   * Logger instance 
+   */
+  private final static Log LOG = LogFactory.getLog( API.class );
 
 
   /**
@@ -399,15 +406,26 @@ public class API
       final URIBuilder b = new URIBuilder( url );
       
       //..Overwrite the host if necessary 
-      if ( isLockHost() && client.getHost().getHost() != null )
+      if ( isLockHost() && client.getHost().getHost() != null 
+        && !client.getHost().getHost().isEmpty())
       {
         b.setHost( client.getHost().getHost())
         .setPort( client.getHost().getPort())
         .setScheme( client.getHost().getScheme());
+        
+        if ( client.getHost().getPath() != null 
+          && !client.getHost().getPath().isEmpty())
+        {        
+          b.setPath( client.getHost().getPath() + b.getPath());
+        }
       }
       
       //...done 
-      return b.build();
+      final URI out = b.build();
+      
+      LOG.debug( "Query: " + out.toString());
+      
+      return out;
     } catch( Exception e ) {
       throw new APIException( "Could not build url: " + url, e );
     }
@@ -468,7 +486,10 @@ public class API
 
         //..Process the stream
         try ( final InputStream in = entity.getContent()) {
-          return processEntity( createResponseObject( response ), in, charset );
+          final APIResponse res = processEntity( createResponseObject( response ), in, charset );
+          LOG.debug( String.valueOf( res.getStatusLine().getStatusCode()) + " " + res.getStatusLine().getReasonPhrase() + " for " + get.getURI().toString());
+          return res;
+          
         } catch( RuntimeException e ) {
           //..Abort
           get.abort();
@@ -477,8 +498,10 @@ public class API
         }
       }
       else
-      {
-        return createResponseObject( response );
+      {        
+        final APIResponse res = createResponseObject( response );
+        LOG.debug( String.valueOf( res.getStatusLine().getStatusCode()) + " " + res.getStatusLine().getReasonPhrase() + " for " + get.getURI().toString());
+        return res;
       }
     } catch( IOException e ) {
       throw new APIException( 

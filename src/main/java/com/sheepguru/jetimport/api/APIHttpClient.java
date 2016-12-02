@@ -678,7 +678,7 @@ public class APIHttpClient
         }
       }
     };
-  }  
+  }
   
   
   /**

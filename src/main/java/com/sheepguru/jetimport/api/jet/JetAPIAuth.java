@@ -5,6 +5,8 @@ import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
 import javax.json.Json;
 import javax.json.JsonObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -18,6 +20,12 @@ public class JetAPIAuth extends JetAPI
    */
   public static final String AUTH_TEST_RESPONSE = 
     "\"This message is authorized.\"";
+  
+  
+  /**
+   * Log
+   */
+  private static final Log LOG = LogFactory.getLog( JetAPIAuth.class );
   
   /**
    * Create a new API instance
@@ -43,22 +51,38 @@ public class JetAPIAuth extends JetAPI
   {
     //..Send the authorization request and attempt to set the response data in 
     //  the config cache.
-    setConfigurationDataFromLogin( post(
-      config.getAuthenticationURL(),
-      getLoginPayload().toString(),
-      JetHeaderBuilder.getJSONHeaderBuilder( 
-        config.getAuthorizationHeaderValue()).build()
-    ));
+    LOG.info( "Attempting Login..." );
+    
+    try {
+      setConfigurationDataFromLogin( post(
+        config.getAuthenticationURL(),
+        getLoginPayload().toString(),
+        JetHeaderBuilder.getJSONHeaderBuilder( 
+          config.getAuthorizationHeaderValue()).build()
+      ));
+    } catch ( JetException e ) {
+      LOG.info( "Failed to authenticate :-( " );
+      LOG.info( "A \"Bad Request\" response from Jet typically means bad credentials" );
+      throw e;
+    }
     
     //..Test the new configuration data from the response 
-    config.testConfigurationData();    
+    config.testConfigurationData();
 
+    LOG.info( "Jet seems to like those credentials. Testing authentication..." );
+    
     //..Perform a live authorization test
     if ( !authTest())
       config.clearAuthenticationData();
 
     //..Return the auth state
-    return config.isAuthenticated();
+    if ( config.isAuthenticated())
+    {
+      LOG.info( "Success!  You're logged in." );
+      return true;
+    }
+    
+    return false;
   }
   
   

@@ -595,6 +595,6 @@ public class DefaultJetConfig implements JetConfig
    */
   private String buildURL( final String uri )
   {
-    return host + uri;
+    return uri;
   }
 }

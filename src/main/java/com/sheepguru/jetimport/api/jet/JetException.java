@@ -6,6 +6,7 @@ import com.sheepguru.jetimport.api.APIResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.logging.Log;
 
 /**
  * An exception for the Jet API
@@ -70,5 +71,24 @@ public class JetException extends APIException
   public List<String> getMessages()
   {
     return messages;
+  }
+  
+  
+  /**
+   * Print this exception to the log 
+   * @param log Log to print to
+   */
+  @Override
+  public void printToLog( final Log log )
+  {
+    super.printToLog( log );
+    
+    if ( messages == null )
+      return;
+    
+    for ( final String m : messages )
+    {
+      log.error( m );
+    }
   }
 }

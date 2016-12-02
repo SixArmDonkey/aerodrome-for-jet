@@ -1,6 +1,8 @@
 
 package com.sheepguru.jetimport.api;
 
+import org.apache.commons.logging.Log;
+
 /**
  * A generic exception for objects that interact with the Jet API
  *
@@ -51,5 +53,23 @@ public class APIException extends Exception
   public Exception getPrevious()
   {
     return previous;
+  }
+  
+  
+  /**
+   * Print this exception to the log 
+   * @param log Log to print to
+   */  
+  public void printToLog( final Log log )
+  {
+    if ( log == null )
+      throw new IllegalArgumentException( "log cannot be null" );
+    
+    log.error( getMessage());
+    log.debug( this );
+    if ( getCause() != null )
+    {
+      log.debug( getCause());
+    }
   }
 }

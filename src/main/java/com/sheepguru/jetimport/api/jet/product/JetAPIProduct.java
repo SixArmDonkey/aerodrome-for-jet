@@ -7,6 +7,9 @@ import com.sheepguru.jetimport.api.APIHttpClient;
 import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetException;
+import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -16,6 +19,12 @@ import com.sheepguru.jetimport.api.jet.JetException;
  */
 public class JetAPIProduct extends JetAPI
 {
+  /**
+   * The log 
+   */
+  private static final Log LOG = LogFactory.getLog( JetAPIProduct.class );
+  
+  
   /**
    * Create a new JetProduct instance
    * @param client The http client 
@@ -37,7 +46,9 @@ public class JetAPIProduct extends JetAPI
    */
   public JetProduct getProduct( final String sku ) throws APIException, JetException
   {
+    LOG.info( "Retrieving " + sku );
     final JetAPIResponse response = get( config.getGetProductURL( sku ), getPlainHeaderBuilder().build());
+    LOG.info( sku + " Found" );
     return JetProduct.fromJSON( response.fromJSON());
   }
 
@@ -51,44 +62,28 @@ public class JetAPIProduct extends JetAPI
    * library itself. A network issue, etc.
    * @throws ValidateException if the product fails pre-submit validation
    */
-  public boolean addProduct( JetProduct product ) throws APIException, JetException, ValidateException
+  public boolean sendProduct( final JetProduct product ) throws APIException, JetException, ValidateException
   {
     product.validate();
     
     //..Add Sku
-    JetAPIResponse res = addProductSku( product );
+    JetAPIResponse res = sendProductSku( product );
     if ( !res.isSuccess())
       return false;
 
     //..Add an image
-    res = addProductImage( product );
+    res = sendProductImage( product );
     if ( !res.isSuccess() )
       return false;
 
     //..Add the price
-    res = addProductPrice( product );
+    res = sendProductPrice( product );
     if ( !res.isSuccess() )
       return false;
 
     //..Add some inventory
-    res = addProductInventory( product );
+    res = sendProductInventory( product );
     return res.isSuccess();
-  }
-  
-
-  /**
-   * Add a single product to the Jet catalog
-   * @param product product to add
-   * @return success 
-   * @throws JetException if there is an error from the jet api
-   * @throws APIException if there is some sort of error with the api 
-   * library itself. A network issue, etc.
-   * @throws ValidateException if the product fails pre-submit validation
-   */
-  public boolean add( final JetProduct product ) 
-    throws JetException, APIException, ValidateException
-  {
-    return addProduct( product );
   }
 
 
@@ -102,9 +97,10 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse addProductSku( final JetProduct product )
+  public JetAPIResponse sendProductSku( final JetProduct product )
       throws APIException, JetException
   {
+    LOG.info( "Sending " + product.getMerchantSku());
     final JetAPIResponse response = put(
       config.getAddProductURL( product.getMerchantSku()),
       product.toJSON().toString(),
@@ -122,9 +118,10 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse addProductImage( final JetProduct product )
+  public JetAPIResponse sendProductImage( final JetProduct product )
       throws APIException, JetException
   {
+    LOG.info( "Sending " + product.getMerchantSku() + " image" );
     final JetAPIResponse response = put(
       config.getAddProductImageUrl( product.getMerchantSku()),
       product.toImageJson().toString(),
@@ -142,9 +139,10 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse addProductPrice( final JetProduct product )
+  public JetAPIResponse sendProductPrice( final JetProduct product )
       throws APIException, JetException
   {
+    LOG.info( "Sending " + product.getMerchantSku() + " price" );
     final JetAPIResponse response = put(
       config.getAddProductPriceUrl( product.getMerchantSku()),
       product.toPriceJson().toString(),
@@ -162,9 +160,10 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse addProductInventory( final JetProduct product )
+  public JetAPIResponse sendProductInventory( final JetProduct product )
       throws APIException, JetException
   {
+    LOG.info( "Sending " + product.getMerchantSku() + " inventory" );
     final JetAPIResponse response = put(
       config.getAddProductInventoryUrl( product.getMerchantSku()),
       product.toInventoryJson().toString(),
@@ -174,6 +173,11 @@ public class JetAPIProduct extends JetAPI
     return response;
   }
 
+  /*
+  public JetAPIResponse sendProductVariation( final JetProductVariationGroup group )
+  {
+    
+  }
+  */
   
-
 }

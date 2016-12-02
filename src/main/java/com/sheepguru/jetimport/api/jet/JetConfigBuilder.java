@@ -1,6 +1,9 @@
 
 package com.sheepguru.jetimport.api.jet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
  * A builder for creating a jet api configuration object.
@@ -99,15 +102,21 @@ public class JetConfigBuilder
    */
   private boolean allowUntrustedSSL = false;
   
+  /**
+   * Get the log 
+   */
+  private static final Log LOG = LogFactory.getLog( JetConfigBuilder.class );
+  
   
   /**
    * Set the hostname 
    * @param host the host to set
    * @return this
    */
-  public JetConfigBuilder setHost(String host) 
+  public JetConfigBuilder setHost( final String host) 
   {
     this.host = host;
+    LOG.debug( "Using Host: " + host );
     return this;
   }
 
@@ -117,9 +126,10 @@ public class JetConfigBuilder
    * @param user the user to set
    * @return this
    */
-  public JetConfigBuilder setUser( String user ) 
+  public JetConfigBuilder setUser( final String user ) 
   {
     this.user = user;
+    LOG.debug( "Using User: " + user );
     return this;
   }
 
@@ -129,9 +139,10 @@ public class JetConfigBuilder
    * @param pass the pass to set
    * @return this
    */
-  public JetConfigBuilder setPass( String pass ) 
+  public JetConfigBuilder setPass( final String pass ) 
   {
     this.pass = pass;
+    LOG.debug( "Using Pass: *****" );
     return this;
   }
 
@@ -141,9 +152,10 @@ public class JetConfigBuilder
    * @param merchantId the merchantId to set
    * @return this
    */
-  public JetConfigBuilder setMerchantId( String merchantId ) 
+  public JetConfigBuilder setMerchantId( final String merchantId ) 
   {
     this.merchantId = merchantId;
+    LOG.debug( "Using merchant Id: " + merchantId );
     return this;
   }
   
@@ -153,9 +165,11 @@ public class JetConfigBuilder
    * @param uriToken the uriToken to set
    * @return this
    */
-  public JetConfigBuilder setUriToken( String uriToken ) 
+  public JetConfigBuilder setUriToken( final String uriToken ) 
   {
     this.uriToken = uriToken;
+    
+    LOG.debug( "Authentication URI set to: " + uriToken );
     return this;
   }
 
@@ -165,9 +179,10 @@ public class JetConfigBuilder
    * @param uriAuthTest the uriAuthTest to set
    * @return this
    */
-  public JetConfigBuilder setUriAuthTest( String uriAuthTest ) 
+  public JetConfigBuilder setUriAuthTest( final String uriAuthTest ) 
   {
     this.uriAuthTest = uriAuthTest;
+    LOG.debug( "Authentication test URI set to: " + uriAuthTest );
     return this;
   }
   
@@ -181,9 +196,10 @@ public class JetConfigBuilder
    * @param uriAddProduct the uriAddProduct to set
    * @return this
    */
-  public JetConfigBuilder setUriAddProduct( String uriAddProduct ) 
+  public JetConfigBuilder setUriAddProduct( final String uriAddProduct ) 
   {
     this.uriAddProduct = uriAddProduct;
+    LOG.debug( "Send product SKU URI set to: " + uriAddProduct );
     return this;
   }
 
@@ -193,9 +209,10 @@ public class JetConfigBuilder
    * @param uriAddProductImage the uriAddProductImage to set
    * @return this
    */
-  public JetConfigBuilder setUriAddProductImage( String uriAddProductImage ) 
+  public JetConfigBuilder setUriAddProductImage( final String uriAddProductImage ) 
   {
     this.uriAddProductImage = uriAddProductImage;
+    LOG.debug( "Send product image URI set to" + uriAddProductImage );
     return this;
   }
 
@@ -205,9 +222,10 @@ public class JetConfigBuilder
    * @param uriAddProductPrice the uriAddProductPrice to set
    * @return this
    */
-  public JetConfigBuilder setUriAddProductPrice( String uriAddProductPrice ) 
+  public JetConfigBuilder setUriAddProductPrice( final String uriAddProductPrice ) 
   {
     this.uriAddProductPrice = uriAddProductPrice;
+    LOG.debug( "Send product price URI set to: " + uriAddProductPrice );
     return this;
   }
 
@@ -217,9 +235,10 @@ public class JetConfigBuilder
    * @param uriAddProductInventory the uriAddProductInventory to set
    * @return this
    */
-  public JetConfigBuilder setUriAddProductInventory( String uriAddProductInventory ) 
+  public JetConfigBuilder setUriAddProductInventory( final String uriAddProductInventory ) 
   {
     this.uriAddProductInventory = uriAddProductInventory;
+    LOG.debug( "Send product inventory URI set to: " + uriAddProductInventory );
     return this;
   }
 
@@ -229,9 +248,10 @@ public class JetConfigBuilder
    * @param uriAddProductShipException the uriAddProductShipException to set
    * @return this
    */
-  public JetConfigBuilder setUriAddProductShipException( String uriAddProductShipException ) 
+  public JetConfigBuilder setUriAddProductShipException( final String uriAddProductShipException ) 
   {
     this.uriAddProductShipException = uriAddProductShipException;
+    LOG.debug( "Send product shipping exceptions URI set to: " + uriAddProductShipException );
     return this;
   }
 
@@ -241,9 +261,10 @@ public class JetConfigBuilder
    * @param uriGetProduct the uriGetProduct to set
    * @return this
    */
-  public JetConfigBuilder setUriGetProduct( String uriGetProduct ) 
+  public JetConfigBuilder setUriGetProduct( final String uriGetProduct ) 
   {
     this.uriGetProduct = uriGetProduct;
+    LOG.debug( "Get product URI set to " + uriGetProduct );
     return this;
   }
 
@@ -253,9 +274,10 @@ public class JetConfigBuilder
    * @param uriGetProductPrice the uriGetProductPrice to set
    * @return this
    */
-  public JetConfigBuilder setUriGetProductPrice( String uriGetProductPrice ) 
+  public JetConfigBuilder setUriGetProductPrice( final String uriGetProductPrice ) 
   {
     this.uriGetProductPrice = uriGetProductPrice;
+    LOG.debug( "Get product price uri set to: " + uriGetProductPrice );
     return this;
   }
   
@@ -266,9 +288,10 @@ public class JetConfigBuilder
    * @param timeout millis
    * @return builder
    */
-  public JetConfigBuilder setReadTimeout( long timeout )
+  public JetConfigBuilder setReadTimeout( final long timeout )
   {
     readTimeout = timeout;
+    LOG.debug( "Read timeout set to: " + String.valueOf( timeout ));
     return this;
   }
   
@@ -285,6 +308,7 @@ public class JetConfigBuilder
       throw new IllegalArgumentException( "value cannot be empty" );
     
     acceptHeaderValue = value;
+    LOG.debug( "Accept header set to: " + value );
     return this;
   }
   
@@ -301,6 +325,7 @@ public class JetConfigBuilder
       throw new IllegalArgumentException( "value cannot be empty" );
     
     acceptLanguageHeaderValue = value;
+    LOG.debug( "Accept-Language header set to: " + value );
     return this;
   }
 
@@ -312,6 +337,9 @@ public class JetConfigBuilder
   public JetConfigBuilder setAllowUntrustedSSL( final boolean allow )
   {
     allowUntrustedSSL = allow;
+    
+    if ( allow )
+      LOG.debug( "Allow Untrusted SSL is enabled" );
     return this;
   }
   

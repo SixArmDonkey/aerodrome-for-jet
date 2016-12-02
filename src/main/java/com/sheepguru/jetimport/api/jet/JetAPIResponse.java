@@ -12,6 +12,8 @@ import java.util.List;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
@@ -113,6 +115,11 @@ public class JetAPIResponse extends APIResponse
     }
   }
   
+  /**
+   * Log 
+   */
+  private static Log LOG = LogFactory.getLog( JetAPIResponse.class );
+  
   
   /**
    * Create a JetAPIResponse object from an APIResponse object 
@@ -147,6 +154,8 @@ public class JetAPIResponse extends APIResponse
   public JetAPIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers )
   {
     super( pv, status, headers );
+    
+    
   }
   
   

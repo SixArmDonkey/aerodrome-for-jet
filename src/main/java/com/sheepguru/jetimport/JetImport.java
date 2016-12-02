@@ -25,6 +25,8 @@ import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -45,33 +47,12 @@ public class JetImport implements ExitCodes
    */
   public static final String DEFAULT_CONFIG_FILENAME = "jetimport.conf.xml";
   
-  
   /**
-   * Print and exit.
-   * @param message Message
-   * @param code Return value 
-   * @param e Exception
+   * Local log 
    */
-  private static void fail( final String message, final int code, final Exception e )
-  {
-    System.err.println( "FATAL EXCEPTION (" + String.valueOf( code ) + ")" );
-    System.err.println( message );
-    
-    if ( e != null )
-    {
-      if ( e instanceof JetException )
-      {
-        for ( final String m : ((JetException) e).getMessages())
-        {
-          System.err.println( m );
-        }
-      }
-      System.err.println( e );
-      if ( e.getCause() != null )
-        System.err.println( e.getCause());
-      e.printStackTrace( System.err );    
-    }
-  }
+  private static final Log LOG = LogFactory.getLog( JetImport.class );
+  
+
   
   
   /**
@@ -81,7 +62,7 @@ public class JetImport implements ExitCodes
   public static void main( final String[] args )
   {
     //..Say hello 
-    System.out.println( "JetImport Build " + CLIArgs.getBuildVersion());
+    LOG.info( "JetImport Build " + CLIArgs.getBuildVersion() + " start" );
         
     //..Build the jet configuration 
     final JetConfig jetConfig = initSettings( getCLIArgs( args ));
@@ -97,14 +78,19 @@ public class JetImport implements ExitCodes
       //..Perform the login and retrieve a token
       //  This token is stored in the jet config and will automatically be 
       //  added to any requests that use the config object.
-      if ( auth.login())
-        System.out.println( "Ok, you're logged in" );
+      if ( !auth.login())
+      {
+        fail( "Failed to test authentication state.  Ensure that "
+          + "JetConfig was updated with the authentication "
+          + "header value after login", E_AUTH_FAILURE, null );        
+      }
       
       
     } catch( APIException e ) {
-      fail( "Failed to create HttpClient", E_API_FAILURE, e );
+      fail( "API Failure", E_API_FAILURE, e );
     } catch( JetAuthException e ) { 
-      fail( "Failed to authenticate", E_AUTH_FAILURE, e );
+      fail( "Failed to authenticate.  A Bad Request can simply "
+        + "mean bad credentials", E_AUTH_FAILURE, e );
     }
       
     
@@ -124,7 +110,7 @@ public class JetImport implements ExitCodes
     try {
       final JetAPIProduct product = new JetAPIProduct( client, jetConfig );
       
-      product.add( prod );    
+      product.sendProduct( prod );    
       
       
       final JetProduct res = product.getProduct( "VIC!47520" );
@@ -154,7 +140,6 @@ public class JetImport implements ExitCodes
         .setAccept( jetConfig.getAcceptHeaderValue())
         .setAcceptLanguages( jetConfig.getAcceptLanguageHeaderValue())
         .setAllowUntrustedSSL( jetConfig.getAllowUntrustedSSL())
-        .setAllowgzip( true )
         .setReadTimeout( jetConfig.getReadTimeout())
         .build();    
     } catch( APIException e ) {
@@ -196,10 +181,16 @@ public class JetImport implements ExitCodes
     //..Get the configuration filename 
     final String filename = getConfigFilename( args );
     
+    LOG.info( "Using configuration file: " + filename );
+    
     try {         
       //..Access the configuration file 
       //..Build the base immutable configuration parts
-      return buildJetConfig( getXMLConfiguration( filename )); 
+      final JetConfig conf = buildJetConfig( getXMLConfiguration( filename )); 
+      if ( conf.getHost() != null && !conf.getHost().isEmpty())
+        LOG.info( "Using host: " + conf.getHost());
+      
+      return conf;
     } catch( Exception e ) {
       fail( "Failed to parse XML file: " + filename, E_CONFIG_FAILURE, e );
     }
@@ -329,5 +320,23 @@ public class JetImport implements ExitCodes
     
     //..Compiler complained about not having this.
     return null;
+  }  
+  
+  
+  /**
+   * Print and exit.
+   * @param message Message
+   * @param code Return value 
+   * @param e Exception
+   */
+  private static void fail( final String message, final int code, final Exception e )
+  {
+    LOG.fatal( "FATAL EXCEPTION (" + String.valueOf( code ) + ")" );
+    LOG.debug( message, e );
+   
+    if ( e instanceof APIException )
+      ((APIException) e).printToLog( LOG );
+    
+    System.exit( code );
   }  
 }
