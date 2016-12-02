@@ -9,6 +9,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
+
 /**
  * A shipping exception node for shipping exceptions
  * @author John Quinn

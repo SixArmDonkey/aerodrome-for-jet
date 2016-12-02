@@ -4,10 +4,15 @@ package com.sheepguru.jetimport.api.jet.product;
 import com.sheepguru.jetimport.api.jet.JetAPI;
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
+import com.sheepguru.jetimport.api.APILog;
 import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetException;
+import java.math.BigDecimal;
 import java.util.List;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,9 +51,11 @@ public class JetAPIProduct extends JetAPI
    */
   public JetProduct getProduct( final String sku ) throws APIException, JetException
   {
-    LOG.info( "Retrieving " + sku );
+    APILog.info( LOG, "Retrieving ", sku );
+    
     final JetAPIResponse response = get( config.getGetProductURL( sku ), getPlainHeaderBuilder().build());
-    LOG.info( sku + " Found" );
+        
+    APILog.info( LOG, sku, " Found" );
     return JetProduct.fromJSON( response.fromJSON());
   }
 
@@ -99,8 +106,8 @@ public class JetAPIProduct extends JetAPI
    */
   public JetAPIResponse sendProductSku( final JetProduct product )
       throws APIException, JetException
-  {
-    LOG.info( "Sending " + product.getMerchantSku());
+  {    
+    APILog.info( LOG, "Sending ", product.getMerchantSku());
     final JetAPIResponse response = put(
       config.getAddProductURL( product.getMerchantSku()),
       product.toJSON().toString(),
@@ -121,7 +128,8 @@ public class JetAPIProduct extends JetAPI
   public JetAPIResponse sendProductImage( final JetProduct product )
       throws APIException, JetException
   {
-    LOG.info( "Sending " + product.getMerchantSku() + " image" );
+    APILog.info( LOG, "Sending", product.getMerchantSku(), "image" );
+    
     final JetAPIResponse response = put(
       config.getAddProductImageUrl( product.getMerchantSku()),
       product.toImageJson().toString(),
@@ -142,7 +150,8 @@ public class JetAPIProduct extends JetAPI
   public JetAPIResponse sendProductPrice( final JetProduct product )
       throws APIException, JetException
   {
-    LOG.info( "Sending " + product.getMerchantSku() + " price" );
+    APILog.info( LOG, "Sending", product.getMerchantSku(), "price" );
+    
     final JetAPIResponse response = put(
       config.getAddProductPriceUrl( product.getMerchantSku()),
       product.toPriceJson().toString(),
@@ -163,7 +172,8 @@ public class JetAPIProduct extends JetAPI
   public JetAPIResponse sendProductInventory( final JetProduct product )
       throws APIException, JetException
   {
-    LOG.info( "Sending " + product.getMerchantSku() + " inventory" );
+    APILog.info( LOG, "Sending", product.getMerchantSku(), "inventory" );
+    
     final JetAPIResponse response = put(
       config.getAddProductInventoryUrl( product.getMerchantSku()),
       product.toInventoryJson().toString(),
@@ -173,11 +183,108 @@ public class JetAPIProduct extends JetAPI
     return response;
   }
 
-  /*
-  public JetAPIResponse sendProductVariation( final JetProductVariationGroup group )
-  {
-    
-  }
-  */
   
+  
+  /**
+   * The variation request is used to create a variation-type relationship 
+   * between several SKUs. To use this request, one must have already uploaded 
+   * all the SKUs in question ; they should then choose one "parent" SKU and 
+   * make the variation request to that SKU, adding as "children" any SKUs they 
+   * want considered part of the relationship.
+   * To denote the particular variation refinements, one must have uploaded one 
+   * or more attributes in the product call for all the SKUs in question; 
+   * finally, they are expected to list these attributes in the variation 
+   * request.
+   * 
+   * @param group data to send 
+   * @return response from jet 
+   * @throws APIException if there's a problem 
+   */
+  public JetAPIResponse sendProductVariation( 
+    final JetProductVariationGroup group ) throws APIException, JetException
+        
+  {
+    if ( group == null )
+      throw new IllegalArgumentException( "group cannot be null" );
+    
+    APILog.info( LOG, "Sending", group.getParentSku(), "variations" );
+    
+    final JetAPIResponse response = put(
+      config.getAddProductVariationUrl( group.getParentSku()),
+      group.toJSON().toString(),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;
+  }
+  
+  
+  
+  /**
+   * Send shipping exceptions to jet 
+   * @param sku Sku 
+   * @param nodes Filfillment nodes 
+   * @return
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendProductShippingExceptions(
+    final String sku,
+    final List<ShippingExceptionNode> nodes
+  ) throws APIException, JetException
+  {
+    if ( sku == null || sku.isEmpty())
+      throw new IllegalArgumentException( "sku cannot be empty" );
+    else if ( nodes == null )
+      throw new IllegalArgumentException( "nodes cannot be null" );
+    
+    APILog.info( LOG, "Sending", sku, "shipping exceptions" );
+    
+    final JsonArrayBuilder b = Json.createArrayBuilder();
+    for ( final ShippingExceptionNode node : nodes )
+    {
+      b.add( node.toJSON());
+    }
+    
+    final JetAPIResponse response = put(
+      config.getAddProductShipExceptioUrl( sku ),
+      b.build().toString(),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;    
+  }
+  
+  
+  
+  /**
+   * Archive a product sku.
+   * 
+   * Archiving a SKU allows the retailer to "deactivate" a SKU from the catalog. 
+   * At any point in time, a retailer may decide to "reactivate" the SKU
+   * @param sku
+   * @param isArchived Indicates whether the specified SKU is archived.
+    'true' - SKU is inactive
+    'false' - SKU is potentially sellable
+   * @return
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendArchiveSku( final String sku, 
+    final boolean isArchived ) throws APIException, JetException
+  {
+    if ( sku == null || sku.isEmpty())
+      throw new IllegalArgumentException( "sku cannot be null or empty" );
+    
+    APILog.info( LOG, "Sending archive sku:", sku );
+
+    final JetAPIResponse response = put(
+      config.getArchiveSkuURL( sku ),
+      Json.createObjectBuilder()
+        .add( "is_archived", isArchived ).build().toString(),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;    
+  }
 }

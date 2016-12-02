@@ -1,6 +1,7 @@
 
 package com.sheepguru.jetimport.api.jet;
 
+import com.sheepguru.jetimport.api.APILog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,6 +42,11 @@ public class JetConfigBuilder
    */
   protected String uriAuthTest = "";
 
+  /**
+   * URI for archiving a sku 
+   */
+  protected String uriArchiveSku = "";
+  
   /**
    * URI For adding a new product.
    * This API provides information about all methods that affect merchant SKU
@@ -83,6 +89,11 @@ public class JetConfigBuilder
   protected String uriGetProductPrice = "";
 
   /**
+   * URI for adding a product variation group 
+   */
+  protected String uriAddProductVariation = "";
+  
+  /**
    * Read timeout 
    */
   private long readTimeout = 10000L;
@@ -116,7 +127,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setHost( final String host) 
   {
     this.host = host;
-    LOG.debug( "Using Host: " + host );
+    APILog.debug( LOG, "Using Host: ", host );
     return this;
   }
 
@@ -129,7 +140,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setUser( final String user ) 
   {
     this.user = user;
-    LOG.debug( "Using User: " + user );
+    APILog.debug( LOG, "Using User: ", user );
     return this;
   }
 
@@ -142,7 +153,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setPass( final String pass ) 
   {
     this.pass = pass;
-    LOG.debug( "Using Pass: *****" );
+    APILog.debug( LOG, "Using Pass: *****" );
     return this;
   }
 
@@ -155,7 +166,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setMerchantId( final String merchantId ) 
   {
     this.merchantId = merchantId;
-    LOG.debug( "Using merchant Id: " + merchantId );
+    APILog.debug( LOG, "Using merchant Id: ", merchantId );
     return this;
   }
   
@@ -169,7 +180,7 @@ public class JetConfigBuilder
   {
     this.uriToken = uriToken;
     
-    LOG.debug( "Authentication URI set to: " + uriToken );
+    APILog.debug( LOG, "Authentication URI set to: ", uriToken );
     return this;
   }
 
@@ -182,7 +193,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setUriAuthTest( final String uriAuthTest ) 
   {
     this.uriAuthTest = uriAuthTest;
-    LOG.debug( "Authentication test URI set to: " + uriAuthTest );
+    APILog.debug( LOG, "Authentication test URI set to: ", uriAuthTest );
     return this;
   }
   
@@ -199,8 +210,23 @@ public class JetConfigBuilder
   public JetConfigBuilder setUriAddProduct( final String uriAddProduct ) 
   {
     this.uriAddProduct = uriAddProduct;
-    LOG.debug( "Send product SKU URI set to: " + uriAddProduct );
+    APILog.debug( LOG, "Send product SKU URI set to: ", uriAddProduct );
     return this;
+  }
+  
+  
+  /**
+   * Set the uri for archiving a sku.
+   * Archiving a SKU allows the retailer to "deactivate" a SKU from the catalog. 
+   * At any point in time, a retailer may decide to "reactivate" the SKU
+   * @param uriArchiveSku sku to archive 
+   * @return this 
+   */
+  public JetConfigBuilder setUriArchiveSku( final String uriArchiveSku )
+  {
+    this.uriArchiveSku = uriArchiveSku;
+    APILog.debug( LOG, "Send archive sku URI set to: ", uriArchiveSku );
+    return this;    
   }
 
   
@@ -212,7 +238,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setUriAddProductImage( final String uriAddProductImage ) 
   {
     this.uriAddProductImage = uriAddProductImage;
-    LOG.debug( "Send product image URI set to" + uriAddProductImage );
+    APILog.debug( LOG, "Send product image URI set to", uriAddProductImage );
     return this;
   }
 
@@ -225,7 +251,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setUriAddProductPrice( final String uriAddProductPrice ) 
   {
     this.uriAddProductPrice = uriAddProductPrice;
-    LOG.debug( "Send product price URI set to: " + uriAddProductPrice );
+    APILog.debug( LOG, "Send product price URI set to: ", uriAddProductPrice );
     return this;
   }
 
@@ -238,7 +264,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setUriAddProductInventory( final String uriAddProductInventory ) 
   {
     this.uriAddProductInventory = uriAddProductInventory;
-    LOG.debug( "Send product inventory URI set to: " + uriAddProductInventory );
+    APILog.debug( LOG, "Send product inventory URI set to: ", uriAddProductInventory );
     return this;
   }
 
@@ -251,7 +277,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setUriAddProductShipException( final String uriAddProductShipException ) 
   {
     this.uriAddProductShipException = uriAddProductShipException;
-    LOG.debug( "Send product shipping exceptions URI set to: " + uriAddProductShipException );
+    APILog.debug( LOG, "Send product shipping exceptions URI set to: ", uriAddProductShipException );
     return this;
   }
 
@@ -264,7 +290,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setUriGetProduct( final String uriGetProduct ) 
   {
     this.uriGetProduct = uriGetProduct;
-    LOG.debug( "Get product URI set to " + uriGetProduct );
+    APILog.debug( LOG, "Get product URI set to ", uriGetProduct );
     return this;
   }
 
@@ -277,7 +303,20 @@ public class JetConfigBuilder
   public JetConfigBuilder setUriGetProductPrice( final String uriGetProductPrice ) 
   {
     this.uriGetProductPrice = uriGetProductPrice;
-    LOG.debug( "Get product price uri set to: " + uriGetProductPrice );
+    APILog.debug( LOG, "Get product price uri set to: ", uriGetProductPrice );
+    return this;
+  }
+  
+  
+  /**
+   * Set uri for adding a product variation group 
+   * @param uriAddProductVariation uri 
+   * @return builder 
+   */
+  public JetConfigBuilder setUriAddProductVariation( final String uriAddProductVariation )
+  {
+    this.uriAddProductVariation = uriAddProductVariation;
+    APILog.debug( LOG, "Add product variation uri set to:", uriAddProductVariation );
     return this;
   }
   
@@ -291,7 +330,7 @@ public class JetConfigBuilder
   public JetConfigBuilder setReadTimeout( final long timeout )
   {
     readTimeout = timeout;
-    LOG.debug( "Read timeout set to: " + String.valueOf( timeout ));
+    APILog.debug( LOG, "Read timeout set to: ", String.valueOf( timeout ));
     return this;
   }
   
@@ -308,7 +347,7 @@ public class JetConfigBuilder
       throw new IllegalArgumentException( "value cannot be empty" );
     
     acceptHeaderValue = value;
-    LOG.debug( "Accept header set to: " + value );
+    APILog.debug( LOG, "Accept header set to: ", value );
     return this;
   }
   
@@ -325,7 +364,7 @@ public class JetConfigBuilder
       throw new IllegalArgumentException( "value cannot be empty" );
     
     acceptLanguageHeaderValue = value;
-    LOG.debug( "Accept-Language header set to: " + value );
+    APILog.debug( LOG, "Accept-Language header set to: ", value );
     return this;
   }
 
@@ -339,7 +378,7 @@ public class JetConfigBuilder
     allowUntrustedSSL = allow;
     
     if ( allow )
-      LOG.debug( "Allow Untrusted SSL is enabled" );
+      APILog.debug( LOG, "Allow Untrusted SSL is enabled" );
     return this;
   }
   
@@ -368,7 +407,9 @@ public class JetConfigBuilder
       uriAddProductInventory, 
       uriAddProductShipException, 
       uriGetProduct, 
-      uriGetProductPrice 
+      uriGetProductPrice,
+      uriAddProductVariation,
+      uriArchiveSku
     );
     
     

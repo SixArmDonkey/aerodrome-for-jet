@@ -88,6 +88,14 @@ public interface JetConfig
 
 
   /**
+   * Retrieve the url for archiving a sku 
+   * @param sku sku to archive 
+   * @return url 
+   */
+  public String getArchiveSkuURL( final String sku );
+  
+  
+  /**
    * Retrieve the URL for retrieving a product.
    * @param sku Unique product SKU
    * @return URL
@@ -141,6 +149,14 @@ public interface JetConfig
    */
   public String getAddProductShipExceptioUrl( final String sku );
 
+  
+  /**
+   * Retrieve the url for adding a product variation group
+   * @param sku Parent sku for the group
+   * @return URL
+   */
+  public String getAddProductVariationUrl( final String sku );
+  
 
   /**
    * Set the authentication token after a successful login.
@@ -227,4 +243,6 @@ public interface JetConfig
    * @throws JetAuthException based on above description
    */
   public void testConfigurationData() throws JetAuthException;
+  
+  
 }

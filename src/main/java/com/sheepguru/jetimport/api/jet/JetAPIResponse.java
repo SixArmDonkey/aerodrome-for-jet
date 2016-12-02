@@ -118,7 +118,7 @@ public class JetAPIResponse extends APIResponse
   /**
    * Log 
    */
-  private static Log LOG = LogFactory.getLog( JetAPIResponse.class );
+  private static final Log LOG = LogFactory.getLog( JetAPIResponse.class );
   
   
   /**

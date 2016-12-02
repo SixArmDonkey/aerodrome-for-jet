@@ -103,9 +103,15 @@ Variable Placeholders
 
           <!-- Add inventory to the product -->
           <inventory>/merchant-skus/{sku}/inventory</inventory>
+          
+          <!-- Add product variation group -->
+          <variation>/merchant-skus/{sku}/variation</variation>
 
           <!-- Add shipping exceptions -->
           <shipException>/merchant-skus/{sku}/shippingexception</shipException>
+          
+          <!-- Archive a sku -->
+          <archiveSku>/merchant-skus/{sku}/status/archive</archiveSku>
         </put>
 
         <!-- Delete Commands -->

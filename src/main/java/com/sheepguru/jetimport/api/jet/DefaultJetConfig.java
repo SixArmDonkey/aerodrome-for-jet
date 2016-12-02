@@ -88,6 +88,11 @@ public class DefaultJetConfig implements JetConfig
    * URI for adding a product's shipping exceptions
    */
   private final String uriAddProductShipException;
+  
+  /**
+   * URI for adding a product variation 
+   */
+  private final String uriAddProductVariation;
 
   /**
    * URI for retrieving product data
@@ -98,6 +103,11 @@ public class DefaultJetConfig implements JetConfig
    * URI for retrieving product price data
    */
   private final String uriGetProductPrice;
+  
+  /**
+   * URI for archiving a price 
+   */
+  private final String uriArchiveSku;
 
   /**
    * Read timeout 
@@ -145,6 +155,20 @@ public class DefaultJetConfig implements JetConfig
    */
   private String authHeaderValue = "";
   
+
+  /**
+   * Test a string for null and empty and 
+   * throw an IllegalArgumentException if null or empty
+   * @param s String to test
+   * @param m Message for exception
+   * @throws IllegalArgumentException if test fails 
+   */
+  private static void checkStringEmpty( final String s, final String m )
+    throws IllegalArgumentException 
+  {
+    if ( s == null || s.isEmpty())
+      throw new IllegalArgumentException( m );
+  }
   
 
   
@@ -168,6 +192,7 @@ public class DefaultJetConfig implements JetConfig
    * @param uriAddProductShipException uri for adding a shipping exception
    * @param uriGetProduct uri for retrieving a product
    * @param uriGetProductPrice uri for retrieving a product price 
+   * @param uriAddProductVariation
    * @throws IllegalArgumentException  
    */
   public DefaultJetConfig(
@@ -187,41 +212,30 @@ public class DefaultJetConfig implements JetConfig
     final String uriAddProductInventory,
     final String uriAddProductShipException,
     final String uriGetProduct,
-    final String uriGetProductPrice
+    final String uriGetProductPrice,
+    final String uriAddProductVariation,
+    final String uriArchiveSku
   ) throws IllegalArgumentException
   {
-    if ( host == null || host.isEmpty())
-      throw new IllegalArgumentException( "jet.host cannot be empty" );
-    else if ( user == null || user.isEmpty())
-      throw new IllegalArgumentException( "jet.username cannot be empty" );
-    else if ( pass == null || pass.isEmpty())
-      throw new IllegalArgumentException( "jet.password cannot be empty" );
-    else if ( uriToken == null || uriToken.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.token cannot be empty" );
-    else if ( uriAuthTest == null || uriAuthTest.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.authTest cannot be empty" );
-    else if ( merchantId == null || merchantId.isEmpty())
-      throw new IllegalArgumentException( "jet.merchantId cannot be empty" );
-    else if ( uriAddProduct == null || uriAddProduct.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.products.put.sku cannot be empty" );
-    else if ( uriAddProductImage == null || uriAddProductImage.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.products.put.image cannot be empty" );
-    else if ( uriAddProductPrice == null || uriAddProductPrice.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.products.put.price cannot be empty" );
-    else if ( uriAddProductInventory == null || uriAddProductInventory.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.products.put.inventory cannot be empty" );
-    else if ( uriAddProductShipException == null || uriAddProductShipException.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.products.put.shipException cannot be empty" );
-    else if ( uriGetProduct == null|| uriGetProduct.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.products.get,sku cannot be empty" );
-    else if ( uriGetProductPrice == null || uriGetProductPrice.isEmpty())
-      throw new IllegalArgumentException( "jet.uri.products.get.price cannot be empty" );
-    else if ( readTimeout < 0 )
+    checkStringEmpty( host, "jet.host cannot be empty" );
+    checkStringEmpty( user, "jet.username cannot be empty" );
+    checkStringEmpty( pass, "jet.password cannot be empty" );
+    checkStringEmpty( uriToken, "jet.uri.token cannot be empty" );
+    checkStringEmpty( uriAuthTest, "jet.uri.authTest cannot be empty" );
+    checkStringEmpty( merchantId, "jet.merchantId cannot be empty" );
+    checkStringEmpty( uriAddProduct,"jet.uri.products.put.sku cannot be empty" );
+    checkStringEmpty( uriAddProductImage,"jet.uri.products.put.image cannot be empty" );
+    checkStringEmpty( uriAddProductPrice,"jet.uri.products.put.price cannot be empty" );
+    checkStringEmpty( uriAddProductInventory,"jet.uri.products.put.inventory cannot be empty" );
+    checkStringEmpty( uriAddProductShipException,"jet.uri.products.put.shipException cannot be empty" );
+    checkStringEmpty( uriGetProduct,"jet.uri.products.get,sku cannot be empty" );
+    checkStringEmpty( uriGetProductPrice,"jet.uri.products.get.price cannot be empty" );
+    checkStringEmpty( acceptHeaderValue,"acceptHeaderValue cannot be null or empty" );
+    checkStringEmpty( acceptLanguageHeaderValue,"acceptLanguageHeaderValue cannot be null or empty" );
+    checkStringEmpty( uriAddProductVariation ,"uriAddProductVariation cannot be null or empty" );
+    checkStringEmpty( uriArchiveSku, "uriArchiveSku cannot be empty" );
+    if ( readTimeout < 0 )
       throw new IllegalArgumentException( "readTimeout cannot be less than zero" );
-    else if ( acceptHeaderValue == null || acceptHeaderValue.isEmpty())
-      throw new IllegalArgumentException( "acceptHeaderValue cannot be null or empty" );
-    else if ( acceptLanguageHeaderValue == null || acceptLanguageHeaderValue.isEmpty())
-      throw new IllegalArgumentException( "acceptLanguageHeaderValue cannot be null or empty" );
     
     this.host = host;
     this.user = user;
@@ -240,6 +254,8 @@ public class DefaultJetConfig implements JetConfig
     this.acceptHeaderValue = acceptHeaderValue;
     this.acceptLanguageHeaderValue = acceptLanguageHeaderValue;
     this.allowUntrustedSSL = allowUntrustedSSL;
+    this.uriAddProductVariation = uriAddProductVariation;
+    this.uriArchiveSku = uriArchiveSku;
   }
   
   
@@ -377,6 +393,18 @@ public class DefaultJetConfig implements JetConfig
     return buildURL( uriGetProductPrice.replace( "{sku}", sku ));
   }
 
+  
+  /**
+   * Retrieve the url for archiving a sku 
+   * @param sku sku to archive 
+   * @return url 
+   */
+  @Override
+  public String getArchiveSkuURL( final String sku )
+  {
+    return buildURL( uriArchiveSku.replace( "{sku}", sku ));
+  }
+  
 
   /**
    * Retrieve the URL for adding a product.
@@ -437,6 +465,19 @@ public class DefaultJetConfig implements JetConfig
     return buildURL( uriAddProductShipException.replace( "{sku}", sku ));
   }
 
+  
+  /**
+   * Retrieve the url for adding a product variation group
+   * @param sku Parent sku for the group
+   * @return URL
+   */
+  @Override
+  public String getAddProductVariationUrl( final String sku )
+  {
+    return buildURL( uriAddProductVariation.replace( "{sku}", sku ));
+  }
+  
+  
 
   /**
    * Set the authentication token after a successful login.

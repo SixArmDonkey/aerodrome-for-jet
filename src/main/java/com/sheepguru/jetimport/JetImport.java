@@ -3,23 +3,18 @@ package com.sheepguru.jetimport;
 
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
-import com.sheepguru.jetimport.api.jet.JetAPI;
 import com.sheepguru.jetimport.api.jet.JetAPIAuth;
 import com.sheepguru.jetimport.api.jet.JetAuthException;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
-import com.sheepguru.jetimport.api.jet.JetException;
 import com.sheepguru.jetimport.api.jet.product.JetAPIProduct;
 import com.sheepguru.jetimport.api.jet.product.JetProduct;
-import com.sheepguru.jetimport.api.jet.product.MAPType;
 import com.sheepguru.jetimport.api.jet.product.ProductCode;
 import com.sheepguru.jetimport.api.jet.product.ProductCodeType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
@@ -259,6 +254,13 @@ public class JetImport implements ExitCodes
             
       .setAllowUntrustedSSL( 
         config.getBoolean( "client.allowUntrustedSSL", false ))          
+            
+      .setUriAddProductVariation( 
+        config.getString( "jet.uri.products.put.variation", "" ))
+            
+      .setUriArchiveSku( 
+        config.getString( "jet.uri.products.put.archiveSku", "" ))
+      
       .build();
 
     return cfg;

@@ -26,8 +26,10 @@ import javax.json.JsonValue;
 
 
 /**
- * A record for holding Jet Product Data
+ * A record for holding Jet Product Data.
  *
+ * This is not thread safe.
+ * 
  * See:
  * https://developer.jet.com/docs/services/5565ca949a274a12b0b3a2a3/operations/5565d4be9a274a12b0b3a2ae
  *

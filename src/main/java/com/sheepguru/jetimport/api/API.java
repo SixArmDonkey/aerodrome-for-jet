@@ -423,7 +423,7 @@ public class API
       //...done 
       final URI out = b.build();
       
-      LOG.debug( "Query: " + out.toString());
+      APILog.debug( LOG, "Query:", out.toString());
       
       return out;
     } catch( Exception e ) {
@@ -487,7 +487,7 @@ public class API
         //..Process the stream
         try ( final InputStream in = entity.getContent()) {
           final APIResponse res = processEntity( createResponseObject( response ), in, charset );
-          LOG.debug( String.valueOf( res.getStatusLine().getStatusCode()) + " " + res.getStatusLine().getReasonPhrase() + " for " + get.getURI().toString());
+          APILog.debug( LOG, String.valueOf( res.getStatusLine().getStatusCode()), res.getStatusLine().getReasonPhrase(), "for", get.getURI().toString());
           return res;
           
         } catch( RuntimeException e ) {
@@ -499,8 +499,8 @@ public class API
       }
       else
       {        
-        final APIResponse res = createResponseObject( response );
-        LOG.debug( String.valueOf( res.getStatusLine().getStatusCode()) + " " + res.getStatusLine().getReasonPhrase() + " for " + get.getURI().toString());
+        final APIResponse res = createResponseObject( response );   
+          APILog.debug( LOG, String.valueOf( res.getStatusLine().getStatusCode()), res.getStatusLine().getReasonPhrase(), "for", get.getURI().toString());
         return res;
       }
     } catch( IOException e ) {

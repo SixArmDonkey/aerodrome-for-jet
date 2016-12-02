@@ -78,7 +78,7 @@ public class JetAPI extends API
    */
   @Override
   public JetAPIResponse get( final String url, 
-    final Map<String,String> headers ) throws APIException
+    final Map<String,String> headers ) throws APIException, JetException
   {
     return JetAPIResponse.createFromAPIResponse( super.get( url, headers ));
   }
@@ -94,7 +94,7 @@ public class JetAPI extends API
    */
   @Override
   public JetAPIResponse post( final String url, final String payload, 
-    final Map<String,String> headers ) throws APIException
+    final Map<String,String> headers ) throws APIException, JetException
   {
     return JetAPIResponse.createFromAPIResponse( 
       super.post( url, payload, headers ));
@@ -111,7 +111,7 @@ public class JetAPI extends API
    */
   @Override
   public JetAPIResponse put( final String url, final String payload, 
-    final Map<String,String> headers ) throws APIException
+    final Map<String,String> headers ) throws APIException, JetException
   {  
     return JetAPIResponse.createFromAPIResponse( 
       super.put( url, payload, headers ));
