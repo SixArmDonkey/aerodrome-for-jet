@@ -79,15 +79,41 @@ Variable Placeholders
       <authTest>/authcheck</authTest>
 
       <!-- Product-related endpoints -->
-      <!-- https://developer.jet.com/docs/services/5565ca949a274a12b0b3a2a3/operations/5565d4be9a274a12b0b3a2ae -->
       <products>
         <!-- Get Commands -->
         <get>
           <!-- Get a SKU/Product -->
+          <!-- Retrieve information about the SKU that was previously uploaded 
+          (price, inventory, shipping exception) -->
           <sku>/merchant-skus/{sku}</sku>
 
           <!-- Get some price data -->
           <price>/merchant-skus/{sku}/price</price>
+          
+          <!-- Retrieve inventory -->
+          <inventory>/merchant-skus/{sku}/inventory</inventory>
+          
+          <!-- Retrieve product variations -->
+          <variation>/merchant-skus/{sku}/variation</variation>
+          
+          <!-- Retrieve shipping shipping exceptions -->
+          <shippingException>/merchant-skus/{sku}/shippingexception</shippingException>
+          
+          <!-- Retrieve product returns exceptions -->>
+          <returnsException>/merchant-skus/{sku}/returnsexception</returnsException>
+          
+          <!-- This call allows you visibility into the total number of SKUs 
+          you have uploaded. This is a paginated list of skus.  
+          
+          This accepts an offset and a per page limit and is done by entry, not page.
+          -->
+          <skuList>/merchant-skus?offset={offset}&amp;limit={limit}</skuList>
+          
+          <!-- Analyze how your individual product price (item and shipping 
+          price) compares to the lowest individual product prices from the 
+          marketplace. -->
+          
+          <salesData>/merchant-skus/{sku}/salesdata</salesData>
         </get>
 
         <!-- Put commands -->
@@ -112,6 +138,9 @@ Variable Placeholders
           
           <!-- Archive a sku -->
           <archiveSku>/merchant-skus/{sku}/status/archive</archiveSku>
+          
+          <!-- Add a return exception -->
+          <returnsException>/merchant-skus/{sku}/returnsexception</returnsException>
         </put>
 
         <!-- Delete Commands -->

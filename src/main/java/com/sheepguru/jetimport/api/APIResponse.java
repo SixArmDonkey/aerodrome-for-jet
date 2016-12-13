@@ -6,8 +6,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import javax.json.Json;
+import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.stream.JsonParsingException;
+import org.apache.commons.logging.Log;
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
@@ -160,10 +163,18 @@ public class APIResponse
   /**
    * Retrieve the response as a parsed JsonObject
    * @return response
+   * @throws JsonException if a JSON object cannot
+   *     be created due to i/o error (IOException would be
+   *     cause of JsonException)
+   * @throws javax.json.stream.JsonParsingException if a JSON object cannot
+   *     be created due to incorrect representation
    */
-  public JsonObject fromJSON()
+  public JsonObject getJsonObject()
+    throws JsonException, JsonParsingException
   {
-    try ( JsonReader reader = Json.createReader( new StringReader( content ))) {
+    try ( final JsonReader reader = Json.createReader( 
+      new StringReader( content ))) 
+    {
       return reader.readObject();
     }
   }

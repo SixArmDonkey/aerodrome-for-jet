@@ -30,7 +30,7 @@
   <!-- Main logging -->
   <root>
     <!-- Set log level -->
-    <priority value="debug" />
+    <priority value="trace" />
     
     <!-- Write everything to the console -->
     <appender-ref ref="Console" />

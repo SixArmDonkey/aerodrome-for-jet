@@ -27,6 +27,8 @@ public class JetAPIResponse extends APIResponse
 
   /**
    * HTTP Response codes for the Jet API 
+   * @see <a href="https://developer.jet.com/docs/jet-api-responses-and-errors#section-summary">
+   * https://developer.jet.com/docs/jet-api-responses-and-errors#section-summary</a>
    */
   public static enum ResponseCode
   {
@@ -171,7 +173,7 @@ public class JetAPIResponse extends APIResponse
     JsonObject json = null;
 
     if ( content.startsWith( "{" ))
-      json = res.fromJSON();
+      json = res.getJsonObject();
 
     if ( json != null )
       checkErrors( json );
@@ -193,7 +195,7 @@ public class JetAPIResponse extends APIResponse
       final JsonArray errors = res.getJsonArray( "errors" );
       ArrayList<String> messages = new ArrayList<>();
 
-      for ( JsonValue error : errors )
+      for ( final JsonValue error : errors )
       {
         messages.add( error.toString());
       }

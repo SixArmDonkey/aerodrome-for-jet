@@ -16,18 +16,47 @@ public class FNodePrice implements Jsonable
    * The fulfillment node assigned in the Jet Merchant Portal for a merchant
    * fulfillment node
    */
-  private String nodeId = "";
+  private final String nodeId;
 
   /**
    * The price of the merchant SKU at the fulfillment node level
    */
-  private float price = 0F;
-
-
-  public FNodePrice( String id, float price )
+  private final String price;
+  
+  
+  /**
+   * Build this from Jet JSON
+   * @param node node 
+   * @return object
+   */
+  public static FNodePrice fromJSON( final JsonObject node )
   {
+    if ( node == null )
+      throw new IllegalArgumentException( "node cannot be null" );
+    
+    return new FNodePrice(
+      node.getString( "fulfillment_node_id", "0" ),
+      node.getString( "filfillment_node_price", "0" )    
+    );
+  }
+
+
+  /**
+   * Create a new Fulfillment node 
+   * @param id Node id 
+   * @param price Price 
+   * @throws IllegalArgumentException if id is null or empty or if price 
+   * is less than zero.
+   */
+  public FNodePrice( final String id, final String price )
+    throws IllegalArgumentException 
+  {
+    if ( id == null || id.isEmpty())
+      throw new IllegalArgumentException( "Fulfillment node id cannot be null or empty" );
+    else if ( price == null || price.isEmpty())
+      throw new IllegalArgumentException( "Fulfillment node price cannot be less than zero" );
     this.nodeId = id;
-    this.price = Utils.round( price, 2 );
+    this.price = price;
   }
 
 
@@ -40,15 +69,17 @@ public class FNodePrice implements Jsonable
     return nodeId;
   }
 
+  
   /**
    * Retrieve the price
    * @return price
    */
-  public float getPrice()
+  public String getPrice()
   {
     return price;
   }
 
+  
   /**
    * Turn this into json
    * @return

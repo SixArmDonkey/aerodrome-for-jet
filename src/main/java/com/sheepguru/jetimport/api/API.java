@@ -245,6 +245,11 @@ public class API
       {
         //..Add the text
         b.addTextBody( pair.getName(), pair.getValue());
+        
+        if ( LOG.isTraceEnabled())
+        {
+          APILog.trace( LOG, pair.getName(), ":", pair.getValue());
+        }
       }
     }
 
@@ -289,6 +294,9 @@ public class API
     //..Add the payload
     try {
       post.setEntity( new StringEntity( payload ));
+      
+      if ( LOG.isTraceEnabled())
+        APILog.trace( LOG, payload );
     } catch( UnsupportedEncodingException e ) {
       throw new APIException( "Unsupported payload encoding", e );
     }
@@ -330,6 +338,10 @@ public class API
     //..Set the put payload
     try {
       put.setEntity( new StringEntity( payload ));
+      
+      if ( LOG.isTraceEnabled())
+        APILog.trace( LOG, payload );
+      
     } catch( UnsupportedEncodingException e ) {
       throw new APIException( 
         "Unsupported payload encoding, cannot create StringEntity", e );
@@ -569,7 +581,14 @@ public class API
       }
 
       //..set the character set used to create the htmlBuffer
-      res.setContent( htmlBuffer.toString(), charset );
+      if ( LOG.isTraceEnabled())
+      {
+        final String buff = htmlBuffer.toString();
+        APILog.trace( LOG, buff );
+        res.setContent( buff, charset );
+      }
+      else
+        res.setContent( htmlBuffer.toString(), charset );
 
     } catch( IOException e ) {
       //..Oh noes!

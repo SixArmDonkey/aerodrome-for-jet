@@ -13,6 +13,9 @@ import org.apache.commons.logging.LogFactory;
 /**
  * The Jet API Authentication Request 
  * @author John Quinn
+ * @see <a href="https://developer.jet.com/docs/retrieving-a-token#request-body">https://developer.jet.com/docs/retrieving-a-token#request-body</a>
+ * and the APIHeaders section for how to send a "logged in" request.
+ * <br><a href="https://developer.jet.com/docs/retrieving-a-token#response-body">https://developer.jet.com/docs/retrieving-a-token#response-body</a>
  */
 public class JetAPIAuth extends JetAPI
 {
@@ -22,11 +25,11 @@ public class JetAPIAuth extends JetAPI
   public static final String AUTH_TEST_RESPONSE = 
     "\"This message is authorized.\"";
   
-  
   /**
    * Log
    */
   private static final Log LOG = LogFactory.getLog( JetAPIAuth.class );
+  
   
   /**
    * Create a new API instance
@@ -114,7 +117,7 @@ public class JetAPIAuth extends JetAPI
     throws JetException
   {
     //..Turn it into JSON
-    final JsonObject res = response.fromJSON();
+    final JsonObject res = response.getJsonObject();
 
     try {
       //..Set the authentication data

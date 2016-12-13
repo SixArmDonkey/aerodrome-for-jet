@@ -20,15 +20,29 @@ public class FNodeInventory implements Jsonable
   /**
    * The quantity of inventory for the given SKU in a given fulfillment node
    */
-  private float quantity = 0F;
+  private int quantity = 0;
 
+  
+  /**
+   * Create a new FNodeInventory instance from Jet JSON 
+   * @param json json object
+   * @return object 
+   */
+  public static FNodeInventory fromJSON( final JsonObject json )
+  {
+    if ( json == null )
+      throw new IllegalArgumentException( "json cannot be null" );
+    
+    return new FNodeInventory( json.getString( "fulfillment_node_id", "" ), json.getInt( "quantity", 0 ));
+  }
+  
 
   /**
    * The inventory
    * @param id id
    * @param qty Quantity
    */
-  public FNodeInventory( String id, float qty )
+  public FNodeInventory( String id, int qty )
   {
     nodeId = id;
     quantity = qty;
@@ -40,7 +54,7 @@ public class FNodeInventory implements Jsonable
     return nodeId;
   }
 
-  public float getQuantity()
+  public int getQuantity()
   {
     return quantity;
   }

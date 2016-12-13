@@ -108,6 +108,11 @@ public class DefaultJetConfig implements JetConfig
    * URI for archiving a price 
    */
   private final String uriArchiveSku;
+  
+  /**
+   * URI for adding a product returns exception 
+   */
+  private final String uriReturnsException;
 
   /**
    * Read timeout 
@@ -155,6 +160,36 @@ public class DefaultJetConfig implements JetConfig
    */
   private String authHeaderValue = "";
   
+  /**
+   * URL to retrieve product inventory 
+   */
+  private String uriGetProductInventory = "";
+  
+  /**
+   * URL to retrieve product variations
+   */
+  private String uriGetProductVariation = "";
+  
+  /**
+   * URL to retrieve product shipping exception s
+   */
+  private String uriGetProductShippingException = "";
+  
+  /**
+   * URL to retrieve product returns exceptions
+   */
+  private String uriGetProductReturnsException = "";
+  
+  /**
+   * URL to retrieve the list of product skus 
+   */
+  private String uriGetSkuList = "";
+  
+  /**
+   * URL to retrieve product sales data 
+   */
+  private String uriGetProductSalesData = "";
+        
 
   /**
    * Test a string for null and empty and 
@@ -214,7 +249,14 @@ public class DefaultJetConfig implements JetConfig
     final String uriGetProduct,
     final String uriGetProductPrice,
     final String uriAddProductVariation,
-    final String uriArchiveSku
+    final String uriArchiveSku,
+    final String uriReturnsException,
+    final String uriGetProductInventory,
+    final String uriGetProductVariation,
+    final String uriGetProductShippingException,
+    final String uriGetProductReturnsException,
+    final String uriGetSkuList,
+    final String uriGetProductSalesData
   ) throws IllegalArgumentException
   {
     checkStringEmpty( host, "jet.host cannot be empty" );
@@ -234,6 +276,14 @@ public class DefaultJetConfig implements JetConfig
     checkStringEmpty( acceptLanguageHeaderValue,"acceptLanguageHeaderValue cannot be null or empty" );
     checkStringEmpty( uriAddProductVariation ,"uriAddProductVariation cannot be null or empty" );
     checkStringEmpty( uriArchiveSku, "uriArchiveSku cannot be empty" );
+    checkStringEmpty( uriReturnsException, "jet.uri.products.put.returnException cannot be null or empty" );
+    checkStringEmpty( uriGetProductInventory, "jet.uri.products.get.inventory cannot be null or empty" );
+    checkStringEmpty( uriGetProductVariation, "jet.uri.products.get.variation cannot be null or empty" );
+    checkStringEmpty( uriGetProductShippingException, "jet.uri.products.get.shippingException cannot be null or empty" );
+    checkStringEmpty( uriGetProductReturnsException, "jet.uri.products.get.returnsException cannot be null or empty" );
+    checkStringEmpty( uriGetSkuList, "jet.uri.products.get.skuList cannot be null or empty" );
+    checkStringEmpty( uriGetProductSalesData, "jet.uri.products.get.salesData cannot be null or empty" );
+    
     if ( readTimeout < 0 )
       throw new IllegalArgumentException( "readTimeout cannot be less than zero" );
     
@@ -256,8 +306,26 @@ public class DefaultJetConfig implements JetConfig
     this.allowUntrustedSSL = allowUntrustedSSL;
     this.uriAddProductVariation = uriAddProductVariation;
     this.uriArchiveSku = uriArchiveSku;
+    this.uriReturnsException = uriReturnsException;
+    this.uriGetProductInventory = uriGetProductInventory;
+    this.uriGetProductVariation = uriGetProductVariation;
+    this.uriGetProductShippingException = uriGetProductShippingException;
+    this.uriGetProductReturnsException = uriGetProductReturnsException;
+    this.uriGetSkuList = uriGetSkuList;
+    this.uriGetProductSalesData = uriGetProductSalesData;    
   }
   
+  
+  /**
+   * Get the returns exception url 
+   * @param sku sku 
+   * @return url 
+   */
+  @Override
+  public String getProductReturnsExceptionUrl( final String sku )
+  {
+    return uriReturnsException;
+  }
   
   /**
    * Retrieve the read timeout in milliseconds 
@@ -460,7 +528,7 @@ public class DefaultJetConfig implements JetConfig
    * @return URL
    */
   @Override
-  public String getAddProductShipExceptioUrl( final String sku )
+  public String getAddProductShipExceptionUrl( final String sku )
   {
     return buildURL( uriAddProductShipException.replace( "{sku}", sku ));
   }
@@ -478,7 +546,6 @@ public class DefaultJetConfig implements JetConfig
   }
   
   
-
   /**
    * Set the authentication token after a successful login.
    *
@@ -531,6 +598,83 @@ public class DefaultJetConfig implements JetConfig
     return tokenExpires;
   }
 
+
+  /**
+   * Retrieve the url for retrieving product inventory
+   * @param sku product sku 
+   * @return url
+   */
+  @Override
+  public String getGetProductInventoryURL( final String sku )
+  {
+    return uriGetProductInventory.replace( "{sku}", sku );
+  }
+  
+  
+  /**
+   * Retrieve the url for retrieving product variations
+   * @param sku product sku 
+   * @return url
+   */
+  @Override
+  public String getGetProductVariationURL( final String sku )
+  {
+    return uriGetProductVariation.replace( "{sku}", sku );
+  }
+  
+  
+  /**
+   * Retrieve the url for retrieving product shipping exceptions
+   * @param sku product sku 
+   * @return url
+   */
+  @Override
+  public String getGetShippingExceptionURL( final String sku )
+  {
+    return uriGetProductShippingException.replace( "{sku}", sku );
+  }
+  
+  
+  /**
+   * Retrieve the url for retrieving product returns exceptions 
+   * @param sku product sku 
+   * @return url
+   */
+  @Override
+  public String getGetReturnsExceptionURL( final String sku )
+  {
+    return uriGetProductReturnsException.replace( "{sku}", sku );
+  }
+  
+  
+  /**
+   * Retrieve the url for retrieving product inventory
+   * @param start The start product number
+   * @param limit the number of products per page (i think)
+   * @return url
+   */
+  @Override
+  public String getSkuListURL( final int start, final int limit )
+  {
+    return uriGetSkuList
+      .replace( "{offset}", String.valueOf( start ))
+      .replace( "{limit}", String.valueOf( limit )
+    );
+  }
+
+  
+  /**
+   * Retrieve the url for retrieving product sales data
+   * @param sku product sku 
+   * @return url
+   */
+  @Override
+  public String getSalesDataBySkuURL( final String sku )
+  {
+    return uriGetProductSalesData.replace( "{sku}", sku );
+  }
+    
+  
 
   /**
    * Set the authentication data retrieved from Jet

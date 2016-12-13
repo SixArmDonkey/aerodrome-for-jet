@@ -94,6 +94,42 @@ public class JetConfigBuilder
   protected String uriAddProductVariation = "";
   
   /**
+   * URI for adding a returns exception 
+   */
+  protected String uriReturnsException = "";
+
+  /**
+   * URL to retrieve product inventory 
+   */
+  protected String uriGetProductInventory = "";
+  
+  /**
+   * URL to retrieve product variations
+   */
+  protected String uriGetProductVariation = "";
+  
+  /**
+   * URL to retrieve product shipping exception s
+   */
+  protected String uriGetProductShippingException = "";
+  
+  /**
+   * URL to retrieve product returns exceptions
+   */
+  protected String uriGetProductReturnsException = "";
+  
+  /**
+   * URL to retrieve the list of product skus 
+   */
+  protected String uriGetSkuList = "";
+  
+  /**
+   * URL to retrieve product sales data 
+   */
+  protected String uriGetProductSalesData = "";
+   
+  
+  /**
    * Read timeout 
    */
   private long readTimeout = 10000L;
@@ -321,6 +357,97 @@ public class JetConfigBuilder
   }
   
   
+  /**
+   * Set uri for adding a return exception 
+   * @param uriReturnException Exception uri 
+   * @return builder
+   */
+  public JetConfigBuilder setUriAddProductReturnException( final String uriReturnException )
+  {
+    this.uriReturnsException = uriReturnException;
+    APILog.debug( LOG, "Add product return exception uri set to: ", uriReturnException );
+    return this;
+  }
+  
+  
+
+  /**
+   * Set the url for retrieving product inventory
+   * @param uriGetProductInventory url 
+   * @return this
+   */
+  public JetConfigBuilder setUriGetProductInventory( final String uriGetProductInventory )
+  {
+    this.uriGetProductInventory = uriGetProductInventory;
+    APILog.debug( LOG, "Get product inventory uri set to: ", uriGetProductInventory );
+    return this;
+  }
+  
+  
+  /**
+   * Set the url for retrieving product variations
+   * @param uriGetProductVariation url 
+   * @return this
+   */
+  public JetConfigBuilder setUriGetProductVariation( final String uriGetProductVariation )
+  {
+    this.uriGetProductVariation = uriGetProductVariation;
+    APILog.debug( LOG, "Get product variation uri set to: ", uriGetProductVariation );
+    return this;
+  }
+  
+  
+  /**
+   * Set the url for retrieving product shipping exceptions
+   * @param uriGetProductShippingException url 
+   * @return this
+   */
+  public JetConfigBuilder setUriGetShippingException( final String uriGetProductShippingException )
+  {
+    this.uriGetProductShippingException = uriGetProductShippingException;
+    APILog.debug( LOG, "Get product shipping exceptions uri set to: ", uriGetProductShippingException );
+    return this;
+  }
+  
+  
+  /**
+   * Set the url for retrieving product returns exceptions 
+   * @param uriGetProductReturnsException url 
+   * @return this
+   */
+  public JetConfigBuilder setUriGetReturnsException( final String uriGetProductReturnsException )
+  {
+    this.uriGetProductReturnsException = uriGetProductReturnsException;
+    APILog.debug( LOG, "Get product returns exceptions uri set to: ", uriGetProductReturnsException );
+    return this;
+  }
+  
+  
+  /**
+   * Set the url for retrieving product inventory
+   * @param uriGetSkuList the url 
+   * @return this
+   */
+  public JetConfigBuilder setUriGetSkuList( final String uriGetSkuList )
+  {
+    this.uriGetSkuList = uriGetSkuList;
+    APILog.debug( LOG, "Get product sku list uri set to: ", uriGetSkuList );
+    return this;
+  }
+
+  
+  /**
+   * Set the url for retrieving product sales data
+   * @param uriGetProductSalesData url 
+   * @return this
+   */
+  public JetConfigBuilder setUriGetSalesDataBySku( final String uriGetProductSalesData )
+  {
+    this.uriGetProductSalesData = uriGetProductSalesData;
+    APILog.debug( LOG, "Get product sales data uri set to: ", uriGetProductSalesData );
+    return this;
+  }  
+  
 
   /**
    * Set the socket read timeout in milliseconds
@@ -333,6 +460,7 @@ public class JetConfigBuilder
     APILog.debug( LOG, "Read timeout set to: ", String.valueOf( timeout ));
     return this;
   }
+  
   
   /**
    * Set the default accept header value for requests
@@ -351,6 +479,7 @@ public class JetConfigBuilder
     return this;
   }
   
+  
   /**
    * Set the default accept language header value for requests
    * @param value value 
@@ -368,6 +497,7 @@ public class JetConfigBuilder
     return this;
   }
 
+  
   /**
    * Set allow untrusted ssl (default false)
    * @param allow toggle
@@ -381,7 +511,6 @@ public class JetConfigBuilder
       APILog.debug( LOG, "Allow Untrusted SSL is enabled" );
     return this;
   }
-  
   
   
   /**
@@ -409,9 +538,14 @@ public class JetConfigBuilder
       uriGetProduct, 
       uriGetProductPrice,
       uriAddProductVariation,
-      uriArchiveSku
+      uriArchiveSku,
+      uriReturnsException,
+      uriGetProductInventory,
+      uriGetProductVariation,
+      uriGetProductShippingException,
+      uriGetProductReturnsException,
+      uriGetSkuList,
+      uriGetProductSalesData
     );
-    
-    
   }
 }

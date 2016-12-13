@@ -5,11 +5,7 @@
  */
 package com.sheepguru.jetimport.api.jet;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  *
@@ -73,20 +69,9 @@ public interface JetConfig
   public String getPassword();
 
 
-  /**
-   * Retrieve the URL used for authenticating a username/password
-   * @return URL
-   */
-  public String getAuthenticationURL();
+  ////////////// START PUT PRODUCT /////////////////////////////////////////////  
 
-
-  /**
-   * Retrieve the URL used for testing an authentication token
-   * @return URL
-   */
-  public String getAuthTestURL();
-
-
+  
   /**
    * Retrieve the url for archiving a sku 
    * @param sku sku to archive 
@@ -95,22 +80,6 @@ public interface JetConfig
   public String getArchiveSkuURL( final String sku );
   
   
-  /**
-   * Retrieve the URL for retrieving a product.
-   * @param sku Unique product SKU
-   * @return URL
-   */
-  public String getGetProductURL( final String sku );
-
-
-  /**
-   * Retrieve the URL for retrieving a product price
-   * @param sku Unique product SKU
-   * @return URL
-   */
-  public String getGetProductPriceURL( final String sku );
-
-
   /**
    * Retrieve the URL for adding a product.
    * @param sku Unique product SKU
@@ -142,12 +111,21 @@ public interface JetConfig
    */
   public String getAddProductInventoryUrl( final String sku );
 
+  
   /**
    * Retrieve the URL for adding a product ship exception
    * @param sku Unique product SKU
    * @return URL
    */
-  public String getAddProductShipExceptioUrl( final String sku );
+  public String getAddProductShipExceptionUrl( final String sku );
+  
+  
+  /**
+   * Retrieve the URL for adding a returns exception to a product sku.
+   * @param sku Sku to modify 
+   * @return URL 
+   */
+  public String getProductReturnsExceptionUrl( final String sku );
 
   
   /**
@@ -157,7 +135,94 @@ public interface JetConfig
    */
   public String getAddProductVariationUrl( final String sku );
   
+  
+  ////////////// END PUT PRODUCT ///////////////////////////////////////////////  
+  ////////////// START GET PRODUCT /////////////////////////////////////////////  
+  
+  
+  /**
+   * Retrieve the URL for retrieving a product.
+   * @param sku Unique product SKU
+   * @return URL
+   */
+  public String getGetProductURL( final String sku );
 
+
+  /**
+   * Retrieve the URL for retrieving a product price
+   * @param sku Unique product SKU
+   * @return URL
+   */
+  public String getGetProductPriceURL( final String sku );
+
+  
+  /**
+   * Retrieve the url for retrieving product inventory
+   * @param sku product sku 
+   * @return url
+   */
+  public String getGetProductInventoryURL( final String sku );
+  
+  
+  /**
+   * Retrieve the url for retrieving product variations
+   * @param sku product sku 
+   * @return url
+   */
+  public String getGetProductVariationURL( final String sku );
+  
+  
+  /**
+   * Retrieve the url for retrieving product shipping exceptions
+   * @param sku product sku 
+   * @return url
+   */
+  public String getGetShippingExceptionURL( final String sku );
+  
+  
+  /**
+   * Retrieve the url for retrieving product returns exceptions 
+   * @param sku product sku 
+   * @return url
+   */
+  public String getGetReturnsExceptionURL( final String sku );
+  
+  
+  /**
+   * Retrieve the url for retrieving product inventory
+   * @param start The start product number
+   * @param limit the number of products per page (i think)
+   * @return url
+   */
+  public String getSkuListURL( final int start, final int limit );
+
+  
+  /**
+   * Retrieve the url for retrieving product sales data
+   * @param sku product sku 
+   * @return url
+   */
+  public String getSalesDataBySkuURL( final String sku );
+  
+  
+  ////////////// END GET PRODUCT ///////////////////////////////////////////////
+  ////////////// START AUTH ////////////////////////////////////////////////////
+  
+
+  /**
+   * Retrieve the URL used for authenticating a username/password
+   * @return URL
+   */
+  public String getAuthenticationURL();
+
+
+  /**
+   * Retrieve the URL used for testing an authentication token
+   * @return URL
+   */
+  public String getAuthTestURL();
+  
+  
   /**
    * Set the authentication token after a successful login.
    *
@@ -234,15 +299,16 @@ public interface JetConfig
   
   
   /**
-   * Throws a JetAuthException with a unique message based on different configuration states.
+   * Throws a JetAuthException with a unique message based on different 
+   * configuration states.
    * 
    * If token is empty, this says "Not authenticated"
-   * If token is not empty and tokenExpires is an instance of Date, this will say that the token is expired 
-   * else this says unknown error
+   * If token is not empty and tokenExpires is an instance of Date, this will 
+   * say that the token is expired else this says unknown error
    * 
    * @throws JetAuthException based on above description
    */
   public void testConfigurationData() throws JetAuthException;
   
-  
+  ////////////// END AUTH ..////////////////////////////////////////////////////  
 }

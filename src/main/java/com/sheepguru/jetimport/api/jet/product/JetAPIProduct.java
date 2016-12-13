@@ -9,10 +9,10 @@ import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,25 +38,6 @@ public class JetAPIProduct extends JetAPI
   public JetAPIProduct( final APIHttpClient client, final JetConfig conf )
   {
     super( client, conf );
-  }
-
-
-  
-  /**
-   * Retrieve product data
-   * @param sku Sku to retrieve
-   * @return jet product data
-   * @throws APIException
-   * @throws JetException
-   */
-  public JetProduct getProduct( final String sku ) throws APIException, JetException
-  {
-    APILog.info( LOG, "Retrieving ", sku );
-    
-    final JetAPIResponse response = get( config.getGetProductURL( sku ), getPlainHeaderBuilder().build());
-        
-    APILog.info( LOG, sku, " Found" );
-    return JetProduct.fromJSON( response.fromJSON());
   }
 
 
@@ -182,7 +163,6 @@ public class JetAPIProduct extends JetAPI
 
     return response;
   }
-
   
   
   /**
@@ -199,6 +179,7 @@ public class JetAPIProduct extends JetAPI
    * @param group data to send 
    * @return response from jet 
    * @throws APIException if there's a problem 
+   * @throws JetException 
    */
   public JetAPIResponse sendProductVariation( 
     final JetProductVariationGroup group ) throws APIException, JetException
@@ -216,8 +197,7 @@ public class JetAPIProduct extends JetAPI
     );
     
     return response;
-  }
-  
+  }  
   
   
   /**
@@ -233,9 +213,9 @@ public class JetAPIProduct extends JetAPI
     final List<ShippingExceptionNode> nodes
   ) throws APIException, JetException
   {
-    if ( sku == null || sku.isEmpty())
-      throw new IllegalArgumentException( "sku cannot be empty" );
-    else if ( nodes == null )
+    checkSku( sku );
+    
+    if ( nodes == null )
       throw new IllegalArgumentException( "nodes cannot be null" );
     
     APILog.info( LOG, "Sending", sku, "shipping exceptions" );
@@ -247,14 +227,54 @@ public class JetAPIProduct extends JetAPI
     }
     
     final JetAPIResponse response = put(
-      config.getAddProductShipExceptioUrl( sku ),
+      config.getAddProductShipExceptionUrl( sku ),
       b.build().toString(),
       getJSONHeaderBuilder().build()
     );
     
     return response;    
-  }
+  }  
   
+  
+  /**
+   * The returns exceptions call is used to set up specific methods that will 
+   * overwrite your default settings on a fulfillment node level for returns. 
+   * This exception will be used to determine how and to where a product is 
+   * returned unless the merchant specifies otherwise in the Ship Order message. 
+   * 
+   * @param sku Product SKU to modify 
+   * @param hashes A list of md5 hashes - Each hash is the ID of the returns 
+   * node that was created on partner.jet.com under fulfillment settings.
+   * 
+   * Must be a valid return node ID set up by the merchant
+   * 
+   * @return response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendReturnsException( final String sku, 
+    List<String> hashes ) throws APIException, JetException
+  {
+    checkSku( sku );
+    
+    if ( hashes == null )
+      throw new IllegalArgumentException( "hashes cannot be null" );
+    
+    final JsonArrayBuilder b = Json.createArrayBuilder();
+    for ( final String s : hashes )
+    {
+      b.add( s );
+    }
+    
+    final JetAPIResponse res = put( 
+      config.getProductReturnsExceptionUrl( sku ),
+      b.build().toString(),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return res;
+    
+  }
   
   
   /**
@@ -273,8 +293,7 @@ public class JetAPIProduct extends JetAPI
   public JetAPIResponse sendArchiveSku( final String sku, 
     final boolean isArchived ) throws APIException, JetException
   {
-    if ( sku == null || sku.isEmpty())
-      throw new IllegalArgumentException( "sku cannot be null or empty" );
+    checkSku( sku );
     
     APILog.info( LOG, "Sending archive sku:", sku );
 
@@ -286,5 +305,227 @@ public class JetAPIProduct extends JetAPI
     );
     
     return response;    
+  }
+  
+  
+  /**
+   * At Jet, the price the retailer sets is not the same as the price the 
+   * customer pays. The price set for a SKU will be the price the retailer 
+   * gets paid for selling the products. However, the price that is set will 
+   * influence how competitive your product offer matches up compared to other 
+   * product offers for the same SKU.
+   * 
+   * @param sku Product sku 
+   * @return API response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendGetProductPrice( final String sku ) 
+    throws APIException, JetException
+  {
+    checkSku( sku );
+    
+    APILog.info( LOG, "Sending GET product price for sku:", sku );
+    
+    final JetAPIResponse response = get(
+      config.getGetProductPriceURL( sku ),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;
+  }
+
+
+  /**
+   * At Jet, the price the retailer sets is not the same as the price the 
+   * customer pays. The price set for a SKU will be the price the retailer 
+   * gets paid for selling the products. However, the price that is set will 
+   * influence how competitive your product offer matches up compared to other 
+   * product offers for the same SKU.
+   * 
+   * @param sku Product sku 
+   * @return API response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public ProductPriceRec getProductPrice( final String sku )
+    throws APIException, JetException
+  {
+    try {
+      return ProductPriceRec.fromJSON( sendGetProductPrice( sku ).getJsonObject());
+    } catch( ParseException e ) {
+      APILog.error( LOG, "Failed to parse Jet Fulfillment Node lastUpdate Date:", e.getMessage());
+      throw new JetException( "getProductPrice result was successful, but Fulfillment node had an invalid lastUpdate date", e );
+    }
+  }
+  
+  
+  /**
+   * Retrieve a single product by sku.
+   * Any information about the SKU that was previously uploaded (price, 
+   * inventory, shipping exception) will show up here
+   * @param sku Product Sku
+   * @return response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendGetProductSku( final String sku )
+    throws APIException, JetException
+  {
+    checkSku( sku );
+    
+    APILog.info( LOG, "Retrieving ", sku );
+    
+    return get( config.getGetProductURL( sku ), getPlainHeaderBuilder().build());
+  }
+  
+
+  /**
+   * Retrieve product data
+   * @param sku Sku to retrieve
+   * @return jet product data
+   * @throws APIException
+   * @throws JetException
+   */
+  public JetProduct getProduct( final String sku ) throws APIException, JetException
+  {
+    return JetProduct.fromJSON( sendGetProductSku( sku ).getJsonObject());
+  }
+  
+  
+  /**
+   * Retrieve product inventory by sku.
+   * The inventory returned from this endpoint represents the number in the 
+   * feed, not the quantity that is currently sellable on Jet.com
+   * 
+   * @param sku Product sku
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendGetProductInventory( final String sku )
+     throws APIException, JetException
+  {
+    checkSku( sku );
+    
+    APILog.info( LOG, "Sending GET product inventory for sku:", sku );
+    
+    final JetAPIResponse response = get(
+      config.getGetProductInventoryURL( sku ),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;    
+  }
+  
+  
+  /**
+   * Retrieve product inventory by sku.
+   * The inventory returned from this endpoint represents the number in the 
+   * feed, not the quantity that is currently sellable on Jet.com
+   * 
+   * @param sku Product sku
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */  
+  public ProductInventoryRec getProductInventory( final String sku )
+    throws APIException, JetException
+  {
+    try {
+      return ProductInventoryRec.fromJSON( sendGetProductInventory( sku ).getJsonObject());
+    } catch( ParseException e ) {
+      APILog.error( LOG, "Failed to parse Jet Fulfillment Node lastUpdate Date:", e.getMessage());
+      throw new JetException( "getProductPrice result was successful, but Fulfillment node had an invalid lastUpdate date", e );
+    }
+  }
+
+  
+  /**
+   * Retrieve product shipping exceptions by sku.
+   * The shipping exceptions call is used to set up specific methods and costs 
+   * for individual SKUs that will override your default settings, with the 
+   * ability to drill down to the fulfillment node level.
+   * 
+   * @param sku Product sku 
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendGetProductShippingExceptions( final String sku )
+    throws APIException, JetException 
+  {
+    checkSku( sku );
+    
+    APILog.info( LOG, "Sending GET product shipping exceptions for sku:", sku );
+    
+    final JetAPIResponse response = get(
+      config.getGetProductInventoryURL( sku ),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;    
+  }
+  
+  
+  /**
+   * Retrieve product variations exceptions by sku.
+   * 
+   * @param sku Product sku 
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendGetProductVariations( final String sku )
+    throws APIException, JetException 
+  {
+    checkSku( sku );
+    
+    APILog.info( LOG, "Sending GET product variations for sku:", sku );
+    
+    final JetAPIResponse response = get(
+      config.getGetProductInventoryURL( sku ),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;    
+  }  
+  
+  
+ /**
+   * Retrieve product returns exceptions by sku.
+   * 
+   * @param sku Product sku 
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendGetProductReturnsExceptions( final String sku )
+    throws APIException, JetException 
+  {
+    checkSku( sku );
+    
+    APILog.info( LOG, "Sending GET product returns exceptions for sku:", sku );
+    
+    final JetAPIResponse response = get(
+      config.getGetProductInventoryURL( sku ),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;    
+  }  
+  
+  
+
+  /**
+   * Simply checks sku for null/empty.
+   * If true, then throw an exception
+   * @param sku Product sku
+   * @throws IllegalArgumentException if sku is null/empty 
+   */
+  private void checkSku( final String sku ) throws IllegalArgumentException 
+  {
+    if ( sku == null || sku.isEmpty())
+      throw new IllegalArgumentException( "sku cannot be null or empty" );    
   }
 }

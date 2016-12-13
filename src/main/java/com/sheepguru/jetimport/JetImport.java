@@ -108,11 +108,16 @@ public class JetImport implements ExitCodes
       product.sendProduct( prod );    
       
       
-      final JetProduct res = product.getProduct( "VIC!47520" );
+      final String sku = "VIC!47520";
+      final JetProduct res = product.getProduct( sku );
       System.out.println( res.toJSON() );
       
+      System.out.println( product.getProductPrice( sku ).getPrice());
+      
+      System.out.println( product.getProductInventory( sku ).getLastUpdate());
+      
     } catch( Exception e ) {
-      fail( "Failed to add product", E_API_FAILURE, e );
+      fail( "Failed to do product stuff", E_API_FAILURE, e );
     }
 
   }
@@ -260,7 +265,28 @@ public class JetImport implements ExitCodes
             
       .setUriArchiveSku( 
         config.getString( "jet.uri.products.put.archiveSku", "" ))
+            
+      .setUriAddProductReturnException( 
+        config.getString( "jet.uri.products.put.returnsException", "" ))
       
+      .setUriGetProductInventory(
+        config.getString( "jet.uri.products.get.inventory", "" ))
+         
+      .setUriGetProductVariation( 
+        config.getString( "jet.uri.products.get.variation", "" ))
+            
+      .setUriGetShippingException(
+        config.getString( "jet.uri.products.get.shippingException", "" ))
+            
+      .setUriGetReturnsException( 
+        config.getString( "jet.uri.products.get.returnsException", "" ))
+            
+      .setUriGetSkuList(
+        config.getString( "jet.uri.products.get.skuList", "" ))
+            
+      .setUriGetSalesDataBySku(
+        config.getString( "jet.uri.products.get.salesData", "" ))
+            
       .build();
 
     return cfg;
