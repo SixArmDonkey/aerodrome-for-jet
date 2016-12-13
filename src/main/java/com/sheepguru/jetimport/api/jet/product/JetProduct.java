@@ -358,7 +358,7 @@ public class JetProduct implements Jsonable
   /**
    * Shipping exception node list
    */
-  private final List<ShippingExceptionNode> shippingExceptionNodes = new ArrayList<>();
+  private final List<FNodeShipping> shippingExceptionNodes = new ArrayList<>();
 
   /**
    * From Product Get response
@@ -1627,7 +1627,7 @@ public class JetProduct implements Jsonable
    * Add a list of shipping exception nodes
    * @param nodes nodes to add
    */
-  public void setShippingExceptionNodes( List<ShippingExceptionNode> nodes )
+  public void setShippingExceptionNodes( List<FNodeShipping> nodes )
   {
     this.shippingExceptionNodes.addAll( nodes );
   }
@@ -1637,7 +1637,7 @@ public class JetProduct implements Jsonable
    * Add a shipping exception node
    * @param node node to add
    */
-  public void setShippingExceptionNodes( ShippingExceptionNode node )
+  public void setShippingExceptionNodes( FNodeShipping node )
   {
     this.shippingExceptionNodes.add( node );
   }
@@ -1647,7 +1647,7 @@ public class JetProduct implements Jsonable
    * Retrieve the shipping exception node list
    * @return node list
    */
-  public List<ShippingExceptionNode> getShippingExceptionNodes()
+  public List<FNodeShipping> getShippingExceptionNodes()
   {
     return shippingExceptionNodes;
   }
@@ -1961,7 +1961,7 @@ public class JetProduct implements Jsonable
     {
       final JsonObject o = a.getJsonObject( i );
       out.add( new ProductCode( o.getString( "standard_product_code", "" ), 
-        ProductCodeType.fromString( o.getString( "standard_product_code_type", "" ))));
+        ProductCodeType.fromText( o.getString( "standard_product_code_type", "" ))));
     }
     
     return out;
@@ -2204,7 +2204,7 @@ public class JetProduct implements Jsonable
   {
     final JsonArrayBuilder a = Json.createArrayBuilder();
 
-    for ( ShippingExceptionNode n : shippingExceptionNodes )
+    for ( FNodeShipping n : shippingExceptionNodes )
     {
       if ( n == null )
         continue;

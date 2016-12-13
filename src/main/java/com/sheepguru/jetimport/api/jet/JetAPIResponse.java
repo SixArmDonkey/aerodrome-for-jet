@@ -202,6 +202,10 @@ public class JetAPIResponse extends APIResponse
 
       throw new JetException( messages );
     }
+    else if ( res.containsKey( "error" ))
+    {
+      throw new JetException( res.getString( "error" ));
+    }
   }  
   
   

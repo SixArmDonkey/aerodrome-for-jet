@@ -31,6 +31,25 @@ public enum ShipOverrideType
    */
   private final String val;
 
+  
+  /**
+   * Attempt to create a ShipOverrideType by text value 
+   * @param text value 
+   * @return code 
+   * @throws IllegalArgumentException if text is not found 
+   */
+  public static ShipOverrideType fromText( final String text )
+    throws IllegalArgumentException
+  {
+    for ( final ShipOverrideType c : values())
+    {
+      if ( c != null && c.getText().equalsIgnoreCase( text ))
+        return c;
+    }
+    
+    throw new IllegalArgumentException( "Invalid value " + text );
+  }    
+  
 
   /**
    * Create a new ShipOverrideType instance
@@ -46,7 +65,7 @@ public enum ShipOverrideType
    * Retrieve the Jet API value
    * @return val 
    */
-  public String getValue()
+  public String getText()
   {
     return val;
   }

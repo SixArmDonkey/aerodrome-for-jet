@@ -42,6 +42,25 @@ public enum ServiceLevel
    */
   private final String val;
 
+  
+  /**
+   * Attempt to create a ServiceLevel by text value 
+   * @param text value 
+   * @return code 
+   * @throws IllegalArgumentException if text is not found 
+   */
+  public static ServiceLevel fromText( final String text )
+    throws IllegalArgumentException
+  {
+    for ( final ServiceLevel c : values())
+    {
+      if ( c != null && c.getText().equalsIgnoreCase( text ))
+        return c;
+    }
+    
+    throw new IllegalArgumentException( "Invalid value " + text );
+  }      
+  
   /**
    * Create a new ServiceLevel instance
    * @param val
@@ -56,7 +75,7 @@ public enum ServiceLevel
    * Retrieve the Jet API value
    * @return jet api value
    */
-  public String getValue()
+  public String getText()
   {
     return val;
   }

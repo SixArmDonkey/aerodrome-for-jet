@@ -8,11 +8,14 @@ import com.sheepguru.jetimport.api.APILog;
 import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetException;
-import java.math.BigDecimal;
+import com.sheepguru.jetimport.api.jet.Utils;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,27 +53,27 @@ public class JetAPIProduct extends JetAPI
    * library itself. A network issue, etc.
    * @throws ValidateException if the product fails pre-submit validation
    */
-  public boolean sendProduct( final JetProduct product ) throws APIException, JetException, ValidateException
+  public boolean addProduct( final JetProduct product ) throws APIException, JetException, ValidateException
   {
     product.validate();
     
     //..Add Sku
-    JetAPIResponse res = sendProductSku( product );
+    JetAPIResponse res = sendPutProductSku( product );
     if ( !res.isSuccess())
       return false;
 
     //..Add an image
-    res = sendProductImage( product );
+    res = sendPutProductImage( product );
     if ( !res.isSuccess() )
       return false;
 
     //..Add the price
-    res = sendProductPrice( product );
+    res = sendPutProductPrice( product );
     if ( !res.isSuccess() )
       return false;
 
     //..Add some inventory
-    res = sendProductInventory( product );
+    res = sendPutProductInventory( product );
     return res.isSuccess();
   }
 
@@ -85,7 +88,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendProductSku( final JetProduct product )
+  public JetAPIResponse sendPutProductSku( final JetProduct product )
       throws APIException, JetException
   {    
     APILog.info( LOG, "Sending ", product.getMerchantSku());
@@ -106,7 +109,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendProductImage( final JetProduct product )
+  public JetAPIResponse sendPutProductImage( final JetProduct product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "image" );
@@ -128,7 +131,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendProductPrice( final JetProduct product )
+  public JetAPIResponse sendPutProductPrice( final JetProduct product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "price" );
@@ -150,7 +153,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendProductInventory( final JetProduct product )
+  public JetAPIResponse sendPutProductInventory( final JetProduct product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "inventory" );
@@ -181,7 +184,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException if there's a problem 
    * @throws JetException 
    */
-  public JetAPIResponse sendProductVariation( 
+  public JetAPIResponse sendPutProductVariation( 
     final JetProductVariationGroup group ) throws APIException, JetException
         
   {
@@ -208,9 +211,9 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendProductShippingExceptions(
+  public JetAPIResponse sendPutProductShippingExceptions(
     final String sku,
-    final List<ShippingExceptionNode> nodes
+    final List<FNodeShipping> nodes
   ) throws APIException, JetException
   {
     checkSku( sku );
@@ -221,7 +224,7 @@ public class JetAPIProduct extends JetAPI
     APILog.info( LOG, "Sending", sku, "shipping exceptions" );
     
     final JsonArrayBuilder b = Json.createArrayBuilder();
-    for ( final ShippingExceptionNode node : nodes )
+    for ( final FNodeShipping node : nodes )
     {
       b.add( node.toJSON());
     }
@@ -252,7 +255,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendReturnsException( final String sku, 
+  public JetAPIResponse sendPutReturnsException( final String sku, 
     List<String> hashes ) throws APIException, JetException
   {
     checkSku( sku );
@@ -290,7 +293,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendArchiveSku( final String sku, 
+  public JetAPIResponse sendPutArchiveSku( final String sku, 
     final boolean isArchived ) throws APIException, JetException
   {
     checkSku( sku );
@@ -460,7 +463,7 @@ public class JetAPIProduct extends JetAPI
     APILog.info( LOG, "Sending GET product shipping exceptions for sku:", sku );
     
     final JetAPIResponse response = get(
-      config.getGetProductInventoryURL( sku ),
+      config.getGetShippingExceptionURL( sku ),
       getJSONHeaderBuilder().build()
     );
     
@@ -484,15 +487,73 @@ public class JetAPIProduct extends JetAPI
     APILog.info( LOG, "Sending GET product variations for sku:", sku );
     
     final JetAPIResponse response = get(
-      config.getGetProductInventoryURL( sku ),
+      config.getGetProductVariationURL( sku ),
       getJSONHeaderBuilder().build()
     );
     
     return response;    
   }  
   
+    
+  /**
+   * Retrieve product variations exceptions by sku.
+   * 
+   * @param sku Product sku 
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetProductVariationGroup getProductVariations( final String sku )
+    throws APIException, JetException
+  {
+    checkSku( sku );
+    
+    try {
+      return JetProductVariationGroup.fromJSON( 
+        sku, 
+        sendGetProductVariations( sku ).getJsonObject()
+      );
+    } catch( ClassCastException e ) {
+      APILog.error( LOG, 
+        "Failed to convert variation_refinements or children_skus to a List" );
+      throw new JetException( e.getMessage(), e );
+    }
+  }
+
+
+  /**
+   * Retrieve a set of product shipping exceptions.
+   * @param sku Sku
+   * @return exceptions 
+   * @throws APIException 
+   * @throws JetException
+   */
+  public List<FNodeShipping> getShippingExceptions( final String sku )
+    throws APIException, JetException
+  {
+    checkSku( sku );
+    
+    final JsonArray nodes = sendGetProductShippingExceptions( sku )
+      .getJsonObject()
+      .getJsonArray( "fulfillment_nodes" );    
+    
+    final List<FNodeShipping> out = new ArrayList<>();
+    
+    if ( nodes == null )
+      return out;
+        
+    
+    for ( int i = 0; i < nodes.size(); i++ )
+    {
+      out.add( FNodeShipping.fromJSON( nodes.getJsonObject( i )));
+    }
+    
+    return out;
+    
+  }
   
- /**
+  
+  /**
    * Retrieve product returns exceptions by sku.
    * 
    * @param sku Product sku 
@@ -508,13 +569,150 @@ public class JetAPIProduct extends JetAPI
     APILog.info( LOG, "Sending GET product returns exceptions for sku:", sku );
     
     final JetAPIResponse response = get(
-      config.getGetProductInventoryURL( sku ),
+      config.getGetReturnsExceptionURL( sku ),
       getJSONHeaderBuilder().build()
     );
     
     return response;    
   }  
   
+  
+  /**
+   * Retrieve product returns exceptions by sku.
+   * 
+   * @param sku Product sku 
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public ReturnsExceptionRec getReturnsExceptions( final String sku )
+    throws APIException, JetException 
+  {
+    checkSku( sku );
+    
+    return ReturnsExceptionRec.fromJSON( 
+      sendGetProductReturnsExceptions( sku ).getJsonObject());
+  }
+  
+  
+  /**
+   * This call allows you visibility into the total number of SKUs you have 
+   * uploaded. Alternatively, the Partner Portal allows you to download a 
+   * CSV file of all SKUs.
+   * @param offset The first SKU # you wish to appear in the return
+   * @param limit The last SKU # you wish to appear in the return
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendGetSkuList( final int offset, final int limit )
+    throws APIException, JetException 
+  {
+    if ( offset < 0 )
+      throw new IllegalArgumentException( "offset cannot be less than zero" );
+    else if ( limit < 1 )
+      throw new IllegalArgumentException( "limit cannot be less than one" );
+    
+    APILog.info( LOG, "Sending GET sku list at (", String.valueOf( offset ), 
+       ".", String.valueOf( limit ), ")" );
+    
+    return get( 
+      config.getSkuListURL( offset, limit ),
+      getJSONHeaderBuilder().build()
+    );
+  }
+  
+  
+  /**
+   * This call allows you visibility into the total number of SKUs you have 
+   * uploaded. Alternatively, the Partner Portal allows you to download a 
+   * CSV file of all SKUs.
+   * @param offset The first SKU # you wish to appear in the return
+   * @param limit The last SKU # you wish to appear in the return
+   * @return api response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public List<String> getSkuList( final int offset, final int limit )
+    throws APIException, JetException 
+  {
+    //..This shouldn't be able to throw a NullPointerException, need to write tests.....
+    return Utils.jsonArrayToStringList( sendGetSkuList( offset, limit )
+      .getJsonObject().getJsonArray( "sku_urls" ));
+  }
+
+  
+  /**
+   * Get sales data.
+   *  
+   * Analyze how your individual product price (item and shipping price) compares 
+   * to the lowest individual product prices from the marketplace. These prices 
+   * are only provided for SKUs that have the status “Available for Sale”. If a 
+   * best price does not change, then the last_update time also will not change. 
+   * If your inventory is zero, then these prices will not continue to be updated 
+   * and will be stale. Note: It may take up to 24 hours to reflect any price 
+   * updates from you and the marketplace.
+   * 
+   * Product pricing is one factor that Jet uses to determine which retailer wins 
+   * a basket order. Jet determines what orders retailers will win based on the 
+   * the product prices of all products in the order, base commission on those 
+   * items as well as commission adjustments set via the Rules Engine. Commission 
+   * adjustments set via the Rules Engine can be very effective in optimizing 
+   * your win rate and profitability at the order level without having to have 
+   * the absolute lowest item and shipping prices.
+   * @param sku Product sku 
+   * @return data 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public JetAPIResponse sendGetSkuSalesData( final String sku )
+    throws APIException, JetException
+  {
+    checkSku( sku );
+    
+    return get(
+      config.getSalesDataBySkuURL( sku ),
+      getJSONHeaderBuilder().build()          
+    );
+  }
+  
+  
+  /**
+   * Get sales data.
+   *  
+   * Analyze how your individual product price (item and shipping price) compares 
+   * to the lowest individual product prices from the marketplace. These prices 
+   * are only provided for SKUs that have the status “Available for Sale”. If a 
+   * best price does not change, then the last_update time also will not change. 
+   * If your inventory is zero, then these prices will not continue to be updated 
+   * and will be stale. Note: It may take up to 24 hours to reflect any price 
+   * updates from you and the marketplace.
+   * 
+   * Product pricing is one factor that Jet uses to determine which retailer wins 
+   * a basket order. Jet determines what orders retailers will win based on the 
+   * the product prices of all products in the order, base commission on those 
+   * items as well as commission adjustments set via the Rules Engine. Commission 
+   * adjustments set via the Rules Engine can be very effective in optimizing 
+   * your win rate and profitability at the order level without having to have 
+   * the absolute lowest item and shipping prices.
+   * @param sku Product sku 
+   * @return data 
+   * @throws APIException
+   * @throws JetException 
+   */  
+  public ProductSalesDataRec getSkuSalesData( final String sku )
+    throws APIException, JetException
+  {
+    try {
+      return ProductSalesDataRec.fromJSON( sku, 
+        sendGetSkuSalesData( sku ).getJsonObject());
+    } catch( ParseException e ) {
+      APILog.error( LOG, "Failed to parse Jet sales data lastUpdate Date:", 
+        e.getMessage());
+      throw new JetException( "getSkuSalesData result was successful, "
+        + "but Sales data had an invalid lastUpdate date", e );
+    }    
+  }
   
 
   /**

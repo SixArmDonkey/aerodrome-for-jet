@@ -4,6 +4,7 @@ package com.sheepguru.jetimport.api.jet.product;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,13 +24,13 @@ public class ProductInventoryRec
   /**
    * A format for converting jet dates to a date
    */
-  private static final SimpleDateFormat FORMAT = new SimpleDateFormat( 
+  private final SimpleDateFormat FORMAT = new SimpleDateFormat( 
     "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSX", Locale.ENGLISH );    
   
   /**
    * An array of fulfillment nodes to set inventory
    */
-  private final List<FNodeInventory> nodes = new ArrayList<>();
+  private final List<FNodeInventory> nodes;
   
   /**
    * The last update
@@ -78,7 +79,7 @@ public class ProductInventoryRec
     else if ( lastUpdate == null || lastUpdate.isEmpty())
       throw new IllegalArgumentException( "lastUpdate cannot be null or empty" );
     
-    this.nodes.addAll( nodes );
+    this.nodes = Collections.unmodifiableList( new ArrayList<>( nodes ));
     this.lastUpdate = FORMAT.parse( lastUpdate );
   }
   

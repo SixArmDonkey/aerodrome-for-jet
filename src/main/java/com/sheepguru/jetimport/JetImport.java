@@ -7,6 +7,7 @@ import com.sheepguru.jetimport.api.jet.JetAPIAuth;
 import com.sheepguru.jetimport.api.jet.JetAuthException;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
+import com.sheepguru.jetimport.api.jet.JetException;
 import com.sheepguru.jetimport.api.jet.product.JetAPIProduct;
 import com.sheepguru.jetimport.api.jet.product.JetProduct;
 import com.sheepguru.jetimport.api.jet.product.ProductCode;
@@ -105,7 +106,7 @@ public class JetImport implements ExitCodes
     try {
       final JetAPIProduct product = new JetAPIProduct( client, jetConfig );
       
-      product.sendProduct( prod );    
+      product.addProduct( prod );    
       
       
       final String sku = "VIC!47520";
@@ -116,10 +117,21 @@ public class JetImport implements ExitCodes
       
       System.out.println( product.getProductInventory( sku ).getLastUpdate());
       
+      product.getProductVariations( sku );
+      product.getShippingExceptions( sku );
+      product.getReturnsExceptions( sku );
+      product.getSkuList( 0, 100 );
+      
+      try {
+        product.getSkuSalesData( sku );
+      } catch( JetException e ) {
+        //..no sales data for this sku
+        System.out.println( "No Sales data for " + sku );
+      }
+      
     } catch( Exception e ) {
       fail( "Failed to do product stuff", E_API_FAILURE, e );
     }
-
   }
 
   

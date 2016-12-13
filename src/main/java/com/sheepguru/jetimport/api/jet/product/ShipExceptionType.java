@@ -1,6 +1,8 @@
 
 package com.sheepguru.jetimport.api.jet.product;
 
+import static com.sheepguru.jetimport.api.jet.product.ShipExceptionType.values;
+
 /**
  * Shipping exception type for shipping exception item.
  * Indicates if you want the product to be shipped exclusively (only with) or
@@ -33,7 +35,26 @@ public enum ShipExceptionType
    */
   private final String val;
 
+  
+  /**
+   * Attempt to create a ShipExceptionType by text value 
+   * @param text value 
+   * @return code 
+   * @throws IllegalArgumentException if text is not found 
+   */
+  public static ShipExceptionType fromText( final String text )
+    throws IllegalArgumentException
+  {
+    for ( final ShipExceptionType c : values())
+    {
+      if ( c != null && c.getText().equalsIgnoreCase( text ))
+        return c;
+    }
+    
+    throw new IllegalArgumentException( "Invalid value " + text );
+  }      
 
+  
   /**
    * Create a new ShipExceptionType
    * @param val jet value
@@ -48,7 +69,7 @@ public enum ShipExceptionType
    * Retrieve the Jet API value
    * @return value
    */
-  public String getValue()
+  public String getText()
   {
     return val;
   }

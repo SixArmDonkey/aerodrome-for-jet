@@ -1,12 +1,13 @@
 package com.sheepguru.jetimport.api.jet.product;
 
+import com.sheepguru.utils.Money;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
@@ -21,18 +22,18 @@ public class ProductPriceRec
   /**
    * A format for converting jet dates to a date
    */
-  private static final SimpleDateFormat FORMAT = new SimpleDateFormat( 
+  private final SimpleDateFormat FORMAT = new SimpleDateFormat( 
     "yyyy-MM-dd'T'HH:mm:ssX", Locale.ENGLISH );
   
   /**
    * Fulfillment nodes 
    */
-  private final List<FNodePrice> fNodes = new ArrayList<>();
+  private final List<FNodePrice> fNodes;
   
   /**
    * Price from jet api 
    */
-  private final String price;
+  private final Money price;
   
   /**
    * Last update 
@@ -61,7 +62,7 @@ public class ProductPriceRec
     }
     
     return new ProductPriceRec(
-      json.getString( "price", "0" ),
+      new Money( json.getString( "price", "0" )),
       json.getString( "price_last_update", "" ),
       nodes
     );
@@ -81,11 +82,11 @@ public class ProductPriceRec
    * @param fNodes The price a retailer would like to set for this SKU sold at a fulfillment node
    * @throws ParseException if the date is invalid 
    */
-  public ProductPriceRec( final String price, final String lastUpdate, 
+  public ProductPriceRec( final Money price, final String lastUpdate, 
     final List<FNodePrice> fNodes ) throws ParseException 
   {
-    if ( price == null || price.isEmpty())
-      throw new IllegalArgumentException( "price cannot be null or empty" );
+    if ( price == null || price.lessThanZero())
+      throw new IllegalArgumentException( "price cannot be null or less than zero" );
     else if ( lastUpdate == null || lastUpdate.isEmpty())
       throw new IllegalArgumentException( "lastUpdate cannot be null or empty" );
     else if ( fNodes == null )
@@ -93,7 +94,7 @@ public class ProductPriceRec
     
     this.lastUpdate = FORMAT.parse( lastUpdate );
     this.price = price;
-    this.fNodes.addAll( fNodes );
+    this.fNodes = Collections.unmodifiableList( new ArrayList<>( fNodes ));
   }
   
   
@@ -113,7 +114,7 @@ public class ProductPriceRec
    * the shipping charge.
    * @return price 
    */
-  public String getPrice()
+  public Money getPrice()
   {
     return price;    
   }

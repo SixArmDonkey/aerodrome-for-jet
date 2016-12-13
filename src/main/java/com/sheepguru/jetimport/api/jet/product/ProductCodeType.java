@@ -36,7 +36,7 @@ public enum ProductCodeType
    * @return code 
    * @throws IllegalArgumentException if text is not found 
    */
-  public static ProductCodeType fromString( final String text )
+  public static ProductCodeType fromText( final String text )
     throws IllegalArgumentException
   {
     for ( final ProductCodeType c : values())
