@@ -12,6 +12,7 @@ import com.sheepguru.jetimport.api.jet.product.JetAPIProduct;
 import com.sheepguru.jetimport.api.jet.product.JetProduct;
 import com.sheepguru.jetimport.api.jet.product.ProductCode;
 import com.sheepguru.jetimport.api.jet.product.ProductCodeType;
+import com.sheepguru.utils.Money;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -95,8 +96,8 @@ public class JetImport implements ExitCodes
     prod.setTitle( "8\" Chefs Knife with Fibrox Handle" );
     prod.setProductDescription( "The Victorinox 47520 8\" Chefs Knife with Fibrox handle is a great chefs knife with a 2\" wide blade at the handle. The cutting edge is thin and extremely sharp. The blade is 8\" long." );
     prod.setMultipackQuantity( 1 );
-    prod.setMsrp( 44.99F );
-    prod.setPrice( 44.99F );
+    prod.setMsrp( new Money( "44.99" ));
+    prod.setPrice( new Money( "44.99" ));
     prod.setMainImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/image/650x650/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
     prod.setSwatchImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/thumbnail/65x65/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
     prod.setBrand( "Victorinox" );

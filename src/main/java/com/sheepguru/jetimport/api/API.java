@@ -192,7 +192,7 @@ public class API
    * @throws APIException If something goes wrong
    */
   public APIResponse post( final String url, final List<NameValuePair> formData, 
-    final Map<String,File> files ) throws APIException
+    final Map<String,PostFile> files ) throws APIException
   {
     return post( url, formData, files, null );
   }
@@ -208,7 +208,7 @@ public class API
    * @throws APIException If something goes wrong
    */
   public APIResponse post( final String url, final List<NameValuePair> formData, 
-      final Map<String,File> files, final Map<String,String> headers )
+      final Map<String,PostFile> files, final Map<String,String> headers )
       throws APIException
   {
     final HttpPost post = (HttpPost)createRequest( 
@@ -226,15 +226,22 @@ public class API
       for ( final String name : files.keySet())
       {
         //..Ensure the file exists
-        final File f = files.get( name );
-        if ( !f.exists())
+        final PostFile pf = files.get( name );
+        
+        if ( !pf.getFile().exists())
         {
           throw new IllegalArgumentException( 
-            f + " does not exist; cannot upload non-existent file." );
+            pf.getFile() + " (" + pf.getFilename() 
+              + ") does not exist; cannot upload non-existent file." );
         }
 
+        if ( LOG.isTraceEnabled())
+          APILog.trace( LOG, "Added file", pf.getFile(), "(", pf.getFilename(), ")" );
+        
+        b.addBinaryBody( name, pf.getFile(), pf.getContentType(), pf.getFilename());
+        
         //..Add the form part
-        b.addPart( name, new FileBody( f ));
+        //b.addPart( name, new FileBody( f ));
       }
     }
 

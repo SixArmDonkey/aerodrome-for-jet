@@ -3,6 +3,7 @@ package com.sheepguru.jetimport.api.jet.product;
 
 import com.sheepguru.jetimport.api.jet.Jsonable;
 import com.sheepguru.jetimport.api.jet.Utils;
+import com.sheepguru.utils.Money;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -250,12 +251,12 @@ public class JetProduct implements Jsonable
   /**
    * Manufacturer's suggested retail price or list price for the product.
    */
-  private float msrp = 0F;
+  private Money msrp = new Money();
 
   /**
    * The overall price that the merchant SKU is priced at
    */
-  private float price = 0F;
+  private Money price = new Money();
 
   /**
    * Fulfillment node prices
@@ -282,7 +283,7 @@ public class JetProduct implements Jsonable
    * left of the decimal point and 2 digits to the right of the decimal point.
    * Commas or currency symbols are not allowed.
    */
-  private float mapPrice = 0F;
+  private Money mapPrice = new Money();
 
   /**
    * The type of rule that indicates how Jet member savings are allowed to be
@@ -428,8 +429,8 @@ public class JetProduct implements Jsonable
     out.countryOfOrigin = json.getString( "country_of_origin", "" );
     out.safetyWarning = json.getString( "safety_warning", "" );
     out.fulfillmentTime = json.getInt( "fulfillment_time", 1 );
-    out.msrp = getJsonFloat( json.getJsonNumber( "msrp" ));
-    out.mapPrice = getJsonFloat( json.getJsonNumber( "map_price" ));
+    out.msrp = new Money( json.getString( "msrp", "0" ));
+    out.mapPrice = new Money( json.getString( "map_price", "0" ));
     out.mapImplementation = MAPType.fromJet( json.getString( "map_implementation", MAPType.NO_RESTRICTIONS.getType()));
     out.productTaxCode = ProductTaxCode.fromString( json.getString( "product_tax_code", "" ));
     out.noReturnFeeAdj = getJsonFloat( json.getJsonNumber( "no_return_fee_adjustment" ));
@@ -455,9 +456,7 @@ public class JetProduct implements Jsonable
     out.excludeFromFeeAdjustments = json.getBoolean( "exclude_from_fee_adjustments", false );
     out.merchantSku = json.getString( "merchant_sku", "" );
     out.merchantSkuId = json.getString( "merchant_sku_id", "" );    
-    final JsonNumber n = json.getJsonNumber( "msrp2" );
-    if ( n != null )
-      out.setMsrp( n.bigDecimalValue().floatValue());
+    out.setMsrp( new Money( json.getString( "msrp2", "0" )));
     out.producerId = json.getString( "producer_id", "" );
     out.shipsAlone = json.getBoolean( "ships_alone", false );
     try {
@@ -1282,7 +1281,7 @@ public class JetProduct implements Jsonable
    * Manufacturer's suggested retail price or list price for the product.
    * @return the msrp
    */
-  public float getMsrp() {
+  public Money getMsrp() {
     return msrp;
   }
 
@@ -1290,11 +1289,11 @@ public class JetProduct implements Jsonable
    * Manufacturer's suggested retail price or list price for the product.
    * @param msrp the msrp to set
    */
-  public void setMsrp(float msrp) {
-    if ( msrp < 0 )
-      throw new IllegalArgumentException( "msrp cannot be less than zero" );
+  public void setMsrp( Money msrp) {
+    if ( msrp == null || msrp.lessThanZero())
+      throw new IllegalArgumentException( "msrp cannot be null or less than zero" );
     
-    this.msrp = Utils.round( msrp, 2 );
+    this.msrp = msrp;
   }
 
 
@@ -1303,7 +1302,7 @@ public class JetProduct implements Jsonable
    * (if applicable, see map_implementation)
    * @return the map price
    */
-  public float getMapPrice() {
+  public Money getMapPrice() {
     return mapPrice;
   }
 
@@ -1312,8 +1311,11 @@ public class JetProduct implements Jsonable
    * (if applicable, see map_implementation)
    * @param map the map to set
    */
-  public void setMapPrice(float map) {
-    mapPrice = Utils.round( map, 2 );
+  public void setMapPrice( Money map) {
+    if ( map == null || map.lessThanZero())
+      throw new IllegalArgumentException( "map cannot be null or less than zero" );
+    
+    mapPrice = map;
   }
 
 
@@ -1562,7 +1564,7 @@ public class JetProduct implements Jsonable
    * The overall price that the merchant SKU is priced at
    * @return the price
    */
-  public float getPrice() {
+  public Money getPrice() {
     return price;
   }
 
@@ -1570,8 +1572,11 @@ public class JetProduct implements Jsonable
    * The overall price that the merchant SKU is priced at
    * @param price the price to set
    */
-  public void setPrice(float price) {
-    this.price = Utils.round( price, 2 );
+  public void setPrice( Money price) {
+    if ( price  == null || price.lessThanZero())
+      throw new IllegalArgumentException( "price cannot be null or less than zero" );
+    
+    this.price = price;
   }
 
   /**
@@ -1700,7 +1705,7 @@ public class JetProduct implements Jsonable
   public JsonObject toPriceJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
-      .add( "price", price );
+      .add( "price", price.asBigDecimal().floatValue());
 
     if ( !fNodePrices.isEmpty())
       o.add( "fulfillment_nodes", fNodesToJSON());
@@ -1775,7 +1780,7 @@ public class JetProduct implements Jsonable
     
     if ( mapImplementation.equals( MAPType.LOGGED_IN ))
     {
-      if ( mapPrice <= 0 )
+      if ( mapPrice.lessThanEqualToZero())
         throw new ValidateException( "When map implementation is Logged In (102), you must specify a map price" );      
     }
     
@@ -1886,11 +1891,11 @@ public class JetProduct implements Jsonable
       if ( fulfillmentTime > 0 )
         o.add( "fulfillment_time", fulfillmentTime );
 
-      if ( msrp > 0 )
-        o.add( "msrp", msrp );
+      if ( msrp.greaterThanZero())
+        o.add( "msrp", msrp.asBigDecimal().floatValue());
 
-      if ( mapPrice > 0 )
-        o.add( "map_price", mapPrice );
+      if ( mapPrice.greaterThanZero())
+        o.add( "map_price", mapPrice.asBigDecimal().floatValue());
 
       o.add( "map_implementation", mapImplementation.getType());
 
