@@ -2,6 +2,8 @@
 
 While this is still in development, all of the Authentication and Product API calls are complete and working.
 
+Bulk uploads now work - merchant sku's tested, need to test the other types.
+
 The source is completely documented, so you can generate the Javadoc.
 
 There is a makeshift test set up in the Main class, see that for usage for now.  

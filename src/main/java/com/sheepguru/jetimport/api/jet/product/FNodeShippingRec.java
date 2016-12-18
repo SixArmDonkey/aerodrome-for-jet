@@ -16,7 +16,7 @@ import javax.json.JsonObject;
  * A shipping exception node for shipping exceptions
  * @author John Quinn
  */
-public class FNodeShipping implements Jsonable
+public class FNodeShippingRec implements Jsonable
 {
   /**
    * Shipping node id
@@ -26,7 +26,7 @@ public class FNodeShipping implements Jsonable
   /**
    * Ship exception data
    */
-  private final List<ShippingException> data;
+  private final List<ShippingExceptionRec> data;
 
   
   /**
@@ -34,7 +34,7 @@ public class FNodeShipping implements Jsonable
    * @param json JSON 
    * @return object 
    */
-  public static FNodeShipping fromJSON( final JsonObject json )
+  public static FNodeShippingRec fromJSON( final JsonObject json )
   {
     Utils.checkNull( json, "json" );
     
@@ -45,14 +45,14 @@ public class FNodeShipping implements Jsonable
         "json does not contain shipping_exceptions property (array)" );
     }
     
-    final List<ShippingException> ex = new ArrayList<>();
+    final List<ShippingExceptionRec> ex = new ArrayList<>();
     
     for ( int i = 0; i < nodes.size(); i++ )
     {
-      ex.add( ShippingException.fromJSON( nodes.getJsonObject( i )));
+      ex.add( ShippingExceptionRec.fromJSON( nodes.getJsonObject( i )));
     }
     
-    return new FNodeShipping( json.getString( "fulfillment_node_id", "" ), ex );
+    return new FNodeShippingRec( json.getString( "fulfillment_node_id", "" ), ex );
   }
   
 
@@ -61,12 +61,12 @@ public class FNodeShipping implements Jsonable
    * @param nodeId Node id
    * @throws IllegalArgumentException
    */
-  public FNodeShipping( final String nodeId )
+  public FNodeShippingRec( final String nodeId )
   {
     Utils.checkNullEmpty( nodeId, "nodeId" );
     
     this.nodeId = nodeId;    
-    this.data = Collections.unmodifiableList( new ArrayList<ShippingException>());
+    this.data = Collections.unmodifiableList( new ArrayList<ShippingExceptionRec>());
   }
   
   
@@ -76,7 +76,7 @@ public class FNodeShipping implements Jsonable
    * @param exceptions Shipping Exceptions 
    * @throws IllegalArgumentException
    */
-  public FNodeShipping( final String nodeId, final List<ShippingException> exceptions )
+  public FNodeShippingRec( final String nodeId, final List<ShippingExceptionRec> exceptions )
   {
     Utils.checkNullEmpty( nodeId, "nodeId" );
     
@@ -91,7 +91,7 @@ public class FNodeShipping implements Jsonable
    * Adds an item
    * @param data data to add
    */
-  public void addItem( final ShippingException data )
+  public void addItem( final ShippingExceptionRec data )
   {
     this.data.add( data );
   }
@@ -101,7 +101,7 @@ public class FNodeShipping implements Jsonable
    * Retrieve the item data
    * @return data
    */
-  public List<ShippingException> getItemData()
+  public List<ShippingExceptionRec> getItemData()
   {
     return data;
   }
@@ -139,7 +139,7 @@ public class FNodeShipping implements Jsonable
   {
     JsonArrayBuilder a = Json.createArrayBuilder();
 
-    for ( ShippingException item : data )
+    for ( ShippingExceptionRec item : data )
     {
       if ( item == null )
         continue;

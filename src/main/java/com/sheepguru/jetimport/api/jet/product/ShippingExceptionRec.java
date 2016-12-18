@@ -14,7 +14,7 @@ import javax.json.JsonObjectBuilder;
  * 
  * @author John Quinn
  */
-public class ShippingException implements Jsonable
+public class ShippingExceptionRec implements Jsonable
 {
   /**
    * Generic descriptions of shipment delivery times
@@ -65,7 +65,7 @@ public class ShippingException implements Jsonable
    * @param shippingChargeAmount Shipping charge
    * @param shippingExceptionType Exception Type 
    */
-  public ShippingException( 
+  public ShippingExceptionRec( 
     final ServiceLevel serviceLevel,
     final ShippingMethod shippingMethod,
     final ShipOverrideType overrideType,
@@ -149,11 +149,11 @@ public class ShippingException implements Jsonable
   }
 
   
-  public static ShippingException fromJSON( final JsonObject o )
+  public static ShippingExceptionRec fromJSON( final JsonObject o )
   {
     Utils.checkNull( o, "o" );
     
-    return new ShippingException(
+    return new ShippingExceptionRec(
       ServiceLevel.fromText( o.getString( "service_level", "" )),
       ShippingMethod.fromText( o.getString( "shipping_method", "" )),
       ShipOverrideType.fromText( o.getString( "override_type", "" )),

@@ -3,23 +3,31 @@ package com.sheepguru.jetimport;
 
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
+import com.sheepguru.jetimport.api.PostFile;
 import com.sheepguru.jetimport.api.jet.JetAPIAuth;
+import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetAuthException;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
 import com.sheepguru.jetimport.api.jet.JetException;
+import com.sheepguru.jetimport.api.jet.product.BulkUploadAuthRec;
+import com.sheepguru.jetimport.api.jet.product.BulkUploadFileType;
+import com.sheepguru.jetimport.api.jet.product.FNodeInventoryRec;
 import com.sheepguru.jetimport.api.jet.product.JetAPIBulkProductUpload;
 import com.sheepguru.jetimport.api.jet.product.JetAPIProduct;
-import com.sheepguru.jetimport.api.jet.product.JetProduct;
-import com.sheepguru.jetimport.api.jet.product.ProductCode;
+import com.sheepguru.jetimport.api.jet.product.ProductRec;
+import com.sheepguru.jetimport.api.jet.product.ProductCodeRec;
 import com.sheepguru.jetimport.api.jet.product.ProductCodeType;
 import com.sheepguru.utils.Money;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.json.JsonObject;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
@@ -27,6 +35,7 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.entity.ContentType;
 
 
 /**
@@ -78,12 +87,12 @@ public class JetImport implements ExitCodes
     
     
     //..test adding a product 
-    //testAddProduct( product );
+    testAddProduct( product );
     
     //..Test a few functions for retrieving data
-    //testGetProductData( product );
+    testGetProductData( product );
     
-    testUpload( client, jetConfig );
+    //testUpload( client, jetConfig );
     
   }
 
@@ -374,9 +383,9 @@ public class JetImport implements ExitCodes
   
   
   
-  private static JetProduct getTestProduct()
+  private static ProductRec getTestProduct()
   {
-    final JetProduct prod = new JetProduct();
+    final ProductRec prod = new ProductRec();
     prod.setMerchantSku( sku );
     prod.setTitle( "8\" Chefs Knife with Fibrox Handle" );
     prod.setProductDescription( "The Victorinox 47520 8\" Chefs Knife with Fibrox handle is a great chefs knife with a 2\" wide blade at the handle. The cutting edge is thin and extremely sharp. The blade is 8\" long." );
@@ -386,8 +395,9 @@ public class JetImport implements ExitCodes
     prod.setMainImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/image/650x650/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
     prod.setSwatchImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/thumbnail/65x65/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
     prod.setBrand( "Victorinox" );
+    prod.setfNodeInventory( new FNodeInventoryRec( "5b7c27bd5bc247be912190096ec61101", 1 ));
     
-    prod.setProductCode( new ProductCode( "046928475209", ProductCodeType.UPC ));
+    prod.setProductCode(new ProductCodeRec( "046928475209", ProductCodeType.UPC ));
 
     return prod;    
   }
@@ -418,7 +428,7 @@ public class JetImport implements ExitCodes
     
   {
     try {
-      final JetProduct res = product.getProduct( sku );
+      final ProductRec res = product.getProduct( sku );
       System.out.println( res.toJSON() );
 
       System.out.println( product.getProductPrice( sku ).getPrice());
@@ -448,16 +458,50 @@ public class JetImport implements ExitCodes
   
   private static void testUpload( final APIHttpClient client, final JetConfig config )
   {
+    
+    
     final JetAPIBulkProductUpload up = new JetAPIBulkProductUpload( client, config );
     
-    List<JetProduct> products = new ArrayList<>();
+    List<ProductRec> products = new ArrayList<>();
     products.add( getTestProduct());
+    
+    try {
+      //..The local filename to write the bulk product data to
+      final File file = new File( "/home/john/jetproducttext.json.gz" );
+      
+      //..Write the product json to a gzip file
+      up.generateBulkSkuUploadFile( products, file );
+            
+      //..Get authorization to upload a file
+      final BulkUploadAuthRec uploadToken = up.getUploadToken();
+      
+      //..Sends the authorized gzip file to the url specified in the uploadToken response.
+      up.sendAuthorizedFile( uploadToken.getUrl(), new PostFile( file, ContentType.create( "application/x-gzip" ), "gzip", uploadToken.getJetFileId()));
+      
+      //..If you want to add an additional file to an existing authorization token/processing batch on jet, create a new PostFile instance for the new file
+      final PostFile pf = new PostFile( file, ContentType.DEFAULT_BINARY, "gzip", file.getName());
+      
+      //..Post the request for a file addition to 
+      JsonObject addRes = up.sendPostUploadedFiles(uploadToken.getUrl(), pf, BulkUploadFileType.MERCHANT_SKUS ).getJsonObject();
+      
+      //..Send the next file up to the batch 
+      up.sendAuthorizedFile( addRes.getString( "url" ), pf );
+      
+      //..Get some stats for an uploaded file 
+      up.getJetFileId( uploadToken.getJetFileId());
+      
+      //..And get some stats for the other uploaded file.
+      up.getJetFileId( addRes.getString( "jet_file_id" ));
+      
+    } catch( Exception e ) {
+      fail( "Failed to bulk", E_API_FAILURE, e );
+    }
     
     
     
     
     try {
-      System.out.println( up.getUploadToken().getUrl());
+      //System.out.println( up.getUploadToken().getUrl());
     } catch( Exception e ) {
       fail( "failed to do upload stuff", E_API_FAILURE, e );
     }

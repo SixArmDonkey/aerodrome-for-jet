@@ -9,7 +9,7 @@ import javax.json.JsonObject;
  * Product Codes attached to this product
  * @author John Quinn
  */
-public class ProductCode implements Comparable, Jsonable
+public class ProductCodeRec implements Comparable, Jsonable
 {
   /**
    * A standard, unique identifier for a product. ISBN-10, ISBN-13, UPC,
@@ -39,7 +39,7 @@ public class ProductCode implements Comparable, Jsonable
    * @param type The code type
    * @throws IllegalArgumentException
    */
-  public ProductCode( final String code, final ProductCodeType type )
+  public ProductCodeRec( final String code, final ProductCodeType type )
   {
     if ( code.trim().isEmpty())
       throw new IllegalArgumentException( "code cannot be empty" );
@@ -86,7 +86,7 @@ public class ProductCode implements Comparable, Jsonable
   @Override
   public int compareTo( Object code )
   {
-    ProductCode c1 = (ProductCode)code;
+    ProductCodeRec c1 = (ProductCodeRec)code;
 
     if ( standardProductCodeType.getSort() > c1.getProductCodeType().getSort())
       return 1;

@@ -25,18 +25,24 @@ public class PostFile
    */
   private final String filename;
   
+  private final String contentEncoding;
   
-  public PostFile( final File file, final ContentType contentType, final String filename )
+  
+  public PostFile( final File file, final ContentType contentType, 
+    final String contentEncoding, final String filename )
   {
     if ( file == null )
       throw new IllegalArgumentException( "file cannot be null" );
     else if ( contentType == null )
       throw new IllegalArgumentException( "contentType cannot be null" );
+    else if ( contentEncoding == null )
+      throw new IllegalArgumentException( "contentEncoding cannot be null" );
     else if ( filename == null )
       throw new IllegalArgumentException( "filename cannot be null" );
     
     this.file = file;
     this.contentType = contentType;
+    this.contentEncoding = contentEncoding;
     this.filename = filename;
   }
   
@@ -55,5 +61,22 @@ public class PostFile
   public String getFilename()
   {
     return filename;
+  }
+  
+  
+  public boolean hasFilename()
+  {
+    return !filename.isEmpty();
+  }
+  
+  
+  public boolean hasContentEncoding()
+  {
+    return !contentEncoding.isEmpty();
+  }
+  
+  public String getContentEncoding()
+  {
+    return contentEncoding;
   }
 }

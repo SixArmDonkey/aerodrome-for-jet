@@ -32,6 +32,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -189,7 +191,49 @@ public class API
     return post( url, formData, files, null );
   }
 
+ 
+  private void setMultipartFileData( final Map<String,PostFile> files, 
+    final MultipartEntityBuilder builder )
+  {
+    //..Check for input files
+    if ( files == null || builder == null )
+      return;    
+    
+    for ( final String name : files.keySet())
+    {
+      //..Ensure the file exists
+      final PostFile pf = files.get( name );
 
+      if ( !pf.getFile().exists())
+      {
+        throw new IllegalArgumentException( 
+          pf.getFile() + " (" + pf.getFilename() 
+            + ") does not exist; cannot upload non-existent file." );
+      }
+
+      APILog.trace( LOG, "Added file", pf.getFile(), "(", pf.getFilename(), ")" );
+
+      builder.addBinaryBody( name, pf.getFile(), pf.getContentType(), pf.getFilename());
+    }
+  }
+  
+  
+  private void setMultipartFormData( final List<NameValuePair> formData,
+    final MultipartEntityBuilder builder )
+  {
+    if ( formData == null )
+      return;
+    
+    for ( final NameValuePair pair : formData )
+    {
+      //..Add the text
+      builder.addTextBody( pair.getName(), pair.getValue());
+
+      APILog.trace( LOG, pair.getName(), ":", pair.getValue());
+    }
+  }
+  
+    
   /**
    * Perform a post-based request to some endpoint
    * @param url The URL
@@ -212,52 +256,16 @@ public class API
     //..Set the mode
     b.setMode( HttpMultipartMode.BROWSER_COMPATIBLE );
 
-    //..Check for input files
-    if ( files != null )
-    {
-      for ( final String name : files.keySet())
-      {
-        //..Ensure the file exists
-        final PostFile pf = files.get( name );
-        
-        if ( !pf.getFile().exists())
-        {
-          throw new IllegalArgumentException( 
-            pf.getFile() + " (" + pf.getFilename() 
-              + ") does not exist; cannot upload non-existent file." );
-        }
-
-        if ( LOG.isTraceEnabled())
-          APILog.trace( LOG, "Added file", pf.getFile(), "(", pf.getFilename(), ")" );
-        
-        b.addBinaryBody( name, pf.getFile(), pf.getContentType(), pf.getFilename());
-        
-        //..Add the form part
-        //b.addPart( name, new FileBody( f ));
-      }
-    }
+    setMultipartFileData( files, b );
 
     //..Check for non-file form data
-    if ( formData != null )
-    {
-      for ( final NameValuePair pair : formData )
-      {
-        //..Add the text
-        b.addTextBody( pair.getName(), pair.getValue());
-        
-        if ( LOG.isTraceEnabled())
-        {
-          APILog.trace( LOG, pair.getName(), ":", pair.getValue());
-        }
-      }
-    }
+    setMultipartFormData( formData, b );
 
     //..Attach the form data to the post request
     post.setEntity( b.build());
 
     //..Execute the request
     return executeRequest( post );
-
   }
 
 
@@ -290,19 +298,64 @@ public class API
     final HttpPost post = (HttpPost)createRequest( 
       REQUEST_TYPE.POST, url, headers );
 
-    //..Add the payload
-    try {
-      post.setEntity( new StringEntity( payload ));
-      
-      if ( LOG.isTraceEnabled())
+
+    if ( payload != null )
+    {
+      //..Add the payload
+      try {
+        post.setEntity( new StringEntity( payload ));
+
         APILog.trace( LOG, payload );
-    } catch( UnsupportedEncodingException e ) {
-      throw new APIException( "Unsupported payload encoding", e );
+      } catch( UnsupportedEncodingException e ) {
+        throw new APIException( "Unsupported payload encoding", e );
+      }
     }
 
     //..Execute the request
     return executeRequest( post );
   }
+  
+  
+  /**
+   * Perform a put-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  public APIResponse post( final String url, final InputStream payload,
+    final long contentLength, final ContentType contentType, 
+    final Map<String,String> headers ) throws APIException
+  {
+    //..Create the new put request
+    final HttpPost post = (HttpPost)createRequest( 
+      REQUEST_TYPE.POST, url, headers );
+
+    //..Set the put payload
+    post.setEntity( new InputStreamEntity( payload, contentLength, contentType ));
+
+    APILog.trace( LOG, payload );
+
+    //..Execute the request
+    return executeRequest( post );
+  }
+  
+  
+  public APIResponse post( final String url, final PostFile file, Map<String,String> headers ) throws APIException
+  {
+    final FileEntity entity = new FileEntity( file.getFile(), file.getContentType());
+    if ( file.hasContentEncoding())
+      entity.setContentEncoding( file.getContentEncoding());
+    
+    final HttpPost post = (HttpPost)createRequest( REQUEST_TYPE.POST, url, headers );
+    post.setEntity( entity );
+    APILog.trace( LOG, entity.toString());
+    
+    return executeRequest( post );
+    
+  }
+  
 
 
   /**
@@ -338,8 +391,7 @@ public class API
     try {
       put.setEntity( new StringEntity( payload ));
       
-      if ( LOG.isTraceEnabled())
-        APILog.trace( LOG, payload );
+      APILog.trace( LOG, payload );
       
     } catch( UnsupportedEncodingException e ) {
       throw new APIException( 
@@ -349,6 +401,53 @@ public class API
     //..Execute the request
     return executeRequest( put );
   }
+  
+  
+  /**
+   * Perform a put-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  public APIResponse put( final String url, final InputStream payload,
+    final long contentLength, final ContentType contentType, 
+    final Map<String,String> headers ) throws APIException
+  {
+    //..Create the new put request
+    final HttpPut put = (HttpPut)createRequest( 
+      REQUEST_TYPE.PUT, url, headers );
+
+    //..Set the put payload
+    put.setEntity( new InputStreamEntity( payload, contentLength, contentType ));
+
+    APILog.trace( LOG, payload );
+
+    //..Execute the request
+    return executeRequest( put );
+  }
+  
+  
+  public APIResponse put( final String url, final PostFile file, Map<String,String> headers ) throws APIException
+  {
+    final FileEntity entity = new FileEntity( file.getFile(), file.getContentType());
+    if ( file.hasContentEncoding())
+      entity.setContentEncoding( file.getContentEncoding());
+    
+    //..Create the new put request
+    final HttpPut put = (HttpPut)createRequest( 
+      REQUEST_TYPE.PUT, url, headers );
+
+    //..Set the put payload
+    put.setEntity( entity );
+
+    APILog.trace( LOG, entity.toString());
+
+    //..Execute the request
+    return executeRequest( put );
+    
+  }  
 
   
   /**
@@ -418,7 +517,8 @@ public class API
       
       //..Overwrite the host if necessary 
       if ( lockHost && client.getHost().getHost() != null 
-        && !client.getHost().getHost().isEmpty())
+        && !client.getHost().getHost().isEmpty()
+        && !url.startsWith( "http://" ) && !url.startsWith( "https://" )) //..Kind of stupid, but I didn't think ahead on this one.
       {
         b.setHost( client.getHost().getHost())
         .setPort( client.getHost().getPort())

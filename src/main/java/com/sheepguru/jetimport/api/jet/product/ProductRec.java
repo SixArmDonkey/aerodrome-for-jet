@@ -36,7 +36,7 @@ import javax.json.JsonValue;
  *
  * @author John Quinn
  */
-public class JetProduct implements Jsonable
+public class ProductRec implements Jsonable
 {
   /**
    * A date format
@@ -71,7 +71,7 @@ public class JetProduct implements Jsonable
   /**
    * Product codes
    */
-  private final List<ProductCode> productCodes = new ArrayList<>();
+  private final List<ProductCodeRec> productCodes = new ArrayList<>();
 
   /**
    * ASIN Number.
@@ -261,12 +261,12 @@ public class JetProduct implements Jsonable
   /**
    * Fulfillment node prices
    */
-  private final List<FNodePrice> fNodePrices = new ArrayList<>();
+  private final List<FNodePriceRec> fNodePrices = new ArrayList<>();
 
   /**
    * Fulfillment node ivnentory
    */
-  private final List<FNodeInventory> fNodeInventory = new ArrayList<>();
+  private final List<FNodeInventoryRec> fNodeInventory = new ArrayList<>();
 
   /**
    * The unique ID for an individually selectable product for sale on Jet.com.
@@ -324,7 +324,7 @@ public class JetProduct implements Jsonable
   /**
    * This is not documented
    */
-  private final List<SkuAttribute> attributesNodeSpecific = new ArrayList<>();
+  private final List<SkuAttributeRec> attributesNodeSpecific = new ArrayList<>();
 
   /**
    * A set of alternate image slots and locations
@@ -359,7 +359,7 @@ public class JetProduct implements Jsonable
   /**
    * Shipping exception node list
    */
-  private final List<FNodeShipping> shippingExceptionNodes = new ArrayList<>();
+  private final List<FNodeShippingRec> shippingExceptionNodes = new ArrayList<>();
 
   /**
    * From Product Get response
@@ -397,9 +397,9 @@ public class JetProduct implements Jsonable
    * @param json Json
    * @return product data
    */
-  public static JetProduct fromJSON( final JsonObject json )
+  public static ProductRec fromJSON( final JsonObject json )
   {
-    final JetProduct out = new JetProduct();
+    final ProductRec out = new ProductRec();
 
     if ( json == null )
       return out;
@@ -483,7 +483,7 @@ public class JetProduct implements Jsonable
   /**
    * Create a new JetProductRec Instance
    */
-  public JetProduct()
+  public ProductRec()
   {
     setStartSellingDate( new Date());
   }
@@ -563,7 +563,7 @@ public class JetProduct implements Jsonable
 
     Collections.sort( productCodes );
 
-    for ( ProductCode p : productCodes )
+    for ( ProductCodeRec p : productCodes )
     {
       skus.add( p.getProductCode());
     }
@@ -735,7 +735,7 @@ public class JetProduct implements Jsonable
    * Product codes
    * @return the productCodes
    */
-  public List<ProductCode> getProductCodes() {
+  public List<ProductCodeRec> getProductCodes() {
     return productCodes;
   }
 
@@ -743,7 +743,7 @@ public class JetProduct implements Jsonable
    * Add a set of product codes
    * @param productCodes the productCodes to set
    */
-  public void setProductCodes( List<ProductCode> productCodes ) {
+  public void setProductCodes( List<ProductCodeRec> productCodes ) {
     this.productCodes.addAll( productCodes );
   }
 
@@ -751,7 +751,7 @@ public class JetProduct implements Jsonable
    * Add a single product code
    * @param productCode the productCode to set
    */
-  public void setProductCode( ProductCode productCode ) {
+  public void setProductCode( ProductCodeRec productCode ) {
     this.productCodes.add( productCode );
   }
 
@@ -1455,7 +1455,7 @@ public class JetProduct implements Jsonable
    * This is not documented
    * @return the attributesNodeSpecific
    */
-  public List<SkuAttribute> getAttributesNodeSpecific() {
+  public List<SkuAttributeRec> getAttributesNodeSpecific() {
     return attributesNodeSpecific;
   }
 
@@ -1463,7 +1463,7 @@ public class JetProduct implements Jsonable
    * This is not documented
    * @param attributesNodeSpecific the attributesNodeSpecific to set
    */
-  public void setAttributesNodeSpecific(List<SkuAttribute> attributesNodeSpecific) {
+  public void setAttributesNodeSpecific(List<SkuAttributeRec> attributesNodeSpecific) {
     this.attributesNodeSpecific.addAll( attributesNodeSpecific );
   }
 
@@ -1472,7 +1472,7 @@ public class JetProduct implements Jsonable
    * This is not documented
    * @param attributesNodeSpecific the attributesNodeSpecific to set
    */
-  public void setAttributesNodeSpecific( SkuAttribute attributesNodeSpecific) {
+  public void setAttributesNodeSpecific( SkuAttributeRec attributesNodeSpecific) {
     this.attributesNodeSpecific.add( attributesNodeSpecific );
   }
 
@@ -1583,7 +1583,7 @@ public class JetProduct implements Jsonable
    * Fulfillment node prices
    * @return the fNodePrices
    */
-  public List<FNodePrice> getfNodePrices() {
+  public List<FNodePriceRec> getfNodePrices() {
     return fNodePrices;
   }
 
@@ -1591,7 +1591,7 @@ public class JetProduct implements Jsonable
    * Fulfillment node prices
    * @param fNodePrices the fNodePrices to set
    */
-  public void setfNodePrices(List<FNodePrice> fNodePrices) {
+  public void setfNodePrices(List<FNodePriceRec> fNodePrices) {
     this.fNodePrices.addAll( fNodePrices );
   }
 
@@ -1599,7 +1599,7 @@ public class JetProduct implements Jsonable
    * Fulfillment node prices
    * @param fNodePrices the fNodePrices to set
    */
-  public void setfNodePrices( FNodePrice fNodePrices) {
+  public void setfNodePrices( FNodePriceRec fNodePrices) {
     this.fNodePrices.add( fNodePrices );
   }
 
@@ -1607,7 +1607,7 @@ public class JetProduct implements Jsonable
    * Fulfillment node inventory
    * @return the fNodeInventory
    */
-  public List<FNodeInventory> getfNodeInventory() {
+  public List<FNodeInventoryRec> getfNodeInventory() {
     return fNodeInventory;
   }
 
@@ -1615,7 +1615,7 @@ public class JetProduct implements Jsonable
    * Fulfillment node inventory
    * @param fNodeInventory the fNodeInventory to set
    */
-  public void setfNodeInventory(List<FNodeInventory> fNodeInventory) {
+  public void setfNodeInventory(List<FNodeInventoryRec> fNodeInventory) {
     this.fNodeInventory.addAll( fNodeInventory );
   }
 
@@ -1623,7 +1623,7 @@ public class JetProduct implements Jsonable
    * Fulfillment node inventory
    * @param fNodeInventory the fNodeInventory to set
    */
-  public void setfNodeInventory( FNodeInventory fNodeInventory) {
+  public void setfNodeInventory( FNodeInventoryRec fNodeInventory) {
     this.fNodeInventory.add( fNodeInventory );
   }
 
@@ -1632,7 +1632,7 @@ public class JetProduct implements Jsonable
    * Add a list of shipping exception nodes
    * @param nodes nodes to add
    */
-  public void setShippingExceptionNodes( List<FNodeShipping> nodes )
+  public void setShippingExceptionNodes( List<FNodeShippingRec> nodes )
   {
     this.shippingExceptionNodes.addAll( nodes );
   }
@@ -1642,7 +1642,7 @@ public class JetProduct implements Jsonable
    * Add a shipping exception node
    * @param node node to add
    */
-  public void setShippingExceptionNodes( FNodeShipping node )
+  public void setShippingExceptionNodes( FNodeShippingRec node )
   {
     this.shippingExceptionNodes.add( node );
   }
@@ -1652,7 +1652,7 @@ public class JetProduct implements Jsonable
    * Retrieve the shipping exception node list
    * @return node list
    */
-  public List<FNodeShipping> getShippingExceptionNodes()
+  public List<FNodeShippingRec> getShippingExceptionNodes()
   {
     return shippingExceptionNodes;
   }
@@ -1674,6 +1674,8 @@ public class JetProduct implements Jsonable
       if ( !productCodes.isEmpty())
         o.add( "standard_product_codes", productCodesToJSON());
 
+      
+      
       return o.build();
   }
 
@@ -1956,16 +1958,16 @@ public class JetProduct implements Jsonable
    * @param a array 
    * @return list
    */
-  private static List<ProductCode> loadProductCodes( final JsonArray a )
+  private static List<ProductCodeRec> loadProductCodes( final JsonArray a )
   {
-    final List<ProductCode> out = new ArrayList<>();
+    final List<ProductCodeRec> out = new ArrayList<>();
     if ( a == null )
       return out;
     
     for ( int i = 0; i < a.size(); i++ )
     {
       final JsonObject o = a.getJsonObject( i );
-      out.add( new ProductCode( o.getString( "standard_product_code", "" ), 
+      out.add( new ProductCodeRec( o.getString( "standard_product_code", "" ), 
         ProductCodeType.fromText( o.getString( "standard_product_code_type", "" ))));
     }
     
@@ -2016,16 +2018,16 @@ public class JetProduct implements Jsonable
   
 
   
-  private static List<SkuAttribute> loadAttrNodeSpecific( final JsonArray a )
+  private static List<SkuAttributeRec> loadAttrNodeSpecific( final JsonArray a )
   {
-    final List<SkuAttribute> out = new ArrayList<>();
+    final List<SkuAttributeRec> out = new ArrayList<>();
     if ( a == null )
       return out;
     
     for ( int i = 0; i < a.size(); i++ )
     {
       final JsonObject o = a.getJsonObject( i );
-      out.add( new SkuAttribute( 
+      out.add( new SkuAttributeRec( 
         o.getInt( "attribute_id", 0 ), 
         o.getString( "attribute_value", "" ), 
         o.getString( "attribute_value_unit", "" ))
@@ -2068,7 +2070,7 @@ public class JetProduct implements Jsonable
   {
     final JsonArrayBuilder obj = Json.createArrayBuilder();
 
-    for ( ProductCode code : productCodes )
+    for ( ProductCodeRec code : productCodes )
     {
       if ( code == null )
         continue;
@@ -2135,7 +2137,7 @@ public class JetProduct implements Jsonable
   {
     final JsonArrayBuilder obj = Json.createArrayBuilder();
 
-    for ( SkuAttribute a : attributesNodeSpecific )
+    for ( SkuAttributeRec a : attributesNodeSpecific )
     {
       if ( a == null )
         continue;
@@ -2155,7 +2157,7 @@ public class JetProduct implements Jsonable
   {
     final JsonArrayBuilder obj = Json.createArrayBuilder();
 
-    for ( FNodePrice p : fNodePrices )
+    for ( FNodePriceRec p : fNodePrices )
     {
       if ( p == null )
         continue;
@@ -2176,7 +2178,7 @@ public class JetProduct implements Jsonable
   {
     final JsonArrayBuilder obj = Json.createArrayBuilder();
 
-    for ( FNodeInventory p : fNodeInventory )
+    for ( FNodeInventoryRec p : fNodeInventory )
     {
       if ( p == null )
         continue;
@@ -2196,7 +2198,7 @@ public class JetProduct implements Jsonable
   {
     final JsonArrayBuilder a = Json.createArrayBuilder();
 
-    for ( FNodeShipping n : shippingExceptionNodes )
+    for ( FNodeShippingRec n : shippingExceptionNodes )
     {
       if ( n == null )
         continue;

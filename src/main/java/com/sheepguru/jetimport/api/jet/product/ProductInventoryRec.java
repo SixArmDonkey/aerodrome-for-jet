@@ -19,7 +19,7 @@ import javax.json.JsonObject;
  * 
  * @author John Quinn
  */
-public class ProductInventory 
+public class ProductInventoryRec 
 {
   /**
    * A format for converting jet dates to a date
@@ -30,7 +30,7 @@ public class ProductInventory
   /**
    * An array of fulfillment nodes to set inventory
    */
-  private final List<FNodeInventory> nodes;
+  private final List<FNodeInventoryRec> nodes;
   
   /**
    * The last update
@@ -44,24 +44,24 @@ public class ProductInventory
    * @return Object 
    * @throws ParseException if the date can't be formatted 
    */
-  public static ProductInventory fromJSON( final JsonObject json )
+  public static ProductInventoryRec fromJSON( final JsonObject json )
     throws ParseException
   {
     if ( json == null )
       throw new IllegalArgumentException( "json cannot be null" );
     
-    final List<FNodeInventory> n = new ArrayList<>();
+    final List<FNodeInventoryRec> n = new ArrayList<>();
     
     final JsonArray a = json.getJsonArray( "fulfillment_nodes" );
     if ( a != null )
     {
       for ( int i = 0; i < a.size(); i++ )
       {
-        n.add( FNodeInventory.fromJSON( a.getJsonObject( i )));
+        n.add( FNodeInventoryRec.fromJSON( a.getJsonObject( i )));
       }
     }
     
-    return new ProductInventory( n, json.getString( "inventory_last_update", "" ));
+    return new ProductInventoryRec( n, json.getString( "inventory_last_update", "" ));
   }
   
   
@@ -71,7 +71,7 @@ public class ProductInventory
    * @param lastUpdate Last update
    * @throws ParseException If last update can't be parsed 
    */
-  public ProductInventory( final List<FNodeInventory> nodes, final String lastUpdate )
+  public ProductInventoryRec( final List<FNodeInventoryRec> nodes, final String lastUpdate )
     throws ParseException
   {
     if ( nodes == null )
@@ -88,7 +88,7 @@ public class ProductInventory
    * Retrieve the fulfillment nodes
    * @return nodes
    */
-  public List<FNodeInventory> getNodes()
+  public List<FNodeInventoryRec> getNodes()
   {
     return nodes;
   }

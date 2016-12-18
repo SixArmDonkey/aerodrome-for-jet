@@ -9,7 +9,7 @@ import javax.json.JsonObject;
  * Fulfillment node inventory/quantity record
  * @author john
  */
-public class FNodeInventory implements Jsonable
+public class FNodeInventoryRec implements Jsonable
 {
   /**
    * The fulfillment node assigned in the Jet Merchant Portal for a merchant
@@ -28,12 +28,12 @@ public class FNodeInventory implements Jsonable
    * @param json json object
    * @return object 
    */
-  public static FNodeInventory fromJSON( final JsonObject json )
+  public static FNodeInventoryRec fromJSON( final JsonObject json )
   {
     if ( json == null )
       throw new IllegalArgumentException( "json cannot be null" );
     
-    return new FNodeInventory( json.getString( "fulfillment_node_id", "" ), json.getInt( "quantity", 0 ));
+    return new FNodeInventoryRec( json.getString( "fulfillment_node_id", "" ), json.getInt( "quantity", 0 ));
   }
   
 
@@ -42,7 +42,7 @@ public class FNodeInventory implements Jsonable
    * @param id id
    * @param qty Quantity
    */
-  public FNodeInventory( String id, int qty )
+  public FNodeInventoryRec( String id, int qty )
   {
     nodeId = id;
     quantity = qty;

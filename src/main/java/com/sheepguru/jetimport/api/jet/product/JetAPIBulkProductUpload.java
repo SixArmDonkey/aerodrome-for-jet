@@ -9,21 +9,32 @@ import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetException;
 import com.sheepguru.jetimport.api.jet.Utils;
+import com.sun.net.httpserver.Headers;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import javax.json.Json;
 import javax.json.JsonException;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.stream.JsonGenerator;
+import org.apache.http.NameValuePair;
+import org.apache.http.entity.ContentType;
+import org.apache.http.message.BasicNameValuePair;
 
 
 /**
@@ -61,51 +72,56 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public BulkUploadAuth getUploadToken()
+  public BulkUploadAuthRec getUploadToken()
     throws APIException, JetException
   {
-    return BulkUploadAuth.fromJSON( sendGetUploadToken().getJsonObject());
+    return BulkUploadAuthRec.fromJSON( sendGetUploadToken().getJsonObject());
   }
   
   
   /**
-   * I have no idea.... The docs are blank besides wanting this header and "put"
-   * @param url
-   * @return
+   * Once you receive the url to upload to from getUploadToken(), feed that 
+   * into the url argument in this method along with the file to upload..
+   * @param url Url from getUploadToken()
+   * @return response
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendUploadedFile( final String url )
+  public JetAPIResponse sendAuthorizedFile( final String url, final PostFile file )
     throws APIException, JetException
   {
     final Map<String,String> headers = new HashMap<>();
     headers.put( "x-ms-blob-type", "blockblob" );
     
-    return put( url, "", headers );
+    return put( url, file, headers );
   }
     
   
   /**
-   * Not quite sure yet...
-   * @param file
-   * @param uploadType
+   * Get authorization to add an additional file to an existing uploadToken, 
+   * AND/OR I'm pretty sure this is required to tell Jet what type of file
+   * was uploaded, and to start the batch import on Jet itself.
+   * The documentation on Jet is lacking, well documentation.
+   * 
+   * @param file File to send 
+   * @param uploadType File type 
    * @return
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendPostUploadedFiles( final PostFile file, 
+  public JetAPIResponse sendPostUploadedFiles( final String uploadUrl, 
+    final PostFile file, 
     BulkUploadFileType uploadType ) throws APIException, JetException
   {
     Utils.checkNull( file, "file" );
     
-    final Map<String,PostFile> files = new HashMap<>();
-    files.put( file.getFilename(), file );
+    JsonObject o = Json.createObjectBuilder().add("url", uploadUrl)
+      .add( "file_type", uploadType.getText())
+      .add( "file_name", file.getFilename()).build();
+    
     
     return JetAPIResponse.createFromAPIResponse( post(
-      config.getPostBulkUploadedFilesUrl(),
-      null,
-      files,
-      getJSONHeaderBuilder().build()
+      config.getPostBulkUploadedFilesUrl(), o.toString(), getJSONHeaderBuilder().build()
     ));
   }
   
@@ -134,15 +150,15 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetFileId getJetFileId( final String fileId )
+  public FileIdRec getJetFileId( final String fileId )
     throws APIException, JetException
   {
-    return JetFileId.fromJSON( sendGetJetFileId( fileId ).getJsonObject());
+    return FileIdRec.fromJSON( sendGetJetFileId( fileId ).getJsonObject());
   }
   
-  
+    
   /**
-   * 
+   * Generate a bulk Product Sku file to upload 
    * @param input
    * @param outputFile 
    * @throws JetException 
@@ -157,28 +173,7 @@ public class JetAPIBulkProductUpload extends JetAPI
       {
         g.writeStartObject(); //.. adds a { 
 
-        //..Write each product to the json stream 
-        String line;
-        
-        while (( line = reader.readLine()) != null )
-        {
-          //..Attempt to convertfrom json to product 
-          try ( final JsonReader jsonReader = Json.createReader( 
-            new StringReader( line ))) 
-          {
-            final JetProduct p = JetProduct.fromJSON( jsonReader.readObject());
-            
-            //..Writes a name/value pair to the json stream
-            // sku : { product object } 
-            g.write( p.getMerchantSku(), p.toJSON());
-          } catch( JsonException e ) {
-            //..Failed to parse the json
-            throw new JetException( "Failed to parse JSON: " + line 
-              + " to file " + outputFile, e );
-          }
-          
-          g.write( line );
-        }
+        writeInputStreamToJson( reader, g, outputFile );
 
         //..adds a } 
         g.writeEnd();        
@@ -196,24 +191,28 @@ public class JetAPIBulkProductUpload extends JetAPI
     
   
   /**
-   * 
+   * Generate a bulk product sku file to upload 
    * @param products
    * @param outputFile 
    * @throws JetException
    */
-  public void generateBulkSkuUploadFile( final List<JetProduct> products, 
+  public void generateBulkSkuUploadFile( final List<ProductRec> products, 
     final File outputFile ) throws JetException
   {
     try ( final JsonGenerator g = Json.createGenerator( new GZIPOutputStream( 
       new FileOutputStream( outputFile )))) {
       
+      final Charset cs = Charset.forName( "UTF-8" );
+      
       g.writeStartObject(); //.. adds a { 
       
       //..Write each product to the json stream 
-      for( final JetProduct p : products )
+      for( final ProductRec p : products )
       {
         //..Writes a name/value pair to the json stream
         // sku : { product object } 
+        
+        
         g.write( p.getMerchantSku(), p.toJSON());
       }
       
@@ -240,4 +239,44 @@ public class JetAPIBulkProductUpload extends JetAPI
       new GZIPOutputStream( new FileOutputStream( outputFile ))
     );
   }
+  
+  
+  /**
+   * Assuming that each line of a BufferedReader contains a complete json
+   * object (ProductRec json), this will simply take each line and write it 
+   * to some json generator (stream).
+   * 
+   * @param reader Buffered Reader with json 
+   * @param g Json Generator output stream 
+   * @param outputFile The output filename (just used for an exception message)
+   * @throws JetException If there is a problem with the product json 
+   * @throws IOException If there is a problem reading from the stream 
+   */
+  private void writeInputStreamToJson( final BufferedReader reader, 
+    final JsonGenerator g, final File outputFile ) 
+    throws JetException, IOException
+  {
+    //..Write each product to the json stream 
+    String line;
+
+    while (( line = reader.readLine()) != null )
+    {
+      //..Attempt to convertfrom json to product 
+      try ( final JsonReader jsonReader = Json.createReader( 
+        new StringReader( line ))) 
+      {
+        final ProductRec p = ProductRec.fromJSON( jsonReader.readObject());
+
+        //..Writes a name/value pair to the json stream
+        // sku : { product object } 
+        g.write( p.getMerchantSku(), p.toJSON());
+      } catch( JsonException e ) {
+        //..Failed to parse the json
+        throw new JetException( "Failed to parse JSON: " + line 
+          + " to file " + outputFile, e );
+      }
+
+      g.write( line );
+    }    
+  }  
 }

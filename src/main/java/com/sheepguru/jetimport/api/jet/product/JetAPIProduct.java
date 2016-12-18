@@ -53,28 +53,24 @@ public class JetAPIProduct extends JetAPI
    * library itself. A network issue, etc.
    * @throws ValidateException if the product fails pre-submit validation
    */
-  public boolean addProduct( final JetProduct product ) throws APIException, JetException, ValidateException
+  public boolean addProduct( final ProductRec product ) throws APIException, JetException, ValidateException
   {
     product.validate();
     
     //..Add Sku
-    JetAPIResponse res = sendPutProductSku( product );
-    if ( !res.isSuccess())
-      return false;
-
+    sendPutProductSku( product );
+    
     //..Add an image
-    res = sendPutProductImage( product );
-    if ( !res.isSuccess() )
-      return false;
+    sendPutProductImage( product );
 
     //..Add the price
-    res = sendPutProductPrice( product );
-    if ( !res.isSuccess() )
-      return false;
+    sendPutProductPrice( product );
 
     //..Add some inventory
-    res = sendPutProductInventory( product );
-    return res.isSuccess();
+    sendPutProductInventory( product );
+    
+    //..pointless.
+    return true;
   }
 
 
@@ -88,7 +84,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutProductSku( final JetProduct product )
+  public JetAPIResponse sendPutProductSku( final ProductRec product )
       throws APIException, JetException
   {    
     APILog.info( LOG, "Sending ", product.getMerchantSku());
@@ -109,7 +105,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutProductImage( final JetProduct product )
+  public JetAPIResponse sendPutProductImage( final ProductRec product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "image" );
@@ -131,7 +127,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutProductPrice( final JetProduct product )
+  public JetAPIResponse sendPutProductPrice( final ProductRec product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "price" );
@@ -153,7 +149,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutProductInventory( final JetProduct product )
+  public JetAPIResponse sendPutProductInventory( final ProductRec product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "inventory" );
@@ -185,7 +181,7 @@ public class JetAPIProduct extends JetAPI
    * @throws JetException 
    */
   public JetAPIResponse sendPutProductVariation( 
-    final JetProductVariationGroup group ) throws APIException, JetException
+    final ProductVariationGroupRec group ) throws APIException, JetException
         
   {
     if ( group == null )
@@ -213,7 +209,7 @@ public class JetAPIProduct extends JetAPI
    */
   public JetAPIResponse sendPutProductShippingExceptions(
     final String sku,
-    final List<FNodeShipping> nodes
+    final List<FNodeShippingRec> nodes
   ) throws APIException, JetException
   {
     checkSku( sku );
@@ -224,7 +220,7 @@ public class JetAPIProduct extends JetAPI
     APILog.info( LOG, "Sending", sku, "shipping exceptions" );
     
     final JsonArrayBuilder b = Json.createArrayBuilder();
-    for ( final FNodeShipping node : nodes )
+    for ( final FNodeShippingRec node : nodes )
     {
       b.add( node.toJSON());
     }
@@ -353,11 +349,11 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public ProductPrice getProductPrice( final String sku )
+  public ProductPriceRec getProductPrice( final String sku )
     throws APIException, JetException
   {
     try {
-      return ProductPrice.fromJSON( sendGetProductPrice( sku ).getJsonObject());
+      return ProductPriceRec.fromJSON( sendGetProductPrice( sku ).getJsonObject());
     } catch( ParseException e ) {
       APILog.error( LOG, "Failed to parse Jet Fulfillment Node lastUpdate Date:", e.getMessage());
       throw new JetException( "getProductPrice result was successful, but Fulfillment node had an invalid lastUpdate date", e );
@@ -392,9 +388,9 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetProduct getProduct( final String sku ) throws APIException, JetException
+  public ProductRec getProduct( final String sku ) throws APIException, JetException
   {
-    return JetProduct.fromJSON( sendGetProductSku( sku ).getJsonObject());
+    return ProductRec.fromJSON( sendGetProductSku( sku ).getJsonObject());
   }
   
   
@@ -434,11 +430,11 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */  
-  public ProductInventory getProductInventory( final String sku )
+  public ProductInventoryRec getProductInventory( final String sku )
     throws APIException, JetException
   {
     try {
-      return ProductInventory.fromJSON( 
+      return ProductInventoryRec.fromJSON( 
         sendGetProductInventory( sku ).getJsonObject());
     } catch( ParseException e ) {
       APILog.error( LOG, 
@@ -508,13 +504,13 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetProductVariationGroup getProductVariations( final String sku )
+  public ProductVariationGroupRec getProductVariations( final String sku )
     throws APIException, JetException
   {
     checkSku( sku );
     
     try {
-      return JetProductVariationGroup.fromJSON( 
+      return ProductVariationGroupRec.fromJSON( 
         sku, 
         sendGetProductVariations( sku ).getJsonObject()
       );
@@ -533,7 +529,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException 
    * @throws JetException
    */
-  public List<FNodeShipping> getShippingExceptions( final String sku )
+  public List<FNodeShippingRec> getShippingExceptions( final String sku )
     throws APIException, JetException
   {
     checkSku( sku );
@@ -542,7 +538,7 @@ public class JetAPIProduct extends JetAPI
       .getJsonObject()
       .getJsonArray( "fulfillment_nodes" );    
     
-    final List<FNodeShipping> out = new ArrayList<>();
+    final List<FNodeShippingRec> out = new ArrayList<>();
     
     if ( nodes == null )
       return out;
@@ -550,7 +546,7 @@ public class JetAPIProduct extends JetAPI
     
     for ( int i = 0; i < nodes.size(); i++ )
     {
-      out.add( FNodeShipping.fromJSON( nodes.getJsonObject( i )));
+      out.add( FNodeShippingRec.fromJSON( nodes.getJsonObject( i )));
     }
     
     return out;
@@ -590,12 +586,12 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public ReturnsException getReturnsExceptions( final String sku )
+  public ReturnsExceptionRec getReturnsExceptions( final String sku )
     throws APIException, JetException 
   {
     checkSku( sku );
     
-    return ReturnsException.fromJSON( 
+    return ReturnsExceptionRec.fromJSON( 
       sendGetProductReturnsExceptions( sku ).getJsonObject());
   }
   
@@ -705,11 +701,11 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */  
-  public ProductSalesData getSkuSalesData( final String sku )
+  public ProductSalesDataRec getSkuSalesData( final String sku )
     throws APIException, JetException
   {
     try {
-      return ProductSalesData.fromJSON( sku, 
+      return ProductSalesDataRec.fromJSON( sku, 
         sendGetSkuSalesData( sku ).getJsonObject());
     } catch( ParseException e ) {
       APILog.error( LOG, "Failed to parse Jet sales data lastUpdate Date:", 

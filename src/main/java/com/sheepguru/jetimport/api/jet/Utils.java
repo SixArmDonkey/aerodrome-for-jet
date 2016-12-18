@@ -1,7 +1,7 @@
 
 package com.sheepguru.jetimport.api.jet;
 
-import com.sheepguru.jetimport.api.jet.product.FNodePrice;
+import com.sheepguru.jetimport.api.jet.product.FNodePriceRec;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;

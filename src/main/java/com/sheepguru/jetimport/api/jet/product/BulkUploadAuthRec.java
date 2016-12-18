@@ -12,7 +12,7 @@ import javax.json.JsonObjectBuilder;
  * A record that contains a response from the get upload token endpoint..
  * @author John Quinn
  */
-public class BulkUploadAuth 
+public class BulkUploadAuthRec 
 {
   /**
    * The url where the file should be uploaded
@@ -40,9 +40,9 @@ public class BulkUploadAuth
    * @param json Json to parse
    * @return instance 
    */
-  public static BulkUploadAuth fromJSON( final JsonObject json )
+  public static BulkUploadAuthRec fromJSON( final JsonObject json )
   {
-    return new BulkUploadAuth(
+    return new BulkUploadAuthRec(
       json.getString( "url", "" ),
       json.getString( "jet_file_id", "" ),
       json.getInt( "expires_in_seconds", 0 )
@@ -56,7 +56,7 @@ public class BulkUploadAuth
    * @param jetFileId Jet File id 
    * @param expiresInSeconds number of seconds for which the token is valid.
    */
-  public BulkUploadAuth( final String url, final String jetFileId, 
+  public BulkUploadAuthRec( final String url, final String jetFileId, 
     final int expiresInSeconds )
   {
     Utils.checkNullEmpty( url, "url" );

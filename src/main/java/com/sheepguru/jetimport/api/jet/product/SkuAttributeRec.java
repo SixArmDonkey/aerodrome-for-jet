@@ -10,7 +10,7 @@ import javax.json.JsonObject;
  *
  * @author John Quinn
  */
-public class SkuAttribute implements Jsonable
+public class SkuAttributeRec implements Jsonable
 {
   /**
    * The node attribute ID number that you get from Jet provided documentation
@@ -42,7 +42,7 @@ public class SkuAttribute implements Jsonable
    * unit here.
    * @throws IllegalArgumentException if any of the above rules are broken
    */
-  public SkuAttribute( final int id, final String val, final String unit )
+  public SkuAttributeRec( final int id, final String val, final String unit )
     throws IllegalArgumentException
   {
     if ( id <= 0 )

@@ -15,7 +15,7 @@ import javax.json.JsonObjectBuilder;
  * Represents a response from the JetFileId command.
  * @author John Quinn
  */
-public class JetFileId 
+public class FileIdRec 
 {
   /**
    * A processing status from jet api about a bulk uploaded file.
@@ -155,7 +155,7 @@ public class JetFileId
    * @param json Jet json 
    * @return instance 
    */
-  public static JetFileId fromJSON( final JsonObject json )
+  public static FileIdRec fromJSON( final JsonObject json )
   {
     Utils.checkNull( json, "json" );
     
@@ -170,7 +170,7 @@ public class JetFileId
       }
     }
     
-    return new JetFileId(
+    return new FileIdRec(
       json.getString( "url", "" ),
       BulkUploadFileType.fromText( json.getString( "file_type", "" )),
       json.getString( "file_name", "" ),
@@ -204,7 +204,7 @@ public class JetFileId
    * identification retrieves the file upload details including processing 
    * errors
    */
-  public JetFileId( 
+  public FileIdRec( 
     final String url, 
     final BulkUploadFileType fileType, 
     final String fileName, 

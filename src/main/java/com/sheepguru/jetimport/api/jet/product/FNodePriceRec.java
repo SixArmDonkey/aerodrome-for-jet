@@ -10,7 +10,7 @@ import javax.json.JsonObject;
  * Fulfillment node price
  * @author John Quinn
  */
-public class FNodePrice implements Jsonable
+public class FNodePriceRec implements Jsonable
 {
   /**
    * The fulfillment node assigned in the Jet Merchant Portal for a merchant
@@ -29,12 +29,12 @@ public class FNodePrice implements Jsonable
    * @param node node 
    * @return object
    */
-  public static FNodePrice fromJSON( final JsonObject node )
+  public static FNodePriceRec fromJSON( final JsonObject node )
   {
     if ( node == null )
       throw new IllegalArgumentException( "node cannot be null" );
     
-    return new FNodePrice(
+    return new FNodePriceRec(
       node.getString( "fulfillment_node_id", "0" ),
       node.getString( "filfillment_node_price", "0" )    
     );
@@ -48,7 +48,7 @@ public class FNodePrice implements Jsonable
    * @throws IllegalArgumentException if id is null or empty or if price 
    * is less than zero.
    */
-  public FNodePrice( final String id, final String price )
+  public FNodePriceRec( final String id, final String price )
     throws IllegalArgumentException 
   {
     if ( id == null || id.isEmpty())

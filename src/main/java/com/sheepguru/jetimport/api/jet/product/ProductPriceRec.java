@@ -17,7 +17,7 @@ import javax.json.JsonObject;
  * 
  * @author John Quinn
  */
-public class ProductPrice 
+public class ProductPriceRec 
 {
   /**
    * A format for converting jet dates to a date
@@ -28,7 +28,7 @@ public class ProductPrice
   /**
    * Fulfillment nodes 
    */
-  private final List<FNodePrice> fNodes;
+  private final List<FNodePriceRec> fNodes;
   
   /**
    * Price from jet api 
@@ -47,21 +47,21 @@ public class ProductPrice
    * @return object 
    * @throws ParseException 
    */
-  public static ProductPrice fromJSON( final JsonObject json )
+  public static ProductPriceRec fromJSON( final JsonObject json )
     throws ParseException 
   {
     final JsonArray a = json.getJsonArray( "fulfillment_nodes" );
-    final List<FNodePrice> nodes = new ArrayList<>();
+    final List<FNodePriceRec> nodes = new ArrayList<>();
     
     if ( a != null )
     {
       for ( int i = 0; i < a.size(); i++ )
       {
-        nodes.add( FNodePrice.fromJSON( a.getJsonObject( i )));
+        nodes.add( FNodePriceRec.fromJSON( a.getJsonObject( i )));
       }
     }
     
-    return new ProductPrice(
+    return new ProductPriceRec(
       new Money( json.getString( "price", "0" )),
       json.getString( "price_last_update", "" ),
       nodes
@@ -82,8 +82,8 @@ public class ProductPrice
    * @param fNodes The price a retailer would like to set for this SKU sold at a fulfillment node
    * @throws ParseException if the date is invalid 
    */
-  public ProductPrice( final Money price, final String lastUpdate, 
-    final List<FNodePrice> fNodes ) throws ParseException 
+  public ProductPriceRec( final Money price, final String lastUpdate, 
+    final List<FNodePriceRec> fNodes ) throws ParseException 
   {
     if ( price == null || price.lessThanZero())
       throw new IllegalArgumentException( "price cannot be null or less than zero" );
@@ -126,7 +126,7 @@ public class ProductPrice
    * The price a retailer would like to set for this SKU sold at a fulfillment node
    * @return nodes list 
    */
-  public List<FNodePrice> getFulfillmentNodes()
+  public List<FNodePriceRec> getFulfillmentNodes()
   {
     return fNodes;
   }

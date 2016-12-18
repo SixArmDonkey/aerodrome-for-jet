@@ -4,7 +4,11 @@ package com.sheepguru.jetimport.api.jet;
 import com.sheepguru.jetimport.api.API;
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
+import com.sheepguru.jetimport.api.APIResponse;
+import com.sheepguru.jetimport.api.PostFile;
+import java.io.InputStream;
 import java.util.Map;
+import org.apache.http.entity.ContentType;
 
 
 /**
@@ -137,11 +141,60 @@ public class JetAPI extends API
    * @return response
    * @throws APIException
    */
+  public APIResponse post( final String url, final InputStream payload,
+    final long contentLength, final ContentType contentType, 
+    final Map<String,String> headers ) throws APIException
+  {
+    return JetAPIResponse.createFromAPIResponse( 
+      super.post( url, payload, contentLength, contentType, headers ));
+  }
+  
+  
+  @Override
+  public APIResponse post( final String url, final PostFile file, Map<String,String> headers ) throws APIException
+  {
+    return JetAPIResponse.createFromAPIResponse(
+      super.post( url, file, headers ));
+  }
+  
+  /**
+   * Perform a put-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
   @Override
   public JetAPIResponse put( final String url, final String payload, 
     final Map<String,String> headers ) throws APIException, JetException
   {  
     return JetAPIResponse.createFromAPIResponse( 
       super.put( url, payload, headers ));
+  }
+  
+  
+  /**
+   * Perform a put-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  @Override
+  public JetAPIResponse put( final String url, final InputStream payload,
+    final long contentLength, final ContentType contentType, 
+    final Map<String,String> headers ) throws APIException, JetException
+  {
+    return JetAPIResponse.createFromAPIResponse(
+      super.put( url, payload, contentLength, contentType, headers ));
+  }
+  
+  
+  @Override
+  public JetAPIResponse put( final String url, final PostFile file, Map<String,String> headers ) throws APIException, JetException 
+  {
+    return JetAPIResponse.createFromAPIResponse( super.put( url, file, headers ));
   }
 }

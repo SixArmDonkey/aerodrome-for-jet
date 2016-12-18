@@ -35,13 +35,12 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author John Quinn
  */
-public class JetProductVariationGroup implements Jsonable
+public class ProductVariationGroupRec implements Jsonable
 {
   /**
    * Log instance 
    */
-  private static final Log LOG = LogFactory.getLog( 
-    JetProductVariationGroup.class );
+  private static final Log LOG = LogFactory.getLog(ProductVariationGroupRec.class );
   
   /**
    * The identifier you used to track and update your merchant SKU
@@ -160,14 +159,14 @@ public class JetProductVariationGroup implements Jsonable
    * @throws IllegalArgumentException if sku or json are null/empty
    * @throws ClassCastException if Any array items are of an incorrect type
    */
-  public static JetProductVariationGroup fromJSON( final String sku, 
+  public static ProductVariationGroupRec fromJSON( final String sku, 
     final JsonObject json ) throws IllegalArgumentException, ClassCastException
   {
     Utils.checkNullEmpty( sku, "sku" );
     Utils.checkNull( json, "json" );
     
     
-    return new JetProductVariationGroup(
+    return new ProductVariationGroupRec(
       sku,
       Relationship.byText( json.getString( "relationship", "" )),
       Utils.jsonArrayToIntList( json.getJsonArray( "variation_refinements" )),
@@ -192,7 +191,7 @@ public class JetProductVariationGroup implements Jsonable
    * title on the product detail page
    * @throws IllegalArgumentException If any args are invalid
    */
-  JetProductVariationGroup( final String parentSku, 
+  ProductVariationGroupRec( final String parentSku, 
     final Relationship relationship, final List<Integer> variationRefinements, 
     final List<String> childSkus, final String groupTitle ) 
     throws IllegalArgumentException
