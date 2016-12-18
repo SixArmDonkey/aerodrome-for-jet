@@ -13,6 +13,12 @@ import java.util.Random;
 public class RandomNumber 
 {
   /**
+   * This is guaranteed thread safe since 1.7
+   */
+  private static final Random RAND = new Random();
+  
+  
+  /**
    * Returns a pseudo-random number between min and max, inclusive.
    * The difference between min and max can be at most
    * <code>Integer.MAX_VALUE - 1</code>.
@@ -25,15 +31,9 @@ public class RandomNumber
    */
   public static int get( int min, int max ) 
   {
-    // NOTE: Usually this should be a field rather than a method
-    // variable so that it is not re-seeded every call.
-    Random rand = new Random();
-
     // nextInt is normally exclusive of the top value,
     // so add 1 to make it inclusive
-    int randomNum = rand.nextInt((max - min) + 1) + min;    
-
-    return randomNum;
+    return RAND.nextInt((max - min) + 1) + min;    
   }  
   
   
@@ -42,14 +42,12 @@ public class RandomNumber
    */
   public static long get( long min, long max ) 
   {
-    Random rng = new Random();
- 
     long n = (max - min + 1L);
     // error checking and 2^x checking removed for simplicity.
     long bits, val;
     
     do {
-      bits = (rng.nextLong() << 1) >>> 1;
+      bits = (RAND.nextLong() << 1) >>> 1;
       val = bits % n;
     } while (bits-val+(n-1) < 0L);
     

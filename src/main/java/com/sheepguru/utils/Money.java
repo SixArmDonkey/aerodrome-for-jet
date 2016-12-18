@@ -329,6 +329,12 @@ public class Money implements Comparable<Money>
   {
     return fAmount;
   }
+  
+  
+  public float floatValue()
+  {
+    return fAmount.floatValue();    
+  }
 
 
   public String toCurrencyString()

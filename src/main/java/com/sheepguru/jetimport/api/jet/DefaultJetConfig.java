@@ -20,9 +20,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * method return values are either values from the configuration file,
  * or from various setters within this object.
  *
- *
+ * build() can throw exceptions that uses the XML naming structure.  If you 
+ * implement a custom config reader, just remember that the errors may 
+ * end up yelling about fields that are named different in your config file.
  *
  * @author John Quinn
+ * 
+ * @todo Fix the stupid exception text so it makes sense...
  */
 public class DefaultJetConfig implements JetConfig
 {
@@ -190,6 +194,21 @@ public class DefaultJetConfig implements JetConfig
    */
   private String uriGetProductSalesData = "";
         
+  /**
+   * Url to retrieve a bulk file upload status by file id 
+   */
+  private String uriGetBulkJetFileId = "";
+  
+  /**
+   * Url for posting additional files to a batch or to start processing 
+   */
+  private String uriPostBulkUploadedFiles = "";
+  
+  /**
+   * Url for retrieving a token for uploading a bulk file
+   */
+  private String uriGetBulkUploadToken = "";
+  
 
   /**
    * Test a string for null and empty and 
@@ -206,7 +225,7 @@ public class DefaultJetConfig implements JetConfig
   }
   
 
-  
+          
   /**
    * Create a JetConfigImpl Instance.
    * This is a config object used for the jet api.
@@ -230,7 +249,7 @@ public class DefaultJetConfig implements JetConfig
    * @param uriAddProductVariation
    * @throws IllegalArgumentException  
    */
-  public DefaultJetConfig(
+  DefaultJetConfig(
     final String merchantId,
     final String host,
     final String user,
@@ -256,9 +275,15 @@ public class DefaultJetConfig implements JetConfig
     final String uriGetProductShippingException,
     final String uriGetProductReturnsException,
     final String uriGetSkuList,
-    final String uriGetProductSalesData
+    final String uriGetProductSalesData,
+    final String uriGetBulkUploadToken,
+    final String uriGetBulkJetFileId,
+    final String uriPostBulkUploadedFiles
   ) throws IllegalArgumentException
   {
+    //...Obviously this is designed to work with the xml configuration file.
+    //..These errors could get weird if someone writes a different configuration 
+    //..implementation...
     checkStringEmpty( host, "jet.host cannot be empty" );
     checkStringEmpty( user, "jet.username cannot be empty" );
     checkStringEmpty( pass, "jet.password cannot be empty" );
@@ -283,6 +308,9 @@ public class DefaultJetConfig implements JetConfig
     checkStringEmpty( uriGetProductReturnsException, "jet.uri.products.get.returnsException cannot be null or empty" );
     checkStringEmpty( uriGetSkuList, "jet.uri.products.get.skuList cannot be null or empty" );
     checkStringEmpty( uriGetProductSalesData, "jet.uri.products.get.salesData cannot be null or empty" );
+    checkStringEmpty( uriGetBulkUploadToken, "jet.uri.products.get.bulkUploadToken cannot be null or empty" );
+    checkStringEmpty( uriGetBulkJetFileId, "jet.uri.products.get.bulkJetFileId cannot be null or empty" );
+    checkStringEmpty( uriPostBulkUploadedFiles, "jet.uri.products.post.bulkUploadedFiles cannot be null or empty" );
     
     if ( readTimeout < 0 )
       throw new IllegalArgumentException( "readTimeout cannot be less than zero" );
@@ -313,6 +341,9 @@ public class DefaultJetConfig implements JetConfig
     this.uriGetProductReturnsException = uriGetProductReturnsException;
     this.uriGetSkuList = uriGetSkuList;
     this.uriGetProductSalesData = uriGetProductSalesData;    
+    this.uriGetBulkUploadToken = uriGetBulkUploadToken;
+    this.uriGetBulkJetFileId = uriGetBulkJetFileId;
+    this.uriPostBulkUploadedFiles = uriPostBulkUploadedFiles;
   }
   
   
@@ -607,7 +638,7 @@ public class DefaultJetConfig implements JetConfig
   @Override
   public String getGetProductInventoryURL( final String sku )
   {
-    return uriGetProductInventory.replace( "{sku}", sku );
+    return buildURL( uriGetProductInventory.replace( "{sku}", sku ));
   }
   
   
@@ -619,7 +650,7 @@ public class DefaultJetConfig implements JetConfig
   @Override
   public String getGetProductVariationURL( final String sku )
   {
-    return uriGetProductVariation.replace( "{sku}", sku );
+    return buildURL( uriGetProductVariation.replace( "{sku}", sku ));
   }
   
   
@@ -631,7 +662,7 @@ public class DefaultJetConfig implements JetConfig
   @Override
   public String getGetShippingExceptionURL( final String sku )
   {
-    return uriGetProductShippingException.replace( "{sku}", sku );
+    return buildURL( uriGetProductShippingException.replace( "{sku}", sku ));
   }
   
   
@@ -643,7 +674,7 @@ public class DefaultJetConfig implements JetConfig
   @Override
   public String getGetReturnsExceptionURL( final String sku )
   {
-    return uriGetProductReturnsException.replace( "{sku}", sku );
+    return buildURL( uriGetProductReturnsException.replace( "{sku}", sku ));
   }
   
   
@@ -656,10 +687,10 @@ public class DefaultJetConfig implements JetConfig
   @Override
   public String getSkuListURL( final int start, final int limit )
   {
-    return uriGetSkuList
+    return buildURL( uriGetSkuList
       .replace( "{offset}", String.valueOf( start ))
       .replace( "{limit}", String.valueOf( limit )
-    );
+    ));
   }
 
   
@@ -671,7 +702,7 @@ public class DefaultJetConfig implements JetConfig
   @Override
   public String getSalesDataBySkuURL( final String sku )
   {
-    return uriGetProductSalesData.replace( "{sku}", sku );
+    return buildURL( uriGetProductSalesData.replace( "{sku}", sku ));
   }
     
   
@@ -782,4 +813,40 @@ public class DefaultJetConfig implements JetConfig
   {
     return uri;
   }
+
+ 
+  /**
+   * @param fileId The jet file id 
+   * @return the uriGetBulkJetFileId
+   * 
+   */
+  @Override
+  public String getGetBulkJetFileIdUrl( final String fileId )
+  {
+    Utils.checkNullEmpty( fileId, "fileId" );
+    return buildURL( uriGetBulkJetFileId.replace( "{file_id}", fileId ));
+  }
+
+  /**
+   * @return the uriGetBulkUploadToken
+   */
+  @Override
+  public String getGetBulkUploadTokenUrl()
+  {
+    return buildURL( uriGetBulkUploadToken );
+  }
+
+  
+  ////////////// END GET PRODUCT ///////////////////////////////////////////////
+  ////////////// START POST PRODUCT ////////////////////////////////////////////
+  
+  /**
+   * @return the uriPostBulkUploadedFiles
+   */
+  @Override
+  public String getPostBulkUploadedFilesUrl()
+  {
+    return buildURL( uriPostBulkUploadedFiles );
+  }
+
 }

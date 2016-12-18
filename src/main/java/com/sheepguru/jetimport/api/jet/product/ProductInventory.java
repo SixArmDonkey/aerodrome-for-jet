@@ -19,7 +19,7 @@ import javax.json.JsonObject;
  * 
  * @author John Quinn
  */
-public class ProductInventoryRec 
+public class ProductInventory 
 {
   /**
    * A format for converting jet dates to a date
@@ -44,7 +44,7 @@ public class ProductInventoryRec
    * @return Object 
    * @throws ParseException if the date can't be formatted 
    */
-  public static ProductInventoryRec fromJSON( final JsonObject json )
+  public static ProductInventory fromJSON( final JsonObject json )
     throws ParseException
   {
     if ( json == null )
@@ -61,7 +61,7 @@ public class ProductInventoryRec
       }
     }
     
-    return new ProductInventoryRec( n, json.getString( "inventory_last_update", "" ));
+    return new ProductInventory( n, json.getString( "inventory_last_update", "" ));
   }
   
   
@@ -71,7 +71,7 @@ public class ProductInventoryRec
    * @param lastUpdate Last update
    * @throws ParseException If last update can't be parsed 
    */
-  public ProductInventoryRec( final List<FNodeInventory> nodes, final String lastUpdate )
+  public ProductInventory( final List<FNodeInventory> nodes, final String lastUpdate )
     throws ParseException
   {
     if ( nodes == null )

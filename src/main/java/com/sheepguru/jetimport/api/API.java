@@ -66,7 +66,7 @@ public class API
   /**
    * Max download size
    */
-  private final AtomicLong maxDownloadSize = new AtomicLong(MAX_DOWNLOAD_SIZE );
+  private final long maxDownloadSize;
   
   /**
    * The http client to use 
@@ -76,7 +76,7 @@ public class API
   /**
    * Lock the host to whatever is specified in the client 
    */
-  private final AtomicBoolean lockHost = new AtomicBoolean( true );
+  private final boolean lockHost;
   
   /**
    * Logger instance 
@@ -94,51 +94,43 @@ public class API
       throw new IllegalArgumentException( "client cannot be null" );
     
     this.client = client;
+    this.maxDownloadSize = MAX_DOWNLOAD_SIZE;
+    this.lockHost = true;
   }
   
   
   /**
-   * Set the max download size in bytes
-   * @param bytes bytes
-   * @throws IllegalArgumentException if bytes is less than zero
+   * 
+   * @param client
+   * @param lockHost 
    */
-  public void setMaxDownloadSize( final long bytes )
-    throws IllegalArgumentException
+  public API( final APIHttpClient client, final boolean lockHost )
   {
-    if ( bytes < 0 )
-      throw new IllegalArgumentException( "bytes cannot be less than zero" );
+    if ( client == null )
+      throw new IllegalArgumentException( "client cannot be null" );
+        
+    this.client = client;    
+    this.maxDownloadSize = MAX_DOWNLOAD_SIZE;
+    this.lockHost = lockHost;
+  }
+  
+  
+  /**
+   * 
+   * @param client
+   * @param lockHost
+   * @param maxDownloadSize 
+   */
+  public API( final APIHttpClient client, final boolean lockHost, final long maxDownloadSize )
+  {
+    if ( client == null )
+      throw new IllegalArgumentException( "client cannot be null" );
+    else if ( maxDownloadSize < 0 )
+      throw new IllegalArgumentException( "maxDownloadSize must be greater than -1" );
     
-    maxDownloadSize.set( bytes );
-  }
-  
-  
-  /**
-   * Retrieve the max download size in bytes
-   * @return max 
-   */
-  public long getMaxDownloadSize()
-  {
-    return maxDownloadSize.get();
-  }
-  
-  
-  /**
-   * Toggle overwriting the host to whatever is specified in the client.
-   * @param lockHost enable
-   */
-  public void setLockHost( final boolean lockHost )
-  {
-    this.lockHost.set( lockHost );
-  }
-  
-  
-  /**
-   * If the host is overwritten by the client.
-   * @return overwrite host 
-   */
-  public boolean isLockHost()
-  {
-    return lockHost.get();
+    this.client = client;    
+    this.maxDownloadSize = maxDownloadSize;
+    this.lockHost = lockHost;
   }
 
 
@@ -425,7 +417,7 @@ public class API
       final URIBuilder b = new URIBuilder( url );
       
       //..Overwrite the host if necessary 
-      if ( isLockHost() && client.getHost().getHost() != null 
+      if ( lockHost && client.getHost().getHost() != null 
         && !client.getHost().getHost().isEmpty())
       {
         b.setHost( client.getHost().getHost())
@@ -583,7 +575,7 @@ public class API
         htmlBuffer.append( new String( bytes, 0, bytesRead, charset ));
 
         //..Break on max download size
-        if ( totalBytes >= getMaxDownloadSize())
+        if ( totalBytes >= maxDownloadSize )
           break;
       }
 

@@ -203,9 +203,31 @@ public interface JetConfig
    * @return url
    */
   public String getSalesDataBySkuURL( final String sku );
-  
+
+
+  /**
+   * @param fileId The jet file id 
+   * @return the uriGetBulkJetFileId
+   * 
+   */
+  public String getGetBulkJetFileIdUrl( final String fileId );
+
+  /**
+   * @return the uriGetBulkUploadToken
+   */
+  public String getGetBulkUploadTokenUrl();
+
   
   ////////////// END GET PRODUCT ///////////////////////////////////////////////
+  ////////////// START POST PRODUCT ////////////////////////////////////////////
+  
+  /**
+   * @return the uriPostBulkUploadedFiles
+   */
+  public String getPostBulkUploadedFilesUrl();
+
+  
+  ////////////// END POST PRODUCT //////////////////////////////////////////////  
   ////////////// START AUTH ////////////////////////////////////////////////////
   
 

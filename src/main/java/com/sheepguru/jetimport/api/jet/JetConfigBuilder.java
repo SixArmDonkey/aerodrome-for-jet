@@ -149,6 +149,23 @@ public class JetConfigBuilder
    */
   private boolean allowUntrustedSSL = false;
   
+  
+        
+  /**
+   * Url to retrieve a bulk file upload status by file id 
+   */
+  private String uriGetBulkJetFileId = "";
+  
+  /**
+   * Url for posting additional files to a batch or to start processing 
+   */
+  private String uriPostBulkUploadedFiles = "";
+  
+  /**
+   * Url for retrieving a token for uploading a bulk file
+   */
+  private String uriGetBulkUploadToken = "";  
+  
   /**
    * Get the log 
    */
@@ -545,7 +562,39 @@ public class JetConfigBuilder
       uriGetProductShippingException,
       uriGetProductReturnsException,
       uriGetSkuList,
-      uriGetProductSalesData
+      uriGetProductSalesData,
+      uriGetBulkUploadToken,
+      uriGetBulkJetFileId,
+      uriPostBulkUploadedFiles      
     );
+  }
+
+  /**
+   * @param uriGetBulkJetFileId the uriGetBulkJetFileId to set
+   */
+  public JetConfigBuilder setUriGetBulkJetFileId( final String uriGetBulkJetFileId ) 
+  {
+    APILog.debug( LOG, "Bulk product file id URI set to:", uriGetBulkJetFileId );
+    this.uriGetBulkJetFileId = uriGetBulkJetFileId;
+    return this;
+  }
+
+  /**
+   * @param uriPostBulkUploadedFiles the uriPostBulkUploadedFiles to set
+   */
+  public JetConfigBuilder setUriPostBulkUploadedFiles(String uriPostBulkUploadedFiles) 
+  {
+    APILog.debug( LOG, "Post bulk file upload URI set to:", uriPostBulkUploadedFiles );
+    this.uriPostBulkUploadedFiles = uriPostBulkUploadedFiles;
+    return this;
+  }
+
+  /**
+   * @param uriGetBulkUploadToken the uriGetBulkUploadToken to set
+   */
+  public JetConfigBuilder setUriGetBulkUploadToken(String uriGetBulkUploadToken) {
+    APILog.debug( LOG, "Get bulk file upload token URI set to:", uriGetBulkUploadToken );
+    this.uriGetBulkUploadToken = uriGetBulkUploadToken;
+    return this;
   }
 }

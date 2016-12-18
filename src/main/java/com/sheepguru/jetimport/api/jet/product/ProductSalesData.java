@@ -33,7 +33,7 @@ import javax.json.JsonObject;
  * 
  * @author John Quinn
  */
-public class ProductSalesDataRec 
+public class ProductSalesData 
 {
   /**
    * The product sku for this data
@@ -69,7 +69,7 @@ public class ProductSalesDataRec
    * @return object 
    * @throws ParseException if a date isnt parsed correctly
    */
-  public static ProductSalesDataRec fromJSON( final String sku, 
+  public static ProductSalesData fromJSON( final String sku, 
     final JsonObject json ) throws ParseException
   {
     Utils.checkNull( json, "json" );
@@ -113,7 +113,7 @@ public class ProductSalesDataRec
     }
 
     
-    return new ProductSalesDataRec(
+    return new ProductSalesData(
       sku,
       srMap,
       usMap,
@@ -131,7 +131,7 @@ public class ProductSalesDataRec
    * @param bestOffers Data
    * @param marketplaceOffers Data
    */
-  public ProductSalesDataRec( 
+  public ProductSalesData( 
     final String sku,
     final Map<Integer,String> salesRank,
     final Map<Integer,String> unitsSold,

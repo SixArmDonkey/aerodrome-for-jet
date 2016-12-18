@@ -256,7 +256,7 @@ public class JetAPIProduct extends JetAPI
    * @throws JetException 
    */
   public JetAPIResponse sendPutReturnsException( final String sku, 
-    List<String> hashes ) throws APIException, JetException
+    final List<String> hashes ) throws APIException, JetException
   {
     checkSku( sku );
     
@@ -268,6 +268,8 @@ public class JetAPIProduct extends JetAPI
     {
       b.add( s );
     }
+    
+    APILog.info( LOG, "Sending", sku, "returns exceptions" );
     
     final JetAPIResponse res = put( 
       config.getProductReturnsExceptionUrl( sku ),
@@ -351,11 +353,11 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public ProductPriceRec getProductPrice( final String sku )
+  public ProductPrice getProductPrice( final String sku )
     throws APIException, JetException
   {
     try {
-      return ProductPriceRec.fromJSON( sendGetProductPrice( sku ).getJsonObject());
+      return ProductPrice.fromJSON( sendGetProductPrice( sku ).getJsonObject());
     } catch( ParseException e ) {
       APILog.error( LOG, "Failed to parse Jet Fulfillment Node lastUpdate Date:", e.getMessage());
       throw new JetException( "getProductPrice result was successful, but Fulfillment node had an invalid lastUpdate date", e );
@@ -432,14 +434,17 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */  
-  public ProductInventoryRec getProductInventory( final String sku )
+  public ProductInventory getProductInventory( final String sku )
     throws APIException, JetException
   {
     try {
-      return ProductInventoryRec.fromJSON( sendGetProductInventory( sku ).getJsonObject());
+      return ProductInventory.fromJSON( 
+        sendGetProductInventory( sku ).getJsonObject());
     } catch( ParseException e ) {
-      APILog.error( LOG, "Failed to parse Jet Fulfillment Node lastUpdate Date:", e.getMessage());
-      throw new JetException( "getProductPrice result was successful, but Fulfillment node had an invalid lastUpdate date", e );
+      APILog.error( LOG, 
+        "Failed to parse Jet Fulfillment Node lastUpdate Date:", e.getMessage());
+      throw new JetException( "getProductPrice result was successful, but "
+        + "Fulfillment node had an invalid lastUpdate date", e );
     }
   }
 
@@ -585,12 +590,12 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public ReturnsExceptionRec getReturnsExceptions( final String sku )
+  public ReturnsException getReturnsExceptions( final String sku )
     throws APIException, JetException 
   {
     checkSku( sku );
     
-    return ReturnsExceptionRec.fromJSON( 
+    return ReturnsException.fromJSON( 
       sendGetProductReturnsExceptions( sku ).getJsonObject());
   }
   
@@ -700,11 +705,11 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */  
-  public ProductSalesDataRec getSkuSalesData( final String sku )
+  public ProductSalesData getSkuSalesData( final String sku )
     throws APIException, JetException
   {
     try {
-      return ProductSalesDataRec.fromJSON( sku, 
+      return ProductSalesData.fromJSON( sku, 
         sendGetSkuSalesData( sku ).getJsonObject());
     } catch( ParseException e ) {
       APILog.error( LOG, "Failed to parse Jet sales data lastUpdate Date:", 

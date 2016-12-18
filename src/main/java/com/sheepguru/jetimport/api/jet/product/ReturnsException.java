@@ -12,7 +12,7 @@ import javax.json.JsonObject;
  * Represents a ReturnsException query from Jet.
  * @author John Quinn
  */
-public class ReturnsExceptionRec 
+public class ReturnsException 
 {
   /**
    * The number of days after purchase a customer can return the item.
@@ -39,7 +39,7 @@ public class ReturnsExceptionRec
    * @param json Jet json
    * @return yer object instance of this.
    */
-  public static ReturnsExceptionRec fromJSON( final JsonObject json )
+  public static ReturnsException fromJSON( final JsonObject json )
   {
     Utils.checkNull( json, "json" );
     
@@ -54,7 +54,7 @@ public class ReturnsExceptionRec
     }
     
     
-    return new ReturnsExceptionRec(
+    return new ReturnsException(
       json.getInt( "time_to_return", 30 ),
       Utils.jsonArrayToStringList( json.getJsonArray( "return_location_ids" )),
       methods 
@@ -68,7 +68,7 @@ public class ReturnsExceptionRec
    * @param returnLocationIds Ids 
    * @param returnShippingMethods Methods 
    */
-  public ReturnsExceptionRec( 
+  public ReturnsException( 
     final int timeToReturn,
     final List<String> returnLocationIds, 
     final List<ShippingMethod> returnShippingMethods )

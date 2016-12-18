@@ -8,6 +8,7 @@ import com.sheepguru.jetimport.api.jet.JetAuthException;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
 import com.sheepguru.jetimport.api.jet.JetException;
+import com.sheepguru.jetimport.api.jet.product.JetAPIBulkProductUpload;
 import com.sheepguru.jetimport.api.jet.product.JetAPIProduct;
 import com.sheepguru.jetimport.api.jet.product.JetProduct;
 import com.sheepguru.jetimport.api.jet.product.ProductCode;
@@ -17,6 +18,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
@@ -49,8 +52,7 @@ public class JetImport implements ExitCodes
    */
   private static final Log LOG = LogFactory.getLog( JetImport.class );
   
-
-  
+  private static final String sku = "VIC!47520";
   
   /**
    * The main method
@@ -66,73 +68,23 @@ public class JetImport implements ExitCodes
     
     //..Create a http client to use based on the jet config 
     final APIHttpClient client = getHttpClient( jetConfig );
-            
-    //..Try to authenticate
-    try {
-      //..Get an auth request 
-      final JetAPIAuth auth = new JetAPIAuth( client, jetConfig );
-      
-      //..Perform the login and retrieve a token
-      //  This token is stored in the jet config and will automatically be 
-      //  added to any requests that use the config object.
-      if ( !auth.login())
-      {
-        fail( "Failed to test authentication state.  Ensure that "
-          + "JetConfig was updated with the authentication "
-          + "header value after login", E_AUTH_FAILURE, null );        
-      }
-      
-      
-    } catch( APIException e ) {
-      fail( "API Failure", E_API_FAILURE, e );
-    } catch( JetAuthException e ) { 
-      fail( "Failed to authenticate.  A Bad Request can simply "
-        + "mean bad credentials", E_AUTH_FAILURE, e );
-    }
+    
+    //..Create a lib for interacting with product sku's directly 
+    final JetAPIProduct product = new JetAPIProduct( client, jetConfig );
+    
+    //...Log in to jet
+    authenticate( client, jetConfig );
       
     
-    JetProduct prod = new JetProduct();
-    prod.setMerchantSku( "VIC!47520" );
-    prod.setTitle( "8\" Chefs Knife with Fibrox Handle" );
-    prod.setProductDescription( "The Victorinox 47520 8\" Chefs Knife with Fibrox handle is a great chefs knife with a 2\" wide blade at the handle. The cutting edge is thin and extremely sharp. The blade is 8\" long." );
-    prod.setMultipackQuantity( 1 );
-    prod.setMsrp( new Money( "44.99" ));
-    prod.setPrice( new Money( "44.99" ));
-    prod.setMainImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/image/650x650/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
-    prod.setSwatchImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/thumbnail/65x65/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
-    prod.setBrand( "Victorinox" );
     
-    prod.setProductCode( new ProductCode( "046928475209", ProductCodeType.UPC ));
-
-    try {
-      final JetAPIProduct product = new JetAPIProduct( client, jetConfig );
-      
-      product.addProduct( prod );    
-      
-      
-      final String sku = "VIC!47520";
-      final JetProduct res = product.getProduct( sku );
-      System.out.println( res.toJSON() );
-      
-      System.out.println( product.getProductPrice( sku ).getPrice());
-      
-      System.out.println( product.getProductInventory( sku ).getLastUpdate());
-      
-      product.getProductVariations( sku );
-      product.getShippingExceptions( sku );
-      product.getReturnsExceptions( sku );
-      product.getSkuList( 0, 100 );
-      
-      try {
-        product.getSkuSalesData( sku );
-      } catch( JetException e ) {
-        //..no sales data for this sku
-        System.out.println( "No Sales data for " + sku );
-      }
-      
-    } catch( Exception e ) {
-      fail( "Failed to do product stuff", E_API_FAILURE, e );
-    }
+    //..test adding a product 
+    //testAddProduct( product );
+    
+    //..Test a few functions for retrieving data
+    //testGetProductData( product );
+    
+    testUpload( client, jetConfig );
+    
   }
 
   
@@ -220,7 +172,7 @@ public class JetImport implements ExitCodes
    */
   private static JetConfig buildJetConfig( final XMLConfiguration config )
   {
-    final JetConfig cfg = ( new JetConfigBuilder())
+    return ( new JetConfigBuilder())
       .setMerchantId( 
         config.getString( "jet.merchantId", "" ))   
 
@@ -300,9 +252,16 @@ public class JetImport implements ExitCodes
       .setUriGetSalesDataBySku(
         config.getString( "jet.uri.products.get.salesData", "" ))
             
+      .setUriGetBulkUploadToken( 
+        config.getString( "jet.uri.products.get.bulkUploadToken", "" ))
+            
+      .setUriGetBulkJetFileId( 
+        config.getString( "jet.uri.products.get.bulkJetFileId", "" ))
+            
+      .setUriPostBulkUploadedFiles(
+        config.getString( "jet.uri.products.post.bulkUploadedFiles", "" ))
+            
       .build();
-
-    return cfg;
   }
   
   
@@ -380,4 +339,128 @@ public class JetImport implements ExitCodes
     
     System.exit( code );
   }  
+  
+  
+
+  /**
+   * Authenticate with Jet.  This terminates the program if it fails.
+   * @param client HttpClient
+   * @param config Jet Config 
+   */
+  private static void authenticate( final APIHttpClient client, 
+    final JetConfig config )
+  {     
+    //..Try to authenticate
+    try {
+      //..Get an auth request 
+      final JetAPIAuth auth = new JetAPIAuth( client, config );
+      
+      //..Perform the login and retrieve a token
+      //  This token is stored in the jet config and will automatically be 
+      //  added to any requests that use the config object.
+      if ( !auth.login())
+      {
+        fail( "Failed to test authentication state.  Ensure that "
+          + "JetConfig was updated with the authentication "
+          + "header value after login", E_AUTH_FAILURE, null );        
+      }            
+    } catch( APIException e ) {
+      fail( "API Failure", E_API_FAILURE, e );
+    } catch( JetAuthException e ) { 
+      fail( "Failed to authenticate.  A Bad Request can simply "
+        + "mean bad credentials", E_AUTH_FAILURE, e );
+    }    
+  }    
+  
+  
+  
+  private static JetProduct getTestProduct()
+  {
+    final JetProduct prod = new JetProduct();
+    prod.setMerchantSku( sku );
+    prod.setTitle( "8\" Chefs Knife with Fibrox Handle" );
+    prod.setProductDescription( "The Victorinox 47520 8\" Chefs Knife with Fibrox handle is a great chefs knife with a 2\" wide blade at the handle. The cutting edge is thin and extremely sharp. The blade is 8\" long." );
+    prod.setMultipackQuantity( 1 );
+    prod.setMsrp( new Money( "44.99" ));
+    prod.setPrice( new Money( "44.99" ));
+    prod.setMainImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/image/650x650/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
+    prod.setSwatchImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/thumbnail/65x65/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
+    prod.setBrand( "Victorinox" );
+    
+    prod.setProductCode( new ProductCode( "046928475209", ProductCodeType.UPC ));
+
+    return prod;    
+  }
+  
+  
+  /**
+   * Test adding a product to jet.
+   * Not a real test, don't freak out.
+   * @param product product api library 
+   */
+  private static void testAddProduct( final JetAPIProduct product )
+  {
+    
+
+    try {
+      product.addProduct( getTestProduct());
+    } catch( Exception e ) {
+      fail( "Failed to add test product", E_API_FAILURE, e );
+    }
+  }
+  
+  
+  /**
+   * Not a real test... 
+   * @param product 
+   */
+  private static void testGetProductData( final JetAPIProduct product )
+    
+  {
+    try {
+      final JetProduct res = product.getProduct( sku );
+      System.out.println( res.toJSON() );
+
+      System.out.println( product.getProductPrice( sku ).getPrice());
+
+      System.out.println( product.getProductInventory( sku ).getLastUpdate());
+
+      product.getProductVariations( sku );
+      product.getShippingExceptions( sku );
+      product.getReturnsExceptions( sku );
+      product.getSkuList( 0, 100 );
+    } catch( Exception e ) {
+      fail( "Failed to add test product", E_API_FAILURE, e );
+    }
+
+    try {
+      product.getSkuSalesData( sku );
+    } catch( JetException e ) {
+      //..no sales data for this sku
+      System.out.println( "No Sales data for " + sku );
+    } catch( Exception e ) {
+      fail( "Failed to get product sales data", E_API_FAILURE, e );
+    }
+    
+  }
+  
+  
+  
+  private static void testUpload( final APIHttpClient client, final JetConfig config )
+  {
+    final JetAPIBulkProductUpload up = new JetAPIBulkProductUpload( client, config );
+    
+    List<JetProduct> products = new ArrayList<>();
+    products.add( getTestProduct());
+    
+    
+    
+    
+    try {
+      System.out.println( up.getUploadToken().getUrl());
+    } catch( Exception e ) {
+      fail( "failed to do upload stuff", E_API_FAILURE, e );
+    }
+    
+  }
 }

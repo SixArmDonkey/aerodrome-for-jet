@@ -304,7 +304,7 @@ public class JetProduct implements Jsonable
    * If you want to increase the commission you are willing to pay from a base rate
    * of 15% to 17%, then you should enter '0.02'
    */
-  private float noReturnFeeAdj = 0F;
+  private Money noReturnFeeAdj = new Money();
 
   /**
    * If this field is 'true', it indicates that this 'merchant SKU' will always
@@ -433,7 +433,7 @@ public class JetProduct implements Jsonable
     out.mapPrice = new Money( json.getString( "map_price", "0" ));
     out.mapImplementation = MAPType.fromJet( json.getString( "map_implementation", MAPType.NO_RESTRICTIONS.getType()));
     out.productTaxCode = ProductTaxCode.fromString( json.getString( "product_tax_code", "" ));
-    out.noReturnFeeAdj = getJsonFloat( json.getJsonNumber( "no_return_fee_adjustment" ));
+    out.noReturnFeeAdj = new Money( json.getString( "no_return_fee_adjustment", "0" ));
     out.excludeFromFeeAdjustments = json.getBoolean( "exclude_from_fee_adjustments", false );
     out.attributesNodeSpecific.addAll( loadAttrNodeSpecific( json.getJsonArray( "attribute_node_specific" )));
     out.mainImageUrl = json.getString( "main_image_url", "" );
@@ -1391,7 +1391,7 @@ public class JetProduct implements Jsonable
    * of 15% to 17%, then you should enter '0.02'
    * @return the noReturnFeeAdj
    */
-  public float getNoReturnFeeAdj() {
+  public Money getNoReturnFeeAdj() {
     return noReturnFeeAdj;
   }
 
@@ -1403,8 +1403,8 @@ public class JetProduct implements Jsonable
    * of 15% to 17%, then you should enter '0.02'
    * @param noReturnFeeAdj the noReturnFeeAdj to set
    */
-  public void setNoReturnFeeAdj(float noReturnFeeAdj) {
-    this.noReturnFeeAdj = Utils.round( noReturnFeeAdj, 2 );
+  public void setNoReturnFeeAdj(final Money noReturnFeeAdj) {
+    this.noReturnFeeAdj = noReturnFeeAdj;
   }
 
   /**
@@ -1705,7 +1705,7 @@ public class JetProduct implements Jsonable
   public JsonObject toPriceJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
-      .add( "price", price.asBigDecimal().floatValue());
+      .add( "price", Float.valueOf( price.toString()));
 
     if ( !fNodePrices.isEmpty())
       o.add( "fulfillment_nodes", fNodesToJSON());
@@ -1892,18 +1892,18 @@ public class JetProduct implements Jsonable
         o.add( "fulfillment_time", fulfillmentTime );
 
       if ( msrp.greaterThanZero())
-        o.add( "msrp", msrp.asBigDecimal().floatValue());
+        o.add( "msrp", Float.valueOf( msrp.toString()));
 
       if ( mapPrice.greaterThanZero())
-        o.add( "map_price", mapPrice.asBigDecimal().floatValue());
+        o.add( "map_price", Float.valueOf( mapPrice.toString()));
 
       o.add( "map_implementation", mapImplementation.getType());
 
       if ( !productTaxCode.equals( ProductTaxCode.NO_VALUE ))
         o.add( "product_tax_code", productTaxCode.getText());
 
-      if ( noReturnFeeAdj > 0 )
-        o.add( "no_return_fee_adjustment", noReturnFeeAdj );
+      if ( noReturnFeeAdj.greaterThanZero())
+        o.add( "no_return_fee_adjustment", noReturnFeeAdj.toString());
 
       o.add( "exclude_from_fee_adjustments", excludeFromFeeAdjustments );
 
@@ -2014,20 +2014,7 @@ public class JetProduct implements Jsonable
     return out;
   }
   
-  
-  /**
-   * Turn a json number into a float 
-   * @param n number
-   * @return float 
-   */
-  private static float getJsonFloat( final JsonNumber n )
-  {
-    if ( n == null )
-      return 0F;
-    
-    return n.bigDecimalValue().floatValue();
-  }
-  
+
   
   private static List<SkuAttribute> loadAttrNodeSpecific( final JsonArray a )
   {

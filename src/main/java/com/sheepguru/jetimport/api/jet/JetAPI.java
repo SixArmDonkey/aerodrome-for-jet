@@ -35,6 +35,34 @@ public class JetAPI extends API
     config = conf;
   }
 
+  
+  public JetAPI( final APIHttpClient client, final JetConfig conf, final boolean lockHost )
+  {
+    super( client, lockHost );
+    
+    if ( conf == null )
+      throw new IllegalArgumentException( "conf cannot be null" );
+    
+    config = conf;
+  }
+  
+    
+  /**
+   * 
+   * @param client
+   * @param lockHost
+   * @param maxDownloadSize 
+   */
+  public JetAPI( final APIHttpClient client, final JetConfig conf, final boolean lockHost, final long maxDownloadSize )  
+  {
+    super( client, lockHost, maxDownloadSize );
+    
+    if ( conf == null )
+      throw new IllegalArgumentException( "conf cannot be null" );
+    
+    config = conf;    
+  }
+  
 
   /**
    * Retrieve a HeaderBuilder instance with an Authorization header 

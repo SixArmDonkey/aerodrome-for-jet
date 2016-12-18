@@ -17,7 +17,7 @@ import javax.json.JsonObject;
  * 
  * @author John Quinn
  */
-public class ProductPriceRec 
+public class ProductPrice 
 {
   /**
    * A format for converting jet dates to a date
@@ -47,7 +47,7 @@ public class ProductPriceRec
    * @return object 
    * @throws ParseException 
    */
-  public static ProductPriceRec fromJSON( final JsonObject json )
+  public static ProductPrice fromJSON( final JsonObject json )
     throws ParseException 
   {
     final JsonArray a = json.getJsonArray( "fulfillment_nodes" );
@@ -61,7 +61,7 @@ public class ProductPriceRec
       }
     }
     
-    return new ProductPriceRec(
+    return new ProductPrice(
       new Money( json.getString( "price", "0" )),
       json.getString( "price_last_update", "" ),
       nodes
@@ -82,7 +82,7 @@ public class ProductPriceRec
    * @param fNodes The price a retailer would like to set for this SKU sold at a fulfillment node
    * @throws ParseException if the date is invalid 
    */
-  public ProductPriceRec( final Money price, final String lastUpdate, 
+  public ProductPrice( final Money price, final String lastUpdate, 
     final List<FNodePrice> fNodes ) throws ParseException 
   {
     if ( price == null || price.lessThanZero())

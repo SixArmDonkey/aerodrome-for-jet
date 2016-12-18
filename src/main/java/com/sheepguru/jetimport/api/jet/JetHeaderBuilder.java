@@ -2,6 +2,7 @@
 package com.sheepguru.jetimport.api.jet;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -23,7 +24,7 @@ public class JetHeaderBuilder
   /**
    * Headers to send 
    */
-  private final HashMap<String,String> headers = new HashMap<>();
+  private final Map<String,String> headers = new HashMap<>();
 
   
   /**
@@ -93,7 +94,7 @@ public class JetHeaderBuilder
    * Access the headers map.
    * @return headers to send 
    */
-  public HashMap<String,String> build()
+  public Map<String,String> build()
   {
     return headers;
   }
