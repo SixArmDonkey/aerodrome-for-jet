@@ -166,6 +166,33 @@ public class JetConfigBuilder
    */
   private String uriGetBulkUploadToken = "";  
   
+  
+  /**
+   * URL for retrieving a list of orders
+   */
+  private String uriGetOrders = "";
+  
+  /**
+   * Uri for getting a list of order url's 
+   */
+  private String uriGetDirectedCancel = "";
+  
+  /**
+   * Uri for retrieving details for an order
+   */
+  private String uriGetOrderDetail = "";  
+  
+  /**
+   * Uri for acknowledging an order
+   */
+  private String uriPutOrderAck = "";
+  
+  /**
+   * Uri for telling jet an order has shipped
+   */
+  private String uriPutOrderShipped = "";  
+  
+  
   /**
    * Get the log 
    */
@@ -530,6 +557,86 @@ public class JetConfigBuilder
   }
   
   
+
+  /**
+   * URL for the endpoint for accessing the first 1000 orders in a certain status.
+   * 
+   * 
+   * 'created' - The order has just been placed. Jet.com allows a half hour for 
+   * fraud check and customer cancellation. We ask that retailers NOT fulfill 
+   * orders that are created.
+   * 'ready' - The order is ready to be fulfilled by the retailer
+   * 'acknowledged' - The order has been accepted by the retailer and is 
+   * awaiting fulfillment
+   * 'inprogress' - The order is partially shipped
+   * 'complete' - The order is completely shipped or cancelled. All units have 
+   * been accounted for
+   * 
+   * @param uri The uri
+   * @return builder
+   */
+  public JetConfigBuilder setGetOrdersUrl( final String uri )
+  {
+    this.uriGetOrders = uri;
+    return this;
+  }
+  
+  
+  /**
+   * This provides a list of order url's that can be used to retrieve order
+   * details I think.  
+   * @param uri The uri
+   * @return builder
+   */
+  public JetConfigBuilder setGetOrderDirectCancelUrl( final String uri )
+  {
+    this.uriGetDirectedCancel = uri;
+    return this;
+  }
+  
+  
+  /**
+   * This endpoint will provide you with requisite fulfillment information for 
+   * the order denoted by the Jet Defined Order ID.
+   * @param jetDefinedOrderId The jet order id defined by jet.com 
+   * @param uri The uri
+   * @this.builder
+   */
+  public JetConfigBuilder setGetOrderDetailUrl( final String uri )
+  {
+    this.uriGetOrderDetail = uri;
+    return this;
+  }
+  
+  
+  /**
+   * The order acknowledge call is utilized to allow a retailer to accept or 
+   * reject an order. If there are any skus in the order that cannot be 
+   * fulfilled then you will reject the order.
+   * @param uri The uri
+   * @this.builder
+   */
+  public JetConfigBuilder setPutOrderAcknowledgeUrl( final String uri )
+  {
+    this.uriPutOrderAck = uri;
+    return this;
+  }
+  
+  
+  /**
+   * The order shipped call is utilized to provide Jet with the SKUs that have 
+   * been shipped or cancelled in an order, the tracking information, carrier 
+   * information and any additional returns information for the order.
+   * @param uri The uri
+   * @this.builder
+   */
+  public JetConfigBuilder setPutOrderShipNotificationUrl( final String uri )
+  {
+    this.uriPutOrderShipped = uri;
+    return this;
+  }  
+  
+  
   /**
    * Build a configuration object
    * @return config
@@ -565,7 +672,12 @@ public class JetConfigBuilder
       uriGetProductSalesData,
       uriGetBulkUploadToken,
       uriGetBulkJetFileId,
-      uriPostBulkUploadedFiles      
+      uriPostBulkUploadedFiles,
+      uriGetOrders,
+      uriGetDirectedCancel,
+      uriGetOrderDetail,
+      uriPutOrderAck,
+      uriPutOrderShipped
     );
   }
 

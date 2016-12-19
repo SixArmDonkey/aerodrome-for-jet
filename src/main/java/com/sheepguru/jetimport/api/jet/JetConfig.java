@@ -331,6 +331,64 @@ public interface JetConfig
    * @throws JetAuthException based on above description
    */
   public void testConfigurationData() throws JetAuthException;
+
   
   ////////////// END AUTH ..////////////////////////////////////////////////////  
+  ////////////// START ORDERS ////////////////////////////////////////////////// 
+  
+  /**
+   * URL for the endpoint for accessing the first 1000 orders in a certain status.
+   * 
+   * 
+   * 'created' - The order has just been placed. Jet.com allows a half hour for 
+   * fraud check and customer cancellation. We ask that retailers NOT fulfill 
+   * orders that are created.
+   * 'ready' - The order is ready to be fulfilled by the retailer
+   * 'acknowledged' - The order has been accepted by the retailer and is 
+   * awaiting fulfillment
+   * 'inprogress' - The order is partially shipped
+   * 'complete' - The order is completely shipped or cancelled. All units have 
+   * been accounted for
+   * 
+   * @param status The order status 
+   * @return url
+   */
+  public String getGetOrdersUrl( final String status );
+  
+  /**
+   * This provides a list of order url's that can be used to retrieve order
+   * details I think.  
+   * @return url
+   */
+  public String getGetOrderDirectCancelUrl();
+  
+  
+  /**
+   * This endpoint will provide you with requisite fulfillment information for 
+   * the order denoted by the Jet Defined Order ID.
+   * @param jetDefinedOrderId The jet order id defined by jet.com 
+   * @return url
+   */
+  public String getGetOrderDetailUrl( final String jetDefinedOrderId );
+  
+  
+  /**
+   * The order acknowledge call is utilized to allow a retailer to accept or 
+   * reject an order. If there are any skus in the order that cannot be 
+   * fulfilled then you will reject the order.
+   * @return url
+   */
+  public String getPutOrderAcknowledgeUrl();
+  
+  
+  /**
+   * The order shipped call is utilized to provide Jet with the SKUs that have 
+   * been shipped or cancelled in an order, the tracking information, carrier 
+   * information and any additional returns information for the order.
+   * @param jetDefinedOrderId order id from jet 
+   * @return url
+   */
+  public String getPutOrderShipNotificationUrl( final String jetDefinedOrderId );
+  
+  ////////////// END ORDERS //////////////////////////////////////////////////// 
 }

@@ -58,7 +58,7 @@ public class JetAPIResponse extends APIResponse
     /**
      * A list of existing enum values 
      */
-    private static ResponseCode[] values = null;
+    private static final ResponseCode[] values = values();
     
     
     
@@ -70,9 +70,6 @@ public class JetAPIResponse extends APIResponse
      */
     public static ResponseCode create( final int code )
     {
-      if ( values == null )
-        values = ResponseCode.values();
-      
       for ( final ResponseCode c : values )
       {
         if ( c.getCode() == code )

@@ -209,6 +209,31 @@ public class DefaultJetConfig implements JetConfig
    */
   private String uriGetBulkUploadToken = "";
   
+  /**
+   * URL for retrieving a list of orders
+   */
+  private String uriGetOrders = "";
+  
+  /**
+   * Uri for getting a list of order url's 
+   */
+  private String uriGetDirectedCancel = "";
+  
+  /**
+   * Uri for retrieving details for an order
+   */
+  private String uriGetOrderDetail = "";  
+  
+  /**
+   * Uri for acknowledging an order
+   */
+  private String uriPutOrderAck = "";
+  
+  /**
+   * Uri for telling jet an order has shipped
+   */
+  private String uriPutOrderShipped = "";
+  
 
   /**
    * Test a string for null and empty and 
@@ -278,7 +303,12 @@ public class DefaultJetConfig implements JetConfig
     final String uriGetProductSalesData,
     final String uriGetBulkUploadToken,
     final String uriGetBulkJetFileId,
-    final String uriPostBulkUploadedFiles
+    final String uriPostBulkUploadedFiles,
+    final String uriGetOrders,
+    final String uriGetDirectedCancel,
+    final String uriGetOrderDetail,
+    final String uriPutOrderAck,
+    final String uriPutOrderShipped
   ) throws IllegalArgumentException
   {
     //...Obviously this is designed to work with the xml configuration file.
@@ -311,6 +341,11 @@ public class DefaultJetConfig implements JetConfig
     checkStringEmpty( uriGetBulkUploadToken, "jet.uri.products.get.bulkUploadToken cannot be null or empty" );
     checkStringEmpty( uriGetBulkJetFileId, "jet.uri.products.get.bulkJetFileId cannot be null or empty" );
     checkStringEmpty( uriPostBulkUploadedFiles, "jet.uri.products.post.bulkUploadedFiles cannot be null or empty" );
+    checkStringEmpty( uriGetOrders, "jet.uri.orders.get.orders cannot be empty" );
+    checkStringEmpty( uriGetDirectedCancel, "jet.uri.orders.get.directedCancel cannot be empty" );
+    checkStringEmpty( uriGetOrderDetail, "jet.uri.orders.get.detail cannot be empty" );
+    checkStringEmpty( uriPutOrderAck, "jet.uri.orders.put.acknowledge cannot be empty" );
+    checkStringEmpty( uriPutOrderShipped, "jet.uri.orders.put.ship cannot be empty" );
     
     if ( readTimeout < 0 )
       throw new IllegalArgumentException( "readTimeout cannot be less than zero" );
@@ -344,6 +379,11 @@ public class DefaultJetConfig implements JetConfig
     this.uriGetBulkUploadToken = uriGetBulkUploadToken;
     this.uriGetBulkJetFileId = uriGetBulkJetFileId;
     this.uriPostBulkUploadedFiles = uriPostBulkUploadedFiles;
+    this.uriGetOrders = uriGetOrders;
+    this.uriGetDirectedCancel = uriGetDirectedCancel;
+    this.uriGetOrderDetail = uriGetOrderDetail;
+    this.uriPutOrderAck = uriPutOrderAck;
+    this.uriPutOrderShipped = uriPutOrderShipped;
   }
   
   
@@ -849,4 +889,84 @@ public class DefaultJetConfig implements JetConfig
     return buildURL( uriPostBulkUploadedFiles );
   }
 
+  ////////////// END POST PRODUCT //////////////////////////////////////////////
+  ////////////// START ORDERS //////////////////////////////////////////////////
+
+  /**
+   * URL for the endpoint for accessing the first 1000 orders in a certain status.
+   * 
+   * 
+   * 'created' - The order has just been placed. Jet.com allows a half hour for 
+   * fraud check and customer cancellation. We ask that retailers NOT fulfill 
+   * orders that are created.
+   * 'ready' - The order is ready to be fulfilled by the retailer
+   * 'acknowledged' - The order has been accepted by the retailer and is 
+   * awaiting fulfillment
+   * 'inprogress' - The order is partially shipped
+   * 'complete' - The order is completely shipped or cancelled. All units have 
+   * been accounted for
+   * 
+   * @param status The order status 
+   * @return url
+   */
+  @Override
+  public String getGetOrdersUrl( final String status )
+  {
+    return uriGetOrders.replace( "{status}", status );
+  }
+  
+  
+  /**
+   * This provides a list of order url's that can be used to retrieve order
+   * details I think.  
+   * @return url
+   */
+  @Override
+  public String getGetOrderDirectCancelUrl()
+  {
+    return uriGetDirectedCancel;
+  }
+  
+  
+  /**
+   * This endpoint will provide you with requisite fulfillment information for 
+   * the order denoted by the Jet Defined Order ID.
+   * @param jetDefinedOrderId The jet order id defined by jet.com 
+   * @return url
+   */
+  @Override
+  public String getGetOrderDetailUrl( final String jetDefinedOrderId )
+  {
+    return uriGetOrderDetail.replace( "{jet_defined_order_id}", 
+      jetDefinedOrderId );
+  }
+  
+  
+  /**
+   * The order acknowledge call is utilized to allow a retailer to accept or 
+   * reject an order. If there are any skus in the order that cannot be 
+   * fulfilled then you will reject the order.
+   * @return url
+   */
+  @Override
+  public String getPutOrderAcknowledgeUrl()
+  {
+    return uriPutOrderAck;
+  }
+  
+  
+  /**
+   * The order shipped call is utilized to provide Jet with the SKUs that have 
+   * been shipped or cancelled in an order, the tracking information, carrier 
+   * information and any additional returns information for the order.
+   * @param jetDefinedOrderId order id from jet 
+   * @return url
+   */
+  @Override
+  public String getPutOrderShipNotificationUrl( final String jetDefinedOrderId )
+  {
+    return uriPutOrderShipped;
+  }
+  
+  ////////////// END ORDERS ..//////////////////////////////////////////////////
 }

@@ -10,14 +10,14 @@ import com.sheepguru.jetimport.api.jet.JetAuthException;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
 import com.sheepguru.jetimport.api.jet.JetException;
-import com.sheepguru.jetimport.api.jet.product.BulkUploadAuthRec;
-import com.sheepguru.jetimport.api.jet.product.BulkUploadFileType;
-import com.sheepguru.jetimport.api.jet.product.FNodeInventoryRec;
-import com.sheepguru.jetimport.api.jet.product.JetAPIBulkProductUpload;
-import com.sheepguru.jetimport.api.jet.product.JetAPIProduct;
-import com.sheepguru.jetimport.api.jet.product.ProductRec;
-import com.sheepguru.jetimport.api.jet.product.ProductCodeRec;
-import com.sheepguru.jetimport.api.jet.product.ProductCodeType;
+import com.sheepguru.jetimport.api.jet.products.BulkUploadAuthRec;
+import com.sheepguru.jetimport.api.jet.products.BulkUploadFileType;
+import com.sheepguru.jetimport.api.jet.products.FNodeInventoryRec;
+import com.sheepguru.jetimport.api.jet.products.JetAPIBulkProductUpload;
+import com.sheepguru.jetimport.api.jet.products.JetAPIProduct;
+import com.sheepguru.jetimport.api.jet.products.ProductRec;
+import com.sheepguru.jetimport.api.jet.products.ProductCodeRec;
+import com.sheepguru.jetimport.api.jet.products.ProductCodeType;
 import com.sheepguru.utils.Money;
 import java.io.File;
 import java.io.FileInputStream;
@@ -270,6 +270,20 @@ public class JetImport implements ExitCodes
       .setUriPostBulkUploadedFiles(
         config.getString( "jet.uri.products.post.bulkUploadedFiles", "" ))
             
+      .setGetOrdersUrl( 
+        config.getString( "jet.uri.orders.get.orders", "" ))
+            
+      .setGetOrderDirectCancelUrl(
+        config.getString( "jet.uri.orders.get.directedCancel", "" ))
+        
+      .setGetOrderDetailUrl(
+        config.getString( "jet.uri.orders.get.detail", "" ))
+        
+      .setPutOrderAcknowledgeUrl( 
+        config.getString( "jet.uri.orders.put.acknowledge", "" ))
+            
+      .setPutOrderShipNotificationUrl(
+        config.getString( "jet.uri.orders.put.ship", "" ))
       .build();
   }
   
