@@ -99,7 +99,7 @@ public class JetDate
   {
     try {
       return ( new SimpleDateFormat( 
-        DEFAULT_FORMAT, Locale.ENGLISH )).parse( date );      
+        format, Locale.ENGLISH )).parse( date );      
     } catch( ParseException e ) {
       APILog.error( LOG, e, "Failed to parse date", date, "with format", format );
       return new Date();
