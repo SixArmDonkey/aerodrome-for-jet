@@ -114,6 +114,13 @@ Variable Placeholders
           marketplace. -->
           
           <salesData>/merchant-skus/{sku}/salesdata</salesData>
+          
+          <!-- This endpoint is used to retrieve a token/url for uploading a 
+          bulk file upload -->
+          <bulkUploadToken>/files/uploadToken</bulkUploadToken>
+          
+          <!-- used to retrieve the processing status of an uploaded bulk file -->
+          <bulkJetFileId>/files/{file_id}</bulkJetFileId>
         </get>
 
         <!-- Put commands -->
@@ -140,14 +147,40 @@ Variable Placeholders
           <archiveSku>/merchant-skus/{sku}/status/archive</archiveSku>
           
           <!-- Add a return exception -->
-          <returnsException>/merchant-skus/{sku}/returnsexception</returnsException>
+          <returnsException>/merchant-skus/{sku}/returnsexception</returnsException>                    
         </put>
-
-        <!-- Delete Commands -->
-        <delete>
-
-        </delete>
+        
+        <!-- post -->
+        <!-- This might be the thing that starts processing -->
+        <post>
+          <bulkUploadedFiles>/files/uploaded</bulkUploadedFiles>
+        </post>
       </products>
+      
+      
+      <!-- Orders API -->
+      <orders>
+        <!-- Get Methods -->
+        <get>
+          <!-- Check for orders -->
+          <orders>/orders/{status}</orders>
+          
+          <!-- I don't know -->
+          <directedCancel>/orders/directedCancel</directedCancel>
+          
+          <!-- Retrieve fulfillment information for an order -->
+          <detail>/orders/withoutShipmentDetail/{jet_defined_order_id}</detail>
+        </get>
+        
+        <!-- Put methods -->
+        <put>
+          <!-- Endpoint to accept or reject an order -->
+          <acknowledge>/orders/{jet_defined_order_id}/acknowledge</acknowledge>
+          
+          <!-- Shipment Notification endpoint -->
+          <ship>/orders/{jet_defined_order_id}/shipped</ship>          
+        </put>
+      </orders>
     </uri>
   </jet>
 </config>
