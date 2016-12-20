@@ -15,6 +15,10 @@ import org.apache.http.entity.ContentType;
  * Jet API
  *
  * @author John Quinn
+ * 
+ * @todo Authentication checks need to exist on every call.
+ * If auth is expired, client needs to lock the config object and 
+ * attempt reauthentication, then re-set the new credentials.
  */
 public class JetAPI extends API
 {

@@ -67,6 +67,20 @@ public class Money implements Comparable<Money>
     fAmount = BigDecimal.ZERO.setScale( getDecimals(), fMode );
     checkAmount();
   }
+  
+  
+  /**
+   * Create a copy of some other money instance 
+   * @param m 
+   */
+  public Money( final Money m )
+  {
+    this.fAmount = new BigDecimal( m.fAmount.toPlainString());
+    this.fLocale = new Locale( m.fLocale.getLanguage(), m.fLocale.getCountry());
+    this.fCurrency = Currency.getInstance( this.fLocale );
+    this.fMode = m.fMode;
+    
+  }
 
 
   /**

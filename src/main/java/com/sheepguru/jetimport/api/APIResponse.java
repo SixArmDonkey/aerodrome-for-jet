@@ -179,6 +179,18 @@ public class APIResponse
     }
   }
 
+  
+  /**
+   * A crude way to see if a response might have json in it.
+   * Checks to see if a { is in position 0.
+   * 
+   * @return might be json
+   */
+  public boolean isJson()
+  {
+    return content.trim().startsWith( "{" );
+  }
+  
 
   /**
    * Find out if the last request was successful
