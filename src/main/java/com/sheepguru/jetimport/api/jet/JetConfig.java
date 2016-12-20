@@ -14,6 +14,20 @@ import java.util.Date;
 public interface JetConfig 
 {
   /**
+   * Retrieve the max download size 
+   * @return size in bytes
+   */
+  public long getMaxDownloadSize();
+  
+  
+  /**
+   * get lock host flag 
+   * @return flag 
+   */
+  public boolean isLockHost();
+  
+  
+  /**
    * Retrieve the read timeout in milliseconds 
    * @return 
    */

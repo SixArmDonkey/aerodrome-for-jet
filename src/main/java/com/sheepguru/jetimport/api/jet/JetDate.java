@@ -40,6 +40,38 @@ public class JetDate
    * The data date or the current date if it fails to format 
    */
   private final Date javaDate;
+
+  
+  /**
+   * Attempt to take some value and turn it into a valid JetDate.
+   * If it isn't valid, then this returns null.
+   * 
+   * @param value Jet value 
+   * @return date or null
+   */
+  public static JetDate fromJetValueOrNull( final String value )
+  {
+    if ( value == null || value.isEmpty())
+      return null;
+    
+    try {
+      return new JetDate( new SimpleDateFormat( 
+        DEFAULT_FORMAT, Locale.ENGLISH ).parse( value ));
+    } catch( ParseException e ) {
+      APILog.error( LOG, e, "Failed to parse date", value, "with format", 
+        DEFAULT_FORMAT );
+      return null;
+    }
+  }
+  
+  
+  /**
+   * Create a new JetDate set to now 
+   */
+  public JetDate()
+  {
+    this( new Date());
+  }
   
   
   /**
@@ -50,8 +82,36 @@ public class JetDate
   {
     this( date, DEFAULT_FORMAT );
   }
+  
+  
+  /**
+   * Create a new JetDate
+   * @param date date to use 
+   */
+  public JetDate( final Date date )
+  {
+    Utils.checkNull( date, "date" );
+    
+    this.javaDate = new Date( date.getTime());
+    this.date = new SimpleDateFormat( DEFAULT_FORMAT, Locale.ENGLISH ).format( javaDate );    
+  }
 
 
+  /**
+   * Create a new JetDate
+   * @param date date to use 
+   * @param format format string
+   */
+  public JetDate( final Date date, final String format )
+  {
+    Utils.checkNull( date, "date" );
+    
+    this.javaDate = new Date( date.getTime());
+    this.date = new SimpleDateFormat( format, Locale.ENGLISH ).format( javaDate );    
+  }
+  
+  
+  
   /**
    * Create a new JetDate
    * @param date Date
@@ -102,7 +162,7 @@ public class JetDate
         format, Locale.ENGLISH )).parse( date );      
     } catch( ParseException e ) {
       APILog.error( LOG, e, "Failed to parse date", date, "with format", format );
-      return new Date();
+      return new Date( 0 );
     }    
   }
 }

@@ -12,6 +12,11 @@ package com.sheepguru.jetimport.api.jet.orders;
 public enum OrderStatus 
 {
   /**
+   * None specified
+   */
+  NONE( "" ),
+  
+  /**
    * order was created by Jet.com but not released for fulfillment
    */
   CREATED( "created" ),
@@ -49,7 +54,7 @@ public enum OrderStatus
    * @return status
    * @throws IllegalArgumentException if text is not found 
    */
-  public static OrderStatus fromString( final String text )
+  public static OrderStatus fromText( final String text )
     throws IllegalArgumentException
   {
     for ( final OrderStatus s : values )

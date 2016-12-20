@@ -149,6 +149,15 @@ public class JetConfigBuilder
    */
   private boolean allowUntrustedSSL = false;
   
+  /**
+   * lock host 
+   */
+  private boolean lockHost = true;
+  
+  /**
+   * Max download size
+   */
+  private long maxDownloadSize = 1024 * 2048;
   
         
   /**
@@ -234,6 +243,32 @@ public class JetConfigBuilder
   {
     this.pass = pass;
     APILog.debug( LOG, "Using Pass: *****" );
+    return this;
+  }
+  
+  
+  /**
+   * Set lock host
+   * @param on on 
+   * @return this
+   */
+  public JetConfigBuilder setLockHost( final boolean on )
+  {
+    lockHost = on;
+    APILog.debug( LOG, "lockHost set to ", ( lockHost ) ? " true " : " false" );
+    return this;
+  }
+  
+  
+  /**
+   * Set the max download size
+   * @param size size 
+   * @return this 
+   */
+  public JetConfigBuilder setMaxDownloadSize( final long size )
+  {
+    maxDownloadSize = size;
+    APILog.debug( LOG, "maxDownloadSize set to", String.valueOf( size ));
     return this;
   }
 
@@ -648,6 +683,8 @@ public class JetConfigBuilder
       host,
       user, 
       pass, 
+      lockHost,
+      maxDownloadSize,
       readTimeout,
       acceptHeaderValue,
       acceptLanguageHeaderValue,

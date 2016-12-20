@@ -1,7 +1,9 @@
 
 package com.sheepguru.jetimport.api.jet.orders;
 
+import com.sheepguru.jetimport.api.jet.Utils;
 import com.sheepguru.utils.Money;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.json.Json;
@@ -37,6 +39,35 @@ public class OrderTotalRec
    * Regulatory fees
    */
   private final Money regFees;
+  
+  
+  /**
+   * Turn jet json into an instance
+   * @param json jet json 
+   * @return object 
+   */
+  public static OrderTotalRec fromJson( final JsonObject json )
+  {
+    Utils.checkNull( json, "json" );
+    
+    final List<FeeAdjRec> adj = new ArrayList<>();
+    
+    final JsonArray a = json.getJsonArray( "fee_adjustments" );
+    if ( a != null )
+    {
+      for ( int i = 0; i < a.size(); i++ )
+      {
+        adj.add( FeeAdjRec.fromJson( a.getJsonObject( i )));
+      }
+    }
+    
+    return new OrderTotalRec(
+      ItemPriceRec.fromJson( json.getJsonObject( "base_price" )),
+      new Money( json.getString( "item_fees", "0" )),
+      adj,
+      new Money( json.getString( "regulatory_fees", "0" ))      
+    );
+  }
   
   
   /**
@@ -122,6 +153,5 @@ public class OrderTotalRec
       .add( "fee_adjustments", a.build())
       .add( "regulatory_fees", regFees.floatValue())
       .build();
-  }
-  
+  } 
 }

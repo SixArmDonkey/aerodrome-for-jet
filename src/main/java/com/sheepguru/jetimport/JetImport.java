@@ -197,6 +197,9 @@ public class JetImport implements ExitCodes
       .setUriToken( 
         config.getString( "jet.uri.token", "" ))
             
+      .setLockHost( config.getBoolean( "client.lockHost", true ))
+      .setMaxDownloadSize( config.getLong( "client.maxDownloadSize", 200000 ))
+            
       .setUriAddProduct( 
         config.getString( "jet.uri.products.put.sku", "" ))
 

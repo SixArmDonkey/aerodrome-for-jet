@@ -44,6 +44,13 @@ public class JetAPI extends API
   }
 
   
+  /**
+   * Create a new API instance
+   * @param client The built APIHttpClient instance 
+   * @param conf The Jet Configuration object
+   * @param lockHost Toggle locking the host to a domain if http is not present
+   * in the url string.
+   */
   public JetAPI( final APIHttpClient client, final JetConfig conf, final boolean lockHost )
   {
     super( client, lockHost );
@@ -56,12 +63,16 @@ public class JetAPI extends API
   
     
   /**
-   * 
-   * @param client
-   * @param lockHost
-   * @param maxDownloadSize 
+   * Create a new API instance
+   * @param client The built APIHttpClient instance 
+   * @param conf The Jet Configuration object
+   * @param lockHost Toggle locking the host to a domain if http is not present
+   * in the url string.
+   * @param maxDownloadSize Set a maximum download site for the local client.
+   * This is a fixed limit.
    */
-  public JetAPI( final APIHttpClient client, final JetConfig conf, final boolean lockHost, final long maxDownloadSize )  
+  public JetAPI( final APIHttpClient client, final JetConfig conf, 
+    final boolean lockHost, final long maxDownloadSize )  
   {
     super( client, lockHost, maxDownloadSize );
     

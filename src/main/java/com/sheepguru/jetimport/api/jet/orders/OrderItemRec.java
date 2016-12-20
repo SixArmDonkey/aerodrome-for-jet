@@ -99,6 +99,13 @@ public class OrderItemRec
    */
   private final Money regFees;
   
+  /**
+   * Order item acknowledge status 
+   */
+  private final ItemAckStatus itemAckStatus;
+    
+  
+  
   private static final Log LOG = LogFactory.getLog( OrderItemRec.class );
 
 
@@ -180,6 +187,24 @@ public class OrderItemRec
      * 
      */
     private Money regFees = new Money();
+    
+    /**
+     * Order item acknowledge status 
+     */
+    private ItemAckStatus itemAckStatus = ItemAckStatus.NONE;
+  
+    
+    /**
+     * Set the item acknowledged status  
+     * @param status status 
+     * @return this 
+     */
+    public Builder setItemAckStatus( final ItemAckStatus status )
+    {
+      Utils.checkNull( status, "status" );
+      this.itemAckStatus = status;
+      return this;
+    }
 
     
     /**
@@ -442,6 +467,8 @@ public class OrderItemRec
       .setTaxInfo( json.getString( "tax_info", "" )) //..This might not work...
       .setRegFees( new Money( json.getString( "regulatory_fees", "0" )))
       .setAdjustments( jsonToFeeAdj( json.getJsonArray( "fee_adjustments" )))
+      .setItemAckStatus( ItemAckStatus.fromText( 
+        json.getString( "order_item_acknowledgement_status", "" )))
       .build();
   }
   
@@ -464,6 +491,7 @@ public class OrderItemRec
     this.adjustments = Collections.unmodifiableList( b.adjustments );
     this.taxInfo = b.taxInfo; 
     this.regFees = new Money( b.regFees );
+    this.itemAckStatus = b.itemAckStatus;
   }
   
   
@@ -600,6 +628,16 @@ public class OrderItemRec
   
   
   /**
+   * Retrieve the item acknowledged status if available 
+   * @return status 
+   */
+  public ItemAckStatus getItemAckStatus()
+  {
+    return itemAckStatus;
+  }
+  
+  
+  /**
    * Turn this object into jet json 
    * @return json
    */
@@ -627,6 +665,7 @@ public class OrderItemRec
       .add( "tax_info", taxInfo )
       .add( "fee_adjustments", adj.build())
       .add( "regulatory_fees", regFees.floatValue())
+      .add( "order_item_acknowledgement_status", itemAckStatus.getText())
       .build();
   }
   

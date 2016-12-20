@@ -162,77 +162,87 @@ public class DefaultJetConfig implements JetConfig
    * Authentication header value 
    * TokenType + ' ' + Token 
    */
-  private String authHeaderValue = "";
+  private String authHeaderValue;
   
   /**
    * URL to retrieve product inventory 
    */
-  private String uriGetProductInventory = "";
+  private final String uriGetProductInventory;
   
   /**
    * URL to retrieve product variations
    */
-  private String uriGetProductVariation = "";
+  private final String uriGetProductVariation;
   
   /**
    * URL to retrieve product shipping exception s
    */
-  private String uriGetProductShippingException = "";
+  private final String uriGetProductShippingException;
   
   /**
    * URL to retrieve product returns exceptions
    */
-  private String uriGetProductReturnsException = "";
+  private final String uriGetProductReturnsException;
   
   /**
    * URL to retrieve the list of product skus 
    */
-  private String uriGetSkuList = "";
+  private final String uriGetSkuList;
   
   /**
    * URL to retrieve product sales data 
    */
-  private String uriGetProductSalesData = "";
+  private final String uriGetProductSalesData;
         
   /**
    * Url to retrieve a bulk file upload status by file id 
    */
-  private String uriGetBulkJetFileId = "";
+  private final String uriGetBulkJetFileId;
   
   /**
    * Url for posting additional files to a batch or to start processing 
    */
-  private String uriPostBulkUploadedFiles = "";
+  private final String uriPostBulkUploadedFiles;
   
   /**
    * Url for retrieving a token for uploading a bulk file
    */
-  private String uriGetBulkUploadToken = "";
+  private final String uriGetBulkUploadToken;
   
   /**
    * URL for retrieving a list of orders
    */
-  private String uriGetOrders = "";
+  private final String uriGetOrders;
   
   /**
    * Uri for getting a list of order url's 
    */
-  private String uriGetDirectedCancel = "";
+  private final String uriGetDirectedCancel;
   
   /**
    * Uri for retrieving details for an order
    */
-  private String uriGetOrderDetail = "";  
+  private final String uriGetOrderDetail;  
   
   /**
    * Uri for acknowledging an order
    */
-  private String uriPutOrderAck = "";
+  private final String uriPutOrderAck;
   
   /**
    * Uri for telling jet an order has shipped
    */
-  private String uriPutOrderShipped = "";
+  private final String uriPutOrderShipped;
+  
+  /**
+   * Lock the host 
+   */
+  private final boolean lockHost;
+  
+  /**
+   * Max download size 
+   */
+  private final long maxDownloadSize;
   
 
   /**
@@ -279,6 +289,8 @@ public class DefaultJetConfig implements JetConfig
     final String host,
     final String user,
     final String pass,
+    final boolean lockHost,
+    final long maxDownloadSize,
     final long readTimeout,
     final String acceptHeaderValue,
     final String acceptLanguageHeaderValue,
@@ -308,7 +320,7 @@ public class DefaultJetConfig implements JetConfig
     final String uriGetDirectedCancel,
     final String uriGetOrderDetail,
     final String uriPutOrderAck,
-    final String uriPutOrderShipped
+    final String uriPutOrderShipped    
   ) throws IllegalArgumentException
   {
     //...Obviously this is designed to work with the xml configuration file.
@@ -350,9 +362,14 @@ public class DefaultJetConfig implements JetConfig
     if ( readTimeout < 0 )
       throw new IllegalArgumentException( "readTimeout cannot be less than zero" );
     
+    if ( maxDownloadSize < 0 )
+      throw new IllegalArgumentException( "maxDownloadSize cannot be less than zero" );
+    
     this.host = host;
     this.user = user;
     this.pass = pass;
+    this.lockHost = lockHost;
+    this.maxDownloadSize = maxDownloadSize;
     this.uriToken = uriToken;
     this.uriAuthTest = uriAuthTest;
     this.merchantId = merchantId;
@@ -384,6 +401,29 @@ public class DefaultJetConfig implements JetConfig
     this.uriGetOrderDetail = uriGetOrderDetail;
     this.uriPutOrderAck = uriPutOrderAck;
     this.uriPutOrderShipped = uriPutOrderShipped;
+  }
+  
+  
+  
+  /**
+   * Retrieve the max download size 
+   * @return size in bytes
+   */
+  @Override
+  public long getMaxDownloadSize()
+  {
+    return maxDownloadSize;
+  }
+  
+  
+  /**
+   * get lock host flag 
+   * @return flag 
+   */
+  @Override
+  public boolean isLockHost()
+  {
+    return lockHost;
   }
   
   

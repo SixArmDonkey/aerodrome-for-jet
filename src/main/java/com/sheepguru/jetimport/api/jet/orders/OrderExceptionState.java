@@ -12,6 +12,11 @@ package com.sheepguru.jetimport.api.jet.orders;
 public enum OrderExceptionState 
 {
   /**
+   * None specified 
+   */
+  NONE( "" ),
+  
+  /**
    * 
    */
   TOO_MANY_CANCELED( "exception - too many units cancelled" ),
@@ -51,7 +56,7 @@ public enum OrderExceptionState
    * @return status
    * @throws IllegalArgumentException if text is not found 
    */
-  public static OrderExceptionState fromString( final String text )
+  public static OrderExceptionState fromText( final String text )
     throws IllegalArgumentException
   {
     for ( final OrderExceptionState s : values )
