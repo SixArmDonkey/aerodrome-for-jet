@@ -406,4 +406,38 @@ public interface JetConfig
   public String getPutOrderShipNotificationUrl( final String jetDefinedOrderId );
   
   ////////////// END ORDERS //////////////////////////////////////////////////// 
+  ////////////// START RETURNS ///////////////////////////////////////////////// 
+  
+  
+  /**
+   * To check for returns you will the utilize the Get Returns method. Please replace {status} with one of the following values:
+   * created
+   * acknowledge - no longer in use
+   * inprogress
+   * completed by merchant
+   * This will return a list of returns in that status.
+   * @param status status 
+   * @return url 
+   */
+  public String getGetReturnsUrl( final String status );
+  
+  /**
+   * To check for a specific return you will the utilize the Get Returns Info 
+   * method. Please replace {jet_return_id} with the return id.
+   * This will return a list of values within that return.
+   * @param jetDefinedReturnId return id 
+   * @return url 
+   */
+  public String getGetReturnDetailUrl( final String jetDefinedReturnId );
+  
+  /**
+   * Get put complete return url 
+   * @param jetDefinedReturnId return id 
+   * @return url 
+   */
+  public String getPutCompleteReturnUrl( final String jetDefinedReturnId );
+  
+  
+  ////////////// END RETURNS /////////////////////////////////////////////////// 
+  
 }

@@ -4,11 +4,11 @@ package com.sheepguru.jetimport;
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
 import com.sheepguru.jetimport.api.PostFile;
+import com.sheepguru.jetimport.api.jet.DefaultJetConfig;
 import com.sheepguru.jetimport.api.jet.JetAPIAuth;
 import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetAuthException;
 import com.sheepguru.jetimport.api.jet.JetConfig;
-import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
 import com.sheepguru.jetimport.api.jet.JetDateWithOffset;
 import com.sheepguru.jetimport.api.jet.JetException;
 import com.sheepguru.jetimport.api.jet.orders.AckRequestItemRec;
@@ -197,7 +197,7 @@ public class JetImport implements ExitCodes
    */
   private static JetConfig buildJetConfig( final XMLConfiguration config )
   {
-    return ( new JetConfigBuilder())
+    return ( new DefaultJetConfig.Builder())
       .setMerchantId( 
         config.getString( "jet.merchantId", "" ))   
 
@@ -303,6 +303,16 @@ public class JetImport implements ExitCodes
             
       .setPutOrderShipNotificationUrl(
         config.getString( "jet.uri.orders.put.ship", "" ))
+            
+      .setGetReturnsUrl( 
+        config.getString( "jet.uri.returns.get.check", "" ))
+            
+      .setGetReturnDetailUrl( 
+        config.getString( "jet.uri.returns.get.detail", "" ))
+            
+      .setPutCompleteReturnUrl( 
+        config.getString( "jet.uri.returns.put.complete", "" ))
+            
       .build();
   }
   
@@ -559,17 +569,17 @@ public class JetImport implements ExitCodes
   
   private static void completeOrders( final JetAPIOrder orderApi ) throws APIException, JetException
   {
-    for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.COMPLETE, false ))
+    for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.COMPLETE ))
     {
       //..Get the order detail 
       final OrderRec order = orderApi.getOrderDetail( jetOrderId );
-    }    
-  }  
+    }
+  }
   
   
   private static void ackOrders( final JetAPIOrder orderApi ) throws APIException, JetException
   {
-    for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.READY, false ))
+    for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.READY ))
     {
       //..Get the order detail 
       final OrderRec order = orderApi.getOrderDetail( jetOrderId );
@@ -591,13 +601,13 @@ public class JetImport implements ExitCodes
 
       //..Tell jet that you acknowledge the order 
       orderApi.sendPutAckOrder( jetOrderId, ackRequest );
-    }    
+    }
   }
   
   
   private static void cancelOrders( final JetAPIOrder orderApi ) throws APIException, JetException
   {
-    for ( final String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK, false ))
+    for ( final String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK ))
     {
       //..Get the order detail 
       final OrderRec order = orderApi.getOrderDetail( jetOrderId );

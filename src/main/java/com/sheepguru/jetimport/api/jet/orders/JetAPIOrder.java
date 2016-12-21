@@ -86,6 +86,22 @@ public class JetAPIOrder extends JetAPI
 
   /**
    * Poll Jet and retrieve a list of order status tokens for doing stuff
+   * with orders.  This will ONLY return the jet order id string, NOT the 
+   * complete uri.
+   * @param status status to poll
+   * @return token list 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public List<String> getOrderStatusTokens( final OrderStatus status ) 
+    throws APIException, JetException    
+  {    
+    return getOrderStatusTokens( status, false );
+  } 
+  
+  
+  /**
+   * Poll Jet and retrieve a list of order status tokens for doing stuff
    * with orders.  
    * @param status status to poll
    * @param includePath If this is false, only the rightmost path part
