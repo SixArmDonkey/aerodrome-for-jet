@@ -2,6 +2,7 @@
 package com.sheepguru.jetimport.api.jet.orders;
 
 import com.sheepguru.jetimport.api.jet.JetDate;
+import com.sheepguru.jetimport.api.jet.JetDateWithOffset;
 import com.sheepguru.jetimport.api.jet.Jsonable;
 import com.sheepguru.jetimport.api.jet.ShippingCarrier;
 import com.sheepguru.jetimport.api.jet.ShippingMethod;
@@ -25,7 +26,7 @@ public class ShipmentRec implements Jsonable
   /**
    * Jet's unique ID for a given shipment. This is not currently supported in 
    * any workflow.
-   * 
+   * @deprecated
    */
   private final String shipmentId;
   
@@ -110,7 +111,7 @@ public class ShipmentRec implements Jsonable
     /**
      * Date/Time that a given shipment was shipped.
      */
-    private JetDate shipmentDate = null;
+    private JetDateWithOffset shipmentDate = null;
   
     /**
      * Shipping method used for the given shipment.
@@ -120,7 +121,7 @@ public class ShipmentRec implements Jsonable
     /**
      * Date/Time that a given shipment is expected to be delivered.
      */
-    private JetDate expectedDeliveryDate = null;
+    private JetDateWithOffset expectedDeliveryDate = null;
   
     /**
      * The zip code of the locations from which the customer shipment is 
@@ -141,7 +142,7 @@ public class ShipmentRec implements Jsonable
      * facility where the shipment originated. (This is provided by merchant 
      * in shipment confirmation)
      */
-    private JetDate pickupDate = null;
+    private JetDateWithOffset pickupDate = null;
   
     /**
      * This is an array of shipment items. Please see our shipment item array 
@@ -155,6 +156,7 @@ public class ShipmentRec implements Jsonable
      * in any workflow.
      * @param shipmentId the shipmentId to set
      * @return this
+     * @deprecated 
      */
     public Builder setShipmentId( final String shipmentId ) 
     {
@@ -199,7 +201,7 @@ public class ShipmentRec implements Jsonable
      * @param shipmentDate the shipmentDate to set
      * @return this
      */
-    public Builder setShipmentDate( final JetDate shipmentDate ) 
+    public Builder setShipmentDate( final JetDateWithOffset shipmentDate ) 
     {
       this.shipmentDate = shipmentDate;
       return this;
@@ -224,7 +226,7 @@ public class ShipmentRec implements Jsonable
      * @param expectedDeliveryDate the expectedDeliveryDate to set
      * @return this
      */
-    public Builder setExpectedDeliveryDate( final JetDate expectedDeliveryDate ) 
+    public Builder setExpectedDeliveryDate( final JetDateWithOffset expectedDeliveryDate ) 
     {
       this.expectedDeliveryDate = expectedDeliveryDate;
       return this;
@@ -268,7 +270,7 @@ public class ShipmentRec implements Jsonable
      * @param pickupDate the pickupDate to set
      * @return this
      */
-    public Builder setPickupDate( final JetDate pickupDate ) 
+    public Builder setPickupDate( final JetDateWithOffset pickupDate ) 
     {
       this.pickupDate = pickupDate;
       return this;
@@ -330,12 +332,12 @@ public class ShipmentRec implements Jsonable
       .setShipmentId( json.getString( "shipment_id", "" ))
       .setAltShipmentId( json.getString( "alt_shipment_id", "" ))
       .setTrackingNumber( json.getString( "shipment_tracking_number", "" ))
-      .setShipmentDate( JetDate.fromJetValueOrNull( json.getString( "response_shipment_date", "" )))
+      .setShipmentDate( JetDateWithOffset.fromJetValueOrNull( json.getString( "response_shipment_date", "" )))
       .setShippingMethod( ShippingMethod.fromText( json.getString( "response_shipping_method", "" )))
-      .setExpectedDeliveryDate( JetDate.fromJetValueOrNull( json.getString( "expected_delivery_date" )))
+      .setExpectedDeliveryDate( JetDateWithOffset.fromJetValueOrNull( json.getString( "expected_delivery_date" )))
       .setShipFromZip( json.getString( "ship_from_zip_code", "" ))
       .setCarrier( ShippingCarrier.fromText( json.getString( "carrier", "" )))
-      .setPickupDate( JetDate.fromJetValueOrNull( json.getString( "carrier_pick_up_date", "" )))
+      .setPickupDate( JetDateWithOffset.fromJetValueOrNull( json.getString( "carrier_pick_up_date", "" )))
       .setItems( items )
       .build();
   }
@@ -365,6 +367,7 @@ public class ShipmentRec implements Jsonable
    * Get Jet's unique ID for a given shipment. This is not currently supported 
    * in any workflow.
    * @return the shipmentId
+   * @deprecated
    */
   public String getShipmentId() 
   {
@@ -480,21 +483,25 @@ public class ShipmentRec implements Jsonable
   {
     final JsonObjectBuilder b = Json.createObjectBuilder()
       .add( "shipment_id", shipmentId )
-      .add( "alt_shipment_id", altShipmentId )
-      .add( "shipment_tracking_number", trackingNumber )
+      .add( "alt_shipment_id", altShipmentId );
+    
+    //..Only add shipment info if this has a tracking number 
+    if ( !trackingNumber.isEmpty())
+    {
+      b.add( "shipment_tracking_number", trackingNumber )
       .add( "response_shipment_method", shippingMethod.getText())
       .add( "ship_from_zip_code", shipFromZip )
       .add( "carrier", carrier.getText());
-    
-    
-    if ( shipmentDate != null )
-      b.add( "response_shipment_date", shipmentDate.getDateString());
-    
-    if ( expectedDeliveryDate != null )
-      b.add( "expected_delivery_date", expectedDeliveryDate.getDateString());
-    
-    if ( pickupDate != null )
-      b.add( "carrier_pick_up_date", pickupDate.getDateString());
+
+      if ( shipmentDate != null )
+        b.add( "response_shipment_date", shipmentDate.getDateString());
+
+      if ( expectedDeliveryDate != null )
+        b.add( "expected_delivery_date", expectedDeliveryDate.getDateString());
+
+      if ( pickupDate != null )
+        b.add( "carrier_pick_up_date", pickupDate.getDateString());
+    }
     
     if ( items != null )
       b.add( "shipment_items", getItemsArray());    

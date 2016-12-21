@@ -62,7 +62,7 @@ public class OrderTotalRec
     }
     
     return new OrderTotalRec(
-      ItemPriceRec.fromJson( json.getJsonObject( "base_price" )),
+      ItemPriceRec.fromJson( json.getJsonObject( "item_price" )),
       new Money( json.getString( "item_fees", "0" )),
       adj,
       new Money( json.getString( "regulatory_fees", "0" ))      
@@ -149,9 +149,9 @@ public class OrderTotalRec
     
     return Json.createObjectBuilder()
       .add( "base_price", itemPrice.toJSON())
-      .add( "item_fees", itemFees.floatValue())
+      .add( "item_fees", itemFees.asBigDecimal())
       .add( "fee_adjustments", a.build())
-      .add( "regulatory_fees", regFees.floatValue())
+      .add( "regulatory_fees", regFees.asBigDecimal())
       .build();
   } 
 }

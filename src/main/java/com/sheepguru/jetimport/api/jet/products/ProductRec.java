@@ -6,6 +6,7 @@ import com.sheepguru.jetimport.api.jet.Jsonable;
 import com.sheepguru.jetimport.api.jet.Utils;
 import com.sheepguru.utils.Money;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -929,7 +930,7 @@ public class ProductRec implements Jsonable
    * @param numberUnitsForPricePerUnit the numberUnitsForPricePerUnit to set
    */
   public void setNumberUnitsForPricePerUnit(float numberUnitsForPricePerUnit) {
-    this.numberUnitsForPricePerUnit = Utils.round( numberUnitsForPricePerUnit, 2 );
+    this.numberUnitsForPricePerUnit = Utils.round( numberUnitsForPricePerUnit, 2, RoundingMode.HALF_UP );
   }
 
   /**
@@ -971,7 +972,7 @@ public class ProductRec implements Jsonable
    * @param shippingWeightPounds the shippingWeightPounds to set
    */
   public void setShippingWeightPounds(float shippingWeightPounds) {
-    this.shippingWeightPounds = Utils.round( shippingWeightPounds, 2 );
+    this.shippingWeightPounds = Utils.round( shippingWeightPounds, 2, RoundingMode.HALF_UP );
   }
 
   /**
@@ -987,7 +988,7 @@ public class ProductRec implements Jsonable
    * @param packageLengthInches the packageLengthInches to set
    */
   public void setPackageLengthInches(float packageLengthInches) {
-    this.packageLengthInches = Utils.round( packageLengthInches, 2 );
+    this.packageLengthInches = Utils.round( packageLengthInches, 2, RoundingMode.HALF_UP );
   }
 
   /**
@@ -1003,7 +1004,7 @@ public class ProductRec implements Jsonable
    * @param packageWidthInches the packageWidthInches to set
    */
   public void setPackageWidthInches(float packageWidthInches) {
-    this.packageWidthInches = Utils.round( packageWidthInches, 2 );
+    this.packageWidthInches = Utils.round( packageWidthInches, 2, RoundingMode.HALF_UP );
   }
 
   /**
@@ -1019,7 +1020,7 @@ public class ProductRec implements Jsonable
    * @param packageHeightInches the packageHeightInches to set
    */
   public void setPackageHeightInches(float packageHeightInches) {
-    this.packageHeightInches = Utils.round( packageHeightInches, 2 );
+    this.packageHeightInches = Utils.round( packageHeightInches, 2, RoundingMode.HALF_UP );
   }
 
   /**
@@ -1035,7 +1036,7 @@ public class ProductRec implements Jsonable
    * @param displayLengthInches the displayLengthInches to set
    */
   public void setDisplayLengthInches(float displayLengthInches) {
-    this.displayLengthInches = Utils.round( displayLengthInches, 2 );
+    this.displayLengthInches = Utils.round( displayLengthInches, 2, RoundingMode.HALF_UP );
   }
 
   /**
@@ -1051,7 +1052,7 @@ public class ProductRec implements Jsonable
    * @param displayWidthInches the displayWidthInches to set
    */
   public void setDisplayWidthInches(float displayWidthInches) {
-    this.displayWidthInches = Utils.round( displayWidthInches, 2 );
+    this.displayWidthInches = Utils.round( displayWidthInches, 2, RoundingMode.HALF_UP );
   }
 
   /**
@@ -1067,7 +1068,7 @@ public class ProductRec implements Jsonable
    * @param displayHeightInches the displayHeightInches to set
    */
   public void setDisplayHeightInches(float displayHeightInches) {
-    this.displayHeightInches = Utils.round( displayHeightInches, 2 );
+    this.displayHeightInches = Utils.round( displayHeightInches, 2, RoundingMode.HALF_UP );
   }
 
   /**

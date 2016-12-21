@@ -3,6 +3,7 @@ package com.sheepguru.jetimport.api.jet.orders;
 
 import com.sheepguru.jetimport.api.jet.JetDate;
 import com.sheepguru.jetimport.api.jet.Jsonable;
+import com.sheepguru.jetimport.api.jet.ShippingCarrier;
 import com.sheepguru.jetimport.api.jet.ShippingMethod;
 import com.sheepguru.jetimport.api.jet.ShippingServiceLevel;
 import com.sheepguru.jetimport.api.jet.Utils;
@@ -18,7 +19,7 @@ public class OrderDetailRec implements Jsonable
   /**
    * The shipping carrier that is delivering the shipment
    */
-  private final String requestShippingCarrier;
+  private final ShippingCarrier requestShippingCarrier;
   
   /**
    * The shipping method for the given shipment_id
@@ -52,7 +53,7 @@ public class OrderDetailRec implements Jsonable
       throw new IllegalArgumentException( "json cannot be null" );
     
     return new OrderDetailRec(
-      json.getString( "request_shipping_carrier", "" ),
+      ShippingCarrier.fromText( json.getString( "request_shipping_carrier", "" )),
       ShippingMethod.fromText( json.getString( "request_shipping_method", "" )),
       ShippingServiceLevel.fromText( json.getString( "request_service_level", "" )),
       new JetDate( json.getString( "request_ship_by", "" )),
@@ -72,14 +73,14 @@ public class OrderDetailRec implements Jsonable
    * @param requestDeliveryBy  Date the customer has been promised delivery
    */
   public OrderDetailRec(
-    final String requestShippingCarrier,
+    final ShippingCarrier requestShippingCarrier,
     final ShippingMethod requestShippingMethod,
     final ShippingServiceLevel requestServiceLevel,
     final JetDate requestShipBy,
     final JetDate requestDeliveryBy
   ) {
     
-    Utils.checkNullEmpty( requestShippingCarrier, "requestShippingCarrier" );
+    Utils.checkNull( requestShippingCarrier, "requestShippingCarrier" );
     Utils.checkNull( requestShippingMethod, "requestShippingMethod" );
     Utils.checkNull( requestServiceLevel, "requestServiceLevel" );
     Utils.checkNull( requestShipBy, "requestShipBy" );
@@ -98,7 +99,7 @@ public class OrderDetailRec implements Jsonable
    * the shipment
    * @return the requestShippingCarrier
    */
-  public String getRequestShippingCarrier() 
+  public ShippingCarrier getRequestShippingCarrier() 
   {
     return requestShippingCarrier;
   }
@@ -153,7 +154,7 @@ public class OrderDetailRec implements Jsonable
   public JsonObject toJSON()
   {
     return Json.createObjectBuilder()
-      .add( "request_shipping_carrier", requestShippingCarrier )
+      .add( "request_shipping_carrier", requestShippingCarrier.getText())
       .add( "request_shipping_method", requestShippingMethod.getText())
       .add( "request_service_level", requestServiceLevel.getText())
       .add( "request_ship_by", requestShipBy.getDateString())

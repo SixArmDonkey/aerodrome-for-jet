@@ -24,7 +24,7 @@ public class JetDate
   /**
    * Default date format 
    */
-  private static final String DEFAULT_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'.0000000'Z";  
+  private static final String DEFAULT_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'";  
  
   /**
    * Logger 

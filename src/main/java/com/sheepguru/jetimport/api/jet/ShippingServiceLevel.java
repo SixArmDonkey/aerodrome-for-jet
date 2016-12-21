@@ -15,17 +15,17 @@ public enum ShippingServiceLevel
   /**
    * Ships 2 day
    */
-  SECOND_DAY( "Second Day" ),
+  SECOND_DAY( "SecondDay" ),
 
   /**
    * Ships overnight
    */
-  NEXT_DAY( "Next Day" ),
+  NEXT_DAY( "NextDay" ),
 
   /**
    * Scheduled?
    */
-  SCHEDULED( "Freight" ),
+  SCHEDULED( "Scheduled (freight)" ),
 
   /**
    * Expedited shipping
@@ -35,12 +35,21 @@ public enum ShippingServiceLevel
   /**
    * Standard shipping
    */
-  STANDARD( "Standard" );
+  STANDARD( "Standard" ),
+  
+  PRIORITY( "Priority" ),
+  
+  FIVE_TO_10_DAY( "5 to 10 Day" ),
+
+  ELEVEN_TO_20_DAY( "11 to 20 Day" ),
+
+  SCHEDULED_11_TO_20_DAY( "Scheduled (freight 11 to 20 day)" );
 
   /**
    * Jet API constant value
    */
   private final String val;
+  
 
   private static final ShippingServiceLevel[] values = values();
   

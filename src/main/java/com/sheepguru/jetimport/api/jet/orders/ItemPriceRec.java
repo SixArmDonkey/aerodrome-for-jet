@@ -125,10 +125,10 @@ public class ItemPriceRec implements Jsonable
   public JsonObject toJSON()
   {
     return Json.createObjectBuilder()
-      .add( "item_price", price.floatValue())
-      .add( "item_tax", price.floatValue())
-      .add( "item_shipping_cost", price.floatValue())
-      .add( "item_shipping_tax", price.floatValue())
+      .add( "item_price", price.asBigDecimal())
+      .add( "item_tax", price.asBigDecimal())
+      .add( "item_shipping_cost", price.asBigDecimal())
+      .add( "item_shipping_tax", price.asBigDecimal())
       .build();
   }
 }

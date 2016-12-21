@@ -13,6 +13,16 @@ public enum AckStatus
   NONE( "" ),
   
   /**
+   * Some unknown reason 
+   */
+  REJECTED_OTHER( "rejected - other" ),
+  
+  /**
+   * Jet detected fraud
+   */
+  REJECTED_FRAUD( "rejected - fraud" ),  
+  
+  /**
    * The error occurred at the item level
    */
   REJECTED_ITEM( "rejected - item level error" ),

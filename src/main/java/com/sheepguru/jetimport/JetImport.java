@@ -9,7 +9,19 @@ import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetAuthException;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetConfigBuilder;
+import com.sheepguru.jetimport.api.jet.JetDateWithOffset;
 import com.sheepguru.jetimport.api.jet.JetException;
+import com.sheepguru.jetimport.api.jet.orders.AckRequestItemRec;
+import com.sheepguru.jetimport.api.jet.orders.AckRequestRec;
+import com.sheepguru.jetimport.api.jet.orders.AckStatus;
+import com.sheepguru.jetimport.api.jet.orders.AddressRec;
+import com.sheepguru.jetimport.api.jet.orders.JetAPIOrder;
+import com.sheepguru.jetimport.api.jet.orders.OrderItemRec;
+import com.sheepguru.jetimport.api.jet.orders.OrderRec;
+import com.sheepguru.jetimport.api.jet.orders.OrderStatus;
+import com.sheepguru.jetimport.api.jet.orders.ShipRequestRec;
+import com.sheepguru.jetimport.api.jet.orders.ShipmentItemRec;
+import com.sheepguru.jetimport.api.jet.orders.ShipmentRec;
 import com.sheepguru.jetimport.api.jet.products.BulkUploadAuthRec;
 import com.sheepguru.jetimport.api.jet.products.BulkUploadFileType;
 import com.sheepguru.jetimport.api.jet.products.FNodeInventoryRec;
@@ -26,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.json.JsonObject;
 import org.apache.commons.cli.ParseException;
@@ -87,12 +100,15 @@ public class JetImport implements ExitCodes
     
     
     //..test adding a product 
-    testAddProduct( product );
+    //testAddProduct( product );
     
     //..Test a few functions for retrieving data
-    testGetProductData( product );
+    //testGetProductData( product );
     
     //testUpload( client, jetConfig );
+    
+    testOrders( client, jetConfig );
+    
     
   }
 
@@ -499,7 +515,7 @@ public class JetImport implements ExitCodes
       final PostFile pf = new PostFile( file, ContentType.DEFAULT_BINARY, "gzip", file.getName());
       
       //..Post the request for a file addition to 
-      JsonObject addRes = up.sendPostUploadedFiles(uploadToken.getUrl(), pf, BulkUploadFileType.MERCHANT_SKUS ).getJsonObject();
+      JsonObject addRes = up.sendPostUploadedFiles( uploadToken.getUrl(), pf, BulkUploadFileType.MERCHANT_SKUS ).getJsonObject();
       
       //..Send the next file up to the batch 
       up.sendAuthorizedFile( addRes.getString( "url" ), pf );
@@ -523,5 +539,183 @@ public class JetImport implements ExitCodes
       fail( "failed to do upload stuff", E_API_FAILURE, e );
     }
     
+  }
+  
+  
+  private static void testOrders( final APIHttpClient client, final JetConfig config )
+  {
+    //..Create an order api instance
+    try {
+      final JetAPIOrder orderApi = new JetAPIOrder( client, config );
+      //ackOrders( orderApi );
+      //shipOrders( orderApi );
+      //cancelOrders( orderApi );
+      completeOrders( orderApi );
+    } catch( Exception e ) {
+      fail( "Failed to do order stuff", E_API_FAILURE, e );
+    }        
+  }
+  
+  
+  private static void completeOrders( final JetAPIOrder orderApi ) throws APIException, JetException
+  {
+    for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.COMPLETE, false ))
+    {
+      //..Get the order detail 
+      final OrderRec order = orderApi.getOrderDetail( jetOrderId );
+    }    
+  }  
+  
+  
+  private static void ackOrders( final JetAPIOrder orderApi ) throws APIException, JetException
+  {
+    for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.READY, false ))
+    {
+      //..Get the order detail 
+      final OrderRec order = orderApi.getOrderDetail( jetOrderId );
+
+      //..A list of order items to reply about 
+      final List<AckRequestItemRec> items = new ArrayList<>();
+
+      //..Turn those into ack order records
+      for ( final OrderItemRec item : order.getOrderItems())
+      {
+        //..Try to acknowledge the order
+        //..Can add a custom status here if you want 
+        items.add( AckRequestItemRec.fromOrderItem( item, AckRequestItemRec.Status.FULFILLABLE ));
+      }
+
+      //..Build the acknowledgement request to send back to jet 
+      final AckRequestRec ackRequest = new AckRequestRec( 
+        AckStatus.ACCEPTED, jetOrderId, items );
+
+      //..Tell jet that you acknowledge the order 
+      orderApi.sendPutAckOrder( jetOrderId, ackRequest );
+    }    
+  }
+  
+  
+  private static void cancelOrders( final JetAPIOrder orderApi ) throws APIException, JetException
+  {
+    for ( final String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK, false ))
+    {
+      //..Get the order detail 
+      final OrderRec order = orderApi.getOrderDetail( jetOrderId );
+
+      //..A list of shipments 
+      //..You can split the order up into however many shipments you want.
+      final List<ShipmentRec> shipments = new ArrayList<>();
+      
+      //..a list of items in a shipment 
+      final List<ShipmentItemRec> shipmentItems = new ArrayList<>();
+
+      //..Turn those into ack order records
+      for ( final OrderItemRec item : order.getOrderItems())
+      {
+        //..Create a builder for a new ShipmentItem by converting the retrieved
+        //  order item to a Shipment Item
+        final ShipmentItemRec.Builder builder = ShipmentItemRec.fromOrderItem( item );
+        
+        //..You can modify the quantity shipped or cancelled here, or just fulfill as it was ordered
+        //..like this:        
+        builder.setQuantity( 0 );
+        builder.setCancelQuantity( item.getRequestOrderQty());
+        
+        //..Build the item and add it to the items list 
+        shipmentItems.add( builder.build());
+      }
+      
+      
+      //..Build a shipment for the items in the order
+      //..You can create multiple shipments, and also mix cancellations 
+      //  with shipments.      
+      final ShipmentRec shipment = new ShipmentRec.Builder()
+        .setItems( shipmentItems )
+        .setAltShipmentId( "Alt ship id test" ) //..Shipments with only cancelled items must have an alt shipment id
+        .build();
+
+      //..Add it to the list of shipments you're sending out.
+      shipments.add( shipment );
+      
+      //..Create the final request object to tell jet about the shipment
+      final ShipRequestRec shipmentRequest = new ShipRequestRec( "", shipments );
+      
+      //..Send the shipment to jet
+      orderApi.sendPutShipOrder( jetOrderId, shipmentRequest );
+    }        
+  }
+ 
+  
+  private static void shipOrders( final JetAPIOrder orderApi ) throws APIException, JetException
+  {
+    for ( final String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK, false ))
+    {
+      //..Get the order detail 
+      final OrderRec order = orderApi.getOrderDetail( jetOrderId );
+
+      //..A list of shipments 
+      //..You can split the order up into however many shipments you want.
+      final List<ShipmentRec> shipments = new ArrayList<>();
+      
+      //..a list of items in a shipment 
+      final List<ShipmentItemRec> shipmentItems = new ArrayList<>();
+
+      //..Create a return address object 
+      final AddressRec returnAddress = new AddressRec(
+        "123 Sesame Street",
+        "Suite 100",
+        "Sesame",
+        "AK",
+        "38473"
+      );
+            
+      //..Create an rma number (can be custom for each item if you want)
+      final String rmaNumber = "1234RMA";
+      
+      //..Turn those into ack order records
+      for ( final OrderItemRec item : order.getOrderItems())
+      {
+        //..Create a builder for a new ShipmentItem by converting the retrieved
+        //  order item to a Shipment Item
+        final ShipmentItemRec.Builder builder = ShipmentItemRec.fromOrderItem( item );
+        
+        //..You can modify the quantity shipped or cancelled here, or just fulfill as it was ordered
+        //..like this:
+        //builder.setQuantity( 1 );
+        //builder.setCancelQuantity( 1 );
+        
+        //...Set the return address
+        builder.setReturnTo( returnAddress );
+        
+        //..Set the rma number if desired
+        builder.setRmaNumber( rmaNumber );
+        
+        //..Build the item and add it to the items list 
+        shipmentItems.add( builder.build());
+      }
+      
+      
+      //..Build a shipment for the items in the order
+      //..You can create multiple shipments, and also mix cancellations 
+      //  with shipments.
+      final ShipmentRec shipment = new ShipmentRec.Builder()
+        .setCarrier( order.getOrderDetail().getRequestShippingCarrier())
+        .setTrackingNumber( "Z123456780123456" )
+        .setShipmentDate( new JetDateWithOffset())
+        .setExpectedDeliveryDate( new JetDateWithOffset( new Date( new Date().getTime() + ( 86400L * 2L ))))
+        .setShipFromZip( "38473" )
+        .setPickupDate( new JetDateWithOffset())
+        .setItems( shipmentItems )
+        .build();
+
+      //..Add it to the list of shipments you're sending out.
+      shipments.add( shipment );
+      
+      //..Create the final request object to tell jet about the shipment
+      final ShipRequestRec shipmentRequest = new ShipRequestRec( "", shipments );
+      
+      //..Send the shipment to jet
+      orderApi.sendPutShipOrder( jetOrderId, shipmentRequest );
+    }        
   }
 }

@@ -128,8 +128,9 @@ public class FeeAdjRec implements Jsonable
     return Json.createObjectBuilder()
       .add( "adjustment_name", name )
       .add( "adjustment_type", type )
-      .add( "commission_id", cid )
-      .add( "value", value.floatValue())
+      .add( "commission_id", cid )      
+      .add( "value", value.asBigDecimal())
+      
       .build();
   }
 }

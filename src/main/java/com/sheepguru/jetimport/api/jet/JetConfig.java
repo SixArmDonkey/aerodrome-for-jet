@@ -390,9 +390,10 @@ public interface JetConfig
    * The order acknowledge call is utilized to allow a retailer to accept or 
    * reject an order. If there are any skus in the order that cannot be 
    * fulfilled then you will reject the order.
+   * @param jetDefinedOrderId The jet order id 
    * @return url
    */
-  public String getPutOrderAcknowledgeUrl();
+  public String getPutOrderAcknowledgeUrl( final String jetDefinedOrderId );
   
   
   /**

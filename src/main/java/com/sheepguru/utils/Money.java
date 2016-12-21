@@ -23,7 +23,7 @@ public class Money implements Comparable<Money>
   /**
    * Default rounding mode is HALF_UP
    */
-  public static final RoundingMode DEFAULT_ROUNDING = RoundingMode.HALF_UP;
+  public static final RoundingMode DEFAULT_ROUNDING = RoundingMode.UNNECESSARY;
 
   /**
    * Default Language used for locale

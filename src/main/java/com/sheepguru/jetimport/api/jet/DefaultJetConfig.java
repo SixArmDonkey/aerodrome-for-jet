@@ -986,12 +986,14 @@ public class DefaultJetConfig implements JetConfig
    * The order acknowledge call is utilized to allow a retailer to accept or 
    * reject an order. If there are any skus in the order that cannot be 
    * fulfilled then you will reject the order.
+   * @param jetDefinedOrderId The jet order id 
    * @return url
    */
   @Override
-  public String getPutOrderAcknowledgeUrl()
+  public String getPutOrderAcknowledgeUrl( final String jetDefinedOrderId )
   {
-    return uriPutOrderAck;
+    return uriPutOrderAck.replace( 
+      "{jet_defined_order_id}", jetDefinedOrderId );
   }
   
   
@@ -1005,7 +1007,8 @@ public class DefaultJetConfig implements JetConfig
   @Override
   public String getPutOrderShipNotificationUrl( final String jetDefinedOrderId )
   {
-    return uriPutOrderShipped;
+    return uriPutOrderShipped.replace( 
+      "{jet_defined_order_id}", jetDefinedOrderId );
   }
   
   ////////////// END ORDERS ..//////////////////////////////////////////////////

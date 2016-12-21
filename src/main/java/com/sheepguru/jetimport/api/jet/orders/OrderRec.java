@@ -1,7 +1,9 @@
 
 package com.sheepguru.jetimport.api.jet.orders;
 
+import com.sheepguru.jetimport.api.APILog;
 import com.sheepguru.jetimport.api.jet.JetDate;
+import com.sheepguru.jetimport.api.jet.JetException;
 import com.sheepguru.jetimport.api.jet.Jsonable;
 import com.sheepguru.jetimport.api.jet.Utils;
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -155,6 +159,16 @@ public class OrderRec implements Jsonable
    */
   private final OrderTotalRec orderTotals;
 
+  /**
+   * A list of order items..
+   */
+  private final List<OrderItemRec> orderItems;
+  
+  /**
+   * Log instance 
+   */
+  private static final Log LOG = LogFactory.getLog( OrderRec.class );
+  
   
   /**
    * OrderRec builder 
@@ -276,6 +290,11 @@ public class OrderRec implements Jsonable
      * A list of shipments to make 
      */
     private List<ShipmentRec> shipments = new ArrayList<>();
+    
+    /**
+     * A list of order items 
+     */
+    private List<OrderItemRec> orderItems = new ArrayList<>();
       
     
     /**
@@ -492,6 +511,19 @@ public class OrderRec implements Jsonable
     
     
     /**
+     * Add some items to the order
+     * @param orderItems items 
+     * @return this 
+     */
+    public Builder setOrderItems( final List<OrderItemRec> orderItems )
+    {
+      Utils.checkNull( orderItems, "orderItems" );
+      this.orderItems.addAll( orderItems );
+      return this;
+    }
+    
+    
+    /**
      * Build it.
      * @return 
      */
@@ -605,7 +637,30 @@ public class OrderRec implements Jsonable
     buildShipTo( b, json.getJsonObject( "shipping_to" ));
     buildOrderTotals( b, json.getJsonObject( "order_totals" ));
     
+    try {
+      buildOrderItems( b, json.getJsonArray( "order_items" ));
+    } catch( JetException e ) {
+      APILog.error( LOG, e, "Failed to generate order items" );
+    }
+    
     return new OrderRec( b );
+  }
+  
+  
+  private static void buildOrderItems( final Builder b, final JsonArray json )
+    throws JetException
+  {
+    if ( json == null )
+      return;
+    
+    final List<OrderItemRec> l = new ArrayList<>();
+    
+    for ( int i = 0; i < json.size(); i++ )
+    {
+      l.add( OrderItemRec.fromJson( json.getJsonObject( i )));
+    }
+    
+    b.setOrderItems( l );
   }
   
   
@@ -709,6 +764,7 @@ public class OrderRec implements Jsonable
     this.orderAckDate = b.orderAckDate;    
     this.ackStatus = b.ackStatus;
     this.shipments = b.shipments;
+    this.orderItems = b.orderItems;
   }
   
   
@@ -863,6 +919,16 @@ public class OrderRec implements Jsonable
   public OrderTotalRec getOrderTotals() {
     return orderTotals;
   }
+  
+  
+  /**
+   * Retrieve the order items list 
+   * @return list
+   */
+  public List<OrderItemRec> getOrderItems()
+  {
+    return orderItems;
+  }
 //////////////////////////
   
   /**
@@ -949,6 +1015,9 @@ public class OrderRec implements Jsonable
     
     if ( shipments != null )
       b.add( "shipments", shipmentsToJson());
+    
+    if ( orderItems != null )
+      b.add( "order_items", orderItemsToJson());
             
     return b.build();
   }  
@@ -973,4 +1042,25 @@ public class OrderRec implements Jsonable
     return ab.build();
     
   }
+  
+  
+  /**
+   * Turn the shipments array into a JsonArray 
+   * @return 
+   */
+  private JsonArray orderItemsToJson()
+  {
+    final JsonArrayBuilder ab = Json.createArrayBuilder();
+    
+    if ( orderItems != null )
+    {
+      for ( final OrderItemRec o : orderItems )
+      {
+        ab.add( o.toJSON());
+      }
+    }
+    
+    return ab.build();
+    
+  }  
 }

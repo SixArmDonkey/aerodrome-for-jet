@@ -5,6 +5,7 @@ import com.sheepguru.jetimport.api.jet.products.FNodePriceRec;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
@@ -26,10 +27,10 @@ public class Utils
    * @param decimalPlace places to round to
    * @return new float
    */
-  public static float round( float d, int decimalPlace )
+  public static float round( float d, int decimalPlace, RoundingMode mode )
   {
     BigDecimal bd = new BigDecimal( Float.toString( d ));
-    bd = bd.setScale( decimalPlace, BigDecimal.ROUND_HALF_EVEN );
+    bd = bd.setScale( decimalPlace, mode );
     
     return bd.floatValue();
   }

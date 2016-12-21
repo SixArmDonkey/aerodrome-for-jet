@@ -660,11 +660,11 @@ public class OrderItemRec
       .add( "adjustment_reason", adjReason )
       .add( "item_tax_code", taxCode )
       .add( "url", url )
-      .add( "price_adjustment", priceAdj.floatValue())
-      .add( "item_fees", fees.floatValue())
+      .add( "price_adjustment", priceAdj.asBigDecimal())
+      .add( "item_fees", fees.asBigDecimal())
       .add( "tax_info", taxInfo )
       .add( "fee_adjustments", adj.build())
-      .add( "regulatory_fees", regFees.floatValue())
+      .add( "regulatory_fees", regFees.asBigDecimal())
       .add( "order_item_acknowledgement_status", itemAckStatus.getText())
       .build();
   }

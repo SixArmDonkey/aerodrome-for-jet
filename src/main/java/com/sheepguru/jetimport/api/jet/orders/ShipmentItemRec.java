@@ -240,6 +240,25 @@ public class ShipmentItemRec implements Jsonable
   
   
   /**
+   * Turn an order item into a Builder for a ShipmentItemRec.
+   * 
+   * @param item order item
+   * @return builder 
+   */
+  public static Builder fromOrderItem( final OrderItemRec item )
+  {
+    Utils.checkNull( item, "item" );
+    
+    return new Builder()
+     .setItemId( item.getOrderItemId())
+     .setAltItemId( item.getAltOrderItemId())
+     .setMerchantSku( item.getMerchantSku())
+     .setQuantity( item.getRequestOrderQty())
+     .setCancelQuantity( item.getRequestOrderCancelQty());
+  }
+  
+  
+  /**
    * Build this record from jet json 
    * @param json jet json
    * @return record 
@@ -266,7 +285,6 @@ public class ShipmentItemRec implements Jsonable
     
     return b.build();      
   }
-  
   
   
   /**
