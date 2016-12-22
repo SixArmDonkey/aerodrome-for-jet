@@ -1,7 +1,23 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api.jet.orders;
 
+import com.sheepguru.jetimport.api.jet.AddressRec;
+import com.sheepguru.jetimport.api.jet.PersonRec;
 import com.sheepguru.jetimport.api.APILog;
+import com.sheepguru.jetimport.api.jet.IJetDate;
 import com.sheepguru.jetimport.api.jet.JetDate;
 import com.sheepguru.jetimport.api.jet.JetException;
 import com.sheepguru.jetimport.api.jet.Jsonable;
@@ -90,12 +106,12 @@ public class OrderRec implements Jsonable
   /**
    * The date the merchant order was placed.
    */
-  private final JetDate orderPlacedDate;
+  private final IJetDate orderPlacedDate;
   
   /**
    * The date/time the merchant order was sent to the merchant
    */
-  private final JetDate orderTransmissionDate;
+  private final IJetDate orderTransmissionDate;
   
   /**
    * Determines whether Jet broke the order into shipments 
@@ -106,12 +122,12 @@ public class OrderRec implements Jsonable
   /**
    * The date the order was switched to 'ready' state
    */
-  private final JetDate orderReadyDate;
+  private final IJetDate orderReadyDate;
   
   /**
    * The date the order was switched to 'acknowledged' state
    */
-  private final JetDate orderAckDate;
+  private final IJetDate orderAckDate;
   
   /**
    * Status to let Jet know whether you accept or reject the order. Errors 
@@ -223,12 +239,12 @@ public class OrderRec implements Jsonable
     /**
      * The date the merchant order was placed.
      */
-    private JetDate orderPlacedDate = null;
+    private IJetDate orderPlacedDate = null;
     
     /**
      * The date/time the merchant order was sent to the merchant
      */
-    private JetDate orderTransmissionDate = null;
+    private IJetDate orderTransmissionDate = null;
     
     /**
      * This field indicates that one or more items in the order have been 
@@ -272,12 +288,12 @@ public class OrderRec implements Jsonable
     /**
      * The date the order was switched to 'ready' state
      */
-    private JetDate orderReadyDate = null;
+    private IJetDate orderReadyDate = null;
 
     /**
      * The date the order was switched to 'acknowledged' state
      */
-    private JetDate orderAckDate = null;
+    private IJetDate orderAckDate = null;
 
     /**
      * Status to let Jet know whether you accept or reject the order. Errors 
@@ -411,7 +427,7 @@ public class OrderRec implements Jsonable
      * @param orderPlacedDate the orderPlacedDate to set
      * @return this
      */
-    public Builder setOrderPlacedDate( final JetDate orderPlacedDate ) 
+    public Builder setOrderPlacedDate( final IJetDate orderPlacedDate ) 
     {
       Utils.checkNull( orderPlacedDate, "orderPlacedDate" );
       this.orderPlacedDate = orderPlacedDate;
@@ -424,7 +440,7 @@ public class OrderRec implements Jsonable
      * @param orderTransmissionDate the orderTransmissionDate to set
      * @return this
      */
-    public Builder setOrderTransmissionDate( final JetDate orderTransmissionDate ) 
+    public Builder setOrderTransmissionDate( final IJetDate orderTransmissionDate ) 
     {
       Utils.checkNull( orderTransmissionDate, "orderTransmissionDate" );
       this.orderTransmissionDate = orderTransmissionDate;
@@ -548,7 +564,7 @@ public class OrderRec implements Jsonable
      * @param orderReadyDate the orderReadyDate to set
      * @return this
      */
-    public Builder setOrderReadyDate( final JetDate orderReadyDate ) 
+    public Builder setOrderReadyDate( final IJetDate orderReadyDate ) 
     {
       this.orderReadyDate = orderReadyDate;
       return this;
@@ -560,7 +576,7 @@ public class OrderRec implements Jsonable
      * @param orderAckDate the orderAckDate to set
      * @return this
      */
-    public Builder setOrderAckDate( final JetDate orderAckDate ) 
+    public Builder setOrderAckDate( final IJetDate orderAckDate ) 
     {      
       this.orderAckDate = orderAckDate;
       return this;
@@ -850,7 +866,7 @@ public class OrderRec implements Jsonable
    * The date the merchant order was placed.
    * @return the orderPlacedDate
    */
-  public JetDate getOrderPlacedDate() {
+  public IJetDate getOrderPlacedDate() {
     return orderPlacedDate;
   }
 
@@ -859,7 +875,7 @@ public class OrderRec implements Jsonable
    * The date/time the merchant order was sent to the merchant
    * @return the orderTransmissionDate
    */
-  public JetDate getOrderTransmissionDate() {
+  public IJetDate getOrderTransmissionDate() {
     return orderTransmissionDate;
   }
   
@@ -944,7 +960,7 @@ public class OrderRec implements Jsonable
    * The date the order was switched to 'ready' state
    * @return the orderReadyDate
    */
-  public JetDate getOrderReadyDate() {
+  public IJetDate getOrderReadyDate() {
     return orderReadyDate;
   }
 
@@ -952,7 +968,7 @@ public class OrderRec implements Jsonable
    * The date the order was switched to 'acknowledged' state
    * @return the orderAckDate
    */
-  public JetDate getOrderAckDate() {
+  public IJetDate getOrderAckDate() {
     return orderAckDate;
   }
 

@@ -1,17 +1,28 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api.jet.orders;
 
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
+import com.sheepguru.jetimport.api.IAPIHttpClient;
+import com.sheepguru.jetimport.api.jet.IJetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetAPI;
-import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetException;
 import com.sheepguru.jetimport.api.jet.Utils;
-import java.util.ArrayList;
 import java.util.List;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 
 
 /**
@@ -19,15 +30,15 @@ import javax.json.JsonObject;
  * 
  * @author John Quinn
  */
-public class JetAPIOrder extends JetAPI
+public class JetAPIOrder extends JetAPI implements IJetOrderAPI
 {
   /**
    * Create a new API instance
    * @param client The built APIHttpClient instance 
    * @param conf The Jet Configuration object
    */
-  public JetAPIOrder( final APIHttpClient client, final JetConfig conf )
-  {    
+  public JetAPIOrder( final IAPIHttpClient client, final JetConfig conf )
+  {
     super( client, conf );
   }
 
@@ -39,7 +50,7 @@ public class JetAPIOrder extends JetAPI
    * @param lockHost Toggle locking the host to a domain if http is not present
    * in the url string.
    */
-  public JetAPIOrder( final APIHttpClient client, final JetConfig conf, 
+  public JetAPIOrder( final IAPIHttpClient client, final JetConfig conf, 
     final boolean lockHost )
   {
     super( client, conf, lockHost );
@@ -55,7 +66,7 @@ public class JetAPIOrder extends JetAPI
    * @param maxDownloadSize Set a maximum download site for the local client.
    * This is a fixed limit.
    */
-  public JetAPIOrder( final APIHttpClient client, final JetConfig conf, 
+  public JetAPIOrder( final IAPIHttpClient client, final JetConfig conf, 
     final boolean lockHost, final long maxDownloadSize )  
   {
     super( client, conf, lockHost, maxDownloadSize );
@@ -69,7 +80,8 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendPollOrders( final OrderStatus status )
+  @Override
+  public IJetAPIResponse sendPollOrders( final OrderStatus status )
     throws APIException, JetException
   {
     Utils.checkNull( status, "status" );
@@ -93,6 +105,7 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public List<String> getOrderStatusTokens( final OrderStatus status ) 
     throws APIException, JetException    
   {    
@@ -110,6 +123,7 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public List<String> getOrderStatusTokens( final OrderStatus status, 
     final boolean includePath ) throws APIException, JetException    
   {    
@@ -125,7 +139,8 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPollDirectedCancel()
+  @Override
+  public IJetAPIResponse sendPollDirectedCancel()
     throws APIException, JetException
   {
     return get(
@@ -142,6 +157,7 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public List<String> getDirectCancelTokens( final boolean includePath )
     throws APIException, JetException
   {
@@ -157,7 +173,8 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetOrderDetail( final String jetOrderId )
+  @Override
+  public IJetAPIResponse sendGetOrderDetail( final String jetOrderId )
     throws APIException, JetException
   {
     Utils.checkNullEmpty( jetOrderId, "jetOrderId" );
@@ -175,6 +192,7 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public OrderRec getOrderDetail( final String jetOrderId )
     throws APIException, JetException
   {
@@ -194,7 +212,8 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutAckOrder( final String jetOrderId, 
+  @Override
+  public IJetAPIResponse sendPutAckOrder( final String jetOrderId, 
     final AckRequestRec req ) throws APIException, JetException
   {
     Utils.checkNullEmpty( jetOrderId, "jetOrderId" );
@@ -218,7 +237,8 @@ public class JetAPIOrder extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendPutShipOrder( final String jetOrderId,
+  @Override
+  public IJetAPIResponse sendPutShipOrder( final String jetOrderId,
     final ShipRequestRec req ) throws APIException, JetException
   {
     Utils.checkNullEmpty( jetOrderId, "jetOrderId" );
@@ -232,46 +252,5 @@ public class JetAPIOrder extends JetAPI
   }
   
     
-  /**
-   * Turn a jet api response into a list of tokens 
-   * @param res response 
-   * @return tokens 
-   */
-  private List<String> jsonArrayToTokenList( final JsonArray a, 
-    final boolean includePath )
-  {
-    final List<String> out = new ArrayList<>();    
-    
-    if ( a != null )
-    {
-      for ( int i = 0; i < a.size(); i++ )
-      {
-        out.add( processOrderStatusTokenPath( 
-          a.getString( i, "" ), includePath ));
-      }
-    }    
-    
-    return out;
-  }
   
-  
-  /**
-   * This will either strip or leave the path on an order status uri.
-   * If includePath is true, only the rightmost path entry is returned.
-   * @param path uri
-   * @param includePath toggle 
-   * @return path 
-   */
-  private String processOrderStatusTokenPath( final String path, 
-    final boolean includePath )
-  {
-    if ( !includePath )
-    {
-      final String[] parts = path.split( "/" );
-      if ( parts.length > 0 )
-        return parts[parts.length - 1];
-    }
-    
-    return path;
-  }
 }

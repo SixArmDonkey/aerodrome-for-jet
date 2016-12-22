@@ -1,3 +1,16 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api;
 
@@ -37,7 +50,7 @@ import org.apache.http.protocol.HttpContext;
  * 
  * @author John Quinn
  */
-public class APIHttpClient 
+public class APIHttpClient implements IAPIHttpClient 
 {
   /**
    * Use this to build instances of APIHttpClient 
@@ -404,6 +417,7 @@ public class APIHttpClient
    * Retrieve the user agent
    * @return User agent
    */
+  @Override
   public String getUserAgent()
   {
     return userAgent;
@@ -414,6 +428,7 @@ public class APIHttpClient
    * Retrieve the current socket read timeout value
    * @return milliseconds
    */
+  @Override
   public long getReadTimeout()
   {
     return readTimeout;
@@ -424,6 +439,7 @@ public class APIHttpClient
    * Retrieve the accept header value
    * @return accept header value
    */
+  @Override
   public String getAccept()
   {
     return accept;
@@ -434,6 +450,7 @@ public class APIHttpClient
    * Retrieve the Accept-Language header value
    * @return value
    */
+  @Override
   public String getAcceptLanguages()
   {
     return acceptLanguage;
@@ -444,6 +461,7 @@ public class APIHttpClient
    * Find out if gzip is allowed or not 
    * @return can use gzip 
    */
+  @Override
   public boolean isGzipAllowed()
   {
     return allowgzip;
@@ -454,6 +472,7 @@ public class APIHttpClient
    * Retrieve the crawl delay 
    * @return millis 
    */
+  @Override
   public long getCrawlDelay()
   {
     return crawlDelay;
@@ -464,6 +483,7 @@ public class APIHttpClient
    * Retrieve the host 
    * @return host 
    */
+  @Override
   public URIBuilder getHost()
   {
     return host;
@@ -474,6 +494,7 @@ public class APIHttpClient
    * Retrieve a shared client instance to use 
    * @return client 
    */
+  @Override
   public CloseableHttpClient getClient()
   {
     return client;
@@ -486,6 +507,7 @@ public class APIHttpClient
    * @throws IllegalArgumentException
    * @throws APIException If there is a problem creating the client or strategy
    */
+  @Override
   public CloseableHttpClient createNewClient()
       throws IllegalArgumentException, APIException
   {

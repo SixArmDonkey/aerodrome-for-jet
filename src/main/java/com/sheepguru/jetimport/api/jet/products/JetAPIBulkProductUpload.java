@@ -1,9 +1,23 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api.jet.products;
 
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
 import com.sheepguru.jetimport.api.PostFile;
+import com.sheepguru.jetimport.api.jet.IJetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetAPI;
 import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetConfig;
@@ -41,7 +55,7 @@ import org.apache.http.message.BasicNameValuePair;
  * This should handle bulk product uploads and stuff.....
  * @author john Quinn
  */
-public class JetAPIBulkProductUpload extends JetAPI
+public class JetAPIBulkProductUpload extends JetAPI implements IJetAPIBulkProductUpload
 {
   public JetAPIBulkProductUpload( final APIHttpClient client, 
     final JetConfig config )
@@ -56,7 +70,8 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetUploadToken()
+  @Override
+  public IJetAPIResponse sendGetUploadToken()
     throws APIException, JetException
   {
     return get(
@@ -72,6 +87,7 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public BulkUploadAuthRec getUploadToken()
     throws APIException, JetException
   {
@@ -87,7 +103,8 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendAuthorizedFile( final String url, final PostFile file )
+  @Override
+  public IJetAPIResponse sendAuthorizedFile( final String url, final PostFile file )
     throws APIException, JetException
   {
     final Map<String,String> headers = new HashMap<>();
@@ -109,7 +126,8 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendPostUploadedFiles( final String uploadUrl, 
+  @Override
+  public IJetAPIResponse sendPostUploadedFiles( final String uploadUrl, 
     final PostFile file, 
     BulkUploadFileType uploadType ) throws APIException, JetException
   {
@@ -133,7 +151,8 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendGetJetFileId( final String fileId )
+  @Override
+  public IJetAPIResponse sendGetJetFileId( final String fileId )
     throws APIException, JetException 
   {
     return get(
@@ -150,6 +169,7 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @throws APIException
    * @throws JetException
    */
+  @Override
   public FileIdRec getJetFileId( final String fileId )
     throws APIException, JetException
   {
@@ -163,6 +183,7 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @param outputFile 
    * @throws JetException 
    */
+  @Override
   public void generateBulkSkuUploadFile( final InputStream input, 
     final File outputFile ) throws JetException
   {
@@ -196,6 +217,7 @@ public class JetAPIBulkProductUpload extends JetAPI
    * @param outputFile 
    * @throws JetException
    */
+  @Override
   public void generateBulkSkuUploadFile( final List<ProductRec> products, 
     final File outputFile ) throws JetException
   {

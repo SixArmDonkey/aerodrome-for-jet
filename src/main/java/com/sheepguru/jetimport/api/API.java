@@ -1,3 +1,16 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api;
 
@@ -7,14 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.UnsupportedCharsetException;
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +47,6 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
@@ -47,7 +56,7 @@ import org.apache.http.util.EntityUtils;
  *
  * @author John Quinn
  */
-public class API
+public class API implements IApi
 {
   /**
    * The download size to specify (in bytes) if the length is not specified.
@@ -73,7 +82,7 @@ public class API
   /**
    * The http client to use 
    */
-  private final APIHttpClient client;
+  private final IAPIHttpClient client;
   
   /**
    * Lock the host to whatever is specified in the client 
@@ -90,7 +99,7 @@ public class API
    * Create a new API instance
    * @param client The HttpClient to use 
    */
-  public API( final APIHttpClient client )
+  public API( final IAPIHttpClient client )
   {
     if ( client == null )
       throw new IllegalArgumentException( "client cannot be null" );
@@ -106,7 +115,7 @@ public class API
    * @param client
    * @param lockHost 
    */
-  public API( final APIHttpClient client, final boolean lockHost )
+  public API( final IAPIHttpClient client, final boolean lockHost )
   {
     if ( client == null )
       throw new IllegalArgumentException( "client cannot be null" );
@@ -123,7 +132,7 @@ public class API
    * @param lockHost
    * @param maxDownloadSize 
    */
-  public API( final APIHttpClient client, final boolean lockHost, final long maxDownloadSize )
+  public API( final IAPIHttpClient client, final boolean lockHost, final long maxDownloadSize )
   {
     if ( client == null )
       throw new IllegalArgumentException( "client cannot be null" );
@@ -142,7 +151,8 @@ public class API
    * @return The response
    * @throws APIException If something goes wrong
    */
-  public APIResponse get( final String url ) throws APIException
+  @Override
+  public IAPIResponse get( final String url ) throws APIException
   {
     return get( url, null );
   }
@@ -155,7 +165,8 @@ public class API
    * @return The response
    * @throws APIException If something goes wrong
    */
-  public APIResponse get( final String url, final Map<String,String> headers ) 
+  @Override
+  public IAPIResponse get( final String url, final Map<String,String> headers ) 
     throws APIException
   {
     //..Execute
@@ -170,7 +181,8 @@ public class API
    * @return response
    * @throws APIException If something goes wrong
    */
-  public APIResponse post( final String url, 
+  @Override
+  public IAPIResponse post( final String url, 
     final List<NameValuePair> formData ) throws APIException
   {
     return post( url, formData, null, null );
@@ -185,7 +197,8 @@ public class API
    * @return response
    * @throws APIException If something goes wrong
    */
-  public APIResponse post( final String url, final List<NameValuePair> formData, 
+  @Override
+  public IAPIResponse post( final String url, final List<NameValuePair> formData, 
     final Map<String,PostFile> files ) throws APIException
   {
     return post( url, formData, files, null );
@@ -243,7 +256,8 @@ public class API
    * @return response
    * @throws APIException If something goes wrong
    */
-  public APIResponse post( final String url, final List<NameValuePair> formData, 
+  @Override
+  public IAPIResponse post( final String url, final List<NameValuePair> formData, 
       final Map<String,PostFile> files, final Map<String,String> headers )
       throws APIException
   {
@@ -276,7 +290,8 @@ public class API
    * @return response
    * @throws APIException if something goes wrong
    */
-  public APIResponse post( final String url, final String payload )
+  @Override
+  public IAPIResponse post( final String url, final String payload )
     throws APIException
   {
     return post( url, payload, null );
@@ -291,7 +306,8 @@ public class API
    * @return response
    * @throws APIException if something goes wrong
    */
-  public APIResponse post( final String url, final String payload, 
+  @Override
+  public IAPIResponse post( final String url, final String payload, 
     final Map<String,String> headers ) throws APIException
   {
     //..Get the post request
@@ -324,7 +340,8 @@ public class API
    * @return response
    * @throws APIException
    */
-  public APIResponse post( final String url, final InputStream payload,
+  @Override
+  public IAPIResponse post( final String url, final InputStream payload,
     final long contentLength, final ContentType contentType, 
     final Map<String,String> headers ) throws APIException
   {
@@ -342,7 +359,8 @@ public class API
   }
   
   
-  public APIResponse post( final String url, final PostFile file, Map<String,String> headers ) throws APIException
+  @Override
+  public IAPIResponse post( final String url, final PostFile file, Map<String,String> headers ) throws APIException
   {
     final FileEntity entity = new FileEntity( file.getFile(), file.getContentType());
     if ( file.hasContentEncoding())
@@ -365,7 +383,8 @@ public class API
    * @return response
    * @throws APIException
    */
-  public APIResponse put( final String url, final String payload )
+  @Override
+  public IAPIResponse put( final String url, final String payload )
       throws APIException
   {
     return put( url, payload, null );
@@ -380,7 +399,8 @@ public class API
    * @return response
    * @throws APIException
    */
-  public APIResponse put( final String url, final String payload, 
+  @Override
+  public IAPIResponse put( final String url, final String payload, 
     final Map<String,String> headers ) throws APIException
   {
     //..Create the new put request
@@ -411,7 +431,8 @@ public class API
    * @return response
    * @throws APIException
    */
-  public APIResponse put( final String url, final InputStream payload,
+  @Override
+  public IAPIResponse put( final String url, final InputStream payload,
     final long contentLength, final ContentType contentType, 
     final Map<String,String> headers ) throws APIException
   {
@@ -429,7 +450,8 @@ public class API
   }
   
   
-  public APIResponse put( final String url, final PostFile file, Map<String,String> headers ) throws APIException
+  @Override
+  public IAPIResponse put( final String url, final PostFile file, Map<String,String> headers ) throws APIException
   {
     final FileEntity entity = new FileEntity( file.getFile(), file.getContentType());
     if ( file.hasContentEncoding())
@@ -569,7 +591,7 @@ public class API
    * @throws BrowserException
    * @throws RedirectException if a redirect needs to happen
    */
-  private APIResponse processResponse( final HttpResponse response, 
+  private IAPIResponse processResponse( final HttpResponse response, 
     final HttpUriRequest get ) throws APIException
   {
     if ( response == null )
@@ -597,7 +619,7 @@ public class API
 
         //..Process the stream
         try ( final InputStream in = entity.getContent()) {
-          final APIResponse res = processEntity( createResponseObject( response ), in, charset );
+          final IAPIResponse res = processEntity( createResponseObject( response ), in, charset );
           APILog.debug( LOG, String.valueOf( res.getStatusLine().getStatusCode()), res.getStatusLine().getReasonPhrase(), "for", get.getURI().toString());
           return res;
           
@@ -610,7 +632,7 @@ public class API
       }
       else
       {        
-        final APIResponse res = createResponseObject( response );   
+        final IAPIResponse res = createResponseObject( response );   
           APILog.debug( LOG, String.valueOf( res.getStatusLine().getStatusCode()), res.getStatusLine().getReasonPhrase(), "for", get.getURI().toString());
         return res;
       }
@@ -629,7 +651,7 @@ public class API
    * Retrieves the status and version number information from the response
    * @param response Response to pull data from
    */
-  private APIResponse createResponseObject( final HttpResponse response )
+  private IAPIResponse createResponseObject( final HttpResponse response )
   {
     return new APIResponse(
       response.getProtocolVersion(),
@@ -646,7 +668,7 @@ public class API
    * @param entity
    * @throws BrowserException
    */
-  private APIResponse processEntity( final APIResponse res, 
+  private IAPIResponse processEntity( final IAPIResponse res, 
      final InputStream in, final String charset ) throws APIException
   {
     //..Buffer dat ish
@@ -706,7 +728,7 @@ public class API
    * @return response
    * @throws APIException If the request failed
    */
-  private APIResponse executeRequest( final HttpUriRequest hr ) 
+  private IAPIResponse executeRequest( final HttpUriRequest hr ) 
     throws APIException
   {
     //..Execute and process the response

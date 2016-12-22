@@ -1,9 +1,23 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api.jet;
 
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
 import com.sheepguru.jetimport.api.APILog;
+import com.sheepguru.jetimport.api.IAPIHttpClient;
 import javax.json.Json;
 import javax.json.JsonObject;
 import org.apache.commons.logging.Log;
@@ -36,7 +50,7 @@ public class JetAPIAuth extends JetAPI
    * @param client The built APIHttpClient instance 
    * @param conf The Jet Configuration object
    */
-  public JetAPIAuth( final APIHttpClient client, final JetConfig conf )
+  public JetAPIAuth( final IAPIHttpClient client, final JetConfig conf )
   {
     super( client, conf );
   }
@@ -113,7 +127,7 @@ public class JetAPIAuth extends JetAPI
    * id_token, token_type or expires_on 
    * @see JetAPI#login() 
    */
-  private void setConfigurationDataFromLogin( final JetAPIResponse response )
+  private void setConfigurationDataFromLogin( final IJetAPIResponse response )
     throws JetException
   {
     //..Turn it into JSON

@@ -1,6 +1,20 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api.jet.orders;
 
+import com.sheepguru.jetimport.api.jet.IJetDate;
 import com.sheepguru.jetimport.api.jet.JetDate;
 import com.sheepguru.jetimport.api.jet.Jsonable;
 import com.sheepguru.jetimport.api.jet.ShippingCarrier;
@@ -34,12 +48,12 @@ public class OrderDetailRec implements Jsonable
   /**
    * Expected date that the shipment will be tendered to the given carrier
    */
-  private final JetDate requestShipBy;
+  private final IJetDate requestShipBy;
   
   /**
    * Date the customer has been promised delivery
    */
-  private final JetDate requestDeliveryBy;
+  private final IJetDate requestDeliveryBy;
 
   
   /**
@@ -76,8 +90,8 @@ public class OrderDetailRec implements Jsonable
     final ShippingCarrier requestShippingCarrier,
     final ShippingMethod requestShippingMethod,
     final ShippingServiceLevel requestServiceLevel,
-    final JetDate requestShipBy,
-    final JetDate requestDeliveryBy
+    final IJetDate requestShipBy,
+    final IJetDate requestDeliveryBy
   ) {
     
     Utils.checkNull( requestShippingCarrier, "requestShippingCarrier" );
@@ -130,7 +144,7 @@ public class OrderDetailRec implements Jsonable
    * the given carrier
    * @return the requestShipBy
    */
-  public JetDate getRequestShipBy() 
+  public IJetDate getRequestShipBy() 
   {
     return requestShipBy;
   }
@@ -140,7 +154,7 @@ public class OrderDetailRec implements Jsonable
    * Get Date the customer has been promised delivery
    * @return the requestDeliveryBy
    */
-  public JetDate getRequestDeliveryBy() 
+  public IJetDate getRequestDeliveryBy() 
   {
     return requestDeliveryBy;
   }

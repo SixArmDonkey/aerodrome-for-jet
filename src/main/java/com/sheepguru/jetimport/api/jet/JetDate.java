@@ -1,8 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  */
+
 package com.sheepguru.jetimport.api.jet;
 
 import com.sheepguru.jetimport.api.APILog;
@@ -19,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  * Dates 
  * @author John Quinn
  */
-public class JetDate 
+public class JetDate implements IJetDate 
 {  
   /**
    * Default date format 
@@ -132,6 +141,7 @@ public class JetDate
    * represents a date.
    * @return date string 
    */
+  @Override
   public String getDateString()
   {
     return date;
@@ -143,6 +153,7 @@ public class JetDate
    * Note: this can be incorrect if the formatter failed.
    * @return  Date
    */
+  @Override
   public Date getDate()
   {
     return javaDate;

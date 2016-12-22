@@ -1,3 +1,16 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport;
 
@@ -14,7 +27,7 @@ import com.sheepguru.jetimport.api.jet.JetException;
 import com.sheepguru.jetimport.api.jet.orders.AckRequestItemRec;
 import com.sheepguru.jetimport.api.jet.orders.AckRequestRec;
 import com.sheepguru.jetimport.api.jet.orders.AckStatus;
-import com.sheepguru.jetimport.api.jet.orders.AddressRec;
+import com.sheepguru.jetimport.api.jet.AddressRec;
 import com.sheepguru.jetimport.api.jet.orders.JetAPIOrder;
 import com.sheepguru.jetimport.api.jet.orders.OrderItemRec;
 import com.sheepguru.jetimport.api.jet.orders.OrderRec;
@@ -552,6 +565,17 @@ public class JetImport implements ExitCodes
   }
   
   
+  private static void testReturns( final APIHttpClient client, final JetConfig config )
+  {
+    try {
+      
+    } catch( Exception e ) {
+      fail( "Failed to test returns", E_API_FAILURE, e );
+    }
+  }
+  
+  
+  
   private static void testOrders( final APIHttpClient client, final JetConfig config )
   {
     //..Create an order api instance
@@ -633,6 +657,8 @@ public class JetImport implements ExitCodes
         
         //..Build the item and add it to the items list 
         shipmentItems.add( builder.build());
+        
+        //..All of the above code can be chained into a 1-liner.
       }
       
       

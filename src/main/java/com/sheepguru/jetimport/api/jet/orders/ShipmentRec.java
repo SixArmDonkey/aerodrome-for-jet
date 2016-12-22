@@ -1,6 +1,20 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api.jet.orders;
 
+import com.sheepguru.jetimport.api.jet.IJetDate;
 import com.sheepguru.jetimport.api.jet.JetDate;
 import com.sheepguru.jetimport.api.jet.JetDateWithOffset;
 import com.sheepguru.jetimport.api.jet.Jsonable;
@@ -45,7 +59,7 @@ public class ShipmentRec implements Jsonable
   /**
    * Date/Time that a given shipment was shipped.
    */
-  private final JetDate shipmentDate;
+  private final IJetDate shipmentDate;
   
   /**
    * Shipping method used for the given shipment.
@@ -55,7 +69,7 @@ public class ShipmentRec implements Jsonable
   /**
    * Date/Time that a given shipment is expected to be delivered.
    */
-  private final JetDate expectedDeliveryDate;
+  private final IJetDate expectedDeliveryDate;
   
   /**
    * The zip code of the locations from which the customer shipment is being 
@@ -75,7 +89,7 @@ public class ShipmentRec implements Jsonable
    * where the shipment originated. (This is provided by merchant in shipment 
    * confirmation)
    */
-  private final JetDate pickupDate;
+  private final IJetDate pickupDate;
   
   /**
    * This is an array of shipment items. Please see our shipment item array 
@@ -111,7 +125,7 @@ public class ShipmentRec implements Jsonable
     /**
      * Date/Time that a given shipment was shipped.
      */
-    private JetDateWithOffset shipmentDate = null;
+    private IJetDate shipmentDate = null;
   
     /**
      * Shipping method used for the given shipment.
@@ -121,7 +135,7 @@ public class ShipmentRec implements Jsonable
     /**
      * Date/Time that a given shipment is expected to be delivered.
      */
-    private JetDateWithOffset expectedDeliveryDate = null;
+    private IJetDate expectedDeliveryDate = null;
   
     /**
      * The zip code of the locations from which the customer shipment is 
@@ -142,7 +156,7 @@ public class ShipmentRec implements Jsonable
      * facility where the shipment originated. (This is provided by merchant 
      * in shipment confirmation)
      */
-    private JetDateWithOffset pickupDate = null;
+    private IJetDate pickupDate = null;
   
     /**
      * This is an array of shipment items. Please see our shipment item array 
@@ -201,7 +215,7 @@ public class ShipmentRec implements Jsonable
      * @param shipmentDate the shipmentDate to set
      * @return this
      */
-    public Builder setShipmentDate( final JetDateWithOffset shipmentDate ) 
+    public Builder setShipmentDate( final IJetDate shipmentDate ) 
     {
       this.shipmentDate = shipmentDate;
       return this;
@@ -226,7 +240,7 @@ public class ShipmentRec implements Jsonable
      * @param expectedDeliveryDate the expectedDeliveryDate to set
      * @return this
      */
-    public Builder setExpectedDeliveryDate( final JetDateWithOffset expectedDeliveryDate ) 
+    public Builder setExpectedDeliveryDate( final IJetDate expectedDeliveryDate ) 
     {
       this.expectedDeliveryDate = expectedDeliveryDate;
       return this;
@@ -270,7 +284,7 @@ public class ShipmentRec implements Jsonable
      * @param pickupDate the pickupDate to set
      * @return this
      */
-    public Builder setPickupDate( final JetDateWithOffset pickupDate ) 
+    public Builder setPickupDate( final IJetDate pickupDate ) 
     {
       this.pickupDate = pickupDate;
       return this;
@@ -401,7 +415,7 @@ public class ShipmentRec implements Jsonable
    * Get Date/Time that a given shipment was shipped.
    * @return the shipmentDate
    */
-  public JetDate getShipmentDate() 
+  public IJetDate getShipmentDate() 
   {
     return shipmentDate;
   }
@@ -421,7 +435,7 @@ public class ShipmentRec implements Jsonable
    * Get Date/Time that a given shipment is expected to be delivered.
    * @return the expectedDeliveryDate
    */
-  public JetDate getExpectedDeliveryDate() 
+  public IJetDate getExpectedDeliveryDate() 
   {
     return expectedDeliveryDate;
   }
@@ -457,7 +471,7 @@ public class ShipmentRec implements Jsonable
    * in shipment confirmation)
    * @return the pickupDate
    */
-  public JetDate getPickupDate() 
+  public IJetDate getPickupDate() 
   {
     return pickupDate;
   }

@@ -1,11 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
  */
+
 package com.sheepguru.jetimport.api.jet;
 
 import com.sheepguru.jetimport.api.APIResponse;
+import com.sheepguru.jetimport.api.IAPIResponse;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +32,7 @@ import org.apache.http.StatusLine;
  * Represents a response from the Jet API.  
  * @author John Quinn
  */
-public class JetAPIResponse extends APIResponse
+public class JetAPIResponse extends APIResponse implements IJetAPIResponse
 {
 
   /**
@@ -121,15 +131,15 @@ public class JetAPIResponse extends APIResponse
   
   
   /**
-   * Create a JetAPIResponse object from an APIResponse object 
+   * Create a JetAPIResponse object from an IAPIResponse object 
    * @param that Some response 
    * @return A JetAPIResponse
    * @throws JetException if the API returned an error response
    */
-  public static JetAPIResponse createFromAPIResponse( final APIResponse that )
+  public static JetAPIResponse createFromAPIResponse( final IAPIResponse that )
      throws JetException
   {
-    if ( !( that instanceof APIResponse ))
+    if ( !( that instanceof IAPIResponse ))
       throw new IllegalArgumentException( "that must be an instance of APIResponse" );
     
     //..Check the errors; this can throw an exception.
@@ -137,7 +147,7 @@ public class JetAPIResponse extends APIResponse
     
     //..Return the response copied into a jet response 
     try {
-      return copyFrom( that, JetAPIResponse.class );
+      return JetAPIResponse.copyFrom( that, JetAPIResponse.class );
     } catch( NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalArgumentException | IllegalAccessException e ) {
       throw new JetException( "Failed to create an instance of JetAPIResponse.class.  Ensure constructor matches APIResponse" );
     }
@@ -145,7 +155,7 @@ public class JetAPIResponse extends APIResponse
   
   
   /**
-   * Create a new JetAPIResponse instance 
+   * Create a new JetIAPIResponse instance 
    * @param pv
    * @param status
    * @param headers 
@@ -164,7 +174,7 @@ public class JetAPIResponse extends APIResponse
    * @return json or null
    * @throws JetException
    */
-  public static final JsonObject checkErrors( APIResponse res ) throws JetException
+  public static final JsonObject checkErrors( IAPIResponse res ) throws JetException
   {
     String content = res.getResponseContent();
     JsonObject json = null;
@@ -210,6 +220,7 @@ public class JetAPIResponse extends APIResponse
    * If the response was successful
    * @return is success
    */
+  @Override
   public boolean isOk()
   {
     return getStatusLine().getStatusCode() == ResponseCode.SUCCESS.getCode();
@@ -220,6 +231,7 @@ public class JetAPIResponse extends APIResponse
    * If the response code was 201
    * @return 
    */
+  @Override
   public boolean isCreated()
   {
     return getStatusLine().getStatusCode() == ResponseCode.CREATED.getCode();
@@ -230,6 +242,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 202
    * @return is it?
    */
+  @Override
   public boolean isAccepted()
   {
     return getStatusLine().getStatusCode() == ResponseCode.ACCEPTED.getCode();
@@ -240,6 +253,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 203
    * @return is it?
    */
+  @Override
   public boolean isNoContent()
   {
     return getStatusLine().getStatusCode() == ResponseCode.NO_CONTENT.getCode();
@@ -249,6 +263,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 400
    * @return is it?
    */
+  @Override
   public boolean isBadRequest()
   {
     return getStatusLine().getStatusCode() == ResponseCode.BAD_REQUEST.getCode();
@@ -259,6 +274,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 401
    * @return is it?
    */
+  @Override
   public boolean isUnauthorized()
   {
     return getStatusLine().getStatusCode() == ResponseCode.UNAUTHORIZED.getCode();
@@ -269,6 +285,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 403
    * @return is it?
    */
+  @Override
   public boolean isForbidden()
   {
     return getStatusLine().getStatusCode() == ResponseCode.FORBIDDEN.getCode();
@@ -278,6 +295,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 404
    * @return is it?
    */
+  @Override
   public boolean isNotFound()
   {
     return getStatusLine().getStatusCode() == ResponseCode.NOT_FOUND.getCode();
@@ -287,6 +305,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 405
    * @return is it?
    */
+  @Override
   public boolean isMethodNotAllowed()
   {
     return getStatusLine().getStatusCode() == ResponseCode.METHOD_NOT_ALLOWED.getCode();
@@ -297,6 +316,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 500
    * @return is it?
    */
+  @Override
   public boolean isInternalServerError()
   {
     return getStatusLine().getStatusCode() == ResponseCode.INTERNAL_SERVER_ERROR.getCode();
@@ -307,6 +327,7 @@ public class JetAPIResponse extends APIResponse
    * Is the response code 503
    * @return 
    */
+  @Override
   public boolean isUnavailable()
   {
     return getStatusLine().getStatusCode() == ResponseCode.UNAVAILABLE.getCode();

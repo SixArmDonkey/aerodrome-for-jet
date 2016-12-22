@@ -1,3 +1,16 @@
+/**
+ * This file is part of the JetImport package, and is subject to the 
+ * terms and conditions defined in file 'LICENSE', which is part 
+ * of this source code package.
+ *
+ * Copyright (c) 2016 All Rights Reserved, John T. Quinn III,
+ * <johnquinn3@gmail.com>
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ */
 
 package com.sheepguru.jetimport.api.jet.products;
 
@@ -5,6 +18,8 @@ import com.sheepguru.jetimport.api.jet.JetAPI;
 import com.sheepguru.jetimport.api.APIException;
 import com.sheepguru.jetimport.api.APIHttpClient;
 import com.sheepguru.jetimport.api.APILog;
+import com.sheepguru.jetimport.api.IAPIHttpClient;
+import com.sheepguru.jetimport.api.jet.IJetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetAPIResponse;
 import com.sheepguru.jetimport.api.jet.JetConfig;
 import com.sheepguru.jetimport.api.jet.JetException;
@@ -25,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author John Quinn
  */
-public class JetAPIProduct extends JetAPI
+public class JetAPIProduct extends JetAPI implements IJetAPIProduct
 {
   /**
    * The log 
@@ -38,7 +53,7 @@ public class JetAPIProduct extends JetAPI
    * @param client The http client 
    * @param conf Configuration 
    */
-  public JetAPIProduct( final APIHttpClient client, final JetConfig conf )
+  public JetAPIProduct( final IAPIHttpClient client, final JetConfig conf )
   {
     super( client, conf );
   }
@@ -53,6 +68,7 @@ public class JetAPIProduct extends JetAPI
    * library itself. A network issue, etc.
    * @throws ValidateException if the product fails pre-submit validation
    */
+  @Override
   public boolean addProduct( final ProductRec product ) throws APIException, JetException, ValidateException
   {
     product.validate();
@@ -84,11 +100,12 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutProductSku( final ProductRec product )
+  @Override
+  public IJetAPIResponse sendPutProductSku( final ProductRec product )
       throws APIException, JetException
   {    
     APILog.info( LOG, "Sending ", product.getMerchantSku());
-    final JetAPIResponse response = put(
+    final IJetAPIResponse response = put(
       config.getAddProductURL( product.getMerchantSku()),
       product.toJSON().toString(),
       getJSONHeaderBuilder().build()
@@ -105,12 +122,13 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutProductImage( final ProductRec product )
+  @Override
+  public IJetAPIResponse sendPutProductImage( final ProductRec product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "image" );
     
-    final JetAPIResponse response = put(
+    final IJetAPIResponse response = put(
       config.getAddProductImageUrl( product.getMerchantSku()),
       product.toImageJson().toString(),
       getJSONHeaderBuilder().build()
@@ -127,12 +145,13 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutProductPrice( final ProductRec product )
+  @Override
+  public IJetAPIResponse sendPutProductPrice( final ProductRec product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "price" );
     
-    final JetAPIResponse response = put(
+    final IJetAPIResponse response = put(
       config.getAddProductPriceUrl( product.getMerchantSku()),
       product.toPriceJson().toString(),
       getJSONHeaderBuilder().build()
@@ -149,12 +168,13 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
-  public JetAPIResponse sendPutProductInventory( final ProductRec product )
+  @Override
+  public IJetAPIResponse sendPutProductInventory( final ProductRec product )
       throws APIException, JetException
   {
     APILog.info( LOG, "Sending", product.getMerchantSku(), "inventory" );
     
-    final JetAPIResponse response = put(
+    final IJetAPIResponse response = put(
       config.getAddProductInventoryUrl( product.getMerchantSku()),
       product.toInventoryJson().toString(),
       getJSONHeaderBuilder().build()
@@ -180,7 +200,8 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException if there's a problem 
    * @throws JetException 
    */
-  public JetAPIResponse sendPutProductVariation( 
+  @Override
+  public IJetAPIResponse sendPutProductVariation( 
     final ProductVariationGroupRec group ) throws APIException, JetException
         
   {
@@ -189,7 +210,7 @@ public class JetAPIProduct extends JetAPI
     
     APILog.info( LOG, "Sending", group.getParentSku(), "variations" );
     
-    final JetAPIResponse response = put(
+    final IJetAPIResponse response = put(
       config.getAddProductVariationUrl( group.getParentSku()),
       group.toJSON().toString(),
       getJSONHeaderBuilder().build()
@@ -207,7 +228,8 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendPutProductShippingExceptions(
+  @Override
+  public IJetAPIResponse sendPutProductShippingExceptions(
     final String sku,
     final List<FNodeShippingRec> nodes
   ) throws APIException, JetException
@@ -225,7 +247,7 @@ public class JetAPIProduct extends JetAPI
       b.add( node.toJSON());
     }
     
-    final JetAPIResponse response = put(
+    final IJetAPIResponse response = put(
       config.getAddProductShipExceptionUrl( sku ),
       b.build().toString(),
       getJSONHeaderBuilder().build()
@@ -251,7 +273,8 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendPutReturnsException( final String sku, 
+  @Override
+  public IJetAPIResponse sendPutReturnsException( final String sku, 
     final List<String> hashes ) throws APIException, JetException
   {
     checkSku( sku );
@@ -267,7 +290,7 @@ public class JetAPIProduct extends JetAPI
     
     APILog.info( LOG, "Sending", sku, "returns exceptions" );
     
-    final JetAPIResponse res = put( 
+    final IJetAPIResponse res = put( 
       config.getProductReturnsExceptionUrl( sku ),
       b.build().toString(),
       getJSONHeaderBuilder().build()
@@ -291,14 +314,15 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendPutArchiveSku( final String sku, 
+  @Override
+  public IJetAPIResponse sendPutArchiveSku( final String sku, 
     final boolean isArchived ) throws APIException, JetException
   {
     checkSku( sku );
     
     APILog.info( LOG, "Sending archive sku:", sku );
 
-    final JetAPIResponse response = put(
+    final IJetAPIResponse response = put(
       config.getArchiveSkuURL( sku ),
       Json.createObjectBuilder()
         .add( "is_archived", isArchived ).build().toString(),
@@ -321,14 +345,15 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetProductPrice( final String sku ) 
+  @Override
+  public IJetAPIResponse sendGetProductPrice( final String sku ) 
     throws APIException, JetException
   {
     checkSku( sku );
     
     APILog.info( LOG, "Sending GET product price for sku:", sku );
     
-    final JetAPIResponse response = get(
+    final IJetAPIResponse response = get(
       config.getGetProductPriceURL( sku ),
       getJSONHeaderBuilder().build()
     );
@@ -349,6 +374,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public ProductPriceRec getProductPrice( final String sku )
     throws APIException, JetException
   {
@@ -370,7 +396,8 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetProductSku( final String sku )
+  @Override
+  public IJetAPIResponse sendGetProductSku( final String sku )
     throws APIException, JetException
   {
     checkSku( sku );
@@ -388,6 +415,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException
    */
+  @Override
   public ProductRec getProduct( final String sku ) throws APIException, JetException
   {
     return ProductRec.fromJSON( sendGetProductSku( sku ).getJsonObject());
@@ -404,14 +432,15 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetProductInventory( final String sku )
+  @Override
+  public IJetAPIResponse sendGetProductInventory( final String sku )
      throws APIException, JetException
   {
     checkSku( sku );
     
     APILog.info( LOG, "Sending GET product inventory for sku:", sku );
     
-    final JetAPIResponse response = get(
+    final IJetAPIResponse response = get(
       config.getGetProductInventoryURL( sku ),
       getJSONHeaderBuilder().build()
     );
@@ -430,6 +459,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */  
+  @Override
   public ProductInventoryRec getProductInventory( final String sku )
     throws APIException, JetException
   {
@@ -456,14 +486,15 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetProductShippingExceptions( final String sku )
+  @Override
+  public IJetAPIResponse sendGetProductShippingExceptions( final String sku )
     throws APIException, JetException 
   {
     checkSku( sku );
     
     APILog.info( LOG, "Sending GET product shipping exceptions for sku:", sku );
     
-    final JetAPIResponse response = get(
+    final IJetAPIResponse response = get(
       config.getGetShippingExceptionURL( sku ),
       getJSONHeaderBuilder().build()
     );
@@ -480,14 +511,15 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetProductVariations( final String sku )
+  @Override
+  public IJetAPIResponse sendGetProductVariations( final String sku )
     throws APIException, JetException 
   {
     checkSku( sku );
     
     APILog.info( LOG, "Sending GET product variations for sku:", sku );
     
-    final JetAPIResponse response = get(
+    final IJetAPIResponse response = get(
       config.getGetProductVariationURL( sku ),
       getJSONHeaderBuilder().build()
     );
@@ -504,6 +536,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public ProductVariationGroupRec getProductVariations( final String sku )
     throws APIException, JetException
   {
@@ -529,6 +562,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException 
    * @throws JetException
    */
+  @Override
   public List<FNodeShippingRec> getShippingExceptions( final String sku )
     throws APIException, JetException
   {
@@ -562,14 +596,15 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetProductReturnsExceptions( final String sku )
+  @Override
+  public IJetAPIResponse sendGetProductReturnsExceptions( final String sku )
     throws APIException, JetException 
   {
     checkSku( sku );
     
     APILog.info( LOG, "Sending GET product returns exceptions for sku:", sku );
     
-    final JetAPIResponse response = get(
+    final IJetAPIResponse response = get(
       config.getGetReturnsExceptionURL( sku ),
       getJSONHeaderBuilder().build()
     );
@@ -586,6 +621,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public ReturnsExceptionRec getReturnsExceptions( final String sku )
     throws APIException, JetException 
   {
@@ -606,7 +642,8 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetSkuList( final int offset, final int limit )
+  @Override
+  public IJetAPIResponse sendGetSkuList( final int offset, final int limit )
     throws APIException, JetException 
   {
     if ( offset < 0 )
@@ -634,6 +671,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public List<String> getSkuList( final int offset, final int limit )
     throws APIException, JetException 
   {
@@ -666,7 +704,8 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public JetAPIResponse sendGetSkuSalesData( final String sku )
+  @Override
+  public IJetAPIResponse sendGetSkuSalesData( final String sku )
     throws APIException, JetException
   {
     checkSku( sku );
@@ -701,6 +740,7 @@ public class JetAPIProduct extends JetAPI
    * @throws APIException
    * @throws JetException 
    */  
+  @Override
   public ProductSalesDataRec getSkuSalesData( final String sku )
     throws APIException, JetException
   {
