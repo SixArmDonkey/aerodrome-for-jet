@@ -1,7 +1,7 @@
 # Aerodrome for Jet
 ## Jet.com API library
 
-[![Aerodrome](https://img.shields.io/badge/Aerodrome-Not%20Tested-red.svg)]
+[![Aerodrome](https://img.shields.io/badge/Aerodrome-Not%20Tested-red.svg)]()
 [![Authentication](https://img.shields.io/badge/Authentication-working-yellowgreen.svg)]
 [![ProductAPI](https://img.shields.io/badge/Product%20API-working-yellowgreen.svg)]
 [![BulkProductAPI](https://img.shields.io/badge/Bulk%20Product%20API-working-yellowgreen.svg)]
