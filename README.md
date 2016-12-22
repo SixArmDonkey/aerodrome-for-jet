@@ -7,7 +7,7 @@ Bulk uploads now work - merchant sku's tested, need to test the other types.
 
 Orders Api is working
 
-The source is completely documented, check out the JavaDoc here: https://sheepguru.github.io/jet.com-api-java-library/ .
+The source is completely documented, check out the JavaDoc here: https://sheepguru.github.io/aerodrome-for-jet/ .
 
 There is a makeshift test set up in the Main class, see that for usage for now.  
 
