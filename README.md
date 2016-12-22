@@ -1,6 +1,10 @@
 # Aerodrome for Jet
 ## Jet.com API library
 
+
+[![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
+
 While this is still in development, all of the Authentication and Product API calls are complete and working.
 
 Bulk uploads now work - merchant sku's tested, need to test the other types.
