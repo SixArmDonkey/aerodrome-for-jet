@@ -44,6 +44,12 @@ Variable Placeholders
 
     <!-- Toggle self-signed certificate rejection -->
     <allowUntrustedSSL>true</allowUntrustedSSL>
+    
+    <!-- Set to true to allow setting uri's as endpoints. -->
+    <lockHost>true</lockHost>
+    
+    <!-- Set the maximum download size in bytes -->
+    <maxDownloadSize>20971520</maxDownloadSize>
   </client>
 
   <!-- Jet.com API Configuration -->
@@ -54,13 +60,13 @@ Variable Placeholders
     <host>https://merchant-api.jet.com/api</host>
 
     <!-- Your Jet API Username -->
-    <username></username>
+    <username>ED2F2460719E3EE2961130FB97F73A659547BA1C</username>
 
     <!-- Your Jet API Password -->
-    <password></password>
+    <password>qUlvcZEVPidBWW7X1x+k/Qhw6uYDazJJqW0R2QQlpR5S</password>
 
     <!-- Jet API Merchant Id -->
-    <merchantId></merchantId>
+    <merchantId>b8ab64c6e2ba469698ffdae26946553d</merchantId>
 
     <!-- Jet API Endpoint URI's -->
     <uri>
@@ -181,6 +187,23 @@ Variable Placeholders
           <ship>/orders/{jet_defined_order_id}/shipped</ship>          
         </put>
       </orders>
+      
+      <!-- Returns API -->
+      <returns>
+        <get>
+          <!-- Check for returns -->
+          <check>/api/returns/{status}</check>
+          
+          <!-- Check return detail -->
+          <detail>/returns/state/{jet_defined_return_id}</detail>
+        </get>
+        
+        <put>
+          <!-- Complete Return -->
+          <complete>/returns/{jet_defined_return_id}/complete</complete>
+        </put>
+      </returns>
+      
     </uri>
   </jet>
 </config>

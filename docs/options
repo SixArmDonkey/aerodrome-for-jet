@@ -4,21 +4,21 @@
 'UTF-8'
 -protected
 -sourcepath
-'/run/media/john/mirror/work/java/maven/JetImport/src/main/java'
+'/run/media/john/mirror/work/java/maven/Aerodrome/src/main/java'
 -author
 -bottom
 'Copyright &#169; 2016. All rights reserved.'
 -charset
 'UTF-8'
 -d
-'/run/media/john/mirror/work/java/maven/JetImport/target/site/apidocs'
+'/run/media/john/mirror/work/java/maven/Aerodrome/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'JetImport 1.0-SNAPSHOT API'
+'Aerodrome 1.0-SNAPSHOT API'
 -linkoffline
-'http://docs.oracle.com/javase/8/docs/api' '/run/media/john/mirror/work/java/maven/JetImport/target/javadoc-bundle-options'
+'http://docs.oracle.com/javase/8/docs/api' '/run/media/john/mirror/work/java/maven/Aerodrome/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'JetImport 1.0-SNAPSHOT API'
+'Aerodrome 1.0-SNAPSHOT API'

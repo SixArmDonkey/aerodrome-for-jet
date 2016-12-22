@@ -1,7 +1,7 @@
-com.sheepguru.jetimport
-com.sheepguru.jetimport.api
-com.sheepguru.jetimport.api.jet
-com.sheepguru.jetimport.api.jet.orders
-com.sheepguru.jetimport.api.jet.products
-com.sheepguru.jetimport.api.jet.returns
+com.sheepguru.aerodrome
+com.sheepguru.aerodrome.api
+com.sheepguru.aerodrome.api.jet
+com.sheepguru.aerodrome.api.jet.orders
+com.sheepguru.aerodrome.api.jet.products
+com.sheepguru.aerodrome.api.jet.returns
 com.sheepguru.utils
