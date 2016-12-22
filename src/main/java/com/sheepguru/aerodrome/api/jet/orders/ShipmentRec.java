@@ -15,8 +15,8 @@
 package com.sheepguru.aerodrome.api.jet.orders;
 
 import com.sheepguru.aerodrome.api.jet.IJetDate;
-import com.sheepguru.aerodrome.api.jet.JetDate;
-import com.sheepguru.aerodrome.api.jet.JetDateWithOffset;
+import com.sheepguru.aerodrome.api.jet.ISO801UTCDate;
+import com.sheepguru.aerodrome.api.jet.ISO801Date;
 import com.sheepguru.aerodrome.api.jet.Jsonable;
 import com.sheepguru.aerodrome.api.jet.ShippingCarrier;
 import com.sheepguru.aerodrome.api.jet.ShippingMethod;
@@ -346,12 +346,12 @@ public class ShipmentRec implements Jsonable
       .setShipmentId( json.getString( "shipment_id", "" ))
       .setAltShipmentId( json.getString( "alt_shipment_id", "" ))
       .setTrackingNumber( json.getString( "shipment_tracking_number", "" ))
-      .setShipmentDate( JetDateWithOffset.fromJetValueOrNull( json.getString( "response_shipment_date", "" )))
+      .setShipmentDate(ISO801Date.fromJetValueOrNull( json.getString( "response_shipment_date", "" )))
       .setShippingMethod( ShippingMethod.fromText( json.getString( "response_shipping_method", "" )))
-      .setExpectedDeliveryDate( JetDateWithOffset.fromJetValueOrNull( json.getString( "expected_delivery_date" )))
+      .setExpectedDeliveryDate(ISO801Date.fromJetValueOrNull( json.getString( "expected_delivery_date" )))
       .setShipFromZip( json.getString( "ship_from_zip_code", "" ))
       .setCarrier( ShippingCarrier.fromText( json.getString( "carrier", "" )))
-      .setPickupDate( JetDateWithOffset.fromJetValueOrNull( json.getString( "carrier_pick_up_date", "" )))
+      .setPickupDate(ISO801Date.fromJetValueOrNull( json.getString( "carrier_pick_up_date", "" )))
       .setItems( items )
       .build();
   }

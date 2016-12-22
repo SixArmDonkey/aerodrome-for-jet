@@ -19,10 +19,9 @@ import com.sheepguru.aerodrome.api.APIHttpClient;
 import com.sheepguru.aerodrome.api.PostFile;
 import com.sheepguru.aerodrome.api.jet.DefaultJetConfig;
 import com.sheepguru.aerodrome.api.jet.JetAPIAuth;
-import com.sheepguru.aerodrome.api.jet.JetAPIResponse;
 import com.sheepguru.aerodrome.api.jet.JetAuthException;
 import com.sheepguru.aerodrome.api.jet.JetConfig;
-import com.sheepguru.aerodrome.api.jet.JetDateWithOffset;
+import com.sheepguru.aerodrome.api.jet.ISO801Date;
 import com.sheepguru.aerodrome.api.jet.JetException;
 import com.sheepguru.aerodrome.api.jet.orders.AckRequestItemRec;
 import com.sheepguru.aerodrome.api.jet.orders.AckRequestRec;
@@ -43,12 +42,18 @@ import com.sheepguru.aerodrome.api.jet.products.JetAPIProduct;
 import com.sheepguru.aerodrome.api.jet.products.ProductRec;
 import com.sheepguru.aerodrome.api.jet.products.ProductCodeRec;
 import com.sheepguru.aerodrome.api.jet.products.ProductCodeType;
+import com.sheepguru.aerodrome.api.jet.returns.ChargeFeedback;
+import com.sheepguru.aerodrome.api.jet.returns.CompleteReturnRequestRec;
+import com.sheepguru.aerodrome.api.jet.returns.IJetAPIReturn;
+import com.sheepguru.aerodrome.api.jet.returns.JetAPIReturn;
+import com.sheepguru.aerodrome.api.jet.returns.RefundFeedback;
+import com.sheepguru.aerodrome.api.jet.returns.ReturnReason;
+import com.sheepguru.aerodrome.api.jet.returns.ReturnRec;
+import com.sheepguru.aerodrome.api.jet.returns.ReturnStatus;
 import com.sheepguru.utils.Money;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -121,6 +126,8 @@ public class Aerodrome implements ExitCodes
     //testUpload( client, jetConfig );
     
     testOrders( client, jetConfig );
+    
+    //testReturns( client, jetConfig );
     
     
   }
@@ -568,7 +575,15 @@ public class Aerodrome implements ExitCodes
   private static void testReturns( final APIHttpClient client, final JetConfig config )
   {
     try {
+      final IJetAPIReturn returnsApi = new JetAPIReturn( client, config );
       
+      for ( final String id : returnsApi.getReturnsStatusTokens( ReturnStatus.CREATED ))
+      {
+        final ReturnRec ret = returnsApi.getReturnDetail( id );
+        
+        //..approve the return i guess
+        returnsApi.putCompleteReturn( id, new CompleteReturnRequestRec( ret.getMerchantOrderId(), "", true, ChargeFeedback.FRAUD, ret.getReturnItems()));
+      }
     } catch( Exception e ) {
       fail( "Failed to test returns", E_API_FAILURE, e );
     }
@@ -581,10 +596,10 @@ public class Aerodrome implements ExitCodes
     //..Create an order api instance
     try {
       final JetAPIOrder orderApi = new JetAPIOrder( client, config );
-      //ackOrders( orderApi );
+      ackOrders( orderApi );
       //shipOrders( orderApi );
       //cancelOrders( orderApi );
-      completeOrders( orderApi );
+      //completeOrders( orderApi );
     } catch( Exception e ) {
       fail( "Failed to do order stuff", E_API_FAILURE, e );
     }        
@@ -737,10 +752,10 @@ public class Aerodrome implements ExitCodes
       final ShipmentRec shipment = new ShipmentRec.Builder()
         .setCarrier( order.getOrderDetail().getRequestShippingCarrier())
         .setTrackingNumber( "Z123456780123456" )
-        .setShipmentDate( new JetDateWithOffset())
-        .setExpectedDeliveryDate( new JetDateWithOffset( new Date( new Date().getTime() + ( 86400L * 2L ))))
+        .setShipmentDate(new ISO801Date())
+        .setExpectedDeliveryDate(new ISO801Date( new Date( new Date().getTime() + ( 86400L * 2L ))))
         .setShipFromZip( "38473" )
-        .setPickupDate( new JetDateWithOffset())
+        .setPickupDate(new ISO801Date())
         .setItems( shipmentItems )
         .build();
 

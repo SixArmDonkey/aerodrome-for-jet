@@ -3,7 +3,7 @@
 <!--
     TODO define vocabulary identification
     PUBLIC ID: -//vendor//vocabulary//EN
-    SYSTEM ID: http://server/path/jetimport.conf.dtd
+    SYSTEM ID: http://server/path/aerodrome.conf.dtd
 
 -->
 
@@ -12,7 +12,7 @@
 
     <?xml version="1.0"?>
 
-    <!DOCTYPE config SYSTEM "jetimport.conf.dtd">
+    <!DOCTYPE config SYSTEM "aerodrome.conf.dtd">
 
     <config>
     ...
@@ -23,10 +23,16 @@
 <!ELEMENT config (log|client|jet)*>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT log (#PCDATA)>
+<!ELEMENT log (class|properties)*>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT client (readTimeout|accept|acceptLanguage|allowUntrustedSSL)*>
+<!ELEMENT class (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT properties EMPTY>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT client (readTimeout|accept|acceptLanguage|allowUntrustedSSL|lockHost|maxDownloadSize)*>
 
 <!--- Put your DTDDoc comment here. -->
 <!ELEMENT readTimeout (#PCDATA)>
@@ -41,22 +47,28 @@
 <!ELEMENT allowUntrustedSSL (#PCDATA)>
 
 <!--- Put your DTDDoc comment here. -->
+<!ELEMENT lockHost (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT maxDownloadSize (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
 <!ELEMENT jet (host|username|password|merchantId|uri)*>
 
 <!--- Put your DTDDoc comment here. -->
 <!ELEMENT host (#PCDATA)>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT username (#PCDATA)>
+<!ELEMENT username EMPTY>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT password (#PCDATA)>
+<!ELEMENT password EMPTY>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT merchantId (#PCDATA)>
+<!ELEMENT merchantId EMPTY>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT uri (token|authTest|products)*>
+<!ELEMENT uri (token|authTest|products|orders|returns)*>
 
 <!--- Put your DTDDoc comment here. -->
 <!ELEMENT token (#PCDATA)>
@@ -65,10 +77,10 @@
 <!ELEMENT authTest (#PCDATA)>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT products (get|put|delete)*>
+<!ELEMENT products (get|put|post)*>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT get (sku|price)*>
+<!ELEMENT get (#PCDATA|salesData|sku|detail|price|directedCancel|inventory|variation|shippingException|returnsException|skuList|check|bulkUploadToken|bulkJetFileId|orders)*>
 
 <!--- Put your DTDDoc comment here. -->
 <!ELEMENT sku (#PCDATA)>
@@ -77,16 +89,67 @@
 <!ELEMENT price (#PCDATA)>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT put (sku|image|price|inventory|shipException)*>
+<!ELEMENT inventory (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT variation (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT shippingException (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT returnsException (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT skuList (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT salesData (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT bulkUploadToken (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT bulkJetFileId (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT put (inventory|sku|image|price|variation|shipException|archiveSku|returnsException|acknowledge|ship|complete)*>
 
 <!--- Put your DTDDoc comment here. -->
 <!ELEMENT image (#PCDATA)>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT inventory (#PCDATA)>
-
-<!--- Put your DTDDoc comment here. -->
 <!ELEMENT shipException (#PCDATA)>
 
 <!--- Put your DTDDoc comment here. -->
-<!ELEMENT delete EMPTY>
+<!ELEMENT archiveSku (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT post (bulkUploadedFiles)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT bulkUploadedFiles (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT orders (#PCDATA|get|put)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT directedCancel (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT detail (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT acknowledge (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT ship (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT returns (get|put)*>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT check (#PCDATA)>
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT complete (#PCDATA)>

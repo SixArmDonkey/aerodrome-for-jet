@@ -29,7 +29,7 @@ import java.util.List;
  * 
  * @author John Quinn
  */
-public class JetAPIReturn extends JetAPI
+public class JetAPIReturn extends JetAPI implements IJetAPIReturn
 {
   /**
    * Create a new API instance
@@ -78,6 +78,7 @@ public class JetAPIReturn extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public IJetAPIResponse sendPollReturns( final ReturnStatus status )
     throws APIException, JetException
   {
@@ -91,7 +92,7 @@ public class JetAPIReturn extends JetAPI
       getJSONHeaderBuilder().build()
     );
   }
-  
+   
 
   /**
    * Poll Jet and retrieve a list of returns id's for doing stuff
@@ -102,7 +103,8 @@ public class JetAPIReturn extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
-  public List<String> getOrderStatusTokens( final ReturnStatus status ) 
+  @Override
+  public List<String> getReturnsStatusTokens( final ReturnStatus status ) 
     throws APIException, JetException    
   {    
     return getReturnStatusTokens( status, false );
@@ -119,6 +121,7 @@ public class JetAPIReturn extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public List<String> getReturnStatusTokens( final ReturnStatus status, 
     final boolean includePath ) throws APIException, JetException    
   {    
@@ -135,6 +138,7 @@ public class JetAPIReturn extends JetAPI
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public IJetAPIResponse sendGetReturnDetail( final String jetReturnId )
     throws APIException, JetException
   {
@@ -144,5 +148,60 @@ public class JetAPIReturn extends JetAPI
       config.getGetReturnDetailUrl( jetReturnId ),
       getJSONHeaderBuilder().build()
     );
+  }
+  
+  
+  /**
+   * Retrieve detail about a specific return 
+   * @param jetReturnId Jet return id 
+   * @return
+   * @throws APIException
+   * @throws JetException 
+   */
+  @Override
+  public ReturnRec getReturnDetail( final String jetReturnId )
+    throws APIException, JetException
+  {
+    return ReturnRec.fromJson( 
+      sendGetReturnDetail( jetReturnId ).getJsonObject());
+  }
+  
+  
+  /**
+   * Send a complete return command to jet 
+   * @param jetReturnId
+   * @param payload The payload 
+   * @return api response
+   * @throws APIException
+   * @throws JetException 
+   */
+  @Override
+  public IJetAPIResponse sendPutCompleteReturn( final String jetReturnId,
+    final String payload ) throws APIException, JetException
+  {
+    Utils.checkNullEmpty( jetReturnId, "jetReturnId" );
+    Utils.checkNull( payload, "payload" );
+    
+    return put(
+      config.getPutCompleteReturnUrl( jetReturnId ),
+      payload,
+      getJSONHeaderBuilder().build()
+    );
+  }
+  
+  
+  /**
+   * Send a complete return command to jet 
+   * @param jetReturnId
+   * @param payload The payload 
+   * @return api response
+   * @throws APIException
+   * @throws JetException 
+   */
+  @Override
+  public IJetAPIResponse putCompleteReturn( final String jetReturnId,
+    final CompleteReturnRequestRec request ) throws APIException, JetException
+  {
+    return sendPutCompleteReturn( jetReturnId, request.toJSON().toString());
   }
 }

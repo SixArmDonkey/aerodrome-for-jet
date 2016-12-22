@@ -16,6 +16,7 @@ package com.sheepguru.aerodrome.api.jet.returns;
 
 import com.sheepguru.aerodrome.api.jet.AddressRec;
 import com.sheepguru.aerodrome.api.jet.IJetDate;
+import com.sheepguru.aerodrome.api.jet.ISO801UTCDate;
 import com.sheepguru.aerodrome.api.jet.JetDate;
 import com.sheepguru.aerodrome.api.jet.Jsonable;
 import com.sheepguru.aerodrome.api.jet.JsonableList;
@@ -23,6 +24,7 @@ import com.sheepguru.aerodrome.api.jet.ShippingCarrier;
 import com.sheepguru.aerodrome.api.jet.Utils;
 import com.sheepguru.utils.Money;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.json.Json;
@@ -131,22 +133,22 @@ public class ReturnRec implements Jsonable
    */
   public static class Builder
   {
-    private boolean agreeToReturnCharge;
-    private String altOrderId;
-    private String altReturnAuthId;
-    private String merchantOrderId;
-    private String merchantReturnAuthId;
-    private Money merchantReturnCharge;
-    private String referenceOrderId;
-    private String referenceReturnAuthId;
-    private boolean refundWithoutReturn;
-    private IJetDate returnDate;
-    private ReturnStatus status;
-    private ShippingCarrier carrier;
-    private String trackingNumber;
-    private List<AddressRec> returnLocations;
-    private List<ReturnMerchantSkuRec> returnMerchantSkus;    
-    private List<ReturnItemRec> items;
+    private boolean agreeToReturnCharge = false;
+    private String altOrderId = "";
+    private String altReturnAuthId = "";
+    private String merchantOrderId = "";
+    private String merchantReturnAuthId = "";
+    private Money merchantReturnCharge = new Money();
+    private String referenceOrderId = "";
+    private String referenceReturnAuthId = "";
+    private boolean refundWithoutReturn = false;
+    private IJetDate returnDate = new JetDate();
+    private ReturnStatus status = ReturnStatus.NONE;
+    private ShippingCarrier carrier = ShippingCarrier.NONE;
+    private String trackingNumber = "";
+    private final List<AddressRec> returnLocations = new ArrayList<>();
+    private final List<ReturnMerchantSkuRec> returnMerchantSkus = new ArrayList<>();
+    private final List<ReturnItemRec> items = new ArrayList<>();
 
     
     /**

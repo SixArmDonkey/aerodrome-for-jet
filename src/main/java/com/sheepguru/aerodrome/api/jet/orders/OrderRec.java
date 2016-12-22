@@ -18,7 +18,7 @@ import com.sheepguru.aerodrome.api.jet.AddressRec;
 import com.sheepguru.aerodrome.api.jet.PersonRec;
 import com.sheepguru.aerodrome.api.APILog;
 import com.sheepguru.aerodrome.api.jet.IJetDate;
-import com.sheepguru.aerodrome.api.jet.JetDate;
+import com.sheepguru.aerodrome.api.jet.ISO801UTCDate;
 import com.sheepguru.aerodrome.api.jet.JetException;
 import com.sheepguru.aerodrome.api.jet.Jsonable;
 import com.sheepguru.aerodrome.api.jet.Utils;
@@ -643,8 +643,8 @@ public class OrderRec implements Jsonable
       .setHashEmail( json.getString( "hash_email", "" ))
       .setStatus( OrderStatus.fromText( json.getString( "status", "" )))
       .setExceptionState( OrderExceptionState.fromText( json.getString( "exception_state", "" )))
-      .setOrderPlacedDate( new JetDate( json.getString( "order_placed_date", "" )))
-      .setOrderTransmissionDate( new JetDate( json.getString( "order_transmission_date", "" )))
+      .setOrderPlacedDate(new ISO801UTCDate( json.getString( "order_placed_date", "" )))
+      .setOrderTransmissionDate(new ISO801UTCDate( json.getString( "order_transmission_date", "" )))
       .setJetRequestDirectedCancel( json.getBoolean( "jet_requested_directed_cancel", false ))
       ;
     

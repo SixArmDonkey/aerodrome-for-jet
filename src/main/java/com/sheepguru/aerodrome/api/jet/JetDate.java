@@ -25,7 +25,11 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Represents a Date from a Jet API Response.
- * Dates 
+ * 
+ * Date time format:
+ * yyyy-MM-dd'T'HH:mm:ss 
+ * 
+ * 
  * @author John Quinn
  */
 public class JetDate implements IJetDate 
@@ -33,12 +37,12 @@ public class JetDate implements IJetDate
   /**
    * Default date format 
    */
-  private static final String DEFAULT_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'";  
+  private static final String DEFAULT_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";  
  
   /**
    * Logger 
    */
-  private static final Log LOG = LogFactory.getLog( JetDate.class );
+  private static final Log LOG = LogFactory.getLog(ISO801UTCDate.class );
   
   /**
    * Date string from jet 

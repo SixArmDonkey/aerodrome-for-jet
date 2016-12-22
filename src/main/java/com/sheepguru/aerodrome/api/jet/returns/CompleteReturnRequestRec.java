@@ -53,7 +53,7 @@ public class CompleteReturnRequestRec implements Jsonable
    * The reason the merchant does not agree to the return charge 
    * for the return notification.
    */
-  private final RefundFeedback feedback;
+  private final ChargeFeedback feedback;
 
   /**
    * This is included if status is inprogress or completed.
@@ -72,7 +72,7 @@ public class CompleteReturnRequestRec implements Jsonable
       json.getString( "merchant_order_id", "" ),
       json.getString( "alt_order_id", "" ),
       json.getBoolean( "agree_to_return_charge", false ),
-      RefundFeedback.fromText( json.getString( "return_charge_feedback", "" )),
+      ChargeFeedback.fromText( json.getString( "return_charge_feedback", "" )),
       jsonToReturnItemsList( json.getJsonArray( "items" ))
    );
   }
@@ -114,7 +114,7 @@ public class CompleteReturnRequestRec implements Jsonable
     final String merchantOrderId,
     final String altOrderId,
     final boolean agreeToReturnCharge,
-    final RefundFeedback feedback,
+    final ChargeFeedback feedback,
     final List<ReturnItemRec> items
   ) {
     Utils.checkNull( altOrderId, "altOrderId" );
@@ -167,7 +167,7 @@ public class CompleteReturnRequestRec implements Jsonable
    * for the return notification.
    * @return the feedback
    */
-  public RefundFeedback getFeedback() 
+  public ChargeFeedback getFeedback() 
   {
     return feedback;
   }

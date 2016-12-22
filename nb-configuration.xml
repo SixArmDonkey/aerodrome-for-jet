@@ -14,5 +14,27 @@ That way multiple projects can share the same settings (useful for formatting ru
 Any value defined here will override the pom.xml file value but is only applicable to the current project.
 -->
         <org-netbeans-modules-javascript2-requirejs.enabled>true</org-netbeans-modules-javascript2-requirejs.enabled>
+        <netbeans.hint.licensePath>${project.basedir}/licenseheader.txt</netbeans.hint.licensePath>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinForParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinForParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinSynchronizedParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinSynchronizedParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinWhileParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinWhileParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinLambdaParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinLambdaParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinSwitchParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinSwitchParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.classDeclBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.classDeclBracePlacement>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinMethodDeclParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinMethodDeclParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinCatchParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinCatchParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinIfParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinIfParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinAnnotationParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinAnnotationParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.methodDeclBracePlacement>NEW_LINE</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.methodDeclBracePlacement>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinMethodCallParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinMethodCallParens>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinTryParens>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinTryParens>
+        <org-netbeans-modules-editor-indent.CodeStyle.project.text-line-wrap>none</org-netbeans-modules-editor-indent.CodeStyle.project.text-line-wrap>
+        <org-netbeans-modules-editor-indent.CodeStyle.project.indent-shift-width>2</org-netbeans-modules-editor-indent.CodeStyle.project.indent-shift-width>
+        <org-netbeans-modules-editor-indent.CodeStyle.project.spaces-per-tab>2</org-netbeans-modules-editor-indent.CodeStyle.project.spaces-per-tab>
+        <org-netbeans-modules-editor-indent.CodeStyle.project.tab-size>2</org-netbeans-modules-editor-indent.CodeStyle.project.tab-size>
+        <org-netbeans-modules-editor-indent.CodeStyle.project.text-limit-width>80</org-netbeans-modules-editor-indent.CodeStyle.project.text-limit-width>
+        <org-netbeans-modules-editor-indent.CodeStyle.project.expand-tabs>true</org-netbeans-modules-editor-indent.CodeStyle.project.expand-tabs>
+        <org-netbeans-modules-editor-indent.CodeStyle.usedProfile>project</org-netbeans-modules-editor-indent.CodeStyle.usedProfile>
     </properties>
 </project-shared-configuration>
