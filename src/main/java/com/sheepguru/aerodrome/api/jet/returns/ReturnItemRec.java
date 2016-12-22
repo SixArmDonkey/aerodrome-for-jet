@@ -222,6 +222,25 @@ public class ReturnItemRec implements Jsonable
   
   
   /**
+   * Convert a ReturnMerchantSkuRec instance into a ReturnItemRec instance.
+   * You will still need to fill in a few extra properties.
+   * This sets AltOrderItemId, RefundAmount, and OrderItemId and the 2
+   * quantity properties are set to from.getQuantity().
+   * @param from
+   * @return 
+   */
+  public static Builder fromReturnMerchantSkuRec( final ReturnMerchantSkuRec from )
+  {
+    return new Builder()
+      .setAltOrderItemId( from.getAltOrderItemId())
+      .setAmount( from.getRefundAmount())
+      .setOrderItemId( from.getOrderItemId())
+      .setOrderReturnRefundQty( from.getQuantity())
+      .setQtyReturned( from.getQuantity());
+  }
+  
+  
+  /**
    * Turn a list of merchant sku's from jet into a list of objects
    * @param json jet json array 
    * @return objects

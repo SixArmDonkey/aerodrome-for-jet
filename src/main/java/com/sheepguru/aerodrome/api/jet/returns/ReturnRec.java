@@ -401,7 +401,7 @@ public class ReturnRec implements Jsonable
       .setCarrier( ShippingCarrier.fromText( json.getString( "shipping_carrier", "" )))
       .setTrackingNumber( json.getString( "tracking_number", "" ))
       .setReturnLocations( AddressRec.fromJsonArray( json.getJsonArray( "return_location" )))
-      .setReturnMerchantSkus( ReturnMerchantSkuRec.fromJsonArray( json.getJsonArray( "return_merchant_skus" )))
+      .setReturnMerchantSkus( ReturnMerchantSkuRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )))
       .setReturnItems( ReturnItemRec.fromJsonArray( json.getJsonArray( "items" )))
       .build();
   }
@@ -628,7 +628,7 @@ public class ReturnRec implements Jsonable
       .add( "shipping_carrier", carrier.getText())
       .add( "tracking_number", trackingNumber )
       .add( "return_location", Utils.jsonableToArray( returnLocations ))
-      .add( "return_merchant_skus", Utils.jsonableToArray( returnMerchantSkus ))
+      .add( "return_merchant_SKUs", Utils.jsonableToArray( returnMerchantSkus ))
       .add( "items", Utils.jsonableToArray( items ))
       .build();
   }

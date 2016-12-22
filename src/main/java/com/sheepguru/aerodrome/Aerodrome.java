@@ -47,6 +47,8 @@ import com.sheepguru.aerodrome.api.jet.returns.CompleteReturnRequestRec;
 import com.sheepguru.aerodrome.api.jet.returns.IJetAPIReturn;
 import com.sheepguru.aerodrome.api.jet.returns.JetAPIReturn;
 import com.sheepguru.aerodrome.api.jet.returns.RefundFeedback;
+import com.sheepguru.aerodrome.api.jet.returns.ReturnItemRec;
+import com.sheepguru.aerodrome.api.jet.returns.ReturnMerchantSkuRec;
 import com.sheepguru.aerodrome.api.jet.returns.ReturnReason;
 import com.sheepguru.aerodrome.api.jet.returns.ReturnRec;
 import com.sheepguru.aerodrome.api.jet.returns.ReturnStatus;
@@ -125,9 +127,9 @@ public class Aerodrome implements ExitCodes
     
     //testUpload( client, jetConfig );
     
-    testOrders( client, jetConfig );
+    //testOrders( client, jetConfig );
     
-    //testReturns( client, jetConfig );
+    testReturns( client, jetConfig );
     
     
   }
@@ -577,12 +579,32 @@ public class Aerodrome implements ExitCodes
     try {
       final IJetAPIReturn returnsApi = new JetAPIReturn( client, config );
       
+      //..Find any returns waiting to be approved 
       for ( final String id : returnsApi.getReturnsStatusTokens( ReturnStatus.CREATED ))
       {
+        //..Get the return detail
         final ReturnRec ret = returnsApi.getReturnDetail( id );
         
+        //..List of items for the return        
+        final List<ReturnItemRec> returnItems = new ArrayList<>();
+        
+        //..Convert merchant sku items from the detail response into items for 
+        //  the put return complete command
+        for ( final ReturnMerchantSkuRec m : ret.getReturnMerchantSkus())
+        {
+          returnItems.add( ReturnItemRec.fromReturnMerchantSkuRec( m )
+            //..Set some custom attributes for jet 
+            //..Any property can be overridden
+            .setFeedback( RefundFeedback.OPENED )
+            .setNotes( "Some of my notes about this return" )
+            .build() //..Build the item and add it to the list 
+          );
+          
+          
+        }
+        
         //..approve the return i guess
-        returnsApi.putCompleteReturn( id, new CompleteReturnRequestRec( ret.getMerchantOrderId(), "", true, ChargeFeedback.FRAUD, ret.getReturnItems()));
+        returnsApi.putCompleteReturn( id, new CompleteReturnRequestRec( ret.getMerchantOrderId(), "", true, ChargeFeedback.FRAUD, returnItems ));
       }
     } catch( Exception e ) {
       fail( "Failed to test returns", E_API_FAILURE, e );
@@ -596,8 +618,8 @@ public class Aerodrome implements ExitCodes
     //..Create an order api instance
     try {
       final JetAPIOrder orderApi = new JetAPIOrder( client, config );
-      ackOrders( orderApi );
-      //shipOrders( orderApi );
+      //ackOrders( orderApi );
+      shipOrders( orderApi );
       //cancelOrders( orderApi );
       //completeOrders( orderApi );
     } catch( Exception e ) {
