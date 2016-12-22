@@ -75,7 +75,7 @@ import org.apache.http.entity.ContentType;
  *
  * @author John Quinn
  */
-public class JetImport implements ExitCodes
+public class Aerodrome implements ExitCodes
 {
   /**
    * Filename of the config file stored in the jar.
@@ -85,7 +85,7 @@ public class JetImport implements ExitCodes
   /**
    * Local log 
    */
-  private static final Log LOG = LogFactory.getLog( JetImport.class );
+  private static final Log LOG = LogFactory.getLog(Aerodrome.class );
   
   private static final String sku = "VIC!47520";
   

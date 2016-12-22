@@ -48,7 +48,7 @@ public class CLIArgs
   {
     String res = null;
 
-    try ( final InputStream is = JetImport.class.getResourceAsStream( File.separator + JarFile.MANIFEST_NAME )) {
+    try ( final InputStream is = Aerodrome.class.getResourceAsStream( File.separator + JarFile.MANIFEST_NAME )) {
         if ( is != null )
         {
           Properties p = new Properties();
