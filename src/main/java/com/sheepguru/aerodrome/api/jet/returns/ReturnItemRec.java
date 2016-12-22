@@ -21,6 +21,7 @@ import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 
 /**
@@ -53,7 +54,7 @@ public class ReturnItemRec implements Jsonable
    * The reason this refund was less than the full amount
    */
   private final RefundFeedback feedback;
-
+  
   /**
    * Some notes 
    */
@@ -73,38 +74,37 @@ public class ReturnItemRec implements Jsonable
     /**
      * Order item id
      */
-    private String orderItemId;
+    private String orderItemId = "";
     
     /**
      * Alternate item id 
      */
-    private String altOrderItemId;
+    private String altOrderItemId = "";
     
     /**
      * Quantity of the given item that was returned 
      */
-    private int qtyReturned;
+    private int qtyReturned = 0;
     
     /**
      * Quantity of the given item that was refunded
      */
-    private int orderReturnRefundQty;
+    private int orderReturnRefundQty = 0;
     
     /**
      * The reason this refund was less than the full amount
      */
-    private RefundFeedback feedback;
+    private RefundFeedback feedback = RefundFeedback.NONE;
     
     /**
      * Some notes 
      */
-    private String notes;
+    private String notes = "";
     
     /**
      * Refund amount 
      */
-    private RefundAmountRec amount;    
-
+    private RefundAmountRec amount = null;
     
     /**
      * Jet's unique identifier for an item in a merchant order.
@@ -259,6 +259,26 @@ public class ReturnItemRec implements Jsonable
     return out;
   }  
   
+  
+  public static Builder fromJsonToBuilder( final JsonObject json )
+  {
+    Utils.checkNull( json, "json" );
+    
+    final Builder b = new Builder()
+      .setOrderItemId( json.getString( "order_item_id", "" ))
+      .setAltOrderItemId( json.getString( "alt_order_item_id", "" ))
+      .setQtyReturned( json.getInt( "total_quantity_returned", 0 ))
+      .setOrderReturnRefundQty( json.getInt( "order_return_refund_qty", 0 ))
+      .setFeedback( RefundFeedback.fromText( json.getString( "return_refund_feedback", "" )))
+      .setNotes( json.getString( "notes", "" ));
+    
+    final JsonObject refAmt = json.getJsonObject( "refund_amount" );
+    if ( refAmt != null )
+      b.setAmount( RefundAmountRec.fromJson( refAmt ));
+
+    return b;    
+  }
+  
     
   /**
    * Convert jet json into this
@@ -267,17 +287,7 @@ public class ReturnItemRec implements Jsonable
    */
   public static ReturnItemRec fromJson( final JsonObject json )
   {
-    Utils.checkNull( json, "json" );
-    
-    return new Builder()
-      .setOrderItemId( json.getString( "order_item_id", "" ))
-      .setAltOrderItemId( json.getString( "alt_order_item_id", "" ))
-      .setQtyReturned( json.getInt( "total_quantity_returned", 0 ))
-      .setOrderReturnRefundQty( json.getInt( "order_return_refund_qty", 0 ))
-      .setFeedback( RefundFeedback.fromText( json.getString( "return_refund_feedback", "" )))
-      .setNotes( json.getString( "notes", "" ))
-      .setAmount( RefundAmountRec.fromJson( json.getJsonObject( "refund_amount" )))
-      .build();
+    return fromJsonToBuilder( json ).build();
   }
     
   
@@ -285,7 +295,7 @@ public class ReturnItemRec implements Jsonable
    * Constructor
    * @param b builder instance 
    */
-  private ReturnItemRec( final Builder b )
+  protected ReturnItemRec( final Builder b )
   {
     this.orderItemId = b.orderItemId;
     this.altOrderItemId = b.altOrderItemId;
@@ -293,7 +303,7 @@ public class ReturnItemRec implements Jsonable
     this.orderReturnRefundQty = b.orderReturnRefundQty;
     this.feedback = b.feedback;
     this.notes = b.notes;
-    this.amount = b.amount;        
+    this.amount = b.amount;            
   }
     
 
@@ -369,6 +379,8 @@ public class ReturnItemRec implements Jsonable
     return amount;
   }
   
+
+  
   
   /**
    * Turn this into jet json
@@ -377,14 +389,15 @@ public class ReturnItemRec implements Jsonable
   @Override
   public JsonObject toJSON()
   {
-    return Json.createObjectBuilder()
+    final JsonObjectBuilder b = Json.createObjectBuilder()
       .add( "order_item_id", orderItemId )
       .add( "alt_order_item_id", altOrderItemId )
       .add( "total_quantity_returned", qtyReturned )
       .add( "order_return_refund_qty", orderReturnRefundQty )
       .add( "return_refund_feedback", feedback.getText())
       .add( "notes", notes )
-      .add( "refund_amount", amount.toJSON())
-      .build();
+      .add( "refund_amount", amount.toJSON());
+      
+    return b.build();
   }
 }
