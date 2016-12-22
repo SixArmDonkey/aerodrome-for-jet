@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE config SYSTEM "aerodrome.conf.dtd">
+
+
+<!--
+Configuration Settings for Aerodrome
+
+
+Variable Placeholders
+=====================
+{sku} - The product SKU
+-->
+
+<config>
+
+  <!-- Log file name -->
+  <log>
+    <!-- Full classname of the Log implementation -->
+    <class>org.apache.commons.logging.impl.Jdk14Logger</class>
+    
+    <!-- Logging properties file -->
+    <properties></properties>
+  </log>
+
+  <!-- HTTP Client Configuration -->
+  <client>
+    <!-- Socket read timeout in milliseconds -->
+    <readTimeout>10000</readTimeout>
+
+    <!-- Accept Header Value -->
+    <!-- text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 -->
+    <accept>
+      <![CDATA[
+      application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+      ]]>
+    </accept>
+
+    <!-- Accept-Language Header Value -->
+    <acceptLanguage>
+      <![CDATA[
+      en-US,en;q=0.5
+      ]]>
+    </acceptLanguage>
+
+    <!-- Toggle self-signed certificate rejection -->
+    <allowUntrustedSSL>true</allowUntrustedSSL>
+    
+    <!-- Set to true to allow setting uri's as endpoints. -->
+    <lockHost>true</lockHost>
+    
+    <!-- Set the maximum download size in bytes -->
+    <maxDownloadSize>20971520</maxDownloadSize>
+  </client>
+
+  <!-- Jet.com API Configuration -->
+  <!-- Currently, your authentication details reside here: -->
+  <!-- https://partner.jet.com/dashboard/start -->
+  <jet>
+    <!-- The Hostname for the Jet API (no trailing slash) -->
+    <host>https://merchant-api.jet.com/api</host>
+
+    <!-- Your Jet API Username -->
+    <username></username>
+
+    <!-- Your Jet API Password -->
+    <password></password>
+
+    <!-- Jet API Merchant Id -->
+    <merchantId></merchantId>
+
+    <!-- Jet API Endpoint URI's -->
+    <uri>
+      <!-- Retrieve authentication token -->
+      <!-- https://developer.jet.com/security -->
+      <token>/Token</token>
+
+      <!-- Authentication testing endpoint -->
+      <!--
+       Jet API provides the test endpoint to be used just for the checking
+       of Security arrangement, that is, /api/authcheck. Upon obtaining a
+       valid bearer token, the Jet API user may access this endpoint and,
+       given the expected response has been obtained, the user may start
+       using other Jet API functions that require authorization.
+      -->
+      <authTest>/authcheck</authTest>
+
+      <!-- Product-related endpoints -->
+      <products>
+        <!-- Get Commands -->
+        <get>
+          <!-- Get a SKU/Product -->
+          <!-- Retrieve information about the SKU that was previously uploaded 
+          (price, inventory, shipping exception) -->
+          <sku>/merchant-skus/{sku}</sku>
+
+          <!-- Get some price data -->
+          <price>/merchant-skus/{sku}/price</price>
+          
+          <!-- Retrieve inventory -->
+          <inventory>/merchant-skus/{sku}/inventory</inventory>
+          
+          <!-- Retrieve product variations -->
+          <variation>/merchant-skus/{sku}/variation</variation>
+          
+          <!-- Retrieve shipping shipping exceptions -->
+          <shippingException>/merchant-skus/{sku}/shippingexception</shippingException>
+          
+          <!-- Retrieve product returns exceptions -->>
+          <returnsException>/merchant-skus/{sku}/returnsexception</returnsException>
+          
+          <!-- This call allows you visibility into the total number of SKUs 
+          you have uploaded. This is a paginated list of skus.  
+          
+          This accepts an offset and a per page limit and is done by entry, not page.
+          -->
+          <skuList>/merchant-skus?offset={offset}&amp;limit={limit}</skuList>
+          
+          <!-- Analyze how your individual product price (item and shipping 
+          price) compares to the lowest individual product prices from the 
+          marketplace. -->
+          
+          <salesData>/merchant-skus/{sku}/salesdata</salesData>
+          
+          <!-- This endpoint is used to retrieve a token/url for uploading a 
+          bulk file upload -->
+          <bulkUploadToken>/files/uploadToken</bulkUploadToken>
+          
+          <!-- used to retrieve the processing status of an uploaded bulk file -->
+          <bulkJetFileId>/files/{file_id}</bulkJetFileId>
+        </get>
+
+        <!-- Put commands -->
+        <put>
+          <!-- Add a new SKU/Product -->
+          <sku>/merchant-skus/{sku}</sku>
+
+          <!-- Add image url's to the product -->
+          <image>/merchant-skus/{sku}/image</image>
+
+          <!-- Add some price data -->
+          <price>/merchant-skus/{sku}/price</price>
+
+          <!-- Add inventory to the product -->
+          <inventory>/merchant-skus/{sku}/inventory</inventory>
+          
+          <!-- Add product variation group -->
+          <variation>/merchant-skus/{sku}/variation</variation>
+
+          <!-- Add shipping exceptions -->
+          <shipException>/merchant-skus/{sku}/shippingexception</shipException>
+          
+          <!-- Archive a sku -->
+          <archiveSku>/merchant-skus/{sku}/status/archive</archiveSku>
+          
+          <!-- Add a return exception -->
+          <returnsException>/merchant-skus/{sku}/returnsexception</returnsException>                    
+        </put>
+        
+        <!-- post -->
+        <!-- This might be the thing that starts processing -->
+        <post>
+          <bulkUploadedFiles>/files/uploaded</bulkUploadedFiles>
+        </post>
+      </products>
+      
+      
+      <!-- Orders API -->
+      <orders>
+        <!-- Get Methods -->
+        <get>
+          <!-- Check for orders -->
+          <orders>/orders/{status}</orders>
+          
+          <!-- I don't know -->
+          <directedCancel>/orders/directedCancel</directedCancel>
+          
+          <!-- Retrieve fulfillment information for an order -->
+          <detail>/orders/withoutShipmentDetail/{jet_defined_order_id}</detail>
+        </get>
+        
+        <!-- Put methods -->
+        <put>
+          <!-- Endpoint to accept or reject an order -->
+          <acknowledge>/orders/{jet_defined_order_id}/acknowledge</acknowledge>
+          
+          <!-- Shipment Notification endpoint -->
+          <ship>/orders/{jet_defined_order_id}/shipped</ship>          
+        </put>
+      </orders>
+      
+      <!-- Returns API -->
+      <returns>
+        <get>
+          <!-- Check for returns -->
+          <check>/api/returns/{status}</check>
+          
+          <!-- Check return detail -->
+          <detail>/returns/state/{jet_defined_return_id}</detail>
+        </get>
+        
+        <put>
+          <!-- Complete Return -->
+          <complete>/returns/{jet_defined_return_id}/complete</complete>
+        </put>
+      </returns>
+      
+    </uri>
+  </jet>
+</config>

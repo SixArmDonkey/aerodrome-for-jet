@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  * This is merely a cache for Jet settings and for maintaining state.
  *
  * Values are initially populated via Settings object and
- * jetimport.conf.xml.
+ * aerodrome.conf.xml.
  *
  * This object does NOT make connections to the Jet.com API, and any retrieval
  * method return values are either values from the configuration file,

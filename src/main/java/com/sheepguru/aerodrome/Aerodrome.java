@@ -65,13 +65,13 @@ import org.apache.http.entity.ContentType;
 
 
 /**
- * The main class for the JetImport application.
+ * The main class for the Aerodrome application.
  *
  * This program will handle converting a spreadsheet and a directory of images
  * into HTTP POST requests delivered via the Jet.com API.
  *
  * Use the command line switch --help for usage.
- * See jetimport.conf.xml for configuration settings and definitions.
+ * See aerodrome.conf.xml for configuration settings and definitions.
  *
  * @author John Quinn
  */
@@ -80,7 +80,7 @@ public class Aerodrome implements ExitCodes
   /**
    * Filename of the config file stored in the jar.
    */
-  public static final String DEFAULT_CONFIG_FILENAME = "jetimport.conf.xml";
+  public static final String DEFAULT_CONFIG_FILENAME = "aerodrome.conf.xml";
   
   /**
    * Local log 
@@ -96,7 +96,7 @@ public class Aerodrome implements ExitCodes
   public static void main( final String[] args )
   {
     //..Say hello 
-    LOG.info( "JetImport Build " + CLIArgs.getBuildVersion() + " start" );
+    LOG.info( "Aerodrome Build " + CLIArgs.getBuildVersion() + " start" );
         
     //..Build the jet configuration 
     final JetConfig jetConfig = initSettings( getCLIArgs( args ));
@@ -205,7 +205,7 @@ public class Aerodrome implements ExitCodes
   
   /**
    * Builds the JetConfig object for all the Jet API commands 
-   * @param config jetimport.conf.xml instance
+   * @param config aerodrome.conf.xml instance
    * @return jet config 
    */
   private static JetConfig buildJetConfig( final XMLConfiguration config )

@@ -14,7 +14,7 @@
   <appender name="LogFileAppender" class="org.apache.log4j.FileAppender">
     
     <!-- Set your log file name here if you want -->
-    <param name="File" value="logs/jetimport.log" />
+    <param name="File" value="logs/aerodrome.log" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern"
           value="%d{dd MMM yyyy HH:mm:ss,SSS} {%t} %-5p %c %x - %m%n" />
@@ -22,7 +22,7 @@
   </appender>
 
   <!--
-  <logger name="com.sheepguru.jetimport">
+  <logger name="com.sheepguru.aerodrome">
       <level value="DEBUG" />      
   </logger>
   -->

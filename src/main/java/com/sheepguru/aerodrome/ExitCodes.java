@@ -15,7 +15,7 @@
 package com.sheepguru.aerodrome;
 
 /**
- * A series of exit/return values for the JetImport application
+ * A series of exit/return values for the Aerodrome application
  * @author John Quinn
  */
 public interface ExitCodes
@@ -31,7 +31,7 @@ public interface ExitCodes
   public static final int E_JAR_EXTRACT_FAILURE = 1;
 
   /**
-   * jetimport.conf.xml was not found
+   * aerodrome.conf.xml was not found
    */
   public static final int E_CONFIG_NOT_FOUND = 2;
 

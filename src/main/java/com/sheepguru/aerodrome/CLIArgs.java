@@ -87,14 +87,14 @@ public class CLIArgs
     try {
       cl = parser.parse( opt, args );
     } catch( ParseException e ) {
-      help.printHelp( "JetImport", opt );
+      help.printHelp( "Aerodrome", opt );
       throw e;
     }
 
     //..Check for the help option 
     if ( cl.hasOption( "help" ))
     {
-      help.printHelp( "JetImport", opt );
+      help.printHelp( "Aerodrome", opt );
     }
 
     //..Set the config filename     

@@ -62,11 +62,11 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
-    <description>A program to handle uploading a product catalog to the Jet API</description>
+    <description>A program interface with the Jet API</description>
 
     <scm>
       <!-- Replace the connection below with your project connection -->
-      <connection>scm:git:https://sg_john_quinn@bitbucket.org/sheepguru/jetimport.git</connection>
+      <connection>scm:git:https://github.com/SheepGuru/aerodrome-for-jet.git</connection>
     </scm>
 
     <developers>
@@ -119,7 +119,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>com.sheepguru.jetimport.JetImport</mainClass>
+              <mainClass>com.sheepguru.aerodrome.Aerodrome</mainClass>
             </manifest>
             <manifestEntries>
               <JI-Version>${buildNumber}</JI-Version>

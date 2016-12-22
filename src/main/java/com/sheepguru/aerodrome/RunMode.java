@@ -26,7 +26,7 @@ public enum RunMode
    * Simply initialize the application.
    * This is a first-run mechanism that will extract configuration resources
    * from the jar file.
-   * Call this to create an instance of jetimport.conf.xml
+   * Call this to create an instance of aerodrome.conf.xml
    */
   FIRST_RUN( "firstrun", false ),
 
