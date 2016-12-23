@@ -152,22 +152,27 @@ product.sendPutProductVariation( new ProductVariationGroupRec(
 
 ```
 
-### 3: 
+### 3: Send shipping exceptions for fullfillment nodes
 
+Shipping Exceptions are configured per fulfillment node, and are sent in a 
+batch using FNodeShippingRec 
+[FNodeShippingRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeShippingRec.html)
+
+Shipping exceptions are configured individually and are added to an 
+FNodeShippingRec instance 
+[ShippingExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ShippingExceptionRec.html)
 
 ```java
 //..A shipping exception must be added to a fulfillment node
 //..More than 1 node can be configured in a single request
 List<FNodeShippingRec> nodes = new ArrayList<>();
 
-[FNodeShippingRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeShippingRec.html)
 
 //..Each node has a list of shipping exceptions/rules
 // These can be configured with a ShippingExceptionRec and are added
 //  to the fulfillment node object
 List<ShippingExceptionRec> exceptions = new ArrayList<>();
 
-[ShippingExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ShippingExceptionRec.html)
 
 //..The rule 
 exceptions.add( new ShippingExceptionRec(
