@@ -14,44 +14,52 @@
 
 package com.sheepguru.aerodrome;
 
-import com.sheepguru.aerodrome.api.APIException;
-import com.sheepguru.aerodrome.api.APIHttpClient;
-import com.sheepguru.aerodrome.api.PostFile;
-import com.sheepguru.aerodrome.api.jet.DefaultJetConfig;
-import com.sheepguru.aerodrome.api.jet.JetAPIAuth;
-import com.sheepguru.aerodrome.api.jet.JetAuthException;
-import com.sheepguru.aerodrome.api.jet.JetConfig;
-import com.sheepguru.aerodrome.api.jet.ISO801Date;
-import com.sheepguru.aerodrome.api.jet.JetException;
-import com.sheepguru.aerodrome.api.jet.orders.AckRequestItemRec;
-import com.sheepguru.aerodrome.api.jet.orders.AckRequestRec;
-import com.sheepguru.aerodrome.api.jet.orders.AckStatus;
-import com.sheepguru.aerodrome.api.jet.AddressRec;
-import com.sheepguru.aerodrome.api.jet.orders.JetAPIOrder;
-import com.sheepguru.aerodrome.api.jet.orders.OrderItemRec;
-import com.sheepguru.aerodrome.api.jet.orders.OrderRec;
-import com.sheepguru.aerodrome.api.jet.orders.OrderStatus;
-import com.sheepguru.aerodrome.api.jet.orders.ShipRequestRec;
-import com.sheepguru.aerodrome.api.jet.orders.ShipmentItemRec;
-import com.sheepguru.aerodrome.api.jet.orders.ShipmentRec;
-import com.sheepguru.aerodrome.api.jet.products.BulkUploadAuthRec;
-import com.sheepguru.aerodrome.api.jet.products.BulkUploadFileType;
-import com.sheepguru.aerodrome.api.jet.products.FNodeInventoryRec;
-import com.sheepguru.aerodrome.api.jet.products.JetAPIBulkProductUpload;
-import com.sheepguru.aerodrome.api.jet.products.JetAPIProduct;
-import com.sheepguru.aerodrome.api.jet.products.ProductRec;
-import com.sheepguru.aerodrome.api.jet.products.ProductCodeRec;
-import com.sheepguru.aerodrome.api.jet.products.ProductCodeType;
-import com.sheepguru.aerodrome.api.jet.returns.ChargeFeedback;
-import com.sheepguru.aerodrome.api.jet.returns.CompleteReturnRequestRec;
-import com.sheepguru.aerodrome.api.jet.returns.IJetAPIReturn;
-import com.sheepguru.aerodrome.api.jet.returns.JetAPIReturn;
-import com.sheepguru.aerodrome.api.jet.returns.RefundFeedback;
-import com.sheepguru.aerodrome.api.jet.returns.ReturnItemRec;
-import com.sheepguru.aerodrome.api.jet.returns.ReturnMerchantSkuRec;
-import com.sheepguru.aerodrome.api.jet.returns.ReturnReason;
-import com.sheepguru.aerodrome.api.jet.returns.ReturnRec;
-import com.sheepguru.aerodrome.api.jet.returns.ReturnStatus;
+import com.sheepguru.api.APIException;
+import com.sheepguru.api.APIHttpClient;
+import com.sheepguru.api.PostFile;
+import com.sheepguru.aerodrome.jet.DefaultJetConfig;
+import com.sheepguru.aerodrome.jet.JetAPIAuth;
+import com.sheepguru.aerodrome.jet.JetAuthException;
+import com.sheepguru.aerodrome.jet.JetConfig;
+import com.sheepguru.aerodrome.jet.ISO801Date;
+import com.sheepguru.aerodrome.jet.JetException;
+import com.sheepguru.aerodrome.jet.orders.AckRequestItemRec;
+import com.sheepguru.aerodrome.jet.orders.AckRequestRec;
+import com.sheepguru.aerodrome.jet.orders.AckStatus;
+import com.sheepguru.aerodrome.jet.AddressRec;
+import com.sheepguru.aerodrome.jet.orders.ItemPriceRec;
+import com.sheepguru.aerodrome.jet.orders.JetAPIOrder;
+import com.sheepguru.aerodrome.jet.orders.OrderItemRec;
+import com.sheepguru.aerodrome.jet.orders.OrderRec;
+import com.sheepguru.aerodrome.jet.orders.OrderStatus;
+import com.sheepguru.aerodrome.jet.orders.ShipRequestRec;
+import com.sheepguru.aerodrome.jet.orders.ShipmentItemRec;
+import com.sheepguru.aerodrome.jet.orders.ShipmentRec;
+import com.sheepguru.aerodrome.jet.products.BulkUploadAuthRec;
+import com.sheepguru.aerodrome.jet.products.BulkUploadFileType;
+import com.sheepguru.aerodrome.jet.products.FNodeInventoryRec;
+import com.sheepguru.aerodrome.jet.products.JetAPIBulkProductUpload;
+import com.sheepguru.aerodrome.jet.products.JetAPIProduct;
+import com.sheepguru.aerodrome.jet.products.ProductRec;
+import com.sheepguru.aerodrome.jet.products.ProductCodeRec;
+import com.sheepguru.aerodrome.jet.products.ProductCodeType;
+import com.sheepguru.aerodrome.jet.orders.ChargeFeedback;
+import com.sheepguru.aerodrome.jet.orders.CompleteReturnRequestRec;
+import com.sheepguru.aerodrome.jet.orders.IJetAPIRefund;
+import com.sheepguru.aerodrome.jet.orders.IJetAPIReturn;
+import com.sheepguru.aerodrome.jet.orders.JetAPIRefund;
+import com.sheepguru.aerodrome.jet.orders.JetAPIReturn;
+import com.sheepguru.aerodrome.jet.orders.RefundAmountRec;
+import com.sheepguru.aerodrome.jet.orders.RefundFeedback;
+import com.sheepguru.aerodrome.jet.orders.RefundItemRec;
+import com.sheepguru.aerodrome.jet.orders.RefundRec;
+import com.sheepguru.aerodrome.jet.orders.RefundStatus;
+import com.sheepguru.aerodrome.jet.orders.ReturnItemRec;
+import com.sheepguru.aerodrome.jet.orders.ReturnMerchantSkuRec;
+import com.sheepguru.aerodrome.jet.orders.ReturnRec;
+import com.sheepguru.aerodrome.jet.orders.ReturnStatus;
+import com.sheepguru.api.APILog;
+import com.sheepguru.api.IAPIHttpClient;
 import com.sheepguru.utils.Money;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,6 +77,8 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.entity.ContentType;
+import com.sheepguru.aerodrome.jet.orders.IJetAPIOrder;
+import com.sheepguru.aerodrome.jet.orders.ReturnReason;
 
 
 /**
@@ -129,9 +139,63 @@ public class Aerodrome implements ExitCodes
     
     //testOrders( client, jetConfig );
     
-    testReturns( client, jetConfig );
+    //testReturns( client, jetConfig );
     
-    
+    testRefunds( client, jetConfig );
+  }
+  
+  
+  /**
+   * Test refunds.
+   * 
+   * 
+   * @param client
+   * @param jetConfig 
+   */
+  private static void testRefunds( final IAPIHttpClient client, final JetConfig jetConfig )
+  {
+    try {
+      //..Need the order api to use the refund api.
+      final IJetAPIOrder orderApi = new JetAPIOrder( client, jetConfig );      
+      final IJetAPIRefund refundApi = new JetAPIRefund( client, jetConfig );
+      
+      //..Poll for a list of jet order id's to play with 
+      List<String> orderTokens = orderApi.getOrderStatusTokens( OrderStatus.COMPLETE );
+      if ( orderTokens.isEmpty())
+      {
+        APILog.error(  LOG, "No Orders found to refund" );
+        return;
+      }
+      
+      //..Get the order detail so we can generate a refund
+      final OrderRec order = orderApi.getOrderDetail( orderTokens.get( 0 ));
+
+      //..Items for the refund 
+      final List<RefundItemRec> refundItems = new ArrayList<>();
+      
+      //..This is annoying, but each item requires custom attributes to be added
+      //..So, get a list of ReturnItemRec builders from the order and loop em
+      //..Each one will have properties added and then be built and added to a list
+      for ( final RefundItemRec.Builder b : order.generateItemsForRefund())
+      {
+        refundItems.add( 
+         b.setNotes( "Some notes about the item" )
+         .setRefundReason( ReturnReason.DAMAGED_ITEM )
+         .build());
+      }      
+      
+      //..Post a new refund to jet      
+      //refundApi.postCreateRefund( "ee537938408e46b9a175b54ce3ad7e32", "alt-refund-id", refundItems );
+            
+      for( final String refundId : refundApi.pollRefunds( RefundStatus.CREATED ))
+      {
+        refundApi.getRefundDetail( refundId );
+      }
+      
+      
+    } catch( Exception e ) {
+      fail( "Fail to refund", 0, e );
+    }
   }
 
   
@@ -220,6 +284,7 @@ public class Aerodrome implements ExitCodes
   private static JetConfig buildJetConfig( final XMLConfiguration config )
   {
     return ( new DefaultJetConfig.Builder())
+      //..Required Arguments 
       .setMerchantId( 
         config.getString( "jet.merchantId", "" ))   
 
@@ -232,6 +297,8 @@ public class Aerodrome implements ExitCodes
       .setPass( 
         config.getString( "jet.password", "" ))
 
+      //..Optional Arguments
+      /*
       .setUriToken( 
         config.getString( "jet.uri.token", "" ))
             
@@ -261,11 +328,13 @@ public class Aerodrome implements ExitCodes
 
       .setUriGetProductPrice( 
         config.getString( "jet.uri.products.get.price", "" ))
-              
-      .setAcceptHeader( 
-        config.getString( "client.accept", "application/json,text/html,"
-          + "application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" ))
-            
+      
+      */
+      //.setAcceptHeader( 
+      //  config.getString( "client.accept", "application/json,text/html,"
+      //    + "application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" ))
+      
+      /*
       .setAcceptLanguageHeader( 
         config.getString( "client.acceptLanguage", "en-US,en;q=0.5" ))
             
@@ -335,6 +404,17 @@ public class Aerodrome implements ExitCodes
       .setPutCompleteReturnUrl( 
         config.getString( "jet.uri.returns.put.complete", "" ))
             
+      .setGetRefundByStatusUrl( 
+        config.getString( "jet.uri.refunds.get.refunds", "" ))
+         
+      .setGetRefundDetailUrl( 
+        config.getString( "jet.uri.refunds.get.detail", "" ))
+            
+      .setPostRefundUrl( 
+        config.getString(  "jet.uri.refunds.post.create", "" ))
+            */
+            
+      //..Build the config 
       .build();
   }
   
