@@ -156,10 +156,12 @@ product.sendPutProductVariation( new ProductVariationGroupRec(
 
 Shipping Exceptions are configured per fulfillment node, and are sent in a 
 batch using FNodeShippingRec 
+
 [FNodeShippingRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeShippingRec.html)
 
 Shipping exceptions are configured individually and are added to an 
 FNodeShippingRec instance 
+
 [ShippingExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ShippingExceptionRec.html)
 
 ```java
@@ -188,4 +190,57 @@ nodes.add( new FNodeShippingRec( "Your jet-defined fulfillment node id", excepti
 
 //..Send the exceptions to jet 
 product.sendPutProductShippingExceptions( "YOUR merchant sku", exceptions );
+```
+
+
+### 4: Send Returns Exceptions 
+
+The returns exceptions call is used to set up specific methods that will 
+overwrite your default settings on a fulfillment node level for returns. 
+This exception will be used to determine how and to where a product is 
+returned unless the merchant specifies otherwise in the Ship Order message.
+
+Returns exceptions are configured within your partner portal on jet.
+
+For a given product sku, we echo a list of return location id's from the 
+jet portal.  This overrides the default settings in the portal for the single
+sku.
+
+```java
+//..Make a list of return id's from the jet portal
+List<String> returnIds = new ArrayList<>();
+returnIds.add( "some return hash" );
+
+//..Send them back with a sku to enable the override
+product.sendPutReturnsException( "YOUR merchant sku", returnIds );
+```
+
+### 5: Archive a Sku
+
+Sku's on Jet can't ever be deleted, but fortunately we can archive them.
+As an added bonus, sku's can also be reactivated down the road if you want.
+
+```java
+//..To archive
+product.sendPutArchiveSku( "YOUR merchant sku", true );
+
+//..To unarchive
+product.sendPutArchiveSku( "YOUR merchant sku", false );
+```
+
+### 6: Get Product Prices
+
+You can retrieve just pricing data for a sku
+
+[ProductPriceRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductPriceRec.html)
+[FNodePriceRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodePriceRec.html)
+
+```java
+ProductPriceRec priceData = product.getProductPrice( sku );
+
+Money price = priceData.getPrice();
+
+//..or for a specific fulfillment Node
+List<FNodePriceRec> fulfillmentNodes = priceData.getFulfillmentNodes();
+Money nodePrice = fulfillmentNodes.get( 0 ).getPrice();
 ```

@@ -79,6 +79,7 @@ import org.apache.http.entity.ContentType;
 import com.sheepguru.aerodrome.jet.orders.IJetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.ReturnReason;
 import com.sheepguru.aerodrome.jet.products.FNodeShippingRec;
+import com.sheepguru.aerodrome.jet.products.ProductPriceRec;
 import com.sheepguru.aerodrome.jet.products.ProductVariationGroupRec;
 import com.sheepguru.aerodrome.jet.products.ShipExceptionType;
 import com.sheepguru.aerodrome.jet.products.ShipOverrideType;
@@ -617,12 +618,7 @@ public class Aerodrome implements ExitCodes
       System.out.println( product.getProductPrice( sku ).getPrice());
 
       System.out.println( product.getProductInventory( sku ).getLastUpdate());
-
       
-      
-      
-     
-
       product.getProductVariations( sku );
       product.getShippingExceptions( sku );
       product.getReturnsExceptions( sku );
