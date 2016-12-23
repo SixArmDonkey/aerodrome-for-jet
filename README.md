@@ -297,9 +297,7 @@ List<FNodeShippingRec> exceptions = product.getShippingExceptions( "YOUR merchan
 List<ShippingExceptionRec> shippingExceptions = exceptions.get( 0 ).getItemData();
 ```
 
-### 10:
-
-Retrieve an exception that you have configured 
+### 10: Retrieve an exception that you have configured 
 
 [ReturnsExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ReturnsExceptionRec.html)
 
@@ -307,9 +305,7 @@ Retrieve an exception that you have configured
 ReturnsExceptionRec returnsException = product.getReturnsExceptions( "YOUR merchant sku" );
 ```
 
-### 11: 
-
-Retrieve all of the merchant sku data
+### 11: Retrieve all of the merchant sku data
 
 [ProductRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductRec.html)
 
@@ -336,7 +332,7 @@ for( String sku : product.getSkuList( 0, 100 ))
 }
 ```
 
-### 12: Retrieving sales/performance data about a single sku
+### 13: Retrieving sales/performance data about a single sku
 
 You can retrieve stats about each sku individually using this command
 
@@ -354,3 +350,6 @@ for ( OfferRec offer : data.getBestOffers())
   Money price = offer.getItemPrice();
 }
 ```
+
+
+#More Docs are on the way!
