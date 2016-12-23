@@ -483,3 +483,225 @@ FileIdRec file2Stats = up.getJetFileId( addRes.getString( "jet_file_id" ));
 ```
 
 
+# Orders API 
+
+
+### 1: Check for Orders
+
+#### Create an IJetAPIOrder instance
+
+[JetOrderAPI JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/JetAPIOrder.html)
+
+```java
+IJetAPIOrder orderApi = new JetAPIOrder( client, config );
+```
+
+Using this endpoint you can access the first 1000 orders in a certain status.
+
+```java
+//..Poll READY status to acknowledge orders
+List<String> orderIds = orderApi.getOrderStatusTokens( OrderStatus.READY );
+```
+
+
+
+### 2: Directed Cancel 
+#### This is deprecated 2/17, don't use this.
+
+
+### 3: Get Order Details
+
+This endpoint will provide you with requisite fulfillment information for the 
+order denoted by the Jet Defined Order ID.
+
+[OrderRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/OrderRec.html)
+
+```java
+OrderRec order = orderApi.getOrderDetail( jetOrderId );
+```
+
+
+### 4: Acknowledge Order
+
+The order acknowledge call is utilized to allow a retailer to accept or 
+reject an order. If there are any skus in the order that cannot be 
+fulfilled then you will reject the order.
+
+[AckRequestItemRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/AckRequestItemRec.html)
+
+[AckRequestRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/AckRequestRec.html)
+
+```java
+//..Poll for READY orders 
+for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.READY ))
+{
+  //..Get the order detail 
+  OrderRec order = orderApi.getOrderDetail( jetOrderId );
+
+  //..A list of order items to reply about 
+  List<AckRequestItemRec> items = new ArrayList<>();
+
+  //..Turn those into ack order records
+  for ( OrderItemRec item : order.getOrderItems())
+  {
+    //..Try to acknowledge the order
+    //..Can add a custom status here if you want 
+    items.add( AckRequestItemRec.fromOrderItem( 
+      item, AckRequestItemRec.Status.FULFILLABLE ));
+  }
+
+  //..Build the acknowledgement request to send back to jet 
+  AckRequestRec ackRequest = new AckRequestRec( 
+    AckStatus.ACCEPTED, jetOrderId, items );
+
+  //..Tell jet that you acknowledge the order 
+  orderApi.sendPutAckOrder( jetOrderId, ackRequest );
+}
+```
+
+### 5: Ship Order
+
+The order shipped call is utilized to provide Jet with the SKUs that have been 
+shipped or cancelled in an order, the tracking information, carrier information 
+and any additional returns information for the order.
+
+[ShipmentRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/ShipmentRec.html)
+
+[ShipmentItemRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/ShipmentItemRec.html)
+
+[AddressRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/AddressRec.html) 
+
+[OrderItemRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/OrderItemRec.html)
+
+[ShipRequestRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/ShipRequestRec.html)
+
+```java
+for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK, false ))
+{
+  //..Get the order detail 
+  OrderRec order = orderApi.getOrderDetail( jetOrderId );
+
+  //..A list of shipments 
+  //..You can split the order up into however many shipments you want.
+  List<ShipmentRec> shipments = new ArrayList<>();
+
+  //..a list of items in a shipment 
+  List<ShipmentItemRec> shipmentItems = new ArrayList<>();
+
+  //..Create a return address object 
+  AddressRec returnAddress = new AddressRec(
+    "123 Sesame Street",
+    "Suite 100",
+    "Sesame",
+    "AK",
+    "38473"
+  );
+
+  //..Create an rma number (can be custom for each item if you want)
+  String rmaNumber = "1234RMA";
+
+  //..Turn those into ack order records
+  for ( OrderItemRec item : order.getOrderItems())
+  {
+    //..Create a builder for a new ShipmentItem by converting the retrieved
+    //  order item to a Shipment Item
+    ShipmentItemRec.Builder builder = ShipmentItemRec.fromOrderItem( item );
+
+    //..You can modify the quantity shipped or cancelled here, or just fulfill as it was ordered
+    //..like this:
+    //builder.setQuantity( 1 );
+    //builder.setCancelQuantity( 1 );
+
+    //...Set the return address
+    builder.setReturnTo( returnAddress );
+
+    //..Set the rma number if desired
+    builder.setRmaNumber( rmaNumber );
+
+    //..Build the item and add it to the items list 
+    shipmentItems.add( builder.build());
+  }
+
+
+  //..Build a shipment for the items in the order
+  //..You can create multiple shipments, and also mix cancellations 
+  //  with shipments.
+  ShipmentRec shipment = new ShipmentRec.Builder()
+    .setCarrier( order.getOrderDetail().getRequestShippingCarrier())
+    .setTrackingNumber( "Z123456780123456" )
+    .setShipmentDate(new ISO801Date())
+    .setExpectedDeliveryDate(new ISO801Date( new Date( new Date().getTime() + ( 86400L * 2L ))))
+    .setShipFromZip( "38473" )
+    .setPickupDate(new ISO801Date())
+    .setItems( shipmentItems )
+    .build();
+
+  //..Add it to the list of shipments you're sending out.
+  shipments.add( shipment );
+
+  //..Create the final request object to tell jet about the shipment
+  ShipRequestRec shipmentRequest = new ShipRequestRec( "", shipments );
+
+  //..Send the shipment to jet
+  orderApi.sendPutShipOrder( jetOrderId, shipmentRequest );
+}       
+
+```
+
+### 6: Cancel Order
+
+You cancel orders using the put shipment command 
+
+
+```java
+//..Get acknowledged orders 
+for ( final String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK ))
+{
+  //..Get the order detail 
+  OrderRec order = orderApi.getOrderDetail( jetOrderId );
+
+  //..A list of shipments 
+  //..You can split the order up into however many shipments you want.
+  List<ShipmentRec> shipments = new ArrayList<>();
+
+  //..a list of items in a shipment 
+  List<ShipmentItemRec> shipmentItems = new ArrayList<>();
+
+  //..Turn those into ack order records
+  for ( OrderItemRec item : order.getOrderItems())
+  {
+    //..Create a builder for a new ShipmentItem by converting the retrieved
+    //  order item to a Shipment Item
+    ShipmentItemRec.Builder builder = ShipmentItemRec.fromOrderItem( item );
+
+    //..You can modify the quantity shipped or cancelled here, or just fulfill as it was ordered
+    //..like this:        
+    builder.setQuantity( 0 );
+    builder.setCancelQuantity( item.getRequestOrderQty());
+
+    //..Build the item and add it to the items list 
+    shipmentItems.add( builder.build());
+
+    //..All of the above code can be chained into a 1-liner.
+  }
+
+
+  //..Build a shipment for the items in the order
+  //..You can create multiple shipments, and also mix cancellations 
+  //  with shipments.      
+  final ShipmentRec shipment = new ShipmentRec.Builder()
+    .setItems( shipmentItems )
+    //..Shipments with only cancelled items must have an alt shipment id
+    .setAltShipmentId( "Alt ship id test" ) 
+    .build();
+
+  //..Add it to the list of shipments you're sending out.
+  shipments.add( shipment );
+
+  //..Create the final request object to tell jet about the shipment
+  final ShipRequestRec shipmentRequest = new ShipRequestRec( "", shipments );
+
+  //..Send the shipment to jet
+  orderApi.sendPutShipOrder( jetOrderId, shipmentRequest );
+}      
+``` 

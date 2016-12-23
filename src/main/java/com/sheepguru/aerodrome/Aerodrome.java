@@ -746,6 +746,7 @@ public class Aerodrome implements ExitCodes
     //..Create an order api instance
     try {
       final JetAPIOrder orderApi = new JetAPIOrder( client, config );
+      
       //ackOrders( orderApi );
       shipOrders( orderApi );
       //cancelOrders( orderApi );
