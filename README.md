@@ -446,7 +446,7 @@ token/processing batch on jet, create a new PostFile instance for the new file
 
 ```java
 
-final PostFile pf = new PostFile( file, ContentType.DEFAULT_BINARY, "gzip", file.getName());
+PostFile pf = new PostFile( file, ContentType.DEFAULT_BINARY, "gzip", file.getName());
 
 //..Post the request for a file addition to 
 JsonObject addRes = up.sendPostUploadedFiles( 

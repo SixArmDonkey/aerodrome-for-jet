@@ -2,5 +2,6 @@ com.sheepguru.aerodrome
 com.sheepguru.aerodrome.jet
 com.sheepguru.aerodrome.jet.orders
 com.sheepguru.aerodrome.jet.products
+com.sheepguru.aerodrome.jet.taxonomy
 com.sheepguru.api
 com.sheepguru.utils
