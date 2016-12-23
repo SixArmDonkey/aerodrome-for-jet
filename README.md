@@ -68,6 +68,7 @@ to send to Jet.  This process is thread safe.
 Follow the steps in the Quick Start Guide prior to using the Product API.
 Jet API Authentication is required.
 
+
 ### 1: Initialize the product API
 
 [JetAPIProduct JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/JetAPIProduct.html)
@@ -75,6 +76,7 @@ Jet API Authentication is required.
 ```java
 IJetAPIProduct productApi = new JetAPIProduct( client, jetConfig );
 ```
+
 
 ### 2: Add a single product to Jet 
 
@@ -154,7 +156,12 @@ product.sendPutProductVariation( new ProductVariationGroupRec(
 
 ```
 
+
 ### 3: Send shipping exceptions for fullfillment nodes
+
+The shipping exceptions call is used to set up specific methods and costs for 
+individual SKUs that will override your default settings, with the ability to 
+drill down to the fulfillment node level.
 
 Shipping Exceptions are configured per fulfillment node, and are sent in a 
 batch using FNodeShippingRec 
@@ -217,6 +224,7 @@ returnIds.add( "some return hash" );
 product.sendPutReturnsException( "YOUR merchant sku", returnIds );
 ```
 
+
 ### 5: Archive a Sku
 
 Sku's on Jet can't ever be deleted, but fortunately we can archive them.
@@ -230,7 +238,14 @@ product.sendPutArchiveSku( "YOUR merchant sku", true );
 product.sendPutArchiveSku( "YOUR merchant sku", false );
 ```
 
+
 ### 6: Get Product Prices
+
+At Jet, the price the retailer sets is not the same as the price the customer 
+pays. The price set for a SKU will be the price the retailer gets paid for
+selling the products. However, the price that is set will influence how 
+competitive your product offer matches up compared to other product offers 
+for the same SKU.
 
 You can retrieve just pricing data for a sku
 
@@ -248,7 +263,11 @@ List<FNodePriceRec> fulfillmentNodes = priceData.getFulfillmentNodes();
 Money nodePrice = fulfillmentNodes.get( 0 ).getPrice();
 ```
 
+
 ### 7: Get product inventory 
+
+The inventory returned from this endpoint represents the number in the feed, 
+not the quantity that is currently sellable on Jet.com
 
 If you want to find the quantity listed of a given sku within any fulfillment
 node, use getProductInventory()
@@ -269,6 +288,7 @@ for( FNodeInventoryRec node : inventory.getNodes())
 }
 ```
 
+
 ### 8: Get Product Variations
 
 You can retrieve a variation group for a given sku.
@@ -286,6 +306,10 @@ List<String> childSkus = variations.getChildSkus();
 
 ### 9 Get Product Shipping Exceptions 
 
+The shipping exceptions call is used to set up specific methods and costs for 
+individual SKUs that will override your default settings, with the ability to 
+drill down to the fulfillment node level.
+
 This is the same as adding an exception, just backwards.
 
 [FNodeShippingRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeShippingRec.html)
@@ -297,6 +321,7 @@ List<FNodeShippingRec> exceptions = product.getShippingExceptions( "YOUR merchan
 List<ShippingExceptionRec> shippingExceptions = exceptions.get( 0 ).getItemData();
 ```
 
+
 ### 10: Retrieve an exception that you have configured 
 
 [ReturnsExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ReturnsExceptionRec.html)
@@ -305,7 +330,11 @@ List<ShippingExceptionRec> shippingExceptions = exceptions.get( 0 ).getItemData(
 ReturnsExceptionRec returnsException = product.getReturnsExceptions( "YOUR merchant sku" );
 ```
 
+
 ### 11: Retrieve all of the merchant sku data
+
+Any information about the SKU that was previously uploaded (price, inventory, 
+shipping exception) will show up here
 
 [ProductRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductRec.html)
 
@@ -320,9 +349,12 @@ String json = pRec.toJSON().toString();
 ProductRec fromJson = ProductRec.fromJSON( json );
 ```
 
+
 ### 12: Retrieve a list of sku's on Jet 
 
-If you want to see what sku's you have uploaded, you use this:
+This call allows you visibility into the total number of SKUs you have uploaded. 
+Alternatively, the Partner Portal allows you to download a CSV file of all SKUs.
+
 
 ```java
 for( String sku : product.getSkuList( 0, 100 ))
@@ -332,7 +364,25 @@ for( String sku : product.getSkuList( 0, 100 ))
 }
 ```
 
+
 ### 13: Retrieving sales/performance data about a single sku
+
+Analyze how your individual product price (item and shipping price) compares to 
+the lowest individual product prices from the marketplace. These prices are only 
+provided for SKUs that have the status “Available for Sale”. If a best price 
+does not change, then the last_update time also will not change. If your 
+inventory is zero, then these prices will not continue to be updated and will 
+be stale. Note: It may take up to 24 hours to reflect any price updates from 
+you and the marketplace.
+
+Product pricing is one factor that Jet uses to determine which retailer wins a 
+basket order. Jet determines what orders retailers will win based on the the 
+product prices of all products in the order, base commission on those items as 
+well as commission adjustments set via the Rules Engine. Commission adjustments 
+set via the Rules Engine can be very effective in optimizing your win rate and 
+profitability at the order level without having to have the absolute lowest 
+item and shipping prices.
+
 
 You can retrieve stats about each sku individually using this command
 
