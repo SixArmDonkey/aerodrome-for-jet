@@ -27,8 +27,6 @@ import com.sheepguru.aerodrome.jet.orders.AckRequestItemRec;
 import com.sheepguru.aerodrome.jet.orders.AckRequestRec;
 import com.sheepguru.aerodrome.jet.orders.AckStatus;
 import com.sheepguru.aerodrome.jet.AddressRec;
-import com.sheepguru.aerodrome.jet.ShippingMethod;
-import com.sheepguru.aerodrome.jet.ShippingServiceLevel;
 import com.sheepguru.aerodrome.jet.orders.JetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.OrderItemRec;
 import com.sheepguru.aerodrome.jet.orders.OrderRec;
@@ -79,12 +77,8 @@ import org.apache.http.entity.ContentType;
 import com.sheepguru.aerodrome.jet.orders.IJetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.ReturnReason;
 import com.sheepguru.aerodrome.jet.products.FNodeShippingRec;
-import com.sheepguru.aerodrome.jet.products.ProductInventoryRec;
-import com.sheepguru.aerodrome.jet.products.ProductPriceRec;
 import com.sheepguru.aerodrome.jet.products.ProductVariationGroupRec;
 import com.sheepguru.aerodrome.jet.products.ReturnsExceptionRec;
-import com.sheepguru.aerodrome.jet.products.ShipExceptionType;
-import com.sheepguru.aerodrome.jet.products.ShipOverrideType;
 import com.sheepguru.aerodrome.jet.products.ShippingExceptionRec;
 import com.sheepguru.aerodrome.jet.taxonomy.IJetAPITaxonomy;
 import com.sheepguru.aerodrome.jet.taxonomy.JetAPITaxonomy;
@@ -135,7 +129,7 @@ public class Aerodrome implements ExitCodes
     final JetAPIProduct product = new JetAPIProduct( client, jetConfig );
     
     //...Log in to jet
-    authenticate( client, jetConfig );
+//    authenticate( client, jetConfig );
       
     
     

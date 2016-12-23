@@ -50,25 +50,12 @@ IAPIHttpClient client = new APIHttpClient.Builder().build();
 
 Authentication is thread safe, and a single config object is designed to be 
 shared between threads.  Aerodrome keeps track of your authentication status, 
-and if it expires, it will obtain a lock on the configuration object and 
-reauthenticate.  It then updates the config with the new auth token and the 
-program continues.
+and will automatically authenticate.  There is no need to manually call login().
 
-[JetAPIAuth JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/JetAPIAuth.html)
+[IJetAPIAuth JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/IJetAPIAuth.html)
 
-```java
-  JetAPIAuth auth = new JetAPIAuth( client, config );
-
-  //..Perform the login and retrieve a token
-  //  This token is stored in the jet config and will automatically be 
-  //  added to any requests that use the config object.
-  auth.login();
-```
-
-If authentication succeeded, then the config object will contain the proper tokens
-to send to Jet.  A single config object is shared between all api libraries.
-
-
+The JetConfig object keeps track of the shared authentication data and is 
+automatically updated.
 
 
 # Product API

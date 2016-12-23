@@ -14,6 +14,7 @@
 
 package com.sheepguru.aerodrome.jet;
 
+import static com.sheepguru.aerodrome.jet.JetAPIAuth.AUTH_TEST_RESPONSE;
 import com.sheepguru.api.API;
 import com.sheepguru.api.APIException;
 import com.sheepguru.api.APIHttpClient;
@@ -26,7 +27,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -42,12 +46,20 @@ import org.apache.http.entity.ContentType;
  * If auth is expired, client needs to lock the config object and 
  * attempt reauthentication, then re-set the new credentials.
  */
-public class JetAPI extends API implements IJetAPI
+public class JetAPI extends API implements IJetAPI, IJetAPIAuth
 {
+  /**
+   * The auth test response from jet 
+   */
+  public static final String AUTH_TEST_RESPONSE = 
+    "\"This message is authorized.\"";
+  
   /**
    * Jet API Configuration
    */
   protected final JetConfig config;
+  
+  private AtomicBoolean isReauth = new AtomicBoolean( false );
   
   private static final Log LOG = LogFactory.getLog( JetAPI.class );
 
@@ -243,6 +255,112 @@ public class JetAPI extends API implements IJetAPI
   }
   
   
+
+  /**
+   * Attempt to log in to the Jet API, and retrieve a token
+   * @return If the user is now logged in and the token has been acquired
+   * @throws APIException if something goes wrong
+   * @throws JetException if there are errors in the API response body
+   * @throws JetAuthException if there is a problem with the authentication
+   * data in the configuration object after setting it from the login response.
+   */
+  @Override
+  public boolean login()
+    throws APIException, JetException, JetAuthException
+  {
+    //..Send the authorization request and attempt to set the response data in 
+    //  the config cache.
+    APILog.info( LOG, "Attempting Login..." );
+    
+    try {
+      setConfigurationDataFromLogin( post(
+        config.getAuthenticationURL(),
+        getLoginPayload().toString(),
+        JetHeaderBuilder.getJSONHeaderBuilder( 
+          config.getAuthorizationHeaderValue()).build()
+      ));
+    } catch ( JetException e ) {
+      APILog.info( LOG, "Failed to authenticate :-( " );
+      APILog.info( LOG, "A \"Bad Request\" response from Jet typically means bad credentials" );
+      throw e;
+    }
+    
+    //..Test the new configuration data from the response 
+    config.testConfigurationData();
+
+    APILog.info( LOG, "Jet seems to like those credentials. Testing authentication..." );
+    
+    //..Perform a live authorization test
+    if ( !authTest())
+      config.clearAuthenticationData();
+
+    //..Return the auth state
+    if ( config.isAuthenticated())
+    {
+      APILog.info( LOG, "Success!  You're logged in." );
+      
+      return true;
+    }
+    
+    return false;
+  }
+  
+  
+  /**
+   * Retrieve the payload for the login/authentication request.
+   * This creates an object with "user" and "pass" properties with values 
+   * from the current JetConfig object.
+   * @return The built JSON
+   */
+  private JsonObject getLoginPayload()
+  {
+    return Json.createObjectBuilder()
+      .add( "user", config.getUsername())
+      .add( "pass", config.getPassword())
+    .build();    
+  }  
+  
+  
+  /**
+   * Sets the configuration data from an authentication request response
+   * @param response Response from login()
+   * @throws JetException if the response does not contain 
+   * id_token, token_type or expires_on 
+   * @see JetAPI#login() 
+   */
+  private void setConfigurationDataFromLogin( final IJetAPIResponse response )
+    throws JetException
+  {
+    //..Turn it into JSON
+    final JsonObject res = response.getJsonObject();
+
+    try {
+      //..Set the authentication data
+      config.setAuthenticationData(
+        res.getString( "id_token" ),
+        res.getString( "token_type" ),
+        res.getString( "expires_on" )
+      );
+    } catch( NullPointerException e ) {
+      throw new JetException( 
+        "Authentication response is missing id_token, token_type or "
+        + "expires_on. Check authentication response", e );      
+    }    
+  }
+
+
+  /**
+   *
+   * @return If the authorization test was successful
+   * @throws APIException if there's a problem
+   */
+  private boolean authTest() throws APIException
+  {    
+    return get( config.getAuthTestURL(), getPlainHeaderBuilder().build())
+      .getResponseContent().equals( AUTH_TEST_RESPONSE );    
+  }    
+  
+  
   /**
    * Execute a HttpRequest
    * @param hr request
@@ -253,16 +371,18 @@ public class JetAPI extends API implements IJetAPI
   protected IAPIResponse executeRequest( final HttpUriRequest hr ) 
     throws APIException
   {
-    if ( !config.isAuthenticated())
-    {
-      synchronized( config )
+    if ( !isReauth.get() && !config.isAuthenticated())
+    {      
+      synchronized( this )
       {
-        IJetAPIAuth auth = new JetAPIAuth( client, config );
+        isReauth.set( true );               
         try {
-          auth.login();
+          login();
+          hr.setHeader( "Authorization", config.getAuthorizationHeaderValue());
         } catch( JetAuthException e ) {
           APILog.error( LOG, "Failed to reauthenticate" );
-        }
+        }        
+        isReauth.set( false );
       }
     }
     return super.executeRequest( hr );
