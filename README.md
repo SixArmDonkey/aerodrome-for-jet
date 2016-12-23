@@ -24,7 +24,7 @@ For questions, please feel free to email johnquinn3@gmail.com.
 
 # Quick Start Guide
 
-1. Create a JetConfig object 
+### 1: Create a JetConfig object 
 
 At minimum, you need to add your merchant id, username, password
 
@@ -38,7 +38,7 @@ JetConfig config = new DefaultJetConfig.Builder();
   .build();
 ```
 
-2. Create a shared Http Client to use 
+### 2: Create a shared Http Client to use 
 
 [APIHttpClient JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/api/APIHttpClient.html)
 
@@ -46,7 +46,7 @@ JetConfig config = new DefaultJetConfig.Builder();
 IAPIHttpClient client = new APIHttpClient.Builder().build();    
 ```
 
-3. Authenticate with Jet 
+### 3: Authenticate with Jet 
 
 [JetAPIAuth JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/JetAPIAuth.html)
 
