@@ -72,22 +72,22 @@ public class API implements IApi
   /**
    * Client context
    */
-  private final HttpContext context = HttpClientContext.create();
+  protected final HttpContext context = HttpClientContext.create();
   
   /**
    * Max download size
    */
-  private final long maxDownloadSize;
+  protected final long maxDownloadSize;
   
   /**
    * The http client to use 
    */
-  private final IAPIHttpClient client;
+  protected final IAPIHttpClient client;
   
   /**
    * Lock the host to whatever is specified in the client 
    */
-  private final boolean lockHost;
+  protected final boolean lockHost;
   
   /**
    * Logger instance 
@@ -728,7 +728,7 @@ public class API implements IApi
    * @return response
    * @throws APIException If the request failed
    */
-  private IAPIResponse executeRequest( final HttpUriRequest hr ) 
+  protected IAPIResponse executeRequest( final HttpUriRequest hr ) 
     throws APIException
   {
     //..Execute and process the response

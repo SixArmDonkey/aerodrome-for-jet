@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  * and the APIHeaders section for how to send a "logged in" request.
  * <br><a href="https://developer.jet.com/docs/retrieving-a-token#response-body">https://developer.jet.com/docs/retrieving-a-token#response-body</a>
  */
-public class JetAPIAuth extends JetAPI
+public class JetAPIAuth extends JetAPI implements IJetAPIAuth
 {
   /**
    * The auth test response from jet 
@@ -64,6 +64,7 @@ public class JetAPIAuth extends JetAPI
    * @throws JetAuthException if there is a problem with the authentication
    * data in the configuration object after setting it from the login response.
    */
+  @Override
   public boolean login()
     throws APIException, JetException, JetAuthException
   {

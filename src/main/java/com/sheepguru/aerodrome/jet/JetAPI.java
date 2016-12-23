@@ -17,14 +17,19 @@ package com.sheepguru.aerodrome.jet;
 import com.sheepguru.api.API;
 import com.sheepguru.api.APIException;
 import com.sheepguru.api.APIHttpClient;
+import com.sheepguru.api.APILog;
 import com.sheepguru.api.APIResponse;
 import com.sheepguru.api.IAPIHttpClient;
+import com.sheepguru.api.IAPIResponse;
 import com.sheepguru.api.PostFile;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.json.JsonArray;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 
 
@@ -43,6 +48,8 @@ public class JetAPI extends API implements IJetAPI
    * Jet API Configuration
    */
   protected final JetConfig config;
+  
+  private static final Log LOG = LogFactory.getLog( JetAPI.class );
 
   
   /**
@@ -236,7 +243,33 @@ public class JetAPI extends API implements IJetAPI
   }
   
   
-/**
+  /**
+   * Execute a HttpRequest
+   * @param hr request
+   * @return response
+   * @throws APIException If the request failed
+   */
+  @Override
+  protected IAPIResponse executeRequest( final HttpUriRequest hr ) 
+    throws APIException
+  {
+    if ( !config.isAuthenticated())
+    {
+      synchronized( config )
+      {
+        IJetAPIAuth auth = new JetAPIAuth( client, config );
+        try {
+          auth.login();
+        } catch( JetAuthException e ) {
+          APILog.error( LOG, "Failed to reauthenticate" );
+        }
+      }
+    }
+    return super.executeRequest( hr );
+  }
+  
+  
+  /**
    * Turn a jet api response into a list of tokens 
    * @param a Json array 
    * @param includePath Toggle including the entire uri or only the rightmost
