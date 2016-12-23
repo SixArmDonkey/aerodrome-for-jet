@@ -415,6 +415,13 @@ for ( OfferRec offer : data.getBestOffers())
 Bulk uploads can be done by creating an in-memory list of ProductRec instances
 or simply streaming some json file through the library.
 
+[JetAPIBulkProductUpload JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/JetAPIBulkProductUpload.html)
+
+[BulkUploadAuthRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/BulkUploadAuthRec.html)
+
+[PostFile JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/api/PostFile.html)
+
+
 #### This example is for merchant sku's, but the technique is similar for all file types
 
 ```java
@@ -463,6 +470,9 @@ up.sendAuthorizedFile( addRes.getString( "url" ), pf );
 ```
 
 Then you can retrieve the status for any of the uploads
+
+[FileIdRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FileIdRec.html)
+
 
 ```java
 //..Get some stats for an uploaded file 
