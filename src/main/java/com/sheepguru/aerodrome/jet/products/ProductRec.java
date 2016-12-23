@@ -449,7 +449,7 @@ public class ProductRec implements Jsonable
     out.msrp = new Money( json.getString( "msrp", "0" ));
     out.mapPrice = new Money( json.getString( "map_price", "0" ));
     out.mapImplementation = MAPType.fromJet( json.getString( "map_implementation", MAPType.NO_RESTRICTIONS.getType()));
-    out.productTaxCode = ProductTaxCode.fromString( json.getString( "product_tax_code", "" ));
+    out.productTaxCode = ProductTaxCode.fromText( json.getString( "product_tax_code", "" ));
     out.noReturnFeeAdj = new Money( json.getString( "no_return_fee_adjustment", "0" ));
     out.excludeFromFeeAdjustments = json.getBoolean( "exclude_from_fee_adjustments", false );
     out.attributesNodeSpecific.addAll( loadAttrNodeSpecific( json.getJsonArray( "attribute_node_specific" )));

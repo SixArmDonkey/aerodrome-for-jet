@@ -50,7 +50,9 @@ public enum ProductTaxCode
 	GENERIC_TAXABLE( "Generic Taxable Product" ),
 	HANDKERCHIEF( "Handkerchiefs" ),
 	HELMET( "Helmets" ),
+  INACTIVE( "N/A - Inactive" ),
 	INFANT_CLOTHING( "Infant Clothing" ),
+  MAGAZINES( "Magazines" ),
 	MEDICATED_PERSONAL( "Medicated Personal Care Items" ),
   MOBILITY_EQUIP( "Mobility Equipment" ),
 	NOT_TAXABLE( "Non Taxable Product" ),
@@ -60,6 +62,7 @@ public enum ProductTaxCode
 	OTC_PET_MEDICATION( "OTC Pet Meds" ),
 	PAPER( "Paper Products" ),
 	PET_FOOD( "Pet Foods" ),
+  PRODUCTIVITY_SOFTWARE( "Productivity Software" ),
 	SAFETY_CLOTHING( "Safety Clothing" ),
   SHOE_INSOLES( "Shoe Insoles" ),
 	SMOKING_CESSATION( "Smoking Cessation" ),
@@ -80,7 +83,7 @@ public enum ProductTaxCode
    * @return tax code 
    * @throws IllegalArgumentException if text is not found 
    */
-  public static ProductTaxCode fromString( final String text )
+  public static ProductTaxCode fromText( final String text )
     throws IllegalArgumentException
   {
     for ( final ProductTaxCode c : values )

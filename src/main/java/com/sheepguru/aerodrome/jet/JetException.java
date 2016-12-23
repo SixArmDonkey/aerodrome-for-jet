@@ -15,10 +15,10 @@
 package com.sheepguru.aerodrome.jet;
 
 import com.sheepguru.api.APIException;
-import com.sheepguru.api.APIResponse;
+import com.sheepguru.api.IAPIResponse;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import org.apache.commons.logging.Log;
 
 /**
@@ -30,13 +30,17 @@ public class JetException extends APIException
   /**
    * Some error messages
    */
-  private List<String> messages = new ArrayList<>();
-
+  private final List<String> messages;
+ 
+  private final IAPIResponse response;
+  
 
   /**
    * Creates a new instance of <code>JetException</code> without detail message.
    */
   public JetException() {
+    response = null;
+    messages = Collections.unmodifiableList( new ArrayList<String>());
   }
 
   /**
@@ -47,6 +51,8 @@ public class JetException extends APIException
    */
   public JetException(String msg) {
     super(msg);
+    response = null;
+    messages = Collections.unmodifiableList( new ArrayList<String>());
   }
 
   public JetException( List<String> messages )
@@ -55,14 +61,27 @@ public class JetException extends APIException
   }
 
 
-
+  public JetException( List<String> messages, Exception previous, IAPIResponse response )
+  {
+    super( "Jet API Error Response", previous );
+    if ( messages != null )
+      this.messages = Collections.unmodifiableList( messages );
+    else
+      this.messages = null;
+    
+    this.response = response;
+  }
 
 
   public JetException( List<String> messages, Exception previous )
   {
     super( "Jet API Error Response", previous );
     if ( messages != null )
-      this.messages = messages;
+      this.messages = Collections.unmodifiableList( messages );
+    else
+      this.messages = null;
+    
+    response = null;
   }
 
 
@@ -72,10 +91,29 @@ public class JetException extends APIException
    * @param previous The previous exception
    */
   public JetException(String message, Exception previous )
-  {
+  {    
     super( message, previous );
+    messages = null;
+    response = null;        
   }
 
+  /**
+   * An api exception with a previous exception
+   * @param message the detail message
+   * @param previous The previous exception
+   */
+  public JetException(String message, Exception previous, IAPIResponse response )
+  {    
+    super( message, previous );
+    messages = null;
+    this.response = response;
+  }
+  
+  
+  public IAPIResponse getResponse()
+  {
+    return response;
+  }
 
   /**
    * Retrieve the API Error messages

@@ -22,6 +22,7 @@ import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -274,5 +275,15 @@ public class Utils
             
     if ( value == null )
       throw new IllegalArgumentException( varName + " cannot be null or empty" );            
+  }
+  
+  
+  public static BigDecimal getJsonNumber( final JsonNumber n )
+  {
+    final BigDecimal b = new BigDecimal( 0 );
+    if ( n == null )
+      return b;
+    
+    return n.bigDecimalValue();
   }
 }

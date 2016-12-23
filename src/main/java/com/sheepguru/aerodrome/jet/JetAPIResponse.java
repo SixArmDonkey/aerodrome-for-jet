@@ -183,13 +183,13 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
       json = res.getJsonObject();
 
     if ( json != null )
-      checkErrors( json );
+      checkErrors( json, res );
 
     if ( res.isFailure())
     {
-      throw new JetException( "FAILURE: Jet responded with" 
+      throw new JetException( "FAILURE: Jet responded with " 
         + String.valueOf( res.getStatusLine().getStatusCode())
-        + "-" + res.getStatusLine().getReasonPhrase());
+        + " - " + res.getStatusLine().getReasonPhrase(), null, res );
     }
     
     return json;
@@ -201,7 +201,7 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
    * @param res JSON results
    * @throws JetException if there's an issue
    */
-  public static final void checkErrors( final JsonObject res )
+  public static final void checkErrors( final JsonObject res, final IAPIResponse apiRes )
       throws JetException
   {
     if ( res.containsKey( "errors" ))
@@ -214,11 +214,11 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
         messages.add( error.toString());
       }
 
-      throw new JetException( messages );
+      throw new JetException( messages, null, apiRes );
     }
     else if ( res.containsKey( "error" ))
     {
-      throw new JetException( res.getString( "error" ));
+      throw new JetException( res.getString( "error" ), null, apiRes );
     }
   }  
   

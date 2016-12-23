@@ -80,12 +80,12 @@ public class APIHttpClient implements IAPIHttpClient
     /**
      * Default allow gzip flag 
      */
-    public static final boolean DEFAULT_ALLOW_GZIP = false;
+    public static final boolean DEFAULT_ALLOW_GZIP = true;
 
     /**
      * Default allow untrusted ssl flag 
      */
-    public static final boolean DEFAULT_ALLOW_UNTRUSTED_SSL = false;  
+    public static final boolean DEFAULT_ALLOW_UNTRUSTED_SSL = true;  
     
     /**
      * Default delay between requests

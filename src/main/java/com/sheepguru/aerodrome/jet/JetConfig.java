@@ -478,4 +478,37 @@ public interface JetConfig
 
   
   ////////////// END REFUNDS ///////////////////////////////////////////////////
+  ////////////// START TAXONOMY ////////////////////////////////////////////////
+  
+  /**
+   * Retrieve the url to retrieve a list of node uri's to query.
+   * @param version the jet taxonomy version to query 
+   * @param offset start
+   * @param limit limit 
+   * @return url
+   */
+  public String getGetTaxonomyNodesUrl( final String version, 
+    final int offset, final int limit );
+
+  /**
+   * Get the url for querying node detail
+   * @param nodeId node id
+   * @return url
+   */
+  public String getGetTaxonomyDetailUrl( final String nodeId );
+  
+  
+  /**
+   * Get the url for querying for an attribute node detail
+   * @param jetNodeId node id 
+   * @return url 
+   */
+  public String getGetTaxonomyAttrUrl( final String jetNodeId );
+  
+  
+  
+  
+  
+  ////////////// END TAXONOMY //////////////////////////////////////////////////
+  
 }

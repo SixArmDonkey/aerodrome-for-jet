@@ -27,7 +27,6 @@ import com.sheepguru.aerodrome.jet.orders.AckRequestItemRec;
 import com.sheepguru.aerodrome.jet.orders.AckRequestRec;
 import com.sheepguru.aerodrome.jet.orders.AckStatus;
 import com.sheepguru.aerodrome.jet.AddressRec;
-import com.sheepguru.aerodrome.jet.orders.ItemPriceRec;
 import com.sheepguru.aerodrome.jet.orders.JetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.OrderItemRec;
 import com.sheepguru.aerodrome.jet.orders.OrderRec;
@@ -49,10 +48,8 @@ import com.sheepguru.aerodrome.jet.orders.IJetAPIRefund;
 import com.sheepguru.aerodrome.jet.orders.IJetAPIReturn;
 import com.sheepguru.aerodrome.jet.orders.JetAPIRefund;
 import com.sheepguru.aerodrome.jet.orders.JetAPIReturn;
-import com.sheepguru.aerodrome.jet.orders.RefundAmountRec;
 import com.sheepguru.aerodrome.jet.orders.RefundFeedback;
 import com.sheepguru.aerodrome.jet.orders.RefundItemRec;
-import com.sheepguru.aerodrome.jet.orders.RefundRec;
 import com.sheepguru.aerodrome.jet.orders.RefundStatus;
 import com.sheepguru.aerodrome.jet.orders.ReturnItemRec;
 import com.sheepguru.aerodrome.jet.orders.ReturnMerchantSkuRec;
@@ -79,6 +76,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.entity.ContentType;
 import com.sheepguru.aerodrome.jet.orders.IJetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.ReturnReason;
+import com.sheepguru.aerodrome.jet.taxonomy.IJetAPITaxonomy;
+import com.sheepguru.aerodrome.jet.taxonomy.JetAPITaxonomy;
+import com.sheepguru.api.IAPIResponse;
 
 
 /**
@@ -141,7 +141,38 @@ public class Aerodrome implements ExitCodes
     
     //testReturns( client, jetConfig );
     
-    testRefunds( client, jetConfig );
+    //testRefunds( client, jetConfig );
+    
+    testTaxonomy( client, jetConfig );
+  }
+  
+  
+  public static void testTaxonomy( final IAPIHttpClient client, final JetConfig config )
+  {
+    try {      
+      final IJetAPITaxonomy taxApi = new JetAPITaxonomy( client, config );
+      
+      for ( final String id : taxApi.pollNodes( 0, 100 ))
+      {
+        try {
+          taxApi.getNodeDetail( id );
+          taxApi.getAttrDetail( id );
+        } catch( JetException e ) {
+          IAPIResponse r = e.getResponse();
+          if ( r == null )
+            throw e;                    
+          
+          //..otherwise it was a successful api response and we can process
+          // the result further here or just continue on.
+          //..This will be a 404 for attribute not found in this instance.
+        }
+      }
+      
+      
+      
+    } catch( Exception e ) {
+      fail( "taxonomy error", 0, e );
+    }
   }
   
   

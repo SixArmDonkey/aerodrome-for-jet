@@ -15,6 +15,7 @@
 package com.sheepguru.aerodrome.jet.products;
 
 import static com.sheepguru.aerodrome.jet.ProductTaxCode.values;
+import static com.sheepguru.aerodrome.jet.ProductTaxCode.values;
 
 /**
  * Represents the type of file being uploaded.

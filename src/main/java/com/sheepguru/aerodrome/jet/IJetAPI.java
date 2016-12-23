@@ -25,6 +25,8 @@ import org.apache.http.entity.ContentType;
 /**
  * Represents the JetAPI base class
  * @author John Quinn
+ * 
+ * @todo Messy Messy....
  */
 public interface IJetAPI extends IApi
 {
@@ -35,7 +37,9 @@ public interface IJetAPI extends IApi
    * @param headers Extra headers to send
    * @return The response
    * @throws APIException If something goes wrong (like an IOException)
+   * @throws JetException if jet has some issue 
    */
+  @Override
   public IJetAPIResponse get(final String url, final Map<String, String> headers) 
           throws APIException, JetException;
 
@@ -65,6 +69,7 @@ public interface IJetAPI extends IApi
    * @return response
    * @throws APIException if something goes wrong
    */
+  @Override
   public IJetAPIResponse post(final String url, final String payload, 
           final Map<String, String> headers) throws APIException, JetException;
 
@@ -76,10 +81,12 @@ public interface IJetAPI extends IApi
    * @return response
    * @throws APIException
    */
+  @Override
   public IJetAPIResponse post(final String url, final InputStream payload, 
           final long contentLength, final ContentType contentType, 
           final Map<String, String> headers) throws APIException;
 
+  @Override
   public IJetAPIResponse post(final String url, final PostFile file, 
           Map<String, String> headers) throws APIException;
 
@@ -91,6 +98,7 @@ public interface IJetAPI extends IApi
    * @return response
    * @throws APIException
    */
+  @Override
   public IJetAPIResponse put(final String url, final String payload, 
           final Map<String, String> headers) throws APIException, JetException;
 
@@ -102,10 +110,12 @@ public interface IJetAPI extends IApi
    * @return response
    * @throws APIException
    */
+  @Override
   public IJetAPIResponse put(final String url, final InputStream payload, 
           final long contentLength, final ContentType contentType, 
           final Map<String, String> headers) throws APIException, JetException;
 
+  @Override
   public IJetAPIResponse put(final String url, final PostFile file, 
           Map<String, String> headers) throws APIException, JetException;
   

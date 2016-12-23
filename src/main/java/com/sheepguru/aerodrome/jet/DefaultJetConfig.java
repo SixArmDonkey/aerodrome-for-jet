@@ -270,6 +270,21 @@ public class DefaultJetConfig implements JetConfig
      */
     private String postRefundUrl = "/refunds/{order_id}/{alt_refund_id}";
     
+    /**
+     * Taxonomy uri list 
+     */
+    private String getTaxonomyNodeUrl = "/taxonomy/links/{version}?offset={offset}&amp;limit={limit}";
+    
+    /**
+     * Node detail url
+     */
+    private String getTaxonomyDetailUrl = "/taxonomy/nodes/{node_id}";
+    
+    /**
+     * Attribute detail url 
+     */
+    private String getTaxonomyAttrUrl = "/taxonomy/nodes/{jet_node_id}/attributes";
+    
     
     /**
      * Get the log 
@@ -852,6 +867,43 @@ public class DefaultJetConfig implements JetConfig
       this.postRefundUrl = postRefundUrl;
       return this;
     }
+
+    /**
+     * Set get taxonomy nodes url
+     * @param getTaxonomyNodeUrl the getTaxonomyNodeUrl to set
+     * @return this
+     */
+    public Builder setGetTaxonomyNodeUrl( final String getTaxonomyNodeUrl )
+    {      
+      this.getTaxonomyNodeUrl = getTaxonomyNodeUrl;
+      return this;
+    }
+
+    
+    /**
+     * Set get node detail url 
+     * @param getTaxonomyDetailUrl the getTaxonomyDetailUrl to set
+     * @return this
+     */
+    public Builder setGetTaxonomyDetailUrl( final String getTaxonomyDetailUrl )
+    {
+      this.getTaxonomyDetailUrl = getTaxonomyDetailUrl;
+      return this;
+    }
+
+    
+    /**
+     * Set get node detail url
+     * @param getTaxonomyAttrUrl the getTaxonomyAttrUrl to set
+     * @return this
+     */
+    public Builder setGetTaxonomyAttrUrl( final String getTaxonomyAttrUrl )
+    {
+      this.getTaxonomyAttrUrl = getTaxonomyAttrUrl;
+      return this;
+    }
+    
+    
   }  
   
   
@@ -1099,6 +1151,21 @@ public class DefaultJetConfig implements JetConfig
    */
   private final String postRefundUrl;
   
+  /**
+   * Taxonomy uri list 
+   */
+  private final String getTaxonomyNodeUrl;
+
+  /**
+   * Node detail url
+   */
+  private final String getTaxonomyDetailUrl;
+
+  /**
+   * Attribute detail url 
+   */
+  private final String getTaxonomyAttrUrl;
+  
   
   /**
    * Test a string for null and empty and 
@@ -1167,6 +1234,10 @@ public class DefaultJetConfig implements JetConfig
     checkStringEmpty( b.getRefundByStatusUrl, "jet.uri.refunds.get.refunds cannot be empty" );
     checkStringEmpty( b.getRefundDetailUrl, "jet.uri.refunds.get.detail cannot be empty" );
     checkStringEmpty( b.postRefundUrl, "jet.uri.refunds.post.create cannot be empty" );
+    checkStringEmpty( b.getTaxonomyNodeUrl, "getTaxonomyNodeUrl cannot be empty" );
+    checkStringEmpty( b.getTaxonomyDetailUrl, "getTaxonomyDetailUrl cannot be empty" );
+    checkStringEmpty( b.getTaxonomyAttrUrl,"getTaxonomyAttrUrl cannot be empty" );
+    
     
     if ( b.readTimeout < 0 )
       throw new IllegalArgumentException( "readTimeout cannot be less than zero" );
@@ -1216,6 +1287,10 @@ public class DefaultJetConfig implements JetConfig
     this.getRefundByStatusUrl = b.getRefundByStatusUrl;
     this.getRefundDetailUrl = b.getRefundDetailUrl;
     this.postRefundUrl = b.postRefundUrl;
+    this.getTaxonomyNodeUrl = b.getTaxonomyNodeUrl;
+    this.getTaxonomyDetailUrl = b.getTaxonomyDetailUrl;
+    this.getTaxonomyAttrUrl = b.getTaxonomyAttrUrl;
+    
   }
   
   
@@ -1917,4 +1992,54 @@ public class DefaultJetConfig implements JetConfig
     return postRefundUrl.replace( "{order_id}", orderId ).replace( "{alt_refund_id}", altRefundId );
   }
   
+
+  /**
+   * Retrieve the url to retrieve a list of node uri's to query.
+   * @param version the jet taxonomy version 
+   * @param offset start
+   * @param limit limit 
+   * @return url
+   */
+  @Override
+  public String getGetTaxonomyNodesUrl( final String version, 
+    final int offset, final int limit )
+  {
+    Utils.checkNull( version, "version" );
+    
+    if ( offset < 0 )
+      throw new IllegalArgumentException( "offset cannot be less than zero" );
+    else if ( limit < 0 )
+      throw new IllegalArgumentException( "limit cannot be less than zero" );
+    
+    return getTaxonomyNodeUrl
+      .replace( "{version}", version )
+      .replace( "{offset}", String.valueOf( offset ))
+      .replace( "{limit}", String.valueOf( limit ));
+  }
+  
+  
+  /**
+   * Get the url for querying node detail
+   * @param nodeId node id
+   * @return url
+   */
+  @Override
+  public String getGetTaxonomyDetailUrl( final String nodeId )
+  {
+    Utils.checkNull( nodeId, "nodeId" );
+    return getTaxonomyDetailUrl.replace( "{node_id}", nodeId );
+  }
+  
+  
+  /**
+   * Get the url for querying for an attribute node detail
+   * @param jetNodeId node id 
+   * @return url 
+   */
+  @Override 
+  public String getGetTaxonomyAttrUrl( final String jetNodeId )
+  {
+    Utils.checkNull( jetNodeId, "jetNodeId" );
+    return getTaxonomyAttrUrl.replace( "{jet_node_id}", jetNodeId );
+  }
 }
