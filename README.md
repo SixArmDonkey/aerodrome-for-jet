@@ -62,3 +62,56 @@ IAPIHttpClient client = new APIHttpClient.Builder().build();
 If authentication succeeded, then the config object will contain the proper tokens
 to send to Jet.  This process is thread safe.
 
+
+# Product API
+
+Follow the steps in the Quick Start Guide prior to using the Product API.
+Jet API Authentication is required.
+
+### 1: Initialize the product API
+
+[JetAPIProduct JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/JetAPIProduct.html)
+
+```java
+IJetAPIProduct productApi = new JetAPIProduct( client, jetConfig );
+```
+
+### 2: Add a single product to Jet 
+
+Each request and response is encapsulated in a unique object.
+In this instance we will use an instance of ProductRec, which represents
+a product.
+
+First we create a product.  The minimum required properties are shown.
+
+Note: This needs a builder class, and will be immutable in the near future.
+
+[ProductRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductRec.html)
+
+```java
+  ProductRec prod = new ProductRec();
+  prod.setMerchantSku( "Your unique local sku" );
+  prod.setTitle( "Product title" );
+  prod.setProductDescription( "Product description" );
+  prod.setMultipackQuantity( 1 );
+  prod.setMsrp( new Money( "44.99" ));
+  prod.setPrice( new Money( "44.99" ));
+  prod.setMainImageUrl( "https://www.example.com/image.jpg" );
+  prod.setSwatchImageUrl( "https://www.example.com/thumbnail.jpg" );
+  prod.setBrand( "Manufacturer Name" );
+  //..Your fulfillment node id's are unique to your account, and are found in your
+  //  Jet Partner Portal 
+  prod.setfNodeInventory( new FNodeInventoryRec( "Fulfillment Node Id", 1 ));
+  prod.setProductCode(new ProductCodeRec( "111111111111", ProductCodeType.UPC ));
+```
+
+The next step is to send this product to Jet.  Please note, adding and editing
+sku's are done with the same operation (addProduct)
+
+addProduct() will upload: sku, image, price and inventory in a single call.
+You can also call each of those individual methods separately.
+
+```java
+productApi.addProduct( prod );
+```
+
