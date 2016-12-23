@@ -129,6 +129,8 @@ they are expected to list these attributes in the variation request.
 
 [Jet Taxonomy Spreadsheet](https://www.dropbox.com/s/wh2ud1q2ujucdt2/Jet_Taxonomy_8.28.2015.xlsx?dl=0)
 
+[ProductVariationGroupRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductVariationGroupRec.html)
+
 ```java
 //..This is a list of jet-defined node attribute id's.
 //  You must use the taxonomy api or the jet node spreadsheet to 
@@ -233,14 +235,122 @@ product.sendPutArchiveSku( "YOUR merchant sku", false );
 You can retrieve just pricing data for a sku
 
 [ProductPriceRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductPriceRec.html)
+
 [FNodePriceRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodePriceRec.html)
 
 ```java
-ProductPriceRec priceData = product.getProductPrice( sku );
+ProductPriceRec priceData = product.getProductPrice( "YOUR merchant sku" );
 
 Money price = priceData.getPrice();
 
 //..or for a specific fulfillment Node
 List<FNodePriceRec> fulfillmentNodes = priceData.getFulfillmentNodes();
 Money nodePrice = fulfillmentNodes.get( 0 ).getPrice();
+```
+
+### 7: Get product inventory 
+
+If you want to find the quantity listed of a given sku within any fulfillment
+node, use getProductInventory()
+
+[ProductInventoryRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductInventoryRec.html)
+
+[FNodeInventoryRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeInventoryRec.html)
+
+```java
+//..Retrieve the inventory for a product sku 
+ProductInventoryRec inventory = product.getProductInventory( "YOUR merchant sku" );
+
+//..Inventory is grouped by fulfillment node 
+for( FNodeInventoryRec node : inventory.getNodes())
+{
+  //..The quantity within the fulfillment Node 
+  int quantity = node.getQuantity()
+}
+```
+
+### 8: Get Product Variations
+
+You can retrieve a variation group for a given sku.
+
+[ProductVariationGroupRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductVariationGroupRec.html)
+
+```java
+//..Get the list of variations
+ProductVariationGroupRec variations = product.getProductVariations( "YOUR merchant sku" );
+
+//..Your list of child sku's that can be queried individually 
+List<String> childSkus = variations.getChildSkus();
+```
+
+
+### 9 Get Product Shipping Exceptions 
+
+This is the same as adding an exception, just backwards.
+
+[FNodeShippingRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeShippingRec.html)
+[ShippingExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ShippingExceptionRec.html)
+
+
+```java
+List<FNodeShippingRec> exceptions = product.getShippingExceptions( "YOUR merchant sku" );
+List<ShippingExceptionRec> shippingExceptions = exceptions.get( 0 ).getItemData();
+```
+
+### 10:
+
+Retrieve an exception that you have configured 
+
+[ReturnsExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ReturnsExceptionRec.html)
+
+```java
+ReturnsExceptionRec returnsException = product.getReturnsExceptions( "YOUR merchant sku" );
+```
+
+### 11: 
+
+Retrieve all of the merchant sku data
+
+[ProductRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductRec.html)
+
+```java
+//..It's that easy
+ProductRec pRec = product.getProduct( "YOUR Merchant Sku" );
+
+//..Want to save this as json somewhere? (Hint: this works with every object)
+String json = pRec.toJSON().toString();
+
+//..And back again
+ProductRec fromJson = ProductRec.fromJSON( json );
+```
+
+### 12: Retrieve a list of sku's on Jet 
+
+If you want to see what sku's you have uploaded, you use this:
+
+```java
+for( String sku : product.getSkuList( 0, 100 ))
+{
+  //..Then you can do whatever with the sku, like get details about it.
+  ProductRec pRec = product.getProduct( sku );
+}
+```
+
+### 12: Retrieving sales/performance data about a single sku
+
+You can retrieve stats about each sku individually using this command
+
+[ProductSalesDataRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductSalesDataRec.html)
+
+[OfferRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/OfferRec.html)
+
+```java
+ProductSalesDataRec data = product.getSkuSalesData( "YOUR merchant sku" );
+
+//..Then you can grab stats 
+for ( OfferRec offer : data.getBestOffers())
+{
+  //..Do something with the price 
+  Money price = offer.getItemPrice();
+}
 ```

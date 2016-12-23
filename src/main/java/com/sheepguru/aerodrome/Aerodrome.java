@@ -79,8 +79,10 @@ import org.apache.http.entity.ContentType;
 import com.sheepguru.aerodrome.jet.orders.IJetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.ReturnReason;
 import com.sheepguru.aerodrome.jet.products.FNodeShippingRec;
+import com.sheepguru.aerodrome.jet.products.ProductInventoryRec;
 import com.sheepguru.aerodrome.jet.products.ProductPriceRec;
 import com.sheepguru.aerodrome.jet.products.ProductVariationGroupRec;
+import com.sheepguru.aerodrome.jet.products.ReturnsExceptionRec;
 import com.sheepguru.aerodrome.jet.products.ShipExceptionType;
 import com.sheepguru.aerodrome.jet.products.ShipOverrideType;
 import com.sheepguru.aerodrome.jet.products.ShippingExceptionRec;
@@ -617,11 +619,18 @@ public class Aerodrome implements ExitCodes
 
       System.out.println( product.getProductPrice( sku ).getPrice());
 
-      System.out.println( product.getProductInventory( sku ).getLastUpdate());
+      //..Get the list of variations
+      ProductVariationGroupRec variations = product.getProductVariations( sku );
+      //..Your list of child sku's that can be queried individually 
+      List<String> childSkus = variations.getChildSkus();
       
-      product.getProductVariations( sku );
-      product.getShippingExceptions( sku );
-      product.getReturnsExceptions( sku );
+      List<FNodeShippingRec> exceptions = product.getShippingExceptions( sku );
+      List<ShippingExceptionRec> shippingExceptions = exceptions.get( 0 ).getItemData();
+      
+      
+      ReturnsExceptionRec returnsException = product.getReturnsExceptions( sku );
+      ProductRec pRec = product.getProduct(  "YOUR Merchant Sku" );
+      
       product.getSkuList( 0, 100 );
     } catch( Exception e ) {
       fail( "Failed to add test product", E_API_FAILURE, e );

@@ -16,6 +16,7 @@ package com.sheepguru.aerodrome.jet.products;
 
 import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
+import com.sheepguru.utils.Money;
 import javax.json.Json;
 import javax.json.JsonObject;
 
@@ -34,7 +35,7 @@ public class FNodePriceRec implements Jsonable
   /**
    * The price of the merchant SKU at the fulfillment node level
    */
-  private final String price;
+  private final Money price;
   
   
   /**
@@ -49,7 +50,7 @@ public class FNodePriceRec implements Jsonable
     
     return new FNodePriceRec(
       node.getString( "fulfillment_node_id", "0" ),
-      node.getString( "filfillment_node_price", "0" )    
+      new Money( node.getString( "filfillment_node_price", "0" ))
     );
   }
 
@@ -61,7 +62,7 @@ public class FNodePriceRec implements Jsonable
    * @throws IllegalArgumentException if id is null or empty or if price 
    * is less than zero.
    */
-  public FNodePriceRec( final String id, final String price )
+  public FNodePriceRec( final String id, final Money price )
     throws IllegalArgumentException 
   {
     if ( id == null || id.isEmpty())
@@ -87,7 +88,7 @@ public class FNodePriceRec implements Jsonable
    * Retrieve the price
    * @return price
    */
-  public String getPrice()
+  public Money getPrice()
   {
     return price;
   }
@@ -102,7 +103,7 @@ public class FNodePriceRec implements Jsonable
   {
     return Json.createObjectBuilder()
       .add( "fulfillment_node_id", nodeId )
-      .add( "fulfillment_node_price", price )
+      .add( "fulfillment_node_price", price.toString() )
       .build();
   }
 }
