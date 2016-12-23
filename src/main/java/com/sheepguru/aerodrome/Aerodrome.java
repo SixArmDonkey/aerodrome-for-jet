@@ -76,6 +76,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.entity.ContentType;
 import com.sheepguru.aerodrome.jet.orders.IJetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.ReturnReason;
+import com.sheepguru.aerodrome.jet.products.ProductVariationGroupRec;
 import com.sheepguru.aerodrome.jet.taxonomy.IJetAPITaxonomy;
 import com.sheepguru.aerodrome.jet.taxonomy.JetAPITaxonomy;
 import com.sheepguru.api.IAPIResponse;
@@ -610,6 +611,7 @@ public class Aerodrome implements ExitCodes
       System.out.println( product.getProductPrice( sku ).getPrice());
 
       System.out.println( product.getProductInventory( sku ).getLastUpdate());
+      
 
       product.getProductVariations( sku );
       product.getShippingExceptions( sku );

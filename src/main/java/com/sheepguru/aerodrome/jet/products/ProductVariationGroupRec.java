@@ -200,7 +200,7 @@ public class ProductVariationGroupRec implements Jsonable
    * title on the product detail page
    * @throws IllegalArgumentException If any args are invalid
    */
-  ProductVariationGroupRec( final String parentSku, 
+  public ProductVariationGroupRec( final String parentSku, 
     final Relationship relationship, final List<Integer> variationRefinements, 
     final List<String> childSkus, final String groupTitle ) 
     throws IllegalArgumentException

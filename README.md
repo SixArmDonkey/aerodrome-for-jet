@@ -115,3 +115,28 @@ You can also call each of those individual methods separately.
 productApi.addProduct( prod );
 ```
 
+#### Send a variation group for an existing sku
+[Jet Taxonomy Spreadsheet](https://www.dropbox.com/s/wh2ud1q2ujucdt2/Jet_Taxonomy_8.28.2015.xlsx?dl=0)
+
+```java
+//..This is a list of jet-defined node attribute id's.
+//  You must use the taxonomy api or the jet node spreadsheet to 
+//  retrieve these values
+List<Integer> refinementAttrNodes = new ArrayList<>();
+refinementAttrNodes.add( 12345 );
+
+//..A list of YOUR merchant sku's that are considered variations of the 
+//  specified parent sku
+List<String> childSkus = new ArrayList<>();
+childSkus.add( "Some other merchant sku" );
+
+//..Send the variation group
+product.sendPutProductVariation( new ProductVariationGroupRec(
+  "YOUR parent sku id (variation group product)", 
+  ProductVariationGroupRec.Relationship.VARIATION, 
+  refinementAttrNodes, 
+  childSkus, 
+  "A custom variation group heading"
+));
+
+```
