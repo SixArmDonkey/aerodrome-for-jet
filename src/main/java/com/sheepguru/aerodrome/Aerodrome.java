@@ -27,6 +27,8 @@ import com.sheepguru.aerodrome.jet.orders.AckRequestItemRec;
 import com.sheepguru.aerodrome.jet.orders.AckRequestRec;
 import com.sheepguru.aerodrome.jet.orders.AckStatus;
 import com.sheepguru.aerodrome.jet.AddressRec;
+import com.sheepguru.aerodrome.jet.ShippingMethod;
+import com.sheepguru.aerodrome.jet.ShippingServiceLevel;
 import com.sheepguru.aerodrome.jet.orders.JetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.OrderItemRec;
 import com.sheepguru.aerodrome.jet.orders.OrderRec;
@@ -76,7 +78,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.entity.ContentType;
 import com.sheepguru.aerodrome.jet.orders.IJetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.ReturnReason;
+import com.sheepguru.aerodrome.jet.products.FNodeShippingRec;
 import com.sheepguru.aerodrome.jet.products.ProductVariationGroupRec;
+import com.sheepguru.aerodrome.jet.products.ShipExceptionType;
+import com.sheepguru.aerodrome.jet.products.ShipOverrideType;
+import com.sheepguru.aerodrome.jet.products.ShippingExceptionRec;
 import com.sheepguru.aerodrome.jet.taxonomy.IJetAPITaxonomy;
 import com.sheepguru.aerodrome.jet.taxonomy.JetAPITaxonomy;
 import com.sheepguru.api.IAPIResponse;
@@ -611,7 +617,11 @@ public class Aerodrome implements ExitCodes
       System.out.println( product.getProductPrice( sku ).getPrice());
 
       System.out.println( product.getProductInventory( sku ).getLastUpdate());
+
       
+      
+      
+     
 
       product.getProductVariations( sku );
       product.getShippingExceptions( sku );

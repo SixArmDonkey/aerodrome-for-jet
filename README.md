@@ -116,6 +116,17 @@ productApi.addProduct( prod );
 ```
 
 #### Send a variation group for an existing sku
+
+The variation request is used to create a variation-type relationship between 
+several SKUs. To use this request, one must have already uploaded all the 
+SKUs in question ; they should then choose one "parent" SKU and make the 
+variation request to that SKU, adding as "children" any SKUs they want 
+considered part of the relationship.
+ 
+To denote the particular variation refinements, one must have uploaded one 
+or more attributes in the product call for all the SKUs in question; finally, 
+they are expected to list these attributes in the variation request.
+
 [Jet Taxonomy Spreadsheet](https://www.dropbox.com/s/wh2ud1q2ujucdt2/Jet_Taxonomy_8.28.2015.xlsx?dl=0)
 
 ```java
@@ -139,4 +150,37 @@ product.sendPutProductVariation( new ProductVariationGroupRec(
   "A custom variation group heading"
 ));
 
+```
+
+### 3: 
+
+
+```java
+//..A shipping exception must be added to a fulfillment node
+//..More than 1 node can be configured in a single request
+List<FNodeShippingRec> nodes = new ArrayList<>();
+
+[FNodeShippingRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeShippingRec.html)
+
+//..Each node has a list of shipping exceptions/rules
+// These can be configured with a ShippingExceptionRec and are added
+//  to the fulfillment node object
+List<ShippingExceptionRec> exceptions = new ArrayList<>();
+
+[ShippingExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ShippingExceptionRec.html)
+
+//..The rule 
+exceptions.add( new ShippingExceptionRec(
+  ShippingServiceLevel.SCHEDULED, 
+  ShippingMethod.UPS_GROUND, 
+  ShipOverrideType.OVERRIDE, 
+  new Money( "5.00" ), 
+  ShipExceptionType.INCLUDE )
+);
+
+//..Add the node exceptions to the list 
+nodes.add( new FNodeShippingRec( "Your jet-defined fulfillment node id", exceptions ));
+
+//..Send the exceptions to jet 
+product.sendPutProductShippingExceptions( "YOUR merchant sku", exceptions );
 ```
