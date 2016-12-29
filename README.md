@@ -10,8 +10,8 @@
 [![OrdersAPI](https://img.shields.io/badge/Orders%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#1-check-for-orders)
 [![ReturnsAPI](https://img.shields.io/badge/Returns%20API-working-yellowgreen.svg)]()
 [![RefundssAPI](https://img.shields.io/badge/Refunds%20API-working-yellowgreen.svg)]()
-[![TaxonomyAPI](https://img.shields.io/badge/Taxonomy%20API-working-yellowgreen.svg)]()
-[![SettlementAPI](https://img.shields.io/badge/Settlement%20API-working-yellowgreen.svg)]()
+[![TaxonomyAPI](https://img.shields.io/badge/Taxonomy%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#taxonomy-api)
+[![SettlementAPI](https://img.shields.io/badge/Settlement%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#settlement-api)
 
 
 
@@ -693,6 +693,84 @@ for ( final String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK )
   orderApi.sendPutShipOrder( jetOrderId, shipmentRequest );
 }      
 ``` 
+
+#Returns API
+
+```java
+IJetAPIReturn returnsApi = new JetAPIReturn( client, config );
+      
+//..Find any returns waiting to be approved 
+for ( final String id : returnsApi.getReturnsStatusTokens( ReturnStatus.CREATED ))
+{
+  //..Get the return detail
+  final ReturnRec ret = returnsApi.getReturnDetail( id );
+
+  //..List of items for the return        
+  final List<ReturnItemRec> returnItems = new ArrayList<>();
+
+  //..Convert merchant sku items from the detail response into items for 
+  //  the put return complete command
+  for ( final ReturnMerchantSkuRec m : ret.getReturnMerchantSkus())
+  {
+    returnItems.add( ReturnItemRec.fromReturnMerchantSkuRec( m )
+      //..Set some custom attributes for jet 
+      //..Any property can be overridden
+      .setFeedback( RefundFeedback.OPENED )
+      .setNotes( "Some of my notes about this return" )
+      .build() //..Build the item and add it to the list 
+    );
+  }
+
+  //..approve/complete the return 
+  returnsApi.putCompleteReturn( id, new CompleteReturnRequestRec( 
+    ret.getMerchantOrderId(), "", true, ChargeFeedback.FRAUD, returnItems ));
+}
+
+```
+
+#Refund API
+
+```java
+//..Need the order api to use the refund api.
+final IJetAPIOrder orderApi = new JetAPIOrder( client, jetConfig );      
+final IJetAPIRefund refundApi = new JetAPIRefund( client, jetConfig );
+
+//..Poll for a list of jet order id's to play with 
+List<String> orderTokens = orderApi.getOrderStatusTokens( OrderStatus.COMPLETE );
+
+final String orderId = orderTokens.get( 0 );
+//..Get the order detail so we can generate a refund
+final OrderRec order = orderApi.getOrderDetail( orderId );
+
+
+//..Items for the refund 
+final List<RefundItemRec> refundItems = new ArrayList<>();
+
+//..This is annoying, but each item requires custom attributes to be added
+//..So, get a list of ReturnItemRec builders from the order and loop em
+//..Each one will have properties added and then be built and added to a list
+for ( final RefundItemRec.Builder b : order.generateItemsForRefund())
+{
+  refundItems.add( 
+   b.setNotes( "Some notes about the item" )
+   .setRefundReason( ReturnReason.DAMAGED_ITEM )
+   .build());
+}      
+
+//..Post a new refund to jet      
+//..Your order id is in your jet console 
+//refundApi.postCreateRefund( orderId, "alt-refund-id", refundItems );
+
+
+//..If NOT posting a new refund, you can poll for refund id's by status.
+for( final String refundId : refundApi.pollRefunds( RefundStatus.CREATED ))
+{
+  //..Get the detail for the report id
+  refundApi.getRefundDetail( refundId );
+}
+
+```
+
 
 #Taxonomy API 
 
