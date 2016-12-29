@@ -510,5 +510,25 @@ public interface JetConfig
   
   
   ////////////// END TAXONOMY //////////////////////////////////////////////////
+  ////////////// START SETTLEMENT //////////////////////////////////////////////
+  
+  /**
+   * URL for retrieving a list of settlement id's by number of days from today.
+   * @param days The number of days from today that you'd like to retrieve 
+   * settlement reports
+   * @return url
+   */
+  public String getGetSettlementDaysUrl( final int days );
+  
+  
+  /**
+   * URL for retrieving a settlement report 
+   * @param id The settlement ID associated with the payment period
+   * @return url
+   */
+  public String getGetSettlementReportUrl( final String id );
+  
+  ////////////// END SETTLEMENT //////////////////////////////////////////////
+  
   
 }

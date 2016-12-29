@@ -28,6 +28,9 @@ import java.util.Collection;
  * This makes money work properly.
  * As a bonus, I'm fairly certain this is thread safe.
  * 
+ * @todo See about making default language, currency and rounding mode 
+ * configurable.
+ * 
  * @author John Quinn
  */
 public class Money implements Comparable<Money>

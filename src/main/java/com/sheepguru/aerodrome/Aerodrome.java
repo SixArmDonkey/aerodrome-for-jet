@@ -21,7 +21,7 @@ import com.sheepguru.aerodrome.jet.DefaultJetConfig;
 import com.sheepguru.aerodrome.jet.JetAPIAuth;
 import com.sheepguru.aerodrome.jet.JetAuthException;
 import com.sheepguru.aerodrome.jet.JetConfig;
-import com.sheepguru.aerodrome.jet.ISO801Date;
+import com.sheepguru.aerodrome.jet.ISO8601Date;
 import com.sheepguru.aerodrome.jet.JetException;
 import com.sheepguru.aerodrome.jet.orders.AckRequestItemRec;
 import com.sheepguru.aerodrome.jet.orders.AckRequestRec;
@@ -80,6 +80,8 @@ import com.sheepguru.aerodrome.jet.products.FNodeShippingRec;
 import com.sheepguru.aerodrome.jet.products.ProductVariationGroupRec;
 import com.sheepguru.aerodrome.jet.products.ReturnsExceptionRec;
 import com.sheepguru.aerodrome.jet.products.ShippingExceptionRec;
+import com.sheepguru.aerodrome.jet.settlement.IJetAPISettlement;
+import com.sheepguru.aerodrome.jet.settlement.JetAPISettlement;
 import com.sheepguru.aerodrome.jet.taxonomy.IJetAPITaxonomy;
 import com.sheepguru.aerodrome.jet.taxonomy.JetAPITaxonomy;
 import com.sheepguru.api.IAPIResponse;
@@ -147,7 +149,9 @@ public class Aerodrome implements ExitCodes
     
     //testRefunds( client, jetConfig );
     
-    testTaxonomy( client, jetConfig );
+    //testTaxonomy( client, jetConfig );
+    
+    testSettlements( client, jetConfig );
   }
   
   
@@ -696,6 +700,32 @@ public class Aerodrome implements ExitCodes
   }
   
   
+  /**
+   * Test the settlement api 
+   * @param client
+   * @param config 
+   */
+  private static void testSettlements( final APIHttpClient client, final JetConfig config )
+  {
+    try {
+      //..Create an api instance
+      final IJetAPISettlement settlementApi = new JetAPISettlement( 
+        client, config );
+      
+      //..Retrieve a list of settlement id's for the last 7 days
+      for ( final String id : settlementApi.getSettlementDays( 7 ))
+      {
+        //..Retrieve the report for each id 
+        settlementApi.getSettlementReport( id );
+      }
+      
+      
+    } catch( Exception e ) {
+      fail( "Failed to test settlements", E_API_FAILURE, e );
+    }
+  }
+  
+  
   private static void testReturns( final APIHttpClient client, final JetConfig config )
   {
     try {
@@ -897,10 +927,10 @@ public class Aerodrome implements ExitCodes
       final ShipmentRec shipment = new ShipmentRec.Builder()
         .setCarrier( order.getOrderDetail().getRequestShippingCarrier())
         .setTrackingNumber( "Z123456780123456" )
-        .setShipmentDate(new ISO801Date())
-        .setExpectedDeliveryDate(new ISO801Date( new Date( new Date().getTime() + ( 86400L * 2L ))))
+        .setShipmentDate(new ISO8601Date())
+        .setExpectedDeliveryDate(new ISO8601Date( new Date( new Date().getTime() + ( 86400L * 2L ))))
         .setShipFromZip( "38473" )
-        .setPickupDate(new ISO801Date())
+        .setPickupDate(new ISO8601Date())
         .setItems( shipmentItems )
         .build();
 

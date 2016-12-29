@@ -59,8 +59,14 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
    */
   protected final JetConfig config;
   
-  private AtomicBoolean isReauth = new AtomicBoolean( false );
+  /**
+   * A flag for if this class is attempting to reauthenticate.
+   */
+  private final AtomicBoolean isReauth = new AtomicBoolean( false );
   
+  /**
+   * Logger 
+   */
   private static final Log LOG = LogFactory.getLog( JetAPI.class );
 
   
@@ -371,21 +377,53 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   protected IAPIResponse executeRequest( final HttpUriRequest hr ) 
     throws APIException
   {
+    checkAuth( hr );
+    
+    return super.executeRequest( hr );
+  }
+  
+  
+  /**
+   * Checks the authentication state, and if it needs to be authenticated, this
+   * locks the api and authenticates. 
+   * @param hr
+   * @throws APIException 
+   */
+  private void checkAuth( final HttpUriRequest hr ) throws APIException
+  {
     if ( !isReauth.get() && !config.isAuthenticated())
-    {      
+    {
       synchronized( this )
       {
-        isReauth.set( true );               
         try {
-          login();
-          hr.setHeader( "Authorization", config.getAuthorizationHeaderValue());
-        } catch( JetAuthException e ) {
-          APILog.error( LOG, "Failed to reauthenticate" );
+          performReauth( hr );          
+        } catch( Exception e ) {
+          notifyAll();
+          throw e;
         }        
-        isReauth.set( false );
+        
+        notifyAll();
       }
-    }
-    return super.executeRequest( hr );
+    }    
+  }
+    
+  
+  /**
+   * Make the auth calls.
+   * If successul, the new auth header is added to hr.
+   * @param hr request
+   * @throws APIException 
+   */
+  private void performReauth( final HttpUriRequest hr ) throws APIException
+  {
+    isReauth.set( true );               
+    try {
+      login();
+      hr.setHeader( "Authorization", config.getAuthorizationHeaderValue());
+    } catch( JetAuthException e ) {
+      APILog.error( LOG, "Failed to reauthenticate" );
+    }        
+    isReauth.set( false );    
   }
   
   

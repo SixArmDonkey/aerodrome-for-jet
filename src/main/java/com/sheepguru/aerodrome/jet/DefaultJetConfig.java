@@ -284,6 +284,16 @@ public class DefaultJetConfig implements JetConfig
      * Attribute detail url 
      */
     private String getTaxonomyAttrUrl = "/taxonomy/nodes/{jet_node_id}/attributes";
+        
+    /**
+     * Settlement report url list url 
+     */
+    private String getSettlementDaysUrl = "/settlement/{days}";
+    
+    /**
+     * Settlement report url 
+     */
+    private String getSettlementReportUrl = "/settlement/report/{settlement_id}";
     
     
     /**
@@ -292,6 +302,32 @@ public class DefaultJetConfig implements JetConfig
     private static final Log LOG = LogFactory.getLog( Builder.class );
 
 
+    /**
+     * URL for retrieving a list of settlement id's by number of days from today.
+     * @param url url 
+     * @return this
+     */
+    public Builder setGetSettlementDaysUrl( final String url )
+    {
+      Utils.checkNullEmpty( url, "Settlement Days Url cannot be empty" );
+      this.getSettlementDaysUrl = url;
+      return this;
+    }
+
+
+    /**
+     * URL for retrieving a settlement report 
+     * @param url url
+     * @return this
+     */
+    public Builder getGetSettlementReportUrl( final String url )
+    {
+      Utils.checkNullEmpty( url, "Settlement Report Url cannot be empty" );
+      this.getSettlementReportUrl = url;
+      return this;
+    }
+    
+    
     /**
      * Set the hostname 
      * @param host the host to set
@@ -1166,6 +1202,15 @@ public class DefaultJetConfig implements JetConfig
    */
   private final String getTaxonomyAttrUrl;
   
+  /**
+   * Settlement report url list url 
+   */
+  private final String getSettlementDaysUrl;
+
+  /**
+   * Settlement report url 
+   */
+  private final String getSettlementReportUrl;
   
   /**
    * Test a string for null and empty and 
@@ -1237,6 +1282,8 @@ public class DefaultJetConfig implements JetConfig
     checkStringEmpty( b.getTaxonomyNodeUrl, "getTaxonomyNodeUrl cannot be empty" );
     checkStringEmpty( b.getTaxonomyDetailUrl, "getTaxonomyDetailUrl cannot be empty" );
     checkStringEmpty( b.getTaxonomyAttrUrl,"getTaxonomyAttrUrl cannot be empty" );
+    checkStringEmpty( b.getSettlementDaysUrl, "getSettlementDaysUrl cannot be empty" );
+    checkStringEmpty( b.getSettlementReportUrl, "getSettlementReportUrl cannot be empty" );
     
     
     if ( b.readTimeout < 0 )
@@ -1290,7 +1337,8 @@ public class DefaultJetConfig implements JetConfig
     this.getTaxonomyNodeUrl = b.getTaxonomyNodeUrl;
     this.getTaxonomyDetailUrl = b.getTaxonomyDetailUrl;
     this.getTaxonomyAttrUrl = b.getTaxonomyAttrUrl;
-    
+    this.getSettlementDaysUrl = b.getSettlementDaysUrl;
+    this.getSettlementReportUrl = b.getSettlementReportUrl;
   }
   
   
@@ -2041,5 +2089,32 @@ public class DefaultJetConfig implements JetConfig
   {
     Utils.checkNull( jetNodeId, "jetNodeId" );
     return getTaxonomyAttrUrl.replace( "{jet_node_id}", jetNodeId );
+  }
+  
+  
+  /**
+   * URL for retrieving a list of settlement id's by number of days from today.
+   * @param days The number of days from today that you'd like to retrieve 
+   * settlement reports
+   * @return url
+   */
+  @Override
+  public String getGetSettlementDaysUrl( final int days )
+  {
+    Utils.checkIntGTZ( days, "days" );
+    return getSettlementDaysUrl.replace( "{days}", String.valueOf( days ));
+  }
+  
+  
+  /**
+   * URL for retrieving a settlement report 
+   * @param id The settlement ID associated with the payment period
+   * @return url
+   */
+  @Override
+  public String getGetSettlementReportUrl( final String id )
+  {
+    Utils.checkNullEmpty( id, "id" );
+    return getSettlementReportUrl.replace( "{settlement_id}", id );
   }
 }

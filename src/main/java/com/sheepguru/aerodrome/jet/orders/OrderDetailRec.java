@@ -15,7 +15,7 @@
 package com.sheepguru.aerodrome.jet.orders;
 
 import com.sheepguru.aerodrome.jet.IJetDate;
-import com.sheepguru.aerodrome.jet.ISO801UTCDate;
+import com.sheepguru.aerodrome.jet.ISO8601UTCDate;
 import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.ShippingCarrier;
 import com.sheepguru.aerodrome.jet.ShippingMethod;
@@ -70,8 +70,8 @@ public class OrderDetailRec implements Jsonable
       ShippingCarrier.fromText( json.getString( "request_shipping_carrier", "" )),
       ShippingMethod.fromText( json.getString( "request_shipping_method", "" )),
       ShippingServiceLevel.fromText( json.getString( "request_service_level", "" )),
-      new ISO801UTCDate( json.getString( "request_ship_by", "" )),
-      new ISO801UTCDate( json.getString( "request_delivery_by", "" ))
+      new ISO8601UTCDate( json.getString( "request_ship_by", "" )),
+      new ISO8601UTCDate( json.getString( "request_delivery_by", "" ))
     );
   }
   

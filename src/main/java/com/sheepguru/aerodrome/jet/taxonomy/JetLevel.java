@@ -46,7 +46,7 @@ public enum JetLevel
   THREE( 3 );
   
   
-/**
+  /**
    * Enum values 
    */
   private static final JetLevel[] values = values();

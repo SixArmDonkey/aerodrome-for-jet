@@ -42,7 +42,7 @@ public class JetDate implements IJetDate
   /**
    * Logger 
    */
-  private static final Log LOG = LogFactory.getLog(ISO801UTCDate.class );
+  private static final Log LOG = LogFactory.getLog(ISO8601UTCDate.class );
   
   /**
    * Date string from jet 

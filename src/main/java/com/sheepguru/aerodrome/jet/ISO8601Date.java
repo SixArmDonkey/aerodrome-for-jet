@@ -21,9 +21,13 @@ import java.util.Date;
  * A JetDate with a time zone offset. ISO-8601  
  * Some stuff wants this type of date, Jet is inconsistent.
  * 
+ * Uses format: yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX
+ * 
+ * 
+ * 
  * @author john
  */
-public class ISO801Date extends ISO801UTCDate 
+public class ISO8601Date extends ISO8601UTCDate 
 {
   private static final String TZ_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX"; 
 
@@ -37,16 +41,16 @@ public class ISO801Date extends ISO801UTCDate
    * @param value Jet value 
    * @return date or null
    */
-  public static ISO801Date fromJetValueOrNull( final String value )
+  public static ISO8601Date fromJetValueOrNull( final String value )
   {
     if ( value == null || value.isEmpty())
       return null;
     
-    return new ISO801Date( value );
+    return new ISO8601Date( value );
   }
   
   
-  public ISO801Date()
+  public ISO8601Date()
   {
     super( new Date(), TZ_FORMAT );
   }
@@ -55,7 +59,7 @@ public class ISO801Date extends ISO801UTCDate
    * Create a new JetDate
    * @param date Date string
    */
-  public ISO801Date( final String date )
+  public ISO8601Date( final String date )
   {
     super( date, TZ_FORMAT );
   }
@@ -65,7 +69,7 @@ public class ISO801Date extends ISO801UTCDate
    * Create a new JetDate
    * @param date date to use 
    */
-  public ISO801Date( final Date date )
+  public ISO8601Date( final Date date )
   {
     super( date, TZ_FORMAT );
   }  

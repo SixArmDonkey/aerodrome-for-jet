@@ -24,10 +24,10 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Represents a Date from a Jet API Response.
- * Dates 
+ * Uses format: yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z' 
  * @author John Quinn
  */
-public class ISO801UTCDate extends JetDate implements IJetDate 
+public class ISO8601UTCDate extends JetDate implements IJetDate 
 {  
   /**
    * Default date format 
@@ -38,7 +38,7 @@ public class ISO801UTCDate extends JetDate implements IJetDate
   /**
    * Logger 
    */
-  private static final Log LOG = LogFactory.getLog( ISO801UTCDate.class );
+  private static final Log LOG = LogFactory.getLog(ISO8601UTCDate.class );
   
   
   /**
@@ -48,13 +48,13 @@ public class ISO801UTCDate extends JetDate implements IJetDate
    * @param value Jet value 
    * @return date or null
    */
-  public static ISO801UTCDate fromJetValueOrNull( final String value )
+  public static ISO8601UTCDate fromJetValueOrNull( final String value )
   {
     if ( value == null || value.isEmpty())
       return null;
     
     try {
-      return new ISO801UTCDate( new SimpleDateFormat( 
+      return new ISO8601UTCDate( new SimpleDateFormat( 
         DEFAULT_FORMAT, Locale.ENGLISH ).parse( value ));
     } catch( ParseException e ) {
       APILog.error( LOG, e, "Failed to parse date", value, "with format", 
@@ -67,7 +67,7 @@ public class ISO801UTCDate extends JetDate implements IJetDate
   /**
    * Create a new JetDate set to now 
    */
-  public ISO801UTCDate()
+  public ISO8601UTCDate()
   {
     this( new Date());
   }
@@ -77,7 +77,7 @@ public class ISO801UTCDate extends JetDate implements IJetDate
    * Create a new JetDate
    * @param date Date string
    */
-  public ISO801UTCDate( final String date )
+  public ISO8601UTCDate( final String date )
   {
     this( date, DEFAULT_FORMAT );
   }
@@ -87,7 +87,7 @@ public class ISO801UTCDate extends JetDate implements IJetDate
    * Create a new JetDate
    * @param date date to use 
    */
-  public ISO801UTCDate( final Date date )
+  public ISO8601UTCDate( final Date date )
   {
     this( date, DEFAULT_FORMAT );  
   }
@@ -98,7 +98,7 @@ public class ISO801UTCDate extends JetDate implements IJetDate
    * @param date date to use 
    * @param format format string
    */
-  public ISO801UTCDate( final Date date, final String format )
+  public ISO8601UTCDate( final Date date, final String format )
   {
     super( date, format );
   }
@@ -110,7 +110,7 @@ public class ISO801UTCDate extends JetDate implements IJetDate
    * @param date Date
    * @param format Format pattern 
    */
-  public ISO801UTCDate( final String date, final String format )
+  public ISO8601UTCDate( final String date, final String format )
   {
     super( date, format );    
   } 

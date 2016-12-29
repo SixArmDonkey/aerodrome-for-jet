@@ -15,7 +15,6 @@
 package com.sheepguru.aerodrome.jet.orders;
 
 import com.sheepguru.api.APIException;
-import com.sheepguru.api.APIHttpClient;
 import com.sheepguru.api.IAPIHttpClient;
 import com.sheepguru.aerodrome.jet.IJetAPIResponse;
 import com.sheepguru.aerodrome.jet.JetAPI;

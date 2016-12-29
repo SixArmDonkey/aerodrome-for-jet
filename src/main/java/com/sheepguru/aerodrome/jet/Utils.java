@@ -286,4 +286,38 @@ public class Utils
     
     return n.bigDecimalValue();
   }
+  
+  
+  /**
+   * Check to ensure an integer is greater than or equal to zero.
+   * If not, this throws an IllegalArgumentException 
+   * @param i int to check 
+   * @param varName variable name for exception message
+   */
+  public static void checkIntGTEZ( final int i, final String varName )
+    throws IllegalArgumentException 
+  {
+    if ( i < 0 )
+    {
+      throw new IllegalArgumentException( varName 
+        + " must be greater than or equal to zero" );
+    }
+  }
+  
+
+  /**
+   * Check to ensure an integer is greater than zero.
+   * If not, this throws an IllegalArgumentException 
+   * @param i int to check 
+   * @param varName variable name for exception message
+   */
+  public static void checkIntGTZ( final int i, final String varName )
+    throws IllegalArgumentException 
+  {
+    if ( i <= 0 )
+    {
+      throw new IllegalArgumentException( varName 
+        + " must be greater than zero" );
+    }
+  }  
 }

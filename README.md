@@ -11,6 +11,7 @@
 [![ReturnsAPI](https://img.shields.io/badge/Returns%20API-working-yellowgreen.svg)]()
 [![RefundssAPI](https://img.shields.io/badge/Refunds%20API-working-yellowgreen.svg)]()
 [![TaxonomyAPI](https://img.shields.io/badge/Taxonomy%20API-working-yellowgreen.svg)]()
+[![SettlementAPI](https://img.shields.io/badge/Settlement%20API-working-yellowgreen.svg)]()
 
 
 
@@ -692,3 +693,59 @@ for ( final String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK )
   orderApi.sendPutShipOrder( jetOrderId, shipmentRequest );
 }      
 ``` 
+
+#Taxonomy API 
+
+Create a Taxonomy API library instance 
+
+```java
+IJetAPITaxonomy taxApi = new JetAPITaxonomy( client, config );
+```
+
+Retrieve a list of taxonomy nodes and then fetch details about the node
+itself and then fetch any attributes.
+
+
+```java
+
+//..Poll for nodes
+for ( String id : taxApi.pollNodes( 0, 100 ))
+{
+  try {
+    //..Get the node detail
+    taxApi.getNodeDetail( id );
+
+    //..Get any node attribute details 
+    taxApi.getAttrDetail( id );
+  } catch( JetException e ) {
+    IAPIResponse r = e.getResponse();
+    if ( r == null )
+      throw e;                    
+
+    //..otherwise it was a successful api response and we can process
+    // the result further here or just continue on.
+    //..This will be a 404 for attribute not found in this instance.
+  }
+}
+```
+
+
+#Settlement API
+
+Create a settlement API instance
+
+```java
+IJetAPISettlement settlementApi = new JetAPISettlement( client, config );
+```
+
+Poll for settlement id's, then fetch the report for each id.
+
+```java      
+//..Retrieve a list of settlement id's for the last 7 days
+for ( final String id : settlementApi.getSettlementDays( 7 ))
+{
+  //..Retrieve the report for each id 
+  settlementApi.getSettlementReport( id );
+}
+
+```
