@@ -27,7 +27,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -68,6 +71,8 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
    * Logger 
    */
   private static final Log LOG = LogFactory.getLog( JetAPI.class );
+  
+  private static final Lock authLock = new ReentrantLock();
 
   
   /**
@@ -377,7 +382,8 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   protected IAPIResponse executeRequest( final HttpUriRequest hr ) 
     throws APIException
   {
-    checkAuth( hr );
+    if ( !config.isAuthenticated())
+      checkAuth( hr );
     
     return super.executeRequest( hr );
   }
@@ -391,20 +397,35 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
    */
   private void checkAuth( final HttpUriRequest hr ) throws APIException
   {
-    if ( !isReauth.get() && !config.isAuthenticated())
-    {
-      synchronized( this )
+    try {
+      if ( authLock.tryLock( 1000L, TimeUnit.MILLISECONDS ) && !isReauth.get())
       {
         try {
-          performReauth( hr );          
-        } catch( Exception e ) {
-          notifyAll();
-          throw e;
-        }        
-        
-        notifyAll();
+          if ( !config.isAuthenticated())
+          {
+            performReauth( hr );
+            authTest();
+          }
+
+        } finally {
+          authLock.unlock();            
+        }
+      } 
+      else 
+      {
+        while( !config.isAuthenticated() && !isReauth.get())
+        {
+          Thread.sleep( 100L );
+        }
+
+        hr.setHeader( "Authorization", config.getAuthorizationHeaderValue());
       }
-    }    
+
+    } catch( InterruptedException e ) {
+      //..do nothing 
+    } catch( Exception e ) {
+      throw e;
+    }        
   }
     
   
@@ -422,8 +443,9 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
       hr.setHeader( "Authorization", config.getAuthorizationHeaderValue());
     } catch( JetAuthException e ) {
       APILog.error( LOG, "Failed to reauthenticate" );
-    }        
-    isReauth.set( false );    
+    } finally {
+      isReauth.set( false );    
+    }
   }
   
   

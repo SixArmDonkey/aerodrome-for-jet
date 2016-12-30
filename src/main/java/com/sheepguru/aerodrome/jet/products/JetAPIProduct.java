@@ -676,8 +676,8 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
     throws APIException, JetException 
   {
     //..This shouldn't be able to throw a NullPointerException, need to write tests.....
-    return Utils.jsonArrayToStringList( sendGetSkuList( offset, limit )
-      .getJsonObject().getJsonArray( "sku_urls" ));
+    return jsonArrayToTokenList( sendGetSkuList( offset, limit )
+      .getJsonObject().getJsonArray( "sku_urls" ), false );
   }
 
   

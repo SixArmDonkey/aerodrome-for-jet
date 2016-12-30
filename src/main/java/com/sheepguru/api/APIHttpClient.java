@@ -294,7 +294,7 @@ public class APIHttpClient implements IAPIHttpClient
   /**
    * Maximum connections per route 
    */
-  public static final int DEFAULT_MAX_PER_ROUTE = 20;
+  public static final int DEFAULT_MAX_PER_ROUTE = 50;
   
   /**
    * The HTTP Client connection manager
@@ -528,6 +528,9 @@ public class APIHttpClient implements IAPIHttpClient
       //..Add the user agent intercept for setting the user agent
       //..Don't know if this is still necessary
       .addInterceptorFirst( createUserAgentInterceptor())
+            
+      .setMaxConnTotal( DEFAULT_MAX_TOTAL )            
+      .setMaxConnPerRoute( DEFAULT_MAX_PER_ROUTE )
 
       //..Add a few headers for what types of encoding to accept, etc.
       .addInterceptorFirst( createAcceptInterceptor());  
