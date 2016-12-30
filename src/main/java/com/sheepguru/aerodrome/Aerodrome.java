@@ -59,18 +59,11 @@ import com.sheepguru.api.APILog;
 import com.sheepguru.api.IAPIHttpClient;
 import com.sheepguru.utils.Money;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.json.JsonObject;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.configuration2.XMLConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.entity.ContentType;
@@ -98,13 +91,8 @@ import com.sheepguru.api.IAPIResponse;
  *
  * @author John Quinn
  */
-public class Aerodrome implements ExitCodes
+public class Aerodrome 
 {
-  /**
-   * Filename of the config file stored in the jar.
-   */
-  public static final String DEFAULT_CONFIG_FILENAME = "aerodrome.conf.xml";
-  
   /**
    * Local log 
    */
@@ -118,11 +106,8 @@ public class Aerodrome implements ExitCodes
    */
   public static void main( final String[] args )
   {
-    //..Say hello 
-    LOG.info( "Aerodrome Build " + CLIArgs.getBuildVersion() + " start" );
-        
     //..Build the jet configuration 
-    final JetConfig jetConfig = initSettings( getCLIArgs( args ));
+    final JetConfig jetConfig = initSettings();
     
     //..Create a http client to use based on the jet config 
     final APIHttpClient client = getHttpClient( jetConfig );
@@ -151,7 +136,7 @@ public class Aerodrome implements ExitCodes
     
     //testTaxonomy( client, jetConfig );
     
-    testSettlements( client, jetConfig );
+    //testSettlements( client, jetConfig );
   }
   
   
@@ -259,9 +244,9 @@ public class Aerodrome implements ExitCodes
         .setReadTimeout( jetConfig.getReadTimeout())
         .build();    
     } catch( APIException e ) {
-      fail( "Failed to create HttpClient", E_API_FAILURE, e );
+      fail( "Failed to create HttpClient", 0, e );
     } catch( URISyntaxException e ) {
-      fail( "Invalid host url", E_CONFIG_FAILURE, e );
+      fail( "Invalid host url", 0, e );
     }
     
     //..unreachable
@@ -269,46 +254,26 @@ public class Aerodrome implements ExitCodes
   }
   
   
-  /**
-   * Parse the cli arguments or exit.
-   * @param args cli args
-   * @return  parsed args 
-   */
-  private static CLIArgs getCLIArgs( final String[] args )
-  {
-    try {
-      return new CLIArgs( args );
-    } catch( ParseException e ) { 
-      fail( "Invalid command line arguments", E_CLI_FAILURE, e );
-    }
-    
-    //..Unreachable
-    return null;
-  }
-      
+   
 
   /**
    * Initialize the settings class
    * @param args Command line args
    * @return jet configuration 
    */
-  private static JetConfig initSettings( final CLIArgs args )
+  private static JetConfig initSettings()
   {
-    //..Get the configuration filename 
-    final String filename = getConfigFilename( args );
-    
-    LOG.info( "Using configuration file: " + filename );
-    
     try {         
       //..Access the configuration file 
       //..Build the base immutable configuration parts
-      final JetConfig conf = buildJetConfig( getXMLConfiguration( filename )); 
+      final JetConfig conf = buildJetConfig();
+              
       if ( conf.getHost() != null && !conf.getHost().isEmpty())
         LOG.info( "Using host: " + conf.getHost());
       
       return conf;
     } catch( Exception e ) {
-      fail( "Failed to parse XML file: " + filename, E_CONFIG_FAILURE, e );
+      fail( "Failed to load settings", 0, e );
     }
     
     //..Never reached
@@ -317,204 +282,25 @@ public class Aerodrome implements ExitCodes
   
   
   /**
-   * Builds the JetConfig object for all the Jet API commands 
-   * @param config aerodrome.conf.xml instance
+   * Add your jet credentials/settings here 
+   * 
    * @return jet config 
    */
-  private static JetConfig buildJetConfig( final XMLConfiguration config )
+  private static JetConfig buildJetConfig()
   {
     return ( new DefaultJetConfig.Builder())
       //..Required Arguments 
-      .setMerchantId( 
-        config.getString( "jet.merchantId", "" ))   
+      .setMerchantId( "" )
 
-      .setHost( 
-        config.getString( "jet.host", "" ))
+      .setHost( "" )
 
-      .setUser( 
-        config.getString( "jet.username", "" ))
+      .setUser( "" )
 
-      .setPass( 
-        config.getString( "jet.password", "" ))
+      .setPass( "" )
 
-      //..Optional Arguments
-      /*
-      .setUriToken( 
-        config.getString( "jet.uri.token", "" ))
-            
-      .setLockHost( config.getBoolean( "client.lockHost", true ))
-      .setMaxDownloadSize( config.getLong( "client.maxDownloadSize", 200000 ))
-            
-      .setUriAddProduct( 
-        config.getString( "jet.uri.products.put.sku", "" ))
-
-      .setUriAddProductImage( 
-        config.getString( "jet.uri.products.put.image", "" ))
-
-      .setUriAddProductInventory( 
-        config.getString( "jet.uri.products.put.inventory", "" ))
-
-      .setUriAddProductPrice( 
-        config.getString( "jet.uri.products.put.price", "" ))
-
-      .setUriAddProductShipException( 
-        config.getString( "jet.uri.products.put.shipException", "" ))
-
-      .setUriAuthTest( 
-        config.getString( "jet.uri.authTest", "" ))
-
-      .setUriGetProduct( 
-        config.getString( "jet.uri.products.get.sku", "" ))
-
-      .setUriGetProductPrice( 
-        config.getString( "jet.uri.products.get.price", "" ))
-      
-      */
-      //.setAcceptHeader( 
-      //  config.getString( "client.accept", "application/json,text/html,"
-      //    + "application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" ))
-      
-      /*
-      .setAcceptLanguageHeader( 
-        config.getString( "client.acceptLanguage", "en-US,en;q=0.5" ))
-            
-      .setReadTimeout( 
-        config.getLong( "client.readTimeout", 10000L ))
-            
-      .setAllowUntrustedSSL( 
-        config.getBoolean( "client.allowUntrustedSSL", false ))          
-            
-      .setUriAddProductVariation( 
-        config.getString( "jet.uri.products.put.variation", "" ))
-            
-      .setUriArchiveSku( 
-        config.getString( "jet.uri.products.put.archiveSku", "" ))
-            
-      .setUriAddProductReturnException( 
-        config.getString( "jet.uri.products.put.returnsException", "" ))
-      
-      .setUriGetProductInventory(
-        config.getString( "jet.uri.products.get.inventory", "" ))
-         
-      .setUriGetProductVariation( 
-        config.getString( "jet.uri.products.get.variation", "" ))
-            
-      .setUriGetShippingException(
-        config.getString( "jet.uri.products.get.shippingException", "" ))
-            
-      .setUriGetReturnsException( 
-        config.getString( "jet.uri.products.get.returnsException", "" ))
-            
-      .setUriGetSkuList(
-        config.getString( "jet.uri.products.get.skuList", "" ))
-            
-      .setUriGetSalesDataBySku(
-        config.getString( "jet.uri.products.get.salesData", "" ))
-            
-      .setUriGetBulkUploadToken( 
-        config.getString( "jet.uri.products.get.bulkUploadToken", "" ))
-            
-      .setUriGetBulkJetFileId( 
-        config.getString( "jet.uri.products.get.bulkJetFileId", "" ))
-            
-      .setUriPostBulkUploadedFiles(
-        config.getString( "jet.uri.products.post.bulkUploadedFiles", "" ))
-            
-      .setGetOrdersUrl( 
-        config.getString( "jet.uri.orders.get.orders", "" ))
-            
-      .setGetOrderDirectCancelUrl(
-        config.getString( "jet.uri.orders.get.directedCancel", "" ))
-        
-      .setGetOrderDetailUrl(
-        config.getString( "jet.uri.orders.get.detail", "" ))
-        
-      .setPutOrderAcknowledgeUrl( 
-        config.getString( "jet.uri.orders.put.acknowledge", "" ))
-            
-      .setPutOrderShipNotificationUrl(
-        config.getString( "jet.uri.orders.put.ship", "" ))
-            
-      .setGetReturnsUrl( 
-        config.getString( "jet.uri.returns.get.check", "" ))
-            
-      .setGetReturnDetailUrl( 
-        config.getString( "jet.uri.returns.get.detail", "" ))
-            
-      .setPutCompleteReturnUrl( 
-        config.getString( "jet.uri.returns.put.complete", "" ))
-            
-      .setGetRefundByStatusUrl( 
-        config.getString( "jet.uri.refunds.get.refunds", "" ))
-         
-      .setGetRefundDetailUrl( 
-        config.getString( "jet.uri.refunds.get.detail", "" ))
-            
-      .setPostRefundUrl( 
-        config.getString(  "jet.uri.refunds.post.create", "" ))
-            */
-            
       //..Build the config 
       .build();
   }
-  
-  
-  /**
-   * Retrieve an xml configuration instance 
-   * @param filename filename 
-   * @return instance 
-   * @throws ConfigurationException 
-   */
-  private static XMLConfiguration getXMLConfiguration( final String filename )
-    throws ConfigurationException
-  {
-    return (new FileBasedConfigurationBuilder<>(XMLConfiguration.class))
-      .configure(( new Parameters()).xml()
-        .setFileName( filename )
-        .setValidating( false )
-      ).getConfiguration();
-  }
-
-  
-  /**
-   * Retrieve the configuration filename to use 
-   * @param args
-   * @return 
-   */
-  private static String getConfigFilename( final CLIArgs args )
-  {
-    //..try for a cli filename 
-    if ( !args.getConfigFilename().isEmpty())
-    {
-      final File f = new File( args.getConfigFilename());
-      if ( !f.exists())
-      {
-        fail( "Specified configuration file: " 
-          + f.toString() + " does not exist", E_CONFIG_NOT_FOUND, null );
-      }
-      else
-      {
-        return f.toString();
-      }
-    }
-        
-    //..Attempt to locate the file elsewhere.
-    final ConfigLocator locator = new ConfigLocator( DEFAULT_CONFIG_FILENAME );
-    try {
-      return locator.getFile( true ).toString();
-    } catch( FileNotFoundException e ) {
-      //..File not found 
-      fail( "", E_CONFIG_NOT_FOUND, e );
-    } catch( IOException e ) {
-      fail( "", E_JAR_EXTRACT_FAILURE, e );
-    } 
-    
-    //..This should never happen.
-    fail( "Config file could not be located", E_CONFIG_NOT_FOUND, null );
-    
-    //..Compiler complained about not having this.
-    return null;
-  }  
   
   
   /**
@@ -556,13 +342,13 @@ public class Aerodrome implements ExitCodes
       {
         fail( "Failed to test authentication state.  Ensure that "
           + "JetConfig was updated with the authentication "
-          + "header value after login", E_AUTH_FAILURE, null );        
+          + "header value after login", 0, null );        
       }            
     } catch( APIException e ) {
-      fail( "API Failure", E_API_FAILURE, e );
+      fail( "API Failure", 0, e );
     } catch( JetAuthException e ) { 
       fail( "Failed to authenticate.  A Bad Request can simply "
-        + "mean bad credentials", E_AUTH_FAILURE, e );
+        + "mean bad credentials", 0, e );
     }    
   }    
   
@@ -600,7 +386,7 @@ public class Aerodrome implements ExitCodes
     try {
       product.addProduct( getTestProduct());
     } catch( Exception e ) {
-      fail( "Failed to add test product", E_API_FAILURE, e );
+      fail( "Failed to add test product", 0, e );
     }
   }
   
@@ -632,7 +418,7 @@ public class Aerodrome implements ExitCodes
       
       product.getSkuList( 0, 100 );
     } catch( Exception e ) {
-      fail( "Failed to add test product", E_API_FAILURE, e );
+      fail( "Failed to add test product", 0, e );
     }
 
     try {
@@ -641,7 +427,7 @@ public class Aerodrome implements ExitCodes
       //..no sales data for this sku
       System.out.println( "No Sales data for " + sku );
     } catch( Exception e ) {
-      fail( "Failed to get product sales data", E_API_FAILURE, e );
+      fail( "Failed to get product sales data", 0, e );
     }
     
   }
@@ -686,7 +472,7 @@ public class Aerodrome implements ExitCodes
       up.getJetFileId( addRes.getString( "jet_file_id" ));
       
     } catch( Exception e ) {
-      fail( "Failed to bulk", E_API_FAILURE, e );
+      fail( "Failed to bulk", 0, e );
     }
     
     
@@ -695,7 +481,7 @@ public class Aerodrome implements ExitCodes
     try {
       //System.out.println( up.getUploadToken().getUrl());
     } catch( Exception e ) {
-      fail( "failed to do upload stuff", E_API_FAILURE, e );
+      fail( "failed to do upload stuff", 0, e );
     }
     
   }
@@ -722,7 +508,7 @@ public class Aerodrome implements ExitCodes
       
       
     } catch( Exception e ) {
-      fail( "Failed to test settlements", E_API_FAILURE, e );
+      fail( "Failed to test settlements", 0, e );
     }
   }
   
@@ -760,7 +546,7 @@ public class Aerodrome implements ExitCodes
         returnsApi.putCompleteReturn( id, new CompleteReturnRequestRec( ret.getMerchantOrderId(), "", true, ChargeFeedback.FRAUD, returnItems ));
       }
     } catch( Exception e ) {
-      fail( "Failed to test returns", E_API_FAILURE, e );
+      fail( "Failed to test returns", 0, e );
     }
   }
   
@@ -777,7 +563,7 @@ public class Aerodrome implements ExitCodes
       //cancelOrders( orderApi );
       //completeOrders( orderApi );
     } catch( Exception e ) {
-      fail( "Failed to do order stuff", E_API_FAILURE, e );
+      fail( "Failed to do order stuff", 0, e );
     }        
   }
   

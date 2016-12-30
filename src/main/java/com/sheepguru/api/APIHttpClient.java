@@ -279,9 +279,6 @@ public class APIHttpClient implements IAPIHttpClient
       );
       
       //..Create the new shared client to use 
-      //..Ok.  I'm really not that happy about what I did here, but it does 
-      //  keep this call out of the constructor.
-      //  If anyone has a suggestion, please :)
       client.client = client.createNewClient();
       
       return client;

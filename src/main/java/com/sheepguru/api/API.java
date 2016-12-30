@@ -85,7 +85,7 @@ public class API implements IApi
   protected final IAPIHttpClient client;
   
   /**
-   * Lock the host to whatever is specified in the client 
+   * Set this to true to autofill the hostname for any uri's. 
    */
   protected final boolean lockHost;
   
@@ -97,7 +97,7 @@ public class API implements IApi
 
   /**
    * Create a new API instance
-   * @param client The HttpClient to use 
+   * @param client The HttpClient instance
    */
   public API( final IAPIHttpClient client )
   {
@@ -111,9 +111,9 @@ public class API implements IApi
   
   
   /**
-   * 
-   * @param client
-   * @param lockHost 
+   * Create a new API instance 
+   * @param client The HttpClient instance 
+   * @param lockHost If you want to auto set the host for uri's 
    */
   public API( final IAPIHttpClient client, final boolean lockHost )
   {
@@ -127,12 +127,13 @@ public class API implements IApi
   
   
   /**
-   * 
-   * @param client
-   * @param lockHost
-   * @param maxDownloadSize 
+   * Create a new API instance 
+   * @param client the HttpClient instance 
+   * @param lockHost If you want to auto set the host for uri's 
+   * @param maxDownloadSize The maximum download size for any response 
    */
-  public API( final IAPIHttpClient client, final boolean lockHost, final long maxDownloadSize )
+  public API( final IAPIHttpClient client, final boolean lockHost, 
+    final long maxDownloadSize )
   {
     if ( client == null )
       throw new IllegalArgumentException( "client cannot be null" );
@@ -205,6 +206,12 @@ public class API implements IApi
   }
 
  
+  /**
+   * This will take a list of files, and attach them to the 
+   * MultipartEntityBuilder instance
+   * @param files Files to add
+   * @param builder builder 
+   */
   private void setMultipartFileData( final Map<String,PostFile> files, 
     final MultipartEntityBuilder builder )
   {
@@ -231,6 +238,12 @@ public class API implements IApi
   }
   
   
+  /**
+   * This will take a list of key/value pairs and add them to the entity 
+   * builder instance.
+   * @param formData data to add
+   * @param builder builder instance 
+   */
   private void setMultipartFormData( final List<NameValuePair> formData,
     final MultipartEntityBuilder builder )
   {
@@ -333,7 +346,7 @@ public class API implements IApi
   
   
   /**
-   * Perform a put-based request to some endpoint
+   * Perform a post-based request to some endpoint
    * @param url URL
    * @param payload Payload to send
    * @param headers additional headers to send
@@ -359,6 +372,14 @@ public class API implements IApi
   }
   
   
+  /**
+   * Perform a post-based request to some endpoint
+   * @param url URL
+   * @param file A file to post 
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */  
   @Override
   public IAPIResponse post( final String url, final PostFile file, Map<String,String> headers ) throws APIException
   {
@@ -427,6 +448,8 @@ public class API implements IApi
    * Perform a put-based request to some endpoint
    * @param url URL
    * @param payload Payload to send
+   * @param contentLength the length of the payload
+   * @param contentType the type of data in payload 
    * @param headers additional headers to send
    * @return response
    * @throws APIException
@@ -450,6 +473,14 @@ public class API implements IApi
   }
   
   
+  /**
+   * Perform a put-based request to some endpoint
+   * @param url URL
+   * @param file file to send 
+   * @param headers additional headers 
+   * @return response 
+   * @throws APIException 
+   */
   @Override
   public IAPIResponse put( final String url, final PostFile file, Map<String,String> headers ) throws APIException
   {
@@ -540,7 +571,8 @@ public class API implements IApi
       //..Overwrite the host if necessary 
       if ( lockHost && client.getHost().getHost() != null 
         && !client.getHost().getHost().isEmpty()
-        && !url.startsWith( "http://" ) && !url.startsWith( "https://" )) //..Kind of stupid, but I didn't think ahead on this one.
+        //..Kind of stupid, but I didn't think ahead on this one.
+        && !url.startsWith( "http://" ) && !url.startsWith( "https://" )) 
       {
         b.setHost( client.getHost().getHost())
         .setPort( client.getHost().getPort())
@@ -619,8 +651,17 @@ public class API implements IApi
 
         //..Process the stream
         try ( final InputStream in = entity.getContent()) {
-          final IAPIResponse res = processEntity( createResponseObject( response ), in, charset );
-          APILog.debug( LOG, String.valueOf( res.getStatusLine().getStatusCode()), res.getStatusLine().getReasonPhrase(), "for", get.getURI().toString());
+          final IAPIResponse res = processEntity( 
+            createResponseObject( response ), in, charset 
+          );
+          
+          APILog.debug( LOG, 
+            String.valueOf( res.getStatusLine().getStatusCode()), 
+            res.getStatusLine().getReasonPhrase(), 
+            "for", 
+            get.getURI().toString()
+          );
+          
           return res;
           
         } catch( RuntimeException e ) {
@@ -633,7 +674,13 @@ public class API implements IApi
       else
       {        
         final IAPIResponse res = createResponseObject( response );   
-          APILog.debug( LOG, String.valueOf( res.getStatusLine().getStatusCode()), res.getStatusLine().getReasonPhrase(), "for", get.getURI().toString());
+        APILog.debug( LOG, 
+          String.valueOf( res.getStatusLine().getStatusCode()), 
+          res.getStatusLine().getReasonPhrase(), 
+          "for", 
+          get.getURI().toString()
+        );
+          
         return res;
       }
     } catch( IOException e ) {
