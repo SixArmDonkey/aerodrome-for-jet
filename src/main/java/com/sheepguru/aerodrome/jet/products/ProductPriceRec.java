@@ -13,6 +13,7 @@
  */
 package com.sheepguru.aerodrome.jet.products;
 
+import com.sheepguru.aerodrome.jet.Utils;
 import com.sheepguru.utils.Money;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,7 +76,7 @@ public class ProductPriceRec
     }
     
     return new ProductPriceRec(
-      new Money( json.getString( "price", "0" )),
+      Utils.jsonNumberToMoney( json.getJsonNumber( "price" )),
       json.getString( "price_last_update", "" ),
       nodes
     );

@@ -50,7 +50,7 @@ public class FNodePriceRec implements Jsonable
     
     return new FNodePriceRec(
       node.getString( "fulfillment_node_id", "0" ),
-      new Money( node.getString( "filfillment_node_price", "0" ))
+      Utils.jsonNumberToMoney( node.getJsonNumber( "filfillment_node_price" ))
     );
   }
 

@@ -61,7 +61,7 @@ public class FeeAdjRec implements Jsonable
       json.getString( "adjustment_name", "" ),
       json.getString( "adjustment_type", "" ),
       json.getString( "commission_id", "" ),
-      new Money( json.getString( "value", "0" ))            
+      Utils.jsonNumberToMoney( json.getJsonNumber( "value" ))
     );
   }
   

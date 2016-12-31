@@ -14,6 +14,7 @@
 
 package com.sheepguru.aerodrome.jet;
 
+import com.sheepguru.utils.Money;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -320,4 +321,21 @@ public class Utils
         + " must be greater than zero" );
     }
   }  
+  
+  
+  public static Money jsonNumberToMoney( final JsonNumber n )
+  {
+    if ( n == null )
+      return new Money();
+    return new Money( n.toString());
+  }
+  
+  
+  public static BigDecimal jsonNumberToBigDecimal( final JsonNumber n, final int defaultValue )
+  {
+    if ( n == null )
+      return new BigDecimal( defaultValue );
+    
+    return n.bigDecimalValue();
+  }
 }

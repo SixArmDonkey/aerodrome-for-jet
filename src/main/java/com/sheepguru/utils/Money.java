@@ -15,6 +15,7 @@
 package com.sheepguru.utils;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.Locale;
@@ -38,7 +39,7 @@ public class Money implements Comparable<Money>
   /**
    * Default rounding mode is HALF_UP
    */
-  public static final RoundingMode DEFAULT_ROUNDING = RoundingMode.UNNECESSARY;
+  public static final RoundingMode DEFAULT_ROUNDING = RoundingMode.DOWN;
 
   /**
    * Default Language used for locale

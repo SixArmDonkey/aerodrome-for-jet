@@ -63,10 +63,10 @@ public class RefundAmountRec implements Jsonable
   {
     Utils.checkNull( json, "json" );
     return new RefundAmountRec(
-      new Money( json.getString( "principal", "0" )),
-      new Money( json.getString( "tax", "0" )),
-      new Money( json.getString( "shipping_cost", "0" )),
-      new Money( json.getString( "shipping_tax", "0" ))
+      Utils.jsonNumberToMoney( json.getJsonNumber( "principal" )),
+      Utils.jsonNumberToMoney( json.getJsonNumber( "tax" )),
+      Utils.jsonNumberToMoney( json.getJsonNumber( "shipping_cost" )),
+      Utils.jsonNumberToMoney( json.getJsonNumber( "shipping_tax" ))
     );
   }
   

@@ -172,7 +172,7 @@ public class ShippingExceptionRec implements Jsonable
       ShippingServiceLevel.fromText( o.getString( "service_level", "" )),
       ShippingMethod.fromText( o.getString( "shipping_method", "" )),
       ShipOverrideType.fromText( o.getString( "override_type", "" )),
-      new Money( o.getString( "shipping_charge_amount", "" )),
+      Utils.jsonNumberToMoney( o.getJsonNumber( "shipping_charge_amount" )),
       ShipExceptionType.fromText( o.getString( "shipping_exception_type", "" ))
     );    
   }

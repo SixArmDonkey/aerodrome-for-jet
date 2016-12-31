@@ -77,8 +77,8 @@ public class OfferRec
     
     return new OfferRec(
       json.getString( "shipping_method", "" ),
-      new Money( json.getString( "item_price", "" )),
-      new Money( json.getString( "shipping_price", "" )),
+      Utils.jsonNumberToMoney( json.getJsonNumber( "item_price")),
+      Utils.jsonNumberToMoney( json.getJsonNumber( "shipping_price" )),
       json.getString( "last_update", "" )
     );
   }

@@ -145,7 +145,7 @@ public class ProductRec implements Jsonable
    * the merchant SKU. The unit of measure must be specified in order to
    * indicate what is being measured by the unit-count.
    */
-  private float numberUnitsForPricePerUnit = 1F;
+  private BigDecimal numberUnitsForPricePerUnit = new BigDecimal( 1 );
 
   /**
    * The type_of_unit_for_price_per_unit attribute is a label for the
@@ -160,37 +160,37 @@ public class ProductRec implements Jsonable
   /**
    * Weight of the merchant SKU when in its shippable configuration
    */
-  private float shippingWeightPounds = 0F;
+  private BigDecimal shippingWeightPounds = new BigDecimal( 0 );
 
   /**
    * Length of the merchant SKU when in its shippable configuration
    */
-  private float packageLengthInches = 0F;
+  private BigDecimal packageLengthInches = new BigDecimal( 0 );;
 
   /**
    * Width of the merchant SKU when in its shippable configuration
    */
-  private float packageWidthInches = 0F;
+  private BigDecimal packageWidthInches = new BigDecimal( 0 );;
 
   /**
    * Height of the merchant SKU when in its shippable configuration
    */
-  private float packageHeightInches = 0F;
+  private BigDecimal packageHeightInches = new BigDecimal( 0 );;
 
   /**
    * Length of the merchant SKU when in its fully assembled/usable condition
    */
-  private float displayLengthInches = 0F;
+  private BigDecimal displayLengthInches = new BigDecimal( 0 );;
 
   /**
    * Width of the merchant SKU when in its fully assembled/usable condition
    */
-  private float displayWidthInches = 0F;
+  private BigDecimal displayWidthInches = new BigDecimal( 0 );;
 
   /**
    * Height of the merchant SKU when in its fully assembled/usable condition
    */
-  private float displayHeightInches = 0F;
+  private BigDecimal displayHeightInches = new BigDecimal( 0 );;
 
   /**
    * Number of business days from receipt of an order for the given merchant SKU until it will be shipped (only populate if it is different than your account default).
@@ -431,26 +431,26 @@ public class ProductRec implements Jsonable
     out.mfrPartNumber = json.getString( "mfr_part_number", "" );
     out.productDescription = json.getString( "product_description", "" );
     out.bullets.addAll( loadStringArray( json.getJsonArray( "bullets" )));
-    out.numberUnitsForPricePerUnit = json.getInt( "number_units_for_price_per_unit", 1 );
+    out.numberUnitsForPricePerUnit = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "number_units_for_price_per_unit" ) , 1 );
     out.typeOfUnitForPricePerUnit = json.getString( "type_of_unit_for_price_per_unit", "each" );
-    out.shippingWeightPounds = json.getInt( "shipping_weight_pounds", 0 );
-    out.packageLengthInches = json.getInt( "package_length_inches", 0 );
-    out.packageWidthInches = json.getInt( "package_width_inches", 0 );
-    out.packageHeightInches = json.getInt( "package_height_inches", 0 );
-    out.displayLengthInches = json.getInt( "display_length_inches", 0 );
-    out.displayWidthInches = json.getInt( "display_width_inches", 0 );
-    out.displayHeightInches = json.getInt( "display_height_inches", 0 );
+    out.shippingWeightPounds = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "shipping_weight_pounds" ), 0 );
+    out.packageLengthInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_length_inches" ), 0 );
+    out.packageWidthInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_width_inches" ), 0 );
+    out.packageHeightInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_height_inches" ), 0 );
+    out.displayLengthInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_length_inches" ), 0 );
+    out.displayWidthInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_width_inches" ), 0 );
+    out.displayHeightInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_height_inches" ), 0 );
     out.prop65 = json.getBoolean( "prop_65", false );
     out.legalDisclaimerDescription = json.getString( "legal_disclaimer_description", "" );
     out.cpsiaStatements.addAll( loadCPSIA( json.getJsonArray( "cpsia_cautionary_statements" )));
     out.countryOfOrigin = json.getString( "country_of_origin", "" );
     out.safetyWarning = json.getString( "safety_warning", "" );
     out.fulfillmentTime = json.getInt( "fulfillment_time", 1 );
-    out.msrp = new Money( json.getString( "msrp", "0" ));
-    out.mapPrice = new Money( json.getString( "map_price", "0" ));
+    out.msrp = Utils.jsonNumberToMoney( json.getJsonNumber( "msrp" ));
+    out.mapPrice = Utils.jsonNumberToMoney( json.getJsonNumber( "map_price" ));
     out.mapImplementation = MAPType.fromJet( json.getString( "map_implementation", MAPType.NO_RESTRICTIONS.getType()));
     out.productTaxCode = ProductTaxCode.fromText( json.getString( "product_tax_code", "" ));
-    out.noReturnFeeAdj = new Money( json.getString( "no_return_fee_adjustment", "0" ));
+    out.noReturnFeeAdj = Utils.jsonNumberToMoney( json.getJsonNumber( "no_return_fee_adjustment" ));
     out.excludeFromFeeAdjustments = json.getBoolean( "exclude_from_fee_adjustments", false );
     out.attributesNodeSpecific.addAll( loadAttrNodeSpecific( json.getJsonArray( "attribute_node_specific" )));
     out.mainImageUrl = json.getString( "main_image_url", "" );
@@ -458,6 +458,8 @@ public class ProductRec implements Jsonable
     out.alternateImages.putAll( loadAltImages( json.getJsonArray( "alternate_images" )));
     out.amazonItemTypeKeyword = json.getString( "amazon_item_type_keyword", "" );
     out.categoryPath = json.getString( "category_path", "" );
+    out.price = Utils.jsonNumberToMoney( json.getJsonNumber( "price" ));
+    
     
     //..Deprecated or removed?    
     try {
@@ -473,7 +475,7 @@ public class ProductRec implements Jsonable
     out.excludeFromFeeAdjustments = json.getBoolean( "exclude_from_fee_adjustments", false );
     out.merchantSku = json.getString( "merchant_sku", "" );
     out.merchantSkuId = json.getString( "merchant_sku_id", "" );    
-    out.setMsrp( new Money( json.getString( "msrp2", "0" )));
+    out.setMsrp( Utils.jsonNumberToMoney( json.getJsonNumber( "msrp2" )));
     out.producerId = json.getString( "producer_id", "" );
     out.shipsAlone = json.getBoolean( "ships_alone", false );
     try {
@@ -932,7 +934,7 @@ public class ProductRec implements Jsonable
    * indicate what is being measured by the unit-count.
    * @return the numberUnitsForPricePerUnit
    */
-  public float getNumberUnitsForPricePerUnit() {
+  public BigDecimal getNumberUnitsForPricePerUnit() {
     return numberUnitsForPricePerUnit;
   }
 
@@ -942,8 +944,8 @@ public class ProductRec implements Jsonable
    * indicate what is being measured by the unit-count.
    * @param numberUnitsForPricePerUnit the numberUnitsForPricePerUnit to set
    */
-  public void setNumberUnitsForPricePerUnit(float numberUnitsForPricePerUnit) {
-    this.numberUnitsForPricePerUnit = Utils.round( numberUnitsForPricePerUnit, 2, RoundingMode.HALF_UP );
+  public void setNumberUnitsForPricePerUnit(BigDecimal numberUnitsForPricePerUnit) {
+    this.numberUnitsForPricePerUnit = numberUnitsForPricePerUnit;
   }
 
   /**
@@ -976,7 +978,7 @@ public class ProductRec implements Jsonable
    * Weight of the merchant SKU when in its shippable configuration
    * @return the shippingWeightPounds
    */
-  public float getShippingWeightPounds() {
+  public BigDecimal getShippingWeightPounds() {
     return shippingWeightPounds;
   }
 
@@ -984,15 +986,15 @@ public class ProductRec implements Jsonable
    * Weight of the merchant SKU when in its shippable configuration
    * @param shippingWeightPounds the shippingWeightPounds to set
    */
-  public void setShippingWeightPounds(float shippingWeightPounds) {
-    this.shippingWeightPounds = Utils.round( shippingWeightPounds, 2, RoundingMode.HALF_UP );
+  public void setShippingWeightPounds(BigDecimal shippingWeightPounds) {
+    this.shippingWeightPounds = shippingWeightPounds;
   }
 
   /**
    * Length of the merchant SKU when in its shippable configuration
    * @return the packageLengthInches
    */
-  public float getPackageLengthInches() {
+  public BigDecimal getPackageLengthInches() {
     return packageLengthInches;
   }
 
@@ -1000,15 +1002,15 @@ public class ProductRec implements Jsonable
    * Length of the merchant SKU when in its shippable configuration
    * @param packageLengthInches the packageLengthInches to set
    */
-  public void setPackageLengthInches(float packageLengthInches) {
-    this.packageLengthInches = Utils.round( packageLengthInches, 2, RoundingMode.HALF_UP );
+  public void setPackageLengthInches(BigDecimal packageLengthInches) {
+    this.packageLengthInches = packageLengthInches;
   }
 
   /**
    * Width of the merchant SKU when in its shippable configuration
    * @return the packageWidthInches
    */
-  public float getPackageWidthInches() {
+  public BigDecimal getPackageWidthInches() {
     return packageWidthInches;
   }
 
@@ -1016,15 +1018,15 @@ public class ProductRec implements Jsonable
    * Width of the merchant SKU when in its shippable configuration
    * @param packageWidthInches the packageWidthInches to set
    */
-  public void setPackageWidthInches(float packageWidthInches) {
-    this.packageWidthInches = Utils.round( packageWidthInches, 2, RoundingMode.HALF_UP );
+  public void setPackageWidthInches(BigDecimal packageWidthInches) {
+    this.packageWidthInches = packageWidthInches;
   }
 
   /**
    * Height of the merchant SKU when in its shippable configuration
    * @return the packageHeightInches
    */
-  public float getPackageHeightInches() {
+  public BigDecimal getPackageHeightInches() {
     return packageHeightInches;
   }
 
@@ -1032,15 +1034,15 @@ public class ProductRec implements Jsonable
    * Height of the merchant SKU when in its shippable configuration
    * @param packageHeightInches the packageHeightInches to set
    */
-  public void setPackageHeightInches(float packageHeightInches) {
-    this.packageHeightInches = Utils.round( packageHeightInches, 2, RoundingMode.HALF_UP );
+  public void setPackageHeightInches(BigDecimal packageHeightInches) {
+    this.packageHeightInches = packageHeightInches;
   }
 
   /**
    * Length of the merchant SKU when in its fully assembled/usable condition
    * @return the displayLengthInches
    */
-  public float getDisplayLengthInches() {
+  public BigDecimal getDisplayLengthInches() {
     return displayLengthInches;
   }
 
@@ -1048,15 +1050,15 @@ public class ProductRec implements Jsonable
    * Length of the merchant SKU when in its fully assembled/usable condition
    * @param displayLengthInches the displayLengthInches to set
    */
-  public void setDisplayLengthInches(float displayLengthInches) {
-    this.displayLengthInches = Utils.round( displayLengthInches, 2, RoundingMode.HALF_UP );
+  public void setDisplayLengthInches(BigDecimal displayLengthInches) {
+    this.displayLengthInches = displayLengthInches;
   }
 
   /**
    * Width of the merchant SKU when in its fully assembled/usable condition
    * @return the displayWidthInches
    */
-  public float getDisplayWidthInches() {
+  public BigDecimal getDisplayWidthInches() {
     return displayWidthInches;
   }
 
@@ -1064,15 +1066,15 @@ public class ProductRec implements Jsonable
    * Width of the merchant SKU when in its fully assembled/usable condition
    * @param displayWidthInches the displayWidthInches to set
    */
-  public void setDisplayWidthInches(float displayWidthInches) {
-    this.displayWidthInches = Utils.round( displayWidthInches, 2, RoundingMode.HALF_UP );
+  public void setDisplayWidthInches(BigDecimal displayWidthInches) {
+    this.displayWidthInches = displayWidthInches;
   }
 
   /**
    * Height of the merchant SKU when in its fully assembled/usable condition
    * @return the displayHeightInches
    */
-  public float getDisplayHeightInches() {
+  public BigDecimal getDisplayHeightInches() {
     return displayHeightInches;
   }
 
@@ -1080,8 +1082,8 @@ public class ProductRec implements Jsonable
    * Height of the merchant SKU when in its fully assembled/usable condition
    * @param displayHeightInches the displayHeightInches to set
    */
-  public void setDisplayHeightInches(float displayHeightInches) {
-    this.displayHeightInches = Utils.round( displayHeightInches, 2, RoundingMode.HALF_UP );
+  public void setDisplayHeightInches(BigDecimal displayHeightInches) {
+    this.displayHeightInches = displayHeightInches;
   }
 
   /**
@@ -1724,7 +1726,7 @@ public class ProductRec implements Jsonable
   public JsonObject toPriceJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
-      .add( "price", Float.valueOf( price.toString()));
+      .add( "price", price.asBigDecimal());
 
     if ( !fNodePrices.isEmpty())
       o.add( "fulfillment_nodes", fNodesToJSON());
@@ -1864,31 +1866,31 @@ public class ProductRec implements Jsonable
       if ( !bullets.isEmpty())
         o.add( "bullets", bulletsToJSON());
 
-      if ( numberUnitsForPricePerUnit > 0 )
+      if ( numberUnitsForPricePerUnit.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "number_units_for_price_per_unit", numberUnitsForPricePerUnit );
 
       if ( !typeOfUnitForPricePerUnit.isEmpty())
         o.add( "type_of_unit_for_price_per_unit", typeOfUnitForPricePerUnit );
 
-      if ( shippingWeightPounds > 0 )
+      if ( shippingWeightPounds.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "shipping_weight_pounds", shippingWeightPounds );
 
-      if ( packageLengthInches > 0 )
+      if ( packageLengthInches.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "package_length_inches", packageLengthInches );
 
-      if ( packageWidthInches > 0 )
+      if ( packageWidthInches.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "package_width_inches", packageWidthInches );
 
-      if ( packageHeightInches > 0 )
+      if ( packageHeightInches.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "package_height_inches", packageHeightInches );
 
-      if ( displayLengthInches > 0 )
+      if ( displayLengthInches.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "display_length_inches", displayLengthInches );
 
-      if ( displayWidthInches > 0 )
+      if ( displayWidthInches.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "display_width_inches", displayWidthInches );
 
-      if ( displayHeightInches > 0 )
+      if ( displayHeightInches.compareTo( BigDecimal.ZERO ) > 0 )
        o.add( "display_height_inches", displayHeightInches );
 
       o.add( "prop_65", prop65 );
