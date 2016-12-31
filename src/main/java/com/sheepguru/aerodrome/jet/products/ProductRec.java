@@ -1913,10 +1913,10 @@ public class ProductRec implements Jsonable
         o.add( "fulfillment_time", fulfillmentTime );
 
       if ( msrp.greaterThanZero())
-        o.add( "msrp", Float.valueOf( msrp.toString()));
+        o.add( "msrp", msrp.asBigDecimal());
 
       if ( mapPrice.greaterThanZero())
-        o.add( "map_price", Float.valueOf( mapPrice.toString()));
+        o.add( "map_price", mapPrice.asBigDecimal());
 
       o.add( "map_implementation", mapImplementation.getType());
 
