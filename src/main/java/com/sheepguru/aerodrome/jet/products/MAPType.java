@@ -24,24 +24,31 @@ package com.sheepguru.aerodrome.jet.products;
 public enum MAPType
 {
   /**
+   * Default, do not send to jet.
+   */
+  NONE( "", "" ),
+  
+  /**
    * Jet member savings never applied to product
    */
-  NOT_APPLIED( "103" ),
+  NOT_APPLIED( "103", "Not Applied" ),
 
   /**
    *  Jet member savings on product only visible to logged in Jet members
    */
-  LOGGED_IN( "102" ),
+  LOGGED_IN( "102", "Logged In" ),
 
   /**
    * no restrictions on product based pricing
    */
-  NO_RESTRICTIONS( "101" );
+  NO_RESTRICTIONS( "101", "No Restrictions" );
 
   /**
    * The type
    */
   private final String type;
+  
+  private final String caption;
 
   
   private static final MAPType[] values = values();
@@ -62,9 +69,10 @@ public enum MAPType
    * Create a new MAPType instance
    * @param type Jet constant value
    */
-  MAPType( final String type )
+  MAPType( final String type, final String caption )
   {
     this.type = type;
+    this.caption = caption;
   }
 
   /**
@@ -74,5 +82,11 @@ public enum MAPType
   public String getType()
   {
     return type;
+  }
+  
+  
+  public String getCaption()
+  {
+    return caption;
   }
 }

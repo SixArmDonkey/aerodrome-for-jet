@@ -14,6 +14,9 @@
 
 package com.sheepguru.aerodrome.jet.products;
 
+import com.sheepguru.aerodrome.jet.ISO8601Date;
+import com.sheepguru.aerodrome.jet.ISO8601UTCDate;
+import com.sheepguru.aerodrome.jet.JetDate;
 import com.sheepguru.aerodrome.jet.ProductTaxCode;
 import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
@@ -406,7 +409,17 @@ public class ProductRec implements Jsonable
   /**
    * Sku last update
    */
-  private Date skuLastUpdate = new Date( 0 );
+  private JetDate skuLastUpdate = null;
+  
+  /**
+   * Inventory last update
+   */
+  private JetDate inventoryLastUpdate = null;
+  
+  /**
+   * Price last update
+   */
+  private JetDate priceLastUpdate = null;
 
 
   /**
@@ -478,11 +491,9 @@ public class ProductRec implements Jsonable
     out.setMsrp( Utils.jsonNumberToMoney( json.getJsonNumber( "msrp2" )));
     out.producerId = json.getString( "producer_id", "" );
     out.shipsAlone = json.getBoolean( "ships_alone", false );
-    try {
-      out.skuLastUpdate = out.fmt.parse( json.getString( "sku_last_update", "" ));
-    } catch( ParseException e ) {
-      //..do nothing
-    }
+    out.skuLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "sku_last_update", "" ));
+    out.inventoryLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "last_update", "" ));
+    out.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "price_last_update", "" ));
     out.setStartSellingDate( json.getString( "start_selling_date", "" ));
    
     
@@ -532,10 +543,29 @@ public class ProductRec implements Jsonable
    * Retrieve the last update time (only after product get response is received)
    * @return last update
    */
-  public Date getSkuLastUpdate()
+  public JetDate getSkuLastUpdate()
   {
     return skuLastUpdate;
   }
+  
+  /**
+   * Retrieve the last inventory update time 
+   * @return last update
+   */
+  public JetDate getInventoryLastUpdate()
+  {
+    return inventoryLastUpdate;
+  }
+  
+  
+  /**
+   * Retrieve the last price update time 
+   * @return last update
+   */
+  public JetDate getPriceLastUpdate()
+  {
+    return priceLastUpdate;
+  }  
 
   /**
    * Retrieve the producer id from the product get response
@@ -1941,7 +1971,17 @@ public class ProductRec implements Jsonable
 
       if ( !alternateImages.isEmpty())
         o.add( "alternate_images", altImgToJSON());
-
+  
+      /*
+      if ( inventoryLastUpdate != null )
+        o.add( "inventory_last_update", inventoryLastUpdate.getDateString());
+      
+      if ( skuLastUpdate != null )
+        o.add( "last_update", skuLastUpdate.getDateString());
+      
+      if ( priceLastUpdate != null )
+        o.add( "price_last_update", priceLastUpdate.getDateString());
+*/
     return o.build();
   }
 

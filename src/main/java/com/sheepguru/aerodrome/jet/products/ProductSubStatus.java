@@ -25,6 +25,19 @@ public enum ProductSubStatus
    * Unknown status
    */
   NONE( "" ),
+  
+  MISSING_VARIATION( "Missing variation information" ),
+  MISSING_TITLE( "Missing title" ),
+  MISSING_SHIPPING_WEIGHT( "Missing shipping weight" ),
+  MISSING_PRICE( "Missing price" ),
+  MISSING_IMAGE( "Missing image" ),
+  MISSING_CATEGORY( "Missing category" ),
+  MISSING_BRAND( "Missing brand" ),
+  MISSING_ATTR_VAL( "Missing attribute value" ),
+  INVALID_SKU( "Invalid SKU identifier" ),
+  INVALID_CATEGORY( "Invalid category" ),
+  INVALID_MULTIPACK_QTY( "Incorrect multipack quantity" ),
+  ADDITIONAL_SKU_NEEDED( "Additional SKU ID needed" ),
 
   /**
    *  Additional preferred attributes are requested but not required
