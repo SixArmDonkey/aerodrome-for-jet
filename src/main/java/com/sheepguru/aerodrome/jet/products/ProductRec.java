@@ -52,91 +52,1751 @@ import javax.json.JsonValue;
  */
 public class ProductRec implements Jsonable
 {
+  public static class Builder
+  {
+    /**
+     * Short product description
+     * 5-500 characters
+     */
+    private String title = "";
+
+    /**
+     * The unique ID that defines where the product will be found in the
+     * Jet.com browse structure
+     */
+    private int browseNodeId = 0;
+
+    /**
+     * ItemType allows customers to find your products as they browse to the
+     * most specific item types. Please use the exact selling from
+     * Amazon's browse tree guides
+     */
+    private String azItemTypeKeyword = "";
+
+    /**
+     * Please enter a category path using your own product taxonomy
+     */
+    private String categoryPath = "";
+
+    /**
+     * Product codes
+     */
+    private final Set<ProductCodeRec> productCodes = new HashSet();
+
+    /**
+     * ASIN Number.
+     * Amazon standard identification number for this merchant SKU if available.
+     */
+    private String asin = "";
+
+    /**
+     * Number of items with the given Standard Product Code that makes up
+     * your merchant SKU
+     */
+    private int multipackQuantity = 1;
+
+    /**
+     * Brand of the merchant SKU
+     * 1-50 characters
+     */
+    private String brand = "";
+
+    /**
+     * Manufacturer of the merchant SKU
+     * 1-50 characters
+     */
+    private String manufacturer = "";
+
+    /**
+     * Part number provided by the original manufacturer of the merchant SKU
+     * Max length: 50 characters
+     */
+    private String mfrPartNumber = "";
+
+    /**
+     * Long description of the merchant SKU
+     *
+     * 1-2000 characters
+     */
+    private String productDescription = "";
+
+    /**
+     * ItemType allows customers to find your products as they browse to 
+     * the most specific item types.
+     */
+    private String amazonItemTypeKeyword = "";
+
+    /**
+     * Merchant SKU feature description
+     * Max length: 500 characters
+     * Maximum of 5 elements
+     */
+    private final Set<String> bullets = new HashSet();
+
+    /**
+     * For Price Per Unit calculations, the number of units included in
+     * the merchant SKU. The unit of measure must be specified in order to
+     * indicate what is being measured by the unit-count.
+     */
+    private BigDecimal numberUnitsForPricePerUnit = new BigDecimal( 1 );
+
+    /**
+     * The type_of_unit_for_price_per_unit attribute is a label for the
+     * number_units_for_price_per_unit. The price per unit can then be
+     * constructed by dividing the selling price by the number of units and
+     * appending the text "per unit value." For example, for a six-pack of soda,
+     * number_units_for_price_per_unit= 6, type_of_unit_for_price_per_unit= can,
+     * price per unit = price per can.
+     */
+    private String typeOfUnitForPricePerUnit = "each";
+
+    /**
+     * Weight of the merchant SKU when in its shippable configuration
+     */
+    private BigDecimal shippingWeightPounds = new BigDecimal( 0 );
+
+    /**
+     * Length of the merchant SKU when in its shippable configuration
+     */
+    private BigDecimal packageLengthInches = new BigDecimal( 0 );;
+
+    /**
+     * Width of the merchant SKU when in its shippable configuration
+     */
+    private BigDecimal packageWidthInches = new BigDecimal( 0 );;
+
+    /**
+     * Height of the merchant SKU when in its shippable configuration
+     */
+    private BigDecimal packageHeightInches = new BigDecimal( 0 );;
+
+    /**
+     * Length of the merchant SKU when in its fully assembled/usable condition
+     */
+    private BigDecimal displayLengthInches = new BigDecimal( 0 );;
+
+    /**
+     * Width of the merchant SKU when in its fully assembled/usable condition
+     */
+    private BigDecimal displayWidthInches = new BigDecimal( 0 );;
+
+    /**
+     * Height of the merchant SKU when in its fully assembled/usable condition
+     */
+    private BigDecimal displayHeightInches = new BigDecimal( 0 );;
+
+    /**
+     * Number of business days from receipt of an order for the given merchant SKU until it will be shipped (only populate if it is different than your account default).
+     * Valid Values
+     * 0 = ships the day the OrderMessage is received
+     * 1 = ships one business day after the 'merchant_order' is received
+     * 2= ships two business days after the 'merchant_order' is received
+     * N = ships N business days after the 'merchant_order' is received
+     */
+    private int fulfillmentTime = 0;
+
+    /**
+     * You must tell us if your product is subject to Proposition 65 rules and
+     * regulations. Proposition 65 requires merchants to provide California
+     * consumers with special warnings for products that contain chemicals known
+     * to cause cancer, birth defects, or other reproductive harm, if those
+     * products expose consumers to such materials above certain threshold
+     * levels. The default value for this is "false," so if you do not populate
+     * this column, we will assume your product is not subject to this rule.
+     * Please view this website for more information: http://www.oehha.ca.gov/.
+     */
+    private boolean prop65 = false;
+
+    /**
+     * Any legal language required to be displayed with the product.
+     * Max Length: 500
+     */
+    private String legalDisclaimerDescription = "";
+
+    /**
+     * Use this field to indicate if a cautionary statement relating to the
+     * choking hazards of children's toys and games applies to your product.
+     * These cautionary statements are defined in Section 24 of the Federal
+     * Hazardous Substances Act and Section 105 of the Consumer Product Safety
+     * Improvement Act of 2008. They must be displayed on the product packaging
+     * and in certain online and catalog advertisements. You are responsible for
+     * determining if a cautionary statement applies to the product. This can be
+     * verified by contacting the product manufacturer or checking the product
+     * packaging. Cautionary statements that you select will be displayed on the
+     * product detail page. If no cautionary statement applies to the product,
+     * select "no warning applicable".
+     *
+     * Max 7 elements
+     */
+    private final Set<CPSIA> cpsiaStatements = new HashSet();
+
+    /**
+     * The country that the item was manufactured in.
+     * Max: 50 chars
+     */
+    private String countryOfOrigin = "";
+
+    /**
+     * If applicable, use to supply any associated warnings for your product.
+     * Max: 500
+     */
+    private String safetyWarning = "";
+
+    /**
+     * If updating merchant SKU that has quantity = 0 at all FCs, date that the
+     * inventory in this message should be available for sale on Jet.com.
+     *
+     * You should only use this field if the quantity for the merchant SKU is 0
+     * at all merchant_fcs. This date should be in
+     * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
+     * Example: 1988-01-01T01:43:30.0000000-07:00
+     */
+    private JetDate startSellingDate = new ProductDate();
+
+    /**
+     * Manufacturer's suggested retail price or list price for the product.
+     */
+    private Money msrp = new Money();
+
+    /**
+     * The overall price that the merchant SKU is priced at
+     */
+    private Money price = new Money();
+
+    /**
+     * Fulfillment node prices
+     */
+    private final Set<FNodePriceRec> fNodePrices = new HashSet();
+
+    /**
+     * Fulfillment node ivnentory
+     */
+    private final Set<FNodeInventoryRec> fNodeInventory = new HashSet();
+
+    /**
+     * The unique ID for an individually selectable product for sale on Jet.com.
+     */
+    private String jetRetailSku = "";
+
+
+    /**
+     * Retailer price for the product for which member savings will be applied
+     * (if applicable, see map_implementation)
+     *
+     * Valid Values
+     * A number up to 9 digits in total, which consists of up to 7 digits to the
+     * left of the decimal point and 2 digits to the right of the decimal point.
+     * Commas or currency symbols are not allowed.
+     */
+    private Money mapPrice = new Money();
+
+    /**
+     * The type of rule that indicates how Jet member savings are allowed to be
+     * applied to an item’s base price (which is referred to as map_price in the
+     * API documentation)
+     */
+    private MAPType mapImplementation = MAPType.NO_RESTRICTIONS;
+
+    /**
+     * Product Tax Code
+     */
+    private ProductTaxCode productTaxCode = ProductTaxCode.NO_VALUE;
+
+    /**
+     * Overides the category level setting for this fee adjustment; this is the
+     * increase in commission you are willing to pay on this product if the
+     * customer waives their ability to return it.
+     * If you want to increase the commission you are willing to pay from a base rate
+     * of 15% to 17%, then you should enter '0.02'
+     */
+    private Money noReturnFeeAdj = new Money();
+
+    /**
+     * If this field is 'true', it indicates that this 'merchant SKU' will always
+     * ship on its own.A separate 'merchant_order' will always be placed for this
+     * 'merchant_SKU', one consequence of this will be that this merchant_sku
+     * will never contriube to any basket size fee adjustments with any other
+     * merchant_skus.
+     */
+    private boolean shipsAlone = false;
+
+    /**
+     * This SKU will not be subject to any fee adjustment rules that are set up
+     * if this field is 'true'
+     */
+    private boolean excludeFromFeeAdjustments = false;
+
+    /**
+     * This is not documented
+     */
+    private final Set<SkuAttributeRec> attributesNodeSpecific = new HashSet();
+
+    /**
+     * A set of alternate image slots and locations
+     *
+     * key: The slot that the alternate image should be uploaded to. Jet.com
+     * supports up to 8 images (or 8 image slots).
+     *
+     * value: The absolute location where Jet.com can retrieve the image
+     */
+    private final Map<Integer,String> alternateImages = new HashMap();
+
+    /**
+     * URL location where Jet.com can access the image. The images should be
+     * 1500 x 1500 pixels or larger, but anything 500 x 500 pixels or larger
+     * is acceptable. There is no limit to image size.
+     */
+    private String mainImageUrl = "";
+
+    /**
+     * URL location where Jet.com can access an image of a color or fabric for a
+     * given merchant SKU. The images should be 1500 x 1500 pixels or larger, but
+     * anything 500 x 500 pixels or larger is acceptable. There is no limit to
+     * image size.
+     */
+    private String swatchImageUrl = "";
+
+    /**
+     * The unique sku for this product
+     */
+    private String merchantSku = "";
+
+    /**
+     * Shipping exception node list
+     */
+    private final Set<FNodeShippingRec> shippingExceptionNodes = new HashSet();
+
+    /**
+     * From Product Get response
+     */
+    private String correlationId = "";
+
+    /**
+     * The merchant sku id returned in the product get response
+     */
+    private String merchantSkuId = "";
+
+    /**
+     * Producer id retrieved from product get response
+     */
+    private String producerId = "";
+
+    /**
+     * Product status
+     */
+    private ProductStatus status = ProductStatus.NONE;
+
+    /**
+     * Product sub status
+     */
+    private final Set<ProductSubStatus> subStatus = new HashSet();
+
+    /**
+     * Sku last update
+     */
+    private JetDate skuLastUpdate = null;
+
+    /**
+     * Inventory last update
+     */
+    private JetDate inventoryLastUpdate = null;
+
+    /**
+     * Price last update
+     */
+    private JetDate priceLastUpdate = null;
+    
+    
+    /**
+     * Build an instance 
+     * @return instance
+     */
+    public ProductRec build()
+    {
+      return new ProductRec( this );
+    }
+
+
+    /**
+     * Retrieve the product status
+     * @return product status
+     */
+    public ProductStatus getProductStatus()
+    {
+      return status;
+    }
+
+
+    /**
+     * The unique ID for an individually selectable product for sale on Jet.com.
+     * @return retail sku
+     */
+    public String getJetRetailSku()
+    {
+      return jetRetailSku;
+    }
+
+
+    /**
+     * Retrieve the last update time (only after product get response is received)
+     * @return last update
+     */
+    public JetDate getSkuLastUpdate()
+    {
+      return skuLastUpdate;
+    }
+
+    /**
+     * Retrieve the last inventory update time 
+     * @return last update
+     */
+    public JetDate getInventoryLastUpdate()
+    {
+      return inventoryLastUpdate;
+    }
+
+
+    /**
+     * Retrieve the last price update time 
+     * @return last update
+     */
+    public JetDate getPriceLastUpdate()
+    {
+      return priceLastUpdate;
+    }  
+
+    /**
+     * Retrieve the producer id from the product get response
+     * @return producer id
+     */
+    public String getProducerId()
+    {
+      return producerId;
+    }
+
+
+    /**
+     * Product get response correlation id
+     * @return id
+     */
+    public String getCorrelationId()
+    {
+      return correlationId;
+    }
+
+
+    /**
+     * Retrieve the merchant sku id
+     * @return sku id
+     */
+    public String getMerchantSkuId()
+    {
+      return merchantSkuId;
+    }
+
+
+    /**
+     * Retrieve the merchant sku.
+     *
+     * If none was explicitly set, this returns asin, gtin13, ean, upc, isbn13, isbn10
+     * or an exception for an empty string.
+     *
+     * @return sku
+     */
+    public String getMerchantSku()
+    {
+      ArrayList<String> skus = new ArrayList<>();
+      skus.add( merchantSku );
+
+      for ( ProductCodeRec p : productCodes )
+      {
+        skus.add( p.getProductCode());
+      }
+
+      for ( String code : skus )
+      {
+        if ( !code.isEmpty())
+          return code;
+      }
+
+      throw new IllegalArgumentException( "No sku found for this product record" );
+
+    }
+
+
+    /**
+     * Set the merchant sku.
+     * @param sku sku
+     */
+    public Builder setMerchantSku( String sku )
+    {
+      Utils.checkNull( sku, "sku" );
+      merchantSku = sku;
+      return this;
+    }
+
+
+    /**
+     * Number of business days from receipt of an order for the given merchant SKU until it will be shipped (only populate if it is different than your account default).
+     * Valid Values
+     * 0 = ships the day the OrderMessage is received
+     * 1 = ships one business day after the 'merchant_order' is received
+     * 2= ships two business days after the 'merchant_order' is received
+     * N = ships N business days after the 'merchant_order' is received
+     *
+     * @return int time
+     */
+    public int getFulfillmentTime()
+    {
+      return fulfillmentTime;
+    }
+
+
+    /**
+     * Number of business days from receipt of an order for the given merchant SKU until it will be shipped (only populate if it is different than your account default).
+     * Valid Values
+     * 0 = ships the day the OrderMessage is received
+     * 1 = ships one business day after the 'merchant_order' is received
+     * 2= ships two business days after the 'merchant_order' is received
+     * N = ships N business days after the 'merchant_order' is received
+     *
+     * @param time
+     */
+    public Builder setFulfillmentTime( int time )
+    {
+      if ( time < 0 )
+        time = 0;
+
+      fulfillmentTime = time;
+      return this;
+    }
+
+    /**
+     * Short product description
+     * 5-500 characters
+     * @return the title
+     */
+    public String getTitle() {
+      return title;
+    }
+
+    /**
+     * Short product description
+     * 5-500 characters
+     * @param title the title to set
+     */
+    public Builder setTitle(String title) {
+      if ( title == null || title.length() < 5 || title.length() > 500 )
+        throw new IllegalArgumentException( "title must be between 5-500 characters" );
+
+      this.title = title;
+      return this;
+    }
+
+
+    /**
+     * Set the amazon item type keyword
+     * @param keyword keyword 
+     */
+    public Builder setAmazonItemTypeKeyword( final String keyword )
+    {
+      if ( keyword == null )
+        throw new IllegalArgumentException( "keyword cannot be null" );
+
+      amazonItemTypeKeyword = keyword;
+      return this;
+    }
+
+
+    /**
+     * Retrieve the amazon item type keyword 
+     * @return keyword 
+     */
+    public String getAmazonItemTypeKeyword()
+    {
+      return amazonItemTypeKeyword;
+    }
+
+
+    /**
+     * The unique ID that defines where the product will be found in the
+     * Jet.com browse structure
+     * @return the browseNodeId
+     */
+    public int getBrowseNodeId() {
+      return browseNodeId;
+    }
+
+    /**
+     * The unique ID that defines where the product will be found in the
+     * Jet.com browse structure
+     * @param browseNodeId the browseNodeId to set
+     */
+    public Builder setBrowseNodeId(int browseNodeId) {
+      this.browseNodeId = browseNodeId;
+      return this;
+    }
+
+    /**
+     * ItemType allows customers to find your products as they browse to the
+     * most specific item types. Please use the exact selling from
+     * Amazon's browse tree guides
+     * @return the azItemTypeKeyword
+     */
+    public String getAzItemTypeKeyword() {
+      return azItemTypeKeyword;
+    }
+
+    /**
+     * ItemType allows customers to find your products as they browse to the
+     * most specific item types. Please use the exact selling from
+     * Amazon's browse tree guides
+     * @param azItemTypeKeyword the azItemTypeKeyword to set
+     */
+    public Builder setAzItemTypeKeyword(String azItemTypeKeyword) {
+      Utils.checkNull( azItemTypeKeyword, "azItemTypeKeyword" );
+      this.azItemTypeKeyword = azItemTypeKeyword;
+      return this;
+    }
+
+    /**
+     * Please enter a category path using your own product taxonomy
+     * @return the categoryPath
+     */
+    public String getCategoryPath() {
+      return categoryPath;
+    }
+
+    /**
+     * Please enter a category path using your own product taxonomy
+     * @param categoryPath the categoryPath to set
+     */
+    public Builder setCategoryPath(String categoryPath) {
+      Utils.checkNull( categoryPath, "categoryPath" );
+      this.categoryPath = categoryPath;
+      return this;
+    }
+
+
+    /**
+     * Get the sub status 
+     * @return sub status 
+     */
+    public Set<ProductSubStatus> getSubstatus() {
+      return subStatus;
+    }
+
+    /**
+     * Product codes
+     * @return the productCodes
+     */
+    public Set<ProductCodeRec> getProductCodes() {
+      return productCodes;
+    }
+
+    /**
+     * Add a set of product codes
+     * @param productCodes the productCodes to set
+     */
+    public Builder setProductCodes( List<ProductCodeRec> productCodes ) {
+      if ( productCodes == null )
+        this.productCodes.clear();
+      else
+        this.productCodes.addAll( productCodes );
+      return this;
+    }
+
+    /**
+     * Add a single product code
+     * @param productCode the productCode to set
+     */
+    public Builder setProductCode( ProductCodeRec productCode ) {
+      Utils.checkNull( productCode, "productCode" );
+      this.productCodes.add( productCode );
+      return this;
+    }
+
+
+    /**
+     * ASIN Number.
+     * Amazon standard identification number for this merchant SKU if available.
+     * @return the asin
+     */
+    public String getAsin() {
+      return asin;
+    }
+
+    /**
+     * ASIN Number.
+     * Amazon standard identification number for this merchant SKU if available.
+     * @param asin the asin to set
+     */
+    public Builder setAsin(String asin) {
+      Utils.checkNull( asin, "asin" );
+      this.asin = asin;
+      return this;
+    }
+
+    /**
+     * Number of items with the given Standard Product Code that makes up
+     * your merchant SKU
+     * @return the multipackQuantity
+     */
+    public int getMultipackQuantity() {
+      return multipackQuantity;
+    }
+
+    /**
+     * Number of items with the given Standard Product Code that makes up
+     * your merchant SKU
+     * @param multipackQuantity the multipackQuantity to set
+     */
+    public Builder setMultipackQuantity(int multipackQuantity) {
+      this.multipackQuantity = multipackQuantity;
+      return this;
+    }
+
+    /**
+     * Brand of the merchant SKU
+     * 1-50 characters
+     * @return the brand
+     */
+    public String getBrand() {
+      return brand;
+    }
+
+    /**
+     * Brand of the merchant SKU
+     * 1-50 characters
+     * @param brand the brand to set
+     */
+    public Builder setBrand(String brand) {
+      if ( brand == null || brand.isEmpty() || brand.length() > 50 )
+        throw new IllegalArgumentException( "brand must be between 1-50 characters" );
+
+      this.brand = brand;
+      return this;
+    }
+
+    /**
+     * Manufacturer of the merchant SKU
+     * 1-50 characters
+     * @return the manufacturer
+     */
+    public String getManufacturer() {
+      return manufacturer;
+    }
+
+    /**
+     * Manufacturer of the merchant SKU
+     * 1-50 characters
+     * @param manufacturer the manufacturer to set
+     */
+    public Builder setManufacturer(String manufacturer) {
+      if ( manufacturer == null || manufacturer.isEmpty() || manufacturer.length() > 50 )
+        throw new IllegalArgumentException( "manufacturer must be between 1-50 characters" );
+      this.manufacturer = manufacturer;
+      return this;
+    }
+
+    /**
+     * Part number provided by the original manufacturer of the merchant SKU
+     * Max length: 50 characters
+     * @return the mfrPartNumber
+     */
+    public String getMfrPartNumber() {
+      return mfrPartNumber;
+    }
+
+    /**
+     * Part number provided by the original manufacturer of the merchant SKU
+     * Max length: 50 characters
+     * @param mfrPartNumber the mfrPartNumber to set
+     */
+    public Builder setMfrPartNumber(String mfrPartNumber) {
+      Utils.checkNull( mfrPartNumber, "mfrPartNumber" );
+      this.mfrPartNumber = mfrPartNumber;
+      return this;
+    }
+
+    /**
+     * Long description of the merchant SKU
+     *
+     * 1-2000 characters
+     * @return the productDescription
+     */
+    public String getProductDescription() {
+      return productDescription;
+    }
+
+    /**
+     * Long description of the merchant SKU
+     *
+     * 1-2000 characters
+     * @param productDescription the productDescription to set
+     */
+    public Builder setProductDescription(String productDescription) {
+      if ( productDescription == null || productDescription.isEmpty() || productDescription.length() > 2000 )
+        throw new IllegalArgumentException( "productDescription must be between 1-2000 characters" );
+
+      this.productDescription = productDescription;
+      return this;
+    }
+
+    /**
+     * Merchant SKU feature description
+     * Max length: 500 characters
+     * Maximum of 5 elements
+     * @return the bullets
+     */
+    public Set<String> getBullets() {
+      return bullets;
+    }
+
+    /**
+     * Merchant SKU feature description
+     * Max length: 500 characters
+     * Maximum of 5 elements
+     * @param bullet the bullet to add
+     */
+    public void addBullet( String bullet ) {
+      if ( bullet == null || bullet.isEmpty() || bullet.length() > 500 )
+        throw new IllegalArgumentException( "bullet must be between 1-500 characters" );
+
+      this.bullets.add( bullet );
+    }
+
+
+    /**
+     * Merchant SKU feature description
+     * Max length: 500 characters
+     * Maximum of 5 elements
+     * @param bullets the bullets to set
+     */
+    public Builder addBullets( Set<String> bullets ) {
+      Utils.checkNull( bullets, "bullets" );
+      this.bullets.addAll( bullets );
+      return this;
+    }
+
+
+    /**
+     * For Price Per Unit calculations, the number of units included in
+     * the merchant SKU. The unit of measure must be specified in order to
+     * indicate what is being measured by the unit-count.
+     * @return the numberUnitsForPricePerUnit
+     */
+    public BigDecimal getNumberUnitsForPricePerUnit() {
+      return numberUnitsForPricePerUnit;
+    }
+
+    /**
+     * For Price Per Unit calculations, the number of units included in
+     * the merchant SKU. The unit of measure must be specified in order to
+     * indicate what is being measured by the unit-count.
+     * @param numberUnitsForPricePerUnit the numberUnitsForPricePerUnit to set
+     */
+    public Builder setNumberUnitsForPricePerUnit(BigDecimal numberUnitsForPricePerUnit) {
+      Utils.checkNull( numberUnitsForPricePerUnit, "numberUnitsForPricePerUnit" );
+      this.numberUnitsForPricePerUnit = numberUnitsForPricePerUnit;
+      return this;
+    }
+
+    /**
+     * The type_of_unit_for_price_per_unit attribute is a label for the
+     * number_units_for_price_per_unit. The price per unit can then be
+     * constructed by dividing the selling price by the number of units and
+     * appending the text "per unit value." For example, for a six-pack of soda,
+     * number_units_for_price_per_unit= 6, type_of_unit_for_price_per_unit= can,
+     * price per unit = price per can.
+     * @return the typeOfUnitForPricePerUnit
+     */
+    public String getTypeOfUnitForPricePerUnit() {
+      return typeOfUnitForPricePerUnit;
+    }
+
+    /**
+     * The type_of_unit_for_price_per_unit attribute is a label for the
+     * number_units_for_price_per_unit. The price per unit can then be
+     * constructed by dividing the selling price by the number of units and
+     * appending the text "per unit value." For example, for a six-pack of soda,
+     * number_units_for_price_per_unit= 6, type_of_unit_for_price_per_unit= can,
+     * price per unit = price per can.
+     * @param typeOfUnitForPricePerUnit the typeOfUnitForPricePerUnit to set
+     */
+    public Builder setTypeOfUnitForPricePerUnit(String typeOfUnitForPricePerUnit) {
+      Utils.checkNull( typeOfUnitForPricePerUnit, "typeOfUnitForPricePerUnit" );
+      this.typeOfUnitForPricePerUnit = typeOfUnitForPricePerUnit;
+      return this;
+    }
+
+    /**
+     * Weight of the merchant SKU when in its shippable configuration
+     * @return the shippingWeightPounds
+     */
+    public BigDecimal getShippingWeightPounds() {
+      return shippingWeightPounds;
+    }
+
+    /**
+     * Weight of the merchant SKU when in its shippable configuration
+     * @param shippingWeightPounds the shippingWeightPounds to set
+     */
+    public Builder setShippingWeightPounds(BigDecimal shippingWeightPounds) {
+      Utils.checkNull( shippingWeightPounds, "shippingWeightPounds" );
+      this.shippingWeightPounds = shippingWeightPounds;
+      return this;
+    }
+
+    /**
+     * Length of the merchant SKU when in its shippable configuration
+     * @return the packageLengthInches
+     */
+    public BigDecimal getPackageLengthInches() {
+      return packageLengthInches;
+    }
+
+    /**
+     * Length of the merchant SKU when in its shippable configuration
+     * @param packageLengthInches the packageLengthInches to set
+     */
+    public Builder setPackageLengthInches(BigDecimal packageLengthInches) {
+      Utils.checkNull( packageLengthInches, "packageLengthInches" );
+      this.packageLengthInches = packageLengthInches;
+      return this;
+    }
+
+    /**
+     * Width of the merchant SKU when in its shippable configuration
+     * @return the packageWidthInches
+     */
+    public BigDecimal getPackageWidthInches() {
+      return packageWidthInches;
+    }
+
+    /**
+     * Width of the merchant SKU when in its shippable configuration
+     * @param packageWidthInches the packageWidthInches to set
+     */
+    public Builder setPackageWidthInches(BigDecimal packageWidthInches) {
+      Utils.checkNull( packageWidthInches, "packageWidthInches" );
+      this.packageWidthInches = packageWidthInches;
+      return this;
+    }
+
+    /**
+     * Height of the merchant SKU when in its shippable configuration
+     * @return the packageHeightInches
+     */
+    public BigDecimal getPackageHeightInches() {
+      return packageHeightInches;
+    }
+
+    /**
+     * Height of the merchant SKU when in its shippable configuration
+     * @param packageHeightInches the packageHeightInches to set
+     */
+    public Builder setPackageHeightInches(BigDecimal packageHeightInches) {
+      Utils.checkNull( packageHeightInches, "packageHeightInches" );
+      this.packageHeightInches = packageHeightInches;
+      return this;
+    }
+
+    /**
+     * Length of the merchant SKU when in its fully assembled/usable condition
+     * @return the displayLengthInches
+     */
+    public BigDecimal getDisplayLengthInches() {
+      return displayLengthInches;
+    }
+
+    /**
+     * Length of the merchant SKU when in its fully assembled/usable condition
+     * @param displayLengthInches the displayLengthInches to set
+     */
+    public Builder setDisplayLengthInches(BigDecimal displayLengthInches) {
+      Utils.checkNull( displayLengthInches, "displayLengthInches" );
+      this.displayLengthInches = displayLengthInches;
+      return this;
+    }
+
+    /**
+     * Width of the merchant SKU when in its fully assembled/usable condition
+     * @return the displayWidthInches
+     */
+    public BigDecimal getDisplayWidthInches() {
+      return displayWidthInches;
+    }
+
+    /**
+     * Width of the merchant SKU when in its fully assembled/usable condition
+     * @param displayWidthInches the displayWidthInches to set
+     */
+    public Builder setDisplayWidthInches(BigDecimal displayWidthInches) {
+      Utils.checkNull( displayWidthInches, "displayWidthInches" );
+      this.displayWidthInches = displayWidthInches;
+      return this;
+    }
+
+    /**
+     * Height of the merchant SKU when in its fully assembled/usable condition
+     * @return the displayHeightInches
+     */
+    public BigDecimal getDisplayHeightInches() {
+      return displayHeightInches;
+    }
+
+    /**
+     * Height of the merchant SKU when in its fully assembled/usable condition
+     * @param displayHeightInches the displayHeightInches to set
+     */
+    public Builder setDisplayHeightInches(BigDecimal displayHeightInches) {
+      Utils.checkNull( displayHeightInches, "displayHeightInches" );
+      this.displayHeightInches = displayHeightInches;
+      return this;
+    }
+
+    /**
+     * You must tell us if your product is subject to Proposition 65 rules and
+     * regulations. Proposition 65 requires merchants to provide California
+     * consumers with special warnings for products that contain chemicals known
+     * to cause cancer, birth defects, or other reproductive harm, if those
+     * products expose consumers to such materials above certain threshold
+     * levels. The default value for this is "false," so if you do not populate
+     * this column, we will assume your product is not subject to this rule.
+     * Please view this website for more information: http://www.oehha.ca.gov/.
+     * @return the prop65
+     */
+    public boolean isProp65() {
+      return prop65;
+    }
+
+    /**
+     * You must tell us if your product is subject to Proposition 65 rules and
+     * regulations. Proposition 65 requires merchants to provide California
+     * consumers with special warnings for products that contain chemicals known
+     * to cause cancer, birth defects, or other reproductive harm, if those
+     * products expose consumers to such materials above certain threshold
+     * levels. The default value for this is "false," so if you do not populate
+     * this column, we will assume your product is not subject to this rule.
+     * Please view this website for more information: http://www.oehha.ca.gov/.
+     * @param prop65 the prop65 to set
+     */
+    public Builder setProp65(boolean prop65) {
+      this.prop65 = prop65;
+      return this;
+    }
+
+    /**
+     * Any legal language required to be displayed with the product.
+     * Max Length: 500
+     * @return the legalDisclaimerDescription
+     */
+    public String getLegalDisclaimerDescription() {
+      return legalDisclaimerDescription;
+    }
+
+    /**
+     * Any legal language required to be displayed with the product.
+     * Max Length: 500
+     * @param legalDisclaimerDescription the legalDisclaimerDescription to set
+     */
+    public Builder setLegalDisclaimerDescription(String legalDisclaimerDescription) {
+      if ( legalDisclaimerDescription == null || legalDisclaimerDescription.isEmpty() || legalDisclaimerDescription.length() > 500 )
+        throw new IllegalArgumentException( "legalDisclaimerDescription must be between 1-500 characters" );
+
+      this.legalDisclaimerDescription = legalDisclaimerDescription;
+      return this;
+    }
+
+    /**
+     * Use this field to indicate if a cautionary statement relating to the
+     * choking hazards of children's toys and games applies to your product.
+     * These cautionary statements are defined in Section 24 of the Federal
+     * Hazardous Substances Act and Section 105 of the Consumer Product Safety
+     * Improvement Act of 2008. They must be displayed on the product packaging
+     * and in certain online and catalog advertisements. You are responsible for
+     * determining if a cautionary statement applies to the product. This can be
+     * verified by contacting the product manufacturer or checking the product
+     * packaging. Cautionary statements that you select will be displayed on the
+     * product detail page. If no cautionary statement applies to the product,
+     * select "no warning applicable".
+     *
+     * Max 7 elements
+     * @return the cpsiaStatements
+     */
+    public Set<CPSIA> getCpsiaStatements() {
+      return cpsiaStatements;
+    }
+
+    /**
+     * Use this field to indicate if a cautionary statement relating to the
+     * choking hazards of children's toys and games applies to your product.
+     * These cautionary statements are defined in Section 24 of the Federal
+     * Hazardous Substances Act and Section 105 of the Consumer Product Safety
+     * Improvement Act of 2008. They must be displayed on the product packaging
+     * and in certain online and catalog advertisements. You are responsible for
+     * determining if a cautionary statement applies to the product. This can be
+     * verified by contacting the product manufacturer or checking the product
+     * packaging. Cautionary statements that you select will be displayed on the
+     * product detail page. If no cautionary statement applies to the product,
+     * select "no warning applicable".
+     *
+     * Max 7 elements
+     * @param cpsiaStatements the cpsiaStatements to set
+     */
+    public Builder setCpsiaStatements(Set<CPSIA> cpsiaStatements) {
+      if ( cpsiaStatements == null )
+        this.cpsiaStatements.clear();
+      else
+        this.cpsiaStatements.addAll( cpsiaStatements );
+      return this;
+    }
+
+
+    /**
+     * Use this field to indicate if a cautionary statement relating to the
+     * choking hazards of children's toys and games applies to your product.
+     * These cautionary statements are defined in Section 24 of the Federal
+     * Hazardous Substances Act and Section 105 of the Consumer Product Safety
+     * Improvement Act of 2008. They must be displayed on the product packaging
+     * and in certain online and catalog advertisements. You are responsible for
+     * determining if a cautionary statement applies to the product. This can be
+     * verified by contacting the product manufacturer or checking the product
+     * packaging. Cautionary statements that you select will be displayed on the
+     * product detail page. If no cautionary statement applies to the product,
+     * select "no warning applicable".
+     *
+     * Max 7 elements
+     * @param cpsiaStatement the cpsiaStatement to add
+     */
+    public Builder setCpsiaStatements( CPSIA cpsiaStatement ) {
+      Utils.checkNull( cpsiaStatement, "cpsiaStatement" );
+      this.cpsiaStatements.add( cpsiaStatement );
+      return this;
+    }
+
+
+    /**
+     * The country that the item was manufactured in.
+     * Max: 50 chars
+     * @return the countryOfOrigin
+     */
+    public String getCountryOfOrigin() {
+      return countryOfOrigin;
+    }
+
+    /**
+     * The country that the item was manufactured in.
+     * Max: 50 chars
+     * @param countryOfOrigin the countryOfOrigin to set
+     */
+    public Builder setCountryOfOrigin(String countryOfOrigin) {
+      if ( countryOfOrigin == null || countryOfOrigin.isEmpty() || countryOfOrigin.length() > 500 )
+        throw new IllegalArgumentException( "countryOfOrigin must be between 1-500 characters" );
+
+      this.countryOfOrigin = countryOfOrigin;
+      return this;
+    }
+
+    /**
+     * If applicable, use to supply any associated warnings for your product.
+     * Max: 500
+     * @return the safetyWarning
+     */
+    public String getSafetyWarning() {
+      return safetyWarning;
+    }
+
+    /**
+     * If applicable, use to supply any associated warnings for your product.
+     * Max: 500
+     * @param safetyWarning the safetyWarning to set
+     */
+    public Builder setSafetyWarning(String safetyWarning) {
+      if ( safetyWarning == null || safetyWarning.isEmpty() || safetyWarning.length() > 500 )
+        throw new IllegalArgumentException( "safetyWarning must be between 1-500 characters" );
+
+      this.safetyWarning = safetyWarning;
+      return this;
+    }
+
+
+    /**
+     * If updating merchant SKU that has quantity = 0 at all FCs, date that the
+     * inventory in this message should be available for sale on Jet.com.
+     *
+     * You should only use this field if the quantity for the merchant SKU is 0
+     * at all merchant_fcs. This date should be in
+     * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
+     * Example: 1988-01-01T01:43:30.0000000-07:00
+     * @param startSellingDate the startSellingDate to set
+     */
+    public final Builder setStartSellingDate(JetDate startSellingDate) {
+      this.startSellingDate = startSellingDate;
+      return this;
+    }
+
+
+    /**
+     * Manufacturer's suggested retail price or list price for the product.
+     * @return the msrp
+     */
+    public Money getMsrp() {
+      return msrp;
+    }
+
+    /**
+     * Manufacturer's suggested retail price or list price for the product.
+     * @param msrp the msrp to set
+     */
+    public Builder setMsrp( Money msrp) {
+      if ( msrp == null || msrp.lessThanZero())
+        throw new IllegalArgumentException( "msrp cannot be null or less than zero" );
+
+      this.msrp = msrp;
+      return this;
+    }
+
+
+    /**
+     * Retailer price for the product for which member savings will be applied
+     * (if applicable, see map_implementation)
+     * @return the map price
+     */
+    public Money getMapPrice() {
+      return mapPrice;
+    }
+
+    /**
+     * Retailer price for the product for which member savings will be applied
+     * (if applicable, see map_implementation)
+     * @param map the map to set
+     */
+    public Builder setMapPrice( Money map) {
+      if ( map == null || map.lessThanZero())
+        throw new IllegalArgumentException( "map cannot be null or less than zero" );
+
+      mapPrice = map;
+      return this;
+    }
+
+
+    /**
+     * The type of rule that indicates how Jet member savings are allowed to be
+     * applied to an item’s base price (which is referred to as map_price in the
+     * API documentation)
+     * @return the mapImplementation
+     */
+    public MAPType getMapImplementation() {
+      return mapImplementation;
+    }
+
+    /**
+     * The type of rule that indicates how Jet member savings are allowed to be
+     * applied to an item’s base price (which is referred to as map_price in the
+     * API documentation)
+     * @param mapImplementation the mapImplementation to set
+     */
+    public Builder setMapImplementation(MAPType mapImplementation) {
+      Utils.checkNull( mapImplementation, "mapImplementation" );
+      this.mapImplementation = mapImplementation;
+      return this;
+    }
+
+
+    /**
+     * The type of rule that indicates how Jet member savings are allowed to be
+     * applied to an item’s base price (which is referred to as map_price in the
+     * API documentation)
+     * @param mapImplementation the mapImplementation to set
+     * @throws IllegalArgumentException if an invalid type is encountered and
+     * mapImplementation is NOT empty
+     */
+    public Builder setMapImplementation( String mapImplementation)
+    {
+      Utils.checkNull( mapImplementation, "mapImplementation" );
+      if ( mapImplementation.isEmpty())
+        return this;
+
+      for ( MAPType m : MAPType.values())
+      {
+        if ( m.getType().equals( mapImplementation ))
+        {
+          this.mapImplementation = m;
+          return this;
+        }
+      }
+
+      throw new IllegalArgumentException( "Invalid MAP Type encountered: " + mapImplementation );
+    }
+
+
+    /**
+     * Product Tax Code
+     * @todo Make this an enum
+     * @return the productTaxCode
+     */
+    public ProductTaxCode getProductTaxCode() {
+      return productTaxCode;
+    }
+
+    /**
+     * Product Tax Code
+     * @param productTaxCode the productTaxCode to set
+     */
+    public Builder setProductTaxCode( final ProductTaxCode productTaxCode) {
+      Utils.checkNull( productTaxCode, "productTaxCode" );
+      this.productTaxCode = productTaxCode;
+      return this;
+    }
+
+    /**
+     * Overides the category level setting for this fee adjustment; this is the
+     * increase in commission you are willing to pay on this product if the
+     * customer waives their ability to return it.
+     * If you want to increase the commission you are willing to pay from a base rate
+     * of 15% to 17%, then you should enter '0.02'
+     * @return the noReturnFeeAdj
+     */
+    public Money getNoReturnFeeAdj() {
+      return noReturnFeeAdj;
+    }
+
+    /**
+     * Overides the category level setting for this fee adjustment; this is the
+     * increase in commission you are willing to pay on this product if the
+     * customer waives their ability to return it.
+     * If you want to increase the commission you are willing to pay from a base rate
+     * of 15% to 17%, then you should enter '0.02'
+     * @param noReturnFeeAdj the noReturnFeeAdj to set
+     */
+    public Builder setNoReturnFeeAdj(final Money noReturnFeeAdj) {
+      Utils.checkNull( noReturnFeeAdj, "noReturnFeeAdj" );
+      this.noReturnFeeAdj = noReturnFeeAdj;
+      return this;
+    }
+
+    /**
+     * If this field is 'true', it indicates that this 'merchant SKU' will always
+     * ship on its own.A separate 'merchant_order' will always be placed for this
+     * 'merchant_SKU', one consequence of this will be that this merchant_sku
+     * will never contriube to any basket size fee adjustments with any other
+     * merchant_skus.
+     * @return the shipsAlone
+     */
+    public boolean isShipsAlone() {
+      return shipsAlone;
+    }
+
+    /**
+     * If this field is 'true', it indicates that this 'merchant SKU' will always
+     * ship on its own.A separate 'merchant_order' will always be placed for this
+     * 'merchant_SKU', one consequence of this will be that this merchant_sku
+     * will never contriube to any basket size fee adjustments with any other
+     * merchant_skus.
+     * @param shipsAlone the shipsAlone to set
+     */
+    public Builder setShipsAlone(boolean shipsAlone) {
+      this.shipsAlone = shipsAlone;
+      return this;
+    }
+
+
+    /**
+     * This SKU will not be subject to any fee adjustment rules that are set up
+     * if this field is 'true'
+     * @return value
+     */
+    public boolean isExcludeFromFeeAdjustments() {
+      return excludeFromFeeAdjustments;
+    }
+
+    /**
+     * This SKU will not be subject to any fee adjustment rules that are set up
+     * if this field is 'true'
+     * @param exclude state
+     */
+    public Builder setExcludeFromFeeAdjustments(boolean exclude) {
+      excludeFromFeeAdjustments = exclude;
+      return this;
+    }
+
+
+    /**
+     * This is not documented
+     * @return the attributesNodeSpecific
+     */
+    public Set<SkuAttributeRec> getAttributesNodeSpecific() {
+      return attributesNodeSpecific;
+    }
+
+    /**
+     * This is not documented
+     * @param attributesNodeSpecific the attributesNodeSpecific to set
+     */
+    public Builder setAttributesNodeSpecific(List<SkuAttributeRec> attributesNodeSpecific) {
+      if ( attributesNodeSpecific == null )
+        this.attributesNodeSpecific.clear();
+      else
+        this.attributesNodeSpecific.addAll( attributesNodeSpecific );
+      return this;
+    }
+
+
+    /**
+     * This is not documented
+     * @param attributesNodeSpecific the attributesNodeSpecific to set
+     */
+    public Builder setAttributesNodeSpecific( SkuAttributeRec attributesNodeSpecific) {
+      Utils.checkNull( attributesNodeSpecific, "attributesNodeSpecific" );
+      this.attributesNodeSpecific.add( attributesNodeSpecific );
+      return this;
+    }
+
+    /**
+     * A set of alternate image slots and locations
+     *
+     * key: The slot that the alternate image should be uploaded to. Jet.com
+     * supports up to 8 images (or 8 image slots).
+     *
+     * value: The absolute location where Jet.com can retrieve the image
+     * @return the alternateImages
+     */
+    public Map<Integer,String> getAlternateImages() {
+      return alternateImages;
+    }
+
+    /**
+     * A set of alternate image slots and locations
+     *
+     * key: The slot that the alternate image should be uploaded to. Jet.com
+     * supports up to 8 images (or 8 image slots).
+     *
+     * value: The absolute location where Jet.com can retrieve the image
+     * @param alternateImages the alternateImages to set
+     */
+    public Builder setAlternateImages(Map<Integer,String> alternateImages) {
+      if ( alternateImages == null )
+        this.alternateImages.clear();
+      else
+        this.alternateImages.putAll( alternateImages );
+      return this;
+    }
+
+    /**
+     * A set of alternate image slots and locations
+     *
+     * key: The slot that the alternate image should be uploaded to. Jet.com
+     * supports up to 8 images (or 8 image slots).
+     *
+     * value: The absolute location where Jet.com can retrieve the image
+     * @param slot The image slot
+     * @param image The image
+     */
+    public Builder setAlternateImages( int slot, String image ) {
+      Utils.checkNull( image, "image" );
+      if ( slot < 0 ) 
+        throw new IllegalArgumentException( "slot cannot be less than zero" );
+      
+      this.alternateImages.put( slot, image );
+      return this;
+    }
+
+    /**
+     * URL location where Jet.com can access the image. The images should be
+     * 1500 x 1500 pixels or larger, but anything 500 x 500 pixels or larger
+     * is acceptable. There is no limit to image size.
+     * @return the mainImageUrl
+     */
+    public String getMainImageUrl() {
+      return mainImageUrl;
+    }
+
+    /**
+     * URL location where Jet.com can access the image. The images should be
+     * 1500 x 1500 pixels or larger, but anything 500 x 500 pixels or larger
+     * is acceptable. There is no limit to image size.
+     * @param mainImageUrl the mainImageUrl to set
+     */
+    public Builder setMainImageUrl(String mainImageUrl) {
+      Utils.checkNull( mainImageUrl, "mainImageUrl" );
+      this.mainImageUrl = mainImageUrl;
+      return this;
+    }
+
+    /**
+     * URL location where Jet.com can access an image of a color or fabric for a
+     * given merchant SKU. The images should be 1500 x 1500 pixels or larger, but
+     * anything 500 x 500 pixels or larger is acceptable. There is no limit to
+     * image size.
+     * @return the swatchImageUrl
+     */
+    public String getSwatchImageUrl() {
+      return swatchImageUrl;
+    }
+
+    /**
+     * URL location where Jet.com can access an image of a color or fabric for a
+     * given merchant SKU. The images should be 1500 x 1500 pixels or larger, but
+     * anything 500 x 500 pixels or larger is acceptable. There is no limit to
+     * image size.
+     * @param swatchImageUrl the swatchImageUrl to set
+     */
+    public Builder setSwatchImageUrl(String swatchImageUrl) {
+      Utils.checkNull( swatchImageUrl, "swatchImageUrl" );
+      this.swatchImageUrl = swatchImageUrl;
+      return this;
+    }
+
+
+
+    /**
+     * The overall price that the merchant SKU is priced at
+     * @return the price
+     */
+    public Money getPrice() {
+      return price;
+    }
+
+    /**
+     * The overall price that the merchant SKU is priced at
+     * @param price the price to set
+     */
+    public Builder setPrice( Money price) {
+      if ( price  == null || price.lessThanZero())
+        throw new IllegalArgumentException( "price cannot be null or less than zero" );
+
+      this.price = price;
+      return this;
+    }
+
+    /**
+     * Fulfillment node prices
+     * @return the fNodePrices
+     */
+    public Set<FNodePriceRec> getfNodePrices() {
+      return fNodePrices;
+    }
+
+    /**
+     * Fulfillment node prices
+     * @param fNodePrices the fNodePrices to set
+     */
+    public Builder setfNodePrices(List<FNodePriceRec> fNodePrices) {
+      if ( fNodePrices == null )
+        this.fNodePrices.clear();
+      else
+        this.fNodePrices.addAll( fNodePrices );
+      return this;
+    }
+
+    /**
+     * Fulfillment node prices
+     * @param fNodePrices the fNodePrices to set
+     */
+    public Builder setfNodePrices( FNodePriceRec fNodePrices) {
+      Utils.checkNull( fNodePrices, "fNodePrices" );
+      this.fNodePrices.add( fNodePrices );
+      return this;
+    }
+
+    /**
+     * Fulfillment node inventory
+     * @return the fNodeInventory
+     */
+    public Set<FNodeInventoryRec> getfNodeInventory() {
+      return fNodeInventory;
+    }
+
+    /**
+     * Fulfillment node inventory
+     * @param fNodeInventory the fNodeInventory to set
+     */
+    public Builder setfNodeInventory(List<FNodeInventoryRec> fNodeInventory) {
+      if ( fNodeInventory == null )
+        this.fNodeInventory.clear();
+      else
+        this.fNodeInventory.addAll( fNodeInventory );
+      return this;
+    }
+
+    /**
+     * Fulfillment node inventory
+     * @param fNodeInventory the fNodeInventory to set
+     */
+    public Builder setfNodeInventory( FNodeInventoryRec fNodeInventory) {
+      Utils.checkNull( fNodeInventory, "fNodeInventory" );
+      this.fNodeInventory.add( fNodeInventory );
+      return this;
+    }
+
+
+    /**
+     * Add a list of shipping exception nodes
+     * @param nodes nodes to add
+     */
+    public Builder setShippingExceptionNodes( List<FNodeShippingRec> nodes )
+    {
+      if ( nodes == null )
+        this.shippingExceptionNodes.clear();
+      else
+        this.shippingExceptionNodes.addAll( nodes );
+      return this;
+    }
+
+
+    /**
+     * Add a shipping exception node
+     * @param node node to add
+     */
+    public Builder setShippingExceptionNodes( FNodeShippingRec node )
+    {
+      Utils.checkNull( node, "node" );
+      this.shippingExceptionNodes.add( node );
+      return this;
+    }
+
+
+    /**
+     * Retrieve the shipping exception node list
+     * @return node list
+     */
+    public Set<FNodeShippingRec> getShippingExceptionNodes()
+    {
+      return shippingExceptionNodes;
+    }
+
+    
+    
+    /**
+     * Set a bullet
+     * @param bullet the bullet
+     */
+    public Builder setBullets( String bullet ) {
+      Utils.checkNullEmpty( bullet, "bullet" );
+      this.bullets.add( bullet );
+      return this;
+    }
+
+
+    /**
+     * Add a list of shipping exception nodes
+     * @param nodes nodes to add
+     */
+    public Builder setBullets( List<String> bullets )
+    {
+      if ( bullets == null )
+        this.bullets.clear();
+      else
+        this.bullets.addAll( bullets );
+      return this;
+    }    
+    
+  } //..Builder
+  
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  
+  
   /**
    * Short product description
    * 5-500 characters
    */
-  private String title = "";
+  private final String title;
 
   /**
    * The unique ID that defines where the product will be found in the
    * Jet.com browse structure
    */
-  private int browseNodeId = 0;
+  private final int browseNodeId;
 
   /**
    * ItemType allows customers to find your products as they browse to the
    * most specific item types. Please use the exact selling from
    * Amazon's browse tree guides
    */
-  private String azItemTypeKeyword = "";
+  private final String azItemTypeKeyword;
 
   /**
    * Please enter a category path using your own product taxonomy
    */
-  private String categoryPath = "";
+  private final String categoryPath;
 
   /**
    * Product codes
    */
-  private final Set<ProductCodeRec> productCodes = Collections.<ProductCodeRec>synchronizedSet( new HashSet());
+  private final Set<ProductCodeRec> productCodes;
 
   /**
    * ASIN Number.
    * Amazon standard identification number for this merchant SKU if available.
    */
-  private String asin = "";
+  private final String asin;
 
   /**
    * Number of items with the given Standard Product Code that makes up
    * your merchant SKU
    */
-  private int multipackQuantity = 1;
+  private final int multipackQuantity;
 
   /**
    * Brand of the merchant SKU
    * 1-50 characters
    */
-  private String brand = "";
+  private final String brand;
 
   /**
    * Manufacturer of the merchant SKU
    * 1-50 characters
    */
-  private String manufacturer = "";
+  private final String manufacturer;
 
   /**
    * Part number provided by the original manufacturer of the merchant SKU
    * Max length: 50 characters
    */
-  private String mfrPartNumber = "";
+  private final String mfrPartNumber;
 
   /**
    * Long description of the merchant SKU
    *
    * 1-2000 characters
    */
-  private String productDescription = "";
+  private final String productDescription;
 
   /**
    * ItemType allows customers to find your products as they browse to 
    * the most specific item types.
    */
-  private String amazonItemTypeKeyword = "";
+  private final String amazonItemTypeKeyword;
   
   /**
    * Merchant SKU feature description
    * Max length: 500 characters
    * Maximum of 5 elements
    */
-  private final Set<String> bullets = Collections.<String>synchronizedSet( new HashSet());
+  private final Set<String> bullets;
 
   /**
    * For Price Per Unit calculations, the number of units included in
    * the merchant SKU. The unit of measure must be specified in order to
    * indicate what is being measured by the unit-count.
    */
-  private BigDecimal numberUnitsForPricePerUnit = new BigDecimal( 1 );
+  private final BigDecimal numberUnitsForPricePerUnit;
 
   /**
    * The type_of_unit_for_price_per_unit attribute is a label for the
@@ -146,42 +1806,42 @@ public class ProductRec implements Jsonable
    * number_units_for_price_per_unit= 6, type_of_unit_for_price_per_unit= can,
    * price per unit = price per can.
    */
-  private String typeOfUnitForPricePerUnit = "each";
+  private final String typeOfUnitForPricePerUnit;
 
   /**
    * Weight of the merchant SKU when in its shippable configuration
    */
-  private BigDecimal shippingWeightPounds = new BigDecimal( 0 );
+  private final BigDecimal shippingWeightPounds;
 
   /**
    * Length of the merchant SKU when in its shippable configuration
    */
-  private BigDecimal packageLengthInches = new BigDecimal( 0 );;
+  private final BigDecimal packageLengthInches;
 
   /**
    * Width of the merchant SKU when in its shippable configuration
    */
-  private BigDecimal packageWidthInches = new BigDecimal( 0 );;
+  private final BigDecimal packageWidthInches ;
 
   /**
    * Height of the merchant SKU when in its shippable configuration
    */
-  private BigDecimal packageHeightInches = new BigDecimal( 0 );;
+  private final BigDecimal packageHeightInches;
 
   /**
    * Length of the merchant SKU when in its fully assembled/usable condition
    */
-  private BigDecimal displayLengthInches = new BigDecimal( 0 );;
+  private final BigDecimal displayLengthInches;
 
   /**
    * Width of the merchant SKU when in its fully assembled/usable condition
    */
-  private BigDecimal displayWidthInches = new BigDecimal( 0 );;
+  private final BigDecimal displayWidthInches;
 
   /**
    * Height of the merchant SKU when in its fully assembled/usable condition
    */
-  private BigDecimal displayHeightInches = new BigDecimal( 0 );;
+  private final BigDecimal displayHeightInches;
 
   /**
    * Number of business days from receipt of an order for the given merchant SKU until it will be shipped (only populate if it is different than your account default).
@@ -191,7 +1851,7 @@ public class ProductRec implements Jsonable
    * 2= ships two business days after the 'merchant_order' is received
    * N = ships N business days after the 'merchant_order' is received
    */
-  private int fulfillmentTime = 0;
+  private final int fulfillmentTime;
 
   /**
    * You must tell us if your product is subject to Proposition 65 rules and
@@ -203,13 +1863,13 @@ public class ProductRec implements Jsonable
    * this column, we will assume your product is not subject to this rule.
    * Please view this website for more information: http://www.oehha.ca.gov/.
    */
-  private boolean prop65 = false;
+  private final boolean prop65;
 
   /**
    * Any legal language required to be displayed with the product.
    * Max Length: 500
    */
-  private String legalDisclaimerDescription = "";
+  private final String legalDisclaimerDescription;
 
   /**
    * Use this field to indicate if a cautionary statement relating to the
@@ -226,19 +1886,19 @@ public class ProductRec implements Jsonable
    *
    * Max 7 elements
    */
-  private final Set<CPSIA> cpsiaStatements = Collections.<CPSIA>synchronizedSet( new HashSet());
+  private final Set<CPSIA> cpsiaStatements;
 
   /**
    * The country that the item was manufactured in.
    * Max: 50 chars
    */
-  private String countryOfOrigin = "";
+  private final String countryOfOrigin;
 
   /**
    * If applicable, use to supply any associated warnings for your product.
    * Max: 500
    */
-  private String safetyWarning = "";
+  private final String safetyWarning;
 
   /**
    * If updating merchant SKU that has quantity = 0 at all FCs, date that the
@@ -249,32 +1909,32 @@ public class ProductRec implements Jsonable
    * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
    * Example: 1988-01-01T01:43:30.0000000-07:00
    */
-  private JetDate startSellingDate;
+  private final JetDate startSellingDate;
 
   /**
    * Manufacturer's suggested retail price or list price for the product.
    */
-  private Money msrp = new Money();
+  private final Money msrp;
 
   /**
    * The overall price that the merchant SKU is priced at
    */
-  private Money price = new Money();
+  private final Money price;
 
   /**
    * Fulfillment node prices
    */
-  private final Set<FNodePriceRec> fNodePrices = Collections.<FNodePriceRec>synchronizedSet( new HashSet());
+  private final Set<FNodePriceRec> fNodePrices;
 
   /**
    * Fulfillment node ivnentory
    */
-  private final Set<FNodeInventoryRec> fNodeInventory = Collections.<FNodeInventoryRec>synchronizedSet( new HashSet());
+  private final Set<FNodeInventoryRec> fNodeInventory;
 
   /**
    * The unique ID for an individually selectable product for sale on Jet.com.
    */
-  private String jetRetailSku = "";
+  private final String jetRetailSku;
 
 
   /**
@@ -286,19 +1946,19 @@ public class ProductRec implements Jsonable
    * left of the decimal point and 2 digits to the right of the decimal point.
    * Commas or currency symbols are not allowed.
    */
-  private Money mapPrice = new Money();
+  private final Money mapPrice;
 
   /**
    * The type of rule that indicates how Jet member savings are allowed to be
    * applied to an item’s base price (which is referred to as map_price in the
    * API documentation)
    */
-  private MAPType mapImplementation = MAPType.NO_RESTRICTIONS;
+  private final MAPType mapImplementation;
 
   /**
    * Product Tax Code
    */
-  private ProductTaxCode productTaxCode = ProductTaxCode.NO_VALUE;
+  private final ProductTaxCode productTaxCode;
 
   /**
    * Overides the category level setting for this fee adjustment; this is the
@@ -307,7 +1967,7 @@ public class ProductRec implements Jsonable
    * If you want to increase the commission you are willing to pay from a base rate
    * of 15% to 17%, then you should enter '0.02'
    */
-  private Money noReturnFeeAdj = new Money();
+  private final Money noReturnFeeAdj;
 
   /**
    * If this field is 'true', it indicates that this 'merchant SKU' will always
@@ -316,18 +1976,18 @@ public class ProductRec implements Jsonable
    * will never contriube to any basket size fee adjustments with any other
    * merchant_skus.
    */
-  private boolean shipsAlone = false;
+  private final boolean shipsAlone;
 
   /**
    * This SKU will not be subject to any fee adjustment rules that are set up
    * if this field is 'true'
    */
-  private boolean excludeFromFeeAdjustments = false;
+  private final boolean excludeFromFeeAdjustments;
 
   /**
    * This is not documented
    */
-  private final Set<SkuAttributeRec> attributesNodeSpecific = Collections.<SkuAttributeRec>synchronizedSet( new HashSet());
+  private final Set<SkuAttributeRec> attributesNodeSpecific;
 
   /**
    * A set of alternate image slots and locations
@@ -337,14 +1997,14 @@ public class ProductRec implements Jsonable
    *
    * value: The absolute location where Jet.com can retrieve the image
    */
-  private final Map<Integer,String> alternateImages = new ConcurrentHashMap<>();
+  private final Map<Integer,String> alternateImages;
 
   /**
    * URL location where Jet.com can access the image. The images should be
    * 1500 x 1500 pixels or larger, but anything 500 x 500 pixels or larger
    * is acceptable. There is no limit to image size.
    */
-  private String mainImageUrl = "";
+  private final String mainImageUrl;
 
   /**
    * URL location where Jet.com can access an image of a color or fabric for a
@@ -352,57 +2012,57 @@ public class ProductRec implements Jsonable
    * anything 500 x 500 pixels or larger is acceptable. There is no limit to
    * image size.
    */
-  private String swatchImageUrl = "";
+  private final String swatchImageUrl;
 
   /**
    * The unique sku for this product
    */
-  private String merchantSku = "";
+  private final String merchantSku;
 
   /**
    * Shipping exception node list
    */
-  private final Set<FNodeShippingRec> shippingExceptionNodes = Collections.<FNodeShippingRec>synchronizedSet( new HashSet());
+  private final Set<FNodeShippingRec> shippingExceptionNodes;
 
   /**
    * From Product Get response
    */
-  private String correlationId = "";
+  private final String correlationId;
 
   /**
    * The merchant sku id returned in the product get response
    */
-  private String merchantSkuId = "";
+  private final String merchantSkuId;
 
   /**
    * Producer id retrieved from product get response
    */
-  private String producerId = "";
+  private final String producerId;
 
   /**
    * Product status
    */
-  private ProductStatus status = ProductStatus.NONE;
+  private final ProductStatus status;
 
   /**
    * Product sub status
    */
-  private final Set<ProductSubStatus> subStatus = Collections.<ProductSubStatus>synchronizedSet( new HashSet());
+  private final Set<ProductSubStatus> subStatus;
 
   /**
    * Sku last update
    */
-  private JetDate skuLastUpdate = null;
+  private final JetDate skuLastUpdate;
   
   /**
    * Inventory last update
    */
-  private JetDate inventoryLastUpdate = null;
+  private final JetDate inventoryLastUpdate;
   
   /**
    * Price last update
    */
-  private JetDate priceLastUpdate = null;
+  private final JetDate priceLastUpdate;
 
 
   /**
@@ -412,49 +2072,49 @@ public class ProductRec implements Jsonable
    */
   public static ProductRec fromJSON( final JsonObject json )
   {
-    final ProductRec out = new ProductRec();
+    final Builder out = new Builder();
 
     if ( json == null )
-      return out;
+      return out.build();
 
-    out.title = json.getString( "product_title", "" );
-    out.browseNodeId = json.getInt( "jet_browse_node_id", 0 );
-    out.asin = json.getString( "ASIN", "" );   
-    out.productCodes.addAll( loadProductCodes( json.getJsonArray( "standard_product_codes" )));
-    out.multipackQuantity = json.getInt( "multipack_quantity", 1 );
-    out.brand = json.getString( "brand", "" );
-    out.manufacturer = json.getString( "manufacturer", "" );
-    out.mfrPartNumber = json.getString( "mfr_part_number", "" );
-    out.productDescription = json.getString( "product_description", "" );
-    out.bullets.addAll( loadStringArray( json.getJsonArray( "bullets" )));
-    out.numberUnitsForPricePerUnit = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "number_units_for_price_per_unit" ) , 1 );
-    out.typeOfUnitForPricePerUnit = json.getString( "type_of_unit_for_price_per_unit", "each" );
-    out.shippingWeightPounds = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "shipping_weight_pounds" ), 0 );
-    out.packageLengthInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_length_inches" ), 0 );
-    out.packageWidthInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_width_inches" ), 0 );
-    out.packageHeightInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_height_inches" ), 0 );
-    out.displayLengthInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_length_inches" ), 0 );
-    out.displayWidthInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_width_inches" ), 0 );
-    out.displayHeightInches = Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_height_inches" ), 0 );
-    out.prop65 = json.getBoolean( "prop_65", false );
-    out.legalDisclaimerDescription = json.getString( "legal_disclaimer_description", "" );
-    out.cpsiaStatements.addAll( loadCPSIA( json.getJsonArray( "cpsia_cautionary_statements" )));
-    out.countryOfOrigin = json.getString( "country_of_origin", "" );
-    out.safetyWarning = json.getString( "safety_warning", "" );
-    out.fulfillmentTime = json.getInt( "fulfillment_time", 1 );
-    out.msrp = Utils.jsonNumberToMoney( json.getJsonNumber( "msrp" ));
-    out.mapPrice = Utils.jsonNumberToMoney( json.getJsonNumber( "map_price" ));
-    out.mapImplementation = MAPType.fromJet( json.getString( "map_implementation", MAPType.NO_RESTRICTIONS.getType()));
-    out.productTaxCode = ProductTaxCode.fromText( json.getString( "product_tax_code", "" ));
-    out.noReturnFeeAdj = Utils.jsonNumberToMoney( json.getJsonNumber( "no_return_fee_adjustment" ));
-    out.excludeFromFeeAdjustments = json.getBoolean( "exclude_from_fee_adjustments", false );
-    out.attributesNodeSpecific.addAll( loadAttrNodeSpecific( json.getJsonArray( "attribute_node_specific" )));
-    out.mainImageUrl = json.getString( "main_image_url", "" );
-    out.swatchImageUrl = json.getString( "swatch_image_url", "" );
-    out.alternateImages.putAll( loadAltImages( json.getJsonArray( "alternate_images" )));
-    out.amazonItemTypeKeyword = json.getString( "amazon_item_type_keyword", "" );
-    out.categoryPath = json.getString( "category_path", "" );
-    out.price = Utils.jsonNumberToMoney( json.getJsonNumber( "price" ));
+    out.setTitle( json.getString( "product_title", "" ));
+    out.setBrowseNodeId( json.getInt( "jet_browse_node_id", 0 ));
+    out.setAsin( json.getString( "ASIN", "" ));   
+    out.setProductCodes( loadProductCodes( json.getJsonArray( "standard_product_codes" )));
+    out.setMultipackQuantity( json.getInt( "multipack_quantity", 1 ));
+    out.setBrand( json.getString( "brand", "" ));
+    out.setManufacturer( json.getString( "manufacturer", "" ));
+    out.setMfrPartNumber( json.getString( "mfr_part_number", "" ));
+    out.setProductDescription( json.getString( "product_description", "" ));
+    out.setBullets( loadStringArray( json.getJsonArray( "bullets" )));
+    out.setNumberUnitsForPricePerUnit( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "number_units_for_price_per_unit" ) , 1 ));
+    out.setTypeOfUnitForPricePerUnit( json.getString( "type_of_unit_for_price_per_unit", "each" ));
+    out.setShippingWeightPounds( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "shipping_weight_pounds" ), 0 ));
+    out.setPackageLengthInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_length_inches" ), 0 ));
+    out.setPackageWidthInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_width_inches" ), 0 ));
+    out.setPackageHeightInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_height_inches" ), 0 ));
+    out.setDisplayLengthInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_length_inches" ), 0 ));
+    out.setDisplayWidthInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_width_inches" ), 0 ));
+    out.setDisplayHeightInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_height_inches" ), 0 ));
+    out.setProp65( json.getBoolean( "prop_65", false ));
+    out.setLegalDisclaimerDescription( json.getString( "legal_disclaimer_description", "" ));
+    out.setCpsiaStatements( loadCPSIA( json.getJsonArray( "cpsia_cautionary_statements" )));
+    out.setCountryOfOrigin( json.getString( "country_of_origin", "" ));
+    out.setSafetyWarning( json.getString( "safety_warning", "" ));
+    out.setFulfillmentTime( json.getInt( "fulfillment_time", 1 ));
+    out.setMsrp( Utils.jsonNumberToMoney( json.getJsonNumber( "msrp" )));
+    out.setMapPrice( Utils.jsonNumberToMoney( json.getJsonNumber( "map_price" )));
+    out.setMapImplementation( MAPType.fromJet( json.getString( "map_implementation", MAPType.NO_RESTRICTIONS.getType())));
+    out.setProductTaxCode( ProductTaxCode.fromText( json.getString( "product_tax_code", "" )));
+    out.setNoReturnFeeAdj( Utils.jsonNumberToMoney( json.getJsonNumber( "no_return_fee_adjustment" )));
+    out.setExcludeFromFeeAdjustments( json.getBoolean( "exclude_from_fee_adjustments", false ));
+    out.setAttributesNodeSpecific( loadAttrNodeSpecific( json.getJsonArray( "attribute_node_specific" )));
+    out.setMainImageUrl( json.getString( "main_image_url", "" ));
+    out.setSwatchImageUrl( json.getString( "swatch_image_url", "" ));
+    out.setAlternateImages( loadAltImages( json.getJsonArray( "alternate_images" )));
+    out.setAmazonItemTypeKeyword( json.getString( "amazon_item_type_keyword", "" ));
+    out.setCategoryPath( json.getString( "category_path", "" ));
+    out.setPrice( Utils.jsonNumberToMoney( json.getJsonNumber( "price" )));
     
     
     //..Deprecated or removed?    
@@ -489,16 +2149,78 @@ public class ProductRec implements Jsonable
     
     
 
-    return out;
+    return out.build();
   }
 
 
   /**
    * Create a new JetProductRec Instance
    */
-  public ProductRec()
+  protected ProductRec( final Builder b )
   {
-    setStartSellingDate( new ISO8601Date());
+    this.title = b.title;
+    this.browseNodeId = b.browseNodeId;
+    this.azItemTypeKeyword = b.azItemTypeKeyword;
+    this.categoryPath = b.categoryPath;
+    this.productCodes = Collections.unmodifiableSet( b.productCodes );
+    
+    this.asin = b.asin;
+    this.multipackQuantity = b.multipackQuantity;
+    this.brand = b.brand;
+    this.manufacturer = b.manufacturer;
+    this.mfrPartNumber = b.mfrPartNumber;
+    this.productDescription = b.productDescription;
+    this.amazonItemTypeKeyword = b.amazonItemTypeKeyword;
+    this.bullets = Collections.unmodifiableSet( b.bullets );
+    
+    this.numberUnitsForPricePerUnit = b.numberUnitsForPricePerUnit;
+    this.typeOfUnitForPricePerUnit = b.typeOfUnitForPricePerUnit;
+    this.shippingWeightPounds = b.shippingWeightPounds;
+    this.packageLengthInches = b.packageLengthInches;
+    this.packageWidthInches = b.packageWidthInches;
+    this.packageHeightInches = b.packageHeightInches;
+    this.displayLengthInches = b.displayLengthInches;
+    this.displayWidthInches = b.displayWidthInches;
+    this.displayHeightInches = b.displayHeightInches;
+    this.fulfillmentTime = b.fulfillmentTime;
+    this.prop65 = b.prop65;
+    this.legalDisclaimerDescription = b.legalDisclaimerDescription;
+    this.cpsiaStatements = Collections.unmodifiableSet( b.cpsiaStatements );
+    this.countryOfOrigin = b.countryOfOrigin;
+    this.safetyWarning = b.safetyWarning;
+    this.msrp = b.msrp;
+    this.price = b.price;
+    this.fNodePrices = Collections.unmodifiableSet( b.fNodePrices );
+    this.fNodeInventory = Collections.unmodifiableSet( b.fNodeInventory );
+
+    this.jetRetailSku = b.jetRetailSku;
+    
+    this.mapPrice = b.mapPrice;
+    this.mapImplementation = b.mapImplementation;
+    this.productTaxCode = b.productTaxCode;
+    this.noReturnFeeAdj = b.noReturnFeeAdj;
+    this.shipsAlone = b.shipsAlone;
+    this.excludeFromFeeAdjustments = b.excludeFromFeeAdjustments;
+    this.attributesNodeSpecific = Collections.unmodifiableSet( b.attributesNodeSpecific );
+    this.alternateImages = Collections.unmodifiableMap( b.alternateImages );
+    
+    this.mainImageUrl = b.mainImageUrl;
+    this.swatchImageUrl = b.swatchImageUrl;
+    this.merchantSku = b.merchantSku;
+    this.shippingExceptionNodes = Collections.unmodifiableSet( b.shippingExceptionNodes );
+    
+    this.correlationId = b.correlationId;
+    this.merchantSkuId = b.merchantSkuId;
+    this.producerId = b.producerId;
+    this.status = b.status;
+    
+    this.subStatus = Collections.unmodifiableSet( b.subStatus );
+    
+    this.skuLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.skuLastUpdate.getDateString());
+    
+    this.inventoryLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.inventoryLastUpdate.getDateString());
+    this.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.priceLastUpdate.getDateString());
+    this.startSellingDate = ProductDate.fromJetValueOrNull( b.startSellingDate.getDateString());
   }
 
 
@@ -506,7 +2228,7 @@ public class ProductRec implements Jsonable
    * Retrieve the product status
    * @return product status
    */
-  public synchronized ProductStatus getProductStatus()
+  public ProductStatus getProductStatus()
   {
     return status;
   }
@@ -516,7 +2238,7 @@ public class ProductRec implements Jsonable
    * The unique ID for an individually selectable product for sale on Jet.com.
    * @return retail sku
    */
-  public synchronized String getJetRetailSku()
+  public String getJetRetailSku()
   {
     return jetRetailSku;
   }
@@ -526,7 +2248,7 @@ public class ProductRec implements Jsonable
    * Retrieve the last update time (only after product get response is received)
    * @return last update
    */
-  public synchronized JetDate getSkuLastUpdate()
+  public JetDate getSkuLastUpdate()
   {
     return skuLastUpdate;
   }
@@ -535,7 +2257,7 @@ public class ProductRec implements Jsonable
    * Retrieve the last inventory update time 
    * @return last update
    */
-  public synchronized JetDate getInventoryLastUpdate()
+  public JetDate getInventoryLastUpdate()
   {
     return inventoryLastUpdate;
   }
@@ -545,7 +2267,7 @@ public class ProductRec implements Jsonable
    * Retrieve the last price update time 
    * @return last update
    */
-  public synchronized JetDate getPriceLastUpdate()
+  public JetDate getPriceLastUpdate()
   {
     return priceLastUpdate;
   }  
@@ -554,7 +2276,7 @@ public class ProductRec implements Jsonable
    * Retrieve the producer id from the product get response
    * @return producer id
    */
-  public synchronized String getProducerId()
+  public String getProducerId()
   {
     return producerId;
   }
@@ -564,7 +2286,7 @@ public class ProductRec implements Jsonable
    * Product get response correlation id
    * @return id
    */
-  public synchronized String getCorrelationId()
+  public String getCorrelationId()
   {
     return correlationId;
   }
@@ -574,7 +2296,7 @@ public class ProductRec implements Jsonable
    * Retrieve the merchant sku id
    * @return sku id
    */
-  public synchronized String getMerchantSkuId()
+  public String getMerchantSkuId()
   {
     return merchantSkuId;
   }
@@ -588,7 +2310,7 @@ public class ProductRec implements Jsonable
    *
    * @return sku
    */
-  public synchronized String getMerchantSku()
+  public String getMerchantSku()
   {
     ArrayList<String> skus = new ArrayList<>();
     skus.add( merchantSku );
@@ -610,16 +2332,6 @@ public class ProductRec implements Jsonable
 
 
   /**
-   * Set the merchant sku.
-   * @param sku sku
-   */
-  public synchronized void setMerchantSku( String sku )
-  {
-    merchantSku = sku;
-  }
-
-
-  /**
    * Number of business days from receipt of an order for the given merchant SKU until it will be shipped (only populate if it is different than your account default).
    * Valid Values
    * 0 = ships the day the OrderMessage is received
@@ -629,28 +2341,9 @@ public class ProductRec implements Jsonable
    *
    * @return int time
    */
-  public synchronized int getFulfillmentTime()
+  public int getFulfillmentTime()
   {
     return fulfillmentTime;
-  }
-
-
-  /**
-   * Number of business days from receipt of an order for the given merchant SKU until it will be shipped (only populate if it is different than your account default).
-   * Valid Values
-   * 0 = ships the day the OrderMessage is received
-   * 1 = ships one business day after the 'merchant_order' is received
-   * 2= ships two business days after the 'merchant_order' is received
-   * N = ships N business days after the 'merchant_order' is received
-   *
-   * @param time
-   */
-  public synchronized void setFulfillmentTime( int time )
-  {
-    if ( time < 0 )
-      time = 0;
-
-    fulfillmentTime = time;
   }
 
   /**
@@ -658,41 +2351,16 @@ public class ProductRec implements Jsonable
    * 5-500 characters
    * @return the title
    */
-  public synchronized String getTitle() {
+  public String getTitle() {
     return title;
   }
 
-  /**
-   * Short product description
-   * 5-500 characters
-   * @param title the title to set
-   */
-  public synchronized void setTitle(String title) {
-    if ( title == null || title.length() < 5 || title.length() > 500 )
-      throw new IllegalArgumentException( "title must be between 5-500 characters" );
-
-    this.title = title;
-  }
-  
-  
-  /**
-   * Set the amazon item type keyword
-   * @param keyword keyword 
-   */
-  public synchronized void setAmazonItemTypeKeyword( final String keyword )
-  {
-    if ( keyword == null )
-      throw new IllegalArgumentException( "keyword cannot be null" );
-    
-    amazonItemTypeKeyword = keyword;
-  }
-  
   
   /**
    * Retrieve the amazon item type keyword 
    * @return keyword 
    */
-  public synchronized String getAmazonItemTypeKeyword()
+  public String getAmazonItemTypeKeyword()
   {
     return amazonItemTypeKeyword;
   }
@@ -703,17 +2371,8 @@ public class ProductRec implements Jsonable
    * Jet.com browse structure
    * @return the browseNodeId
    */
-  public synchronized int getBrowseNodeId() {
+  public int getBrowseNodeId() {
     return browseNodeId;
-  }
-
-  /**
-   * The unique ID that defines where the product will be found in the
-   * Jet.com browse structure
-   * @param browseNodeId the browseNodeId to set
-   */
-  public synchronized void setBrowseNodeId(int browseNodeId) {
-    this.browseNodeId = browseNodeId;
   }
 
   /**
@@ -722,42 +2381,23 @@ public class ProductRec implements Jsonable
    * Amazon's browse tree guides
    * @return the azItemTypeKeyword
    */
-  public synchronized String getAzItemTypeKeyword() {
+  public String getAzItemTypeKeyword() {
     return azItemTypeKeyword;
-  }
-
-  /**
-   * ItemType allows customers to find your products as they browse to the
-   * most specific item types. Please use the exact selling from
-   * Amazon's browse tree guides
-   * @param azItemTypeKeyword the azItemTypeKeyword to set
-   */
-  public synchronized void setAzItemTypeKeyword(String azItemTypeKeyword) {
-    this.azItemTypeKeyword = azItemTypeKeyword;
   }
 
   /**
    * Please enter a category path using your own product taxonomy
    * @return the categoryPath
    */
-  public synchronized String getCategoryPath() {
+  public String getCategoryPath() {
     return categoryPath;
   }
-
-  /**
-   * Please enter a category path using your own product taxonomy
-   * @param categoryPath the categoryPath to set
-   */
-  public synchronized void setCategoryPath(String categoryPath) {
-    this.categoryPath = categoryPath;
-  }
-
   
   /**
    * Get the sub status 
    * @return sub status 
    */
-  public synchronized Set<ProductSubStatus> getSubstatus() {
+  public Set<ProductSubStatus> getSubstatus() {
     return subStatus;
   }
   
@@ -765,43 +2405,17 @@ public class ProductRec implements Jsonable
    * Product codes
    * @return the productCodes
    */
-  public synchronized Set<ProductCodeRec> getProductCodes() {
+  public Set<ProductCodeRec> getProductCodes() {
     return productCodes;
   }
-
-  /**
-   * Add a set of product codes
-   * @param productCodes the productCodes to set
-   */
-  public synchronized void setProductCodes( List<ProductCodeRec> productCodes ) {
-    this.productCodes.addAll( productCodes );
-  }
-
-  /**
-   * Add a single product code
-   * @param productCode the productCode to set
-   */
-  public synchronized void setProductCode( ProductCodeRec productCode ) {
-    this.productCodes.add( productCode );
-  }
-
 
   /**
    * ASIN Number.
    * Amazon standard identification number for this merchant SKU if available.
    * @return the asin
    */
-  public synchronized String getAsin() {
+  public String getAsin() {
     return asin;
-  }
-
-  /**
-   * ASIN Number.
-   * Amazon standard identification number for this merchant SKU if available.
-   * @param asin the asin to set
-   */
-  public synchronized void setAsin(String asin) {
-    this.asin = asin;
   }
 
   /**
@@ -809,17 +2423,8 @@ public class ProductRec implements Jsonable
    * your merchant SKU
    * @return the multipackQuantity
    */
-  public synchronized int getMultipackQuantity() {
+  public int getMultipackQuantity() {
     return multipackQuantity;
-  }
-
-  /**
-   * Number of items with the given Standard Product Code that makes up
-   * your merchant SKU
-   * @param multipackQuantity the multipackQuantity to set
-   */
-  public synchronized void setMultipackQuantity(int multipackQuantity) {
-    this.multipackQuantity = multipackQuantity;
   }
 
   /**
@@ -827,20 +2432,8 @@ public class ProductRec implements Jsonable
    * 1-50 characters
    * @return the brand
    */
-  public synchronized String getBrand() {
+  public String getBrand() {
     return brand;
-  }
-
-  /**
-   * Brand of the merchant SKU
-   * 1-50 characters
-   * @param brand the brand to set
-   */
-  public synchronized void setBrand(String brand) {
-    if ( brand == null || brand.isEmpty() || brand.length() > 50 )
-      throw new IllegalArgumentException( "brand must be between 1-50 characters" );
-
-    this.brand = brand;
   }
 
   /**
@@ -848,19 +2441,8 @@ public class ProductRec implements Jsonable
    * 1-50 characters
    * @return the manufacturer
    */
-  public synchronized String getManufacturer() {
+  public String getManufacturer() {
     return manufacturer;
-  }
-
-  /**
-   * Manufacturer of the merchant SKU
-   * 1-50 characters
-   * @param manufacturer the manufacturer to set
-   */
-  public synchronized void setManufacturer(String manufacturer) {
-    if ( manufacturer == null || manufacturer.isEmpty() || manufacturer.length() > 50 )
-      throw new IllegalArgumentException( "manufacturer must be between 1-50 characters" );
-    this.manufacturer = manufacturer;
   }
 
   /**
@@ -868,17 +2450,8 @@ public class ProductRec implements Jsonable
    * Max length: 50 characters
    * @return the mfrPartNumber
    */
-  public synchronized String getMfrPartNumber() {
+  public String getMfrPartNumber() {
     return mfrPartNumber;
-  }
-
-  /**
-   * Part number provided by the original manufacturer of the merchant SKU
-   * Max length: 50 characters
-   * @param mfrPartNumber the mfrPartNumber to set
-   */
-  public synchronized void setMfrPartNumber(String mfrPartNumber) {
-    this.mfrPartNumber = mfrPartNumber;
   }
 
   /**
@@ -887,21 +2460,8 @@ public class ProductRec implements Jsonable
    * 1-2000 characters
    * @return the productDescription
    */
-  public synchronized String getProductDescription() {
+  public String getProductDescription() {
     return productDescription;
-  }
-
-  /**
-   * Long description of the merchant SKU
-   *
-   * 1-2000 characters
-   * @param productDescription the productDescription to set
-   */
-  public synchronized void setProductDescription(String productDescription) {
-    if ( productDescription == null || productDescription.isEmpty() || productDescription.length() > 2000 )
-      throw new IllegalArgumentException( "productDescription must be between 1-2000 characters" );
-
-    this.productDescription = productDescription;
   }
 
   /**
@@ -910,7 +2470,7 @@ public class ProductRec implements Jsonable
    * Maximum of 5 elements
    * @return the bullets
    */
-  public synchronized Set<String> getBullets() {
+  public Set<String> getBullets() {
     return bullets;
   }
 
@@ -920,13 +2480,12 @@ public class ProductRec implements Jsonable
    * Maximum of 5 elements
    * @param bullet the bullet to add
    */
-  public synchronized void addBullet( String bullet ) {
+  public void addBullet( String bullet ) {
     if ( bullet == null || bullet.isEmpty() || bullet.length() > 500 )
       throw new IllegalArgumentException( "bullet must be between 1-500 characters" );
 
     this.bullets.add( bullet );
   }
-
 
   /**
    * Merchant SKU feature description
@@ -934,10 +2493,9 @@ public class ProductRec implements Jsonable
    * Maximum of 5 elements
    * @param bullets the bullets to set
    */
-  public synchronized void addBullets( Set<String> bullets ) {
+  public void addBullets( Set<String> bullets ) {
     this.bullets.addAll( bullets );
   }
-
 
   /**
    * For Price Per Unit calculations, the number of units included in
@@ -945,18 +2503,8 @@ public class ProductRec implements Jsonable
    * indicate what is being measured by the unit-count.
    * @return the numberUnitsForPricePerUnit
    */
-  public synchronized BigDecimal getNumberUnitsForPricePerUnit() {
+  public BigDecimal getNumberUnitsForPricePerUnit() {
     return numberUnitsForPricePerUnit;
-  }
-
-  /**
-   * For Price Per Unit calculations, the number of units included in
-   * the merchant SKU. The unit of measure must be specified in order to
-   * indicate what is being measured by the unit-count.
-   * @param numberUnitsForPricePerUnit the numberUnitsForPricePerUnit to set
-   */
-  public synchronized void setNumberUnitsForPricePerUnit(BigDecimal numberUnitsForPricePerUnit) {
-    this.numberUnitsForPricePerUnit = numberUnitsForPricePerUnit;
   }
 
   /**
@@ -968,133 +2516,64 @@ public class ProductRec implements Jsonable
    * price per unit = price per can.
    * @return the typeOfUnitForPricePerUnit
    */
-  public synchronized String getTypeOfUnitForPricePerUnit() {
+  public String getTypeOfUnitForPricePerUnit() {
     return typeOfUnitForPricePerUnit;
-  }
-
-  /**
-   * The type_of_unit_for_price_per_unit attribute is a label for the
-   * number_units_for_price_per_unit. The price per unit can then be
-   * constructed by dividing the selling price by the number of units and
-   * appending the text "per unit value." For example, for a six-pack of soda,
-   * number_units_for_price_per_unit= 6, type_of_unit_for_price_per_unit= can,
-   * price per unit = price per can.
-   * @param typeOfUnitForPricePerUnit the typeOfUnitForPricePerUnit to set
-   */
-  public synchronized void setTypeOfUnitForPricePerUnit(String typeOfUnitForPricePerUnit) {
-    this.typeOfUnitForPricePerUnit = typeOfUnitForPricePerUnit;
   }
 
   /**
    * Weight of the merchant SKU when in its shippable configuration
    * @return the shippingWeightPounds
    */
-  public synchronized BigDecimal getShippingWeightPounds() {
+  public BigDecimal getShippingWeightPounds() {
     return shippingWeightPounds;
-  }
-
-  /**
-   * Weight of the merchant SKU when in its shippable configuration
-   * @param shippingWeightPounds the shippingWeightPounds to set
-   */
-  public synchronized void setShippingWeightPounds(BigDecimal shippingWeightPounds) {
-    this.shippingWeightPounds = shippingWeightPounds;
   }
 
   /**
    * Length of the merchant SKU when in its shippable configuration
    * @return the packageLengthInches
    */
-  public synchronized BigDecimal getPackageLengthInches() {
+  public BigDecimal getPackageLengthInches() {
     return packageLengthInches;
-  }
-
-  /**
-   * Length of the merchant SKU when in its shippable configuration
-   * @param packageLengthInches the packageLengthInches to set
-   */
-  public synchronized void setPackageLengthInches(BigDecimal packageLengthInches) {
-    this.packageLengthInches = packageLengthInches;
   }
 
   /**
    * Width of the merchant SKU when in its shippable configuration
    * @return the packageWidthInches
    */
-  public synchronized BigDecimal getPackageWidthInches() {
+  public BigDecimal getPackageWidthInches() {
     return packageWidthInches;
-  }
-
-  /**
-   * Width of the merchant SKU when in its shippable configuration
-   * @param packageWidthInches the packageWidthInches to set
-   */
-  public synchronized void setPackageWidthInches(BigDecimal packageWidthInches) {
-    this.packageWidthInches = packageWidthInches;
   }
 
   /**
    * Height of the merchant SKU when in its shippable configuration
    * @return the packageHeightInches
    */
-  public synchronized BigDecimal getPackageHeightInches() {
+  public BigDecimal getPackageHeightInches() {
     return packageHeightInches;
-  }
-
-  /**
-   * Height of the merchant SKU when in its shippable configuration
-   * @param packageHeightInches the packageHeightInches to set
-   */
-  public synchronized void setPackageHeightInches(BigDecimal packageHeightInches) {
-    this.packageHeightInches = packageHeightInches;
   }
 
   /**
    * Length of the merchant SKU when in its fully assembled/usable condition
    * @return the displayLengthInches
    */
-  public synchronized BigDecimal getDisplayLengthInches() {
+  public BigDecimal getDisplayLengthInches() {
     return displayLengthInches;
-  }
-
-  /**
-   * Length of the merchant SKU when in its fully assembled/usable condition
-   * @param displayLengthInches the displayLengthInches to set
-   */
-  public synchronized void setDisplayLengthInches(BigDecimal displayLengthInches) {
-    this.displayLengthInches = displayLengthInches;
   }
 
   /**
    * Width of the merchant SKU when in its fully assembled/usable condition
    * @return the displayWidthInches
    */
-  public synchronized BigDecimal getDisplayWidthInches() {
+  public BigDecimal getDisplayWidthInches() {
     return displayWidthInches;
-  }
-
-  /**
-   * Width of the merchant SKU when in its fully assembled/usable condition
-   * @param displayWidthInches the displayWidthInches to set
-   */
-  public synchronized void setDisplayWidthInches(BigDecimal displayWidthInches) {
-    this.displayWidthInches = displayWidthInches;
   }
 
   /**
    * Height of the merchant SKU when in its fully assembled/usable condition
    * @return the displayHeightInches
    */
-  public synchronized BigDecimal getDisplayHeightInches() {
+  public BigDecimal getDisplayHeightInches() {
     return displayHeightInches;
-  }
-
-  /**
-   * Height of the merchant SKU when in its fully assembled/usable condition
-   * @param displayHeightInches the displayHeightInches to set
-   */
-  public synchronized void setDisplayHeightInches(BigDecimal displayHeightInches) {
-    this.displayHeightInches = displayHeightInches;
   }
 
   /**
@@ -1108,23 +2587,8 @@ public class ProductRec implements Jsonable
    * Please view this website for more information: http://www.oehha.ca.gov/.
    * @return the prop65
    */
-  public synchronized boolean isProp65() {
+  public boolean isProp65() {
     return prop65;
-  }
-
-  /**
-   * You must tell us if your product is subject to Proposition 65 rules and
-   * regulations. Proposition 65 requires merchants to provide California
-   * consumers with special warnings for products that contain chemicals known
-   * to cause cancer, birth defects, or other reproductive harm, if those
-   * products expose consumers to such materials above certain threshold
-   * levels. The default value for this is "false," so if you do not populate
-   * this column, we will assume your product is not subject to this rule.
-   * Please view this website for more information: http://www.oehha.ca.gov/.
-   * @param prop65 the prop65 to set
-   */
-  public synchronized void setProp65(boolean prop65) {
-    this.prop65 = prop65;
   }
 
   /**
@@ -1132,20 +2596,8 @@ public class ProductRec implements Jsonable
    * Max Length: 500
    * @return the legalDisclaimerDescription
    */
-  public synchronized String getLegalDisclaimerDescription() {
+  public String getLegalDisclaimerDescription() {
     return legalDisclaimerDescription;
-  }
-
-  /**
-   * Any legal language required to be displayed with the product.
-   * Max Length: 500
-   * @param legalDisclaimerDescription the legalDisclaimerDescription to set
-   */
-  public synchronized void setLegalDisclaimerDescription(String legalDisclaimerDescription) {
-    if ( legalDisclaimerDescription == null || legalDisclaimerDescription.isEmpty() || legalDisclaimerDescription.length() > 500 )
-      throw new IllegalArgumentException( "legalDisclaimerDescription must be between 1-500 characters" );
-
-    this.legalDisclaimerDescription = legalDisclaimerDescription;
   }
 
   /**
@@ -1164,71 +2616,17 @@ public class ProductRec implements Jsonable
    * Max 7 elements
    * @return the cpsiaStatements
    */
-  public synchronized Set<CPSIA> getCpsiaStatements() {
+  public Set<CPSIA> getCpsiaStatements() {
     return cpsiaStatements;
   }
-
-  /**
-   * Use this field to indicate if a cautionary statement relating to the
-   * choking hazards of children's toys and games applies to your product.
-   * These cautionary statements are defined in Section 24 of the Federal
-   * Hazardous Substances Act and Section 105 of the Consumer Product Safety
-   * Improvement Act of 2008. They must be displayed on the product packaging
-   * and in certain online and catalog advertisements. You are responsible for
-   * determining if a cautionary statement applies to the product. This can be
-   * verified by contacting the product manufacturer or checking the product
-   * packaging. Cautionary statements that you select will be displayed on the
-   * product detail page. If no cautionary statement applies to the product,
-   * select "no warning applicable".
-   *
-   * Max 7 elements
-   * @param cpsiaStatements the cpsiaStatements to set
-   */
-  public synchronized void setCpsiaStatements(Set<CPSIA> cpsiaStatements) {
-    this.cpsiaStatements.addAll( cpsiaStatements );
-  }
-
-
-  /**
-   * Use this field to indicate if a cautionary statement relating to the
-   * choking hazards of children's toys and games applies to your product.
-   * These cautionary statements are defined in Section 24 of the Federal
-   * Hazardous Substances Act and Section 105 of the Consumer Product Safety
-   * Improvement Act of 2008. They must be displayed on the product packaging
-   * and in certain online and catalog advertisements. You are responsible for
-   * determining if a cautionary statement applies to the product. This can be
-   * verified by contacting the product manufacturer or checking the product
-   * packaging. Cautionary statements that you select will be displayed on the
-   * product detail page. If no cautionary statement applies to the product,
-   * select "no warning applicable".
-   *
-   * Max 7 elements
-   * @param cpsiaStatement the cpsiaStatement to add
-   */
-  public synchronized void setCpsiaStatements( CPSIA cpsiaStatement ) {
-    this.cpsiaStatements.add( cpsiaStatement );
-  }
-
 
   /**
    * The country that the item was manufactured in.
    * Max: 50 chars
    * @return the countryOfOrigin
    */
-  public synchronized String getCountryOfOrigin() {
+  public String getCountryOfOrigin() {
     return countryOfOrigin;
-  }
-
-  /**
-   * The country that the item was manufactured in.
-   * Max: 50 chars
-   * @param countryOfOrigin the countryOfOrigin to set
-   */
-  public synchronized void setCountryOfOrigin(String countryOfOrigin) {
-    if ( countryOfOrigin == null || countryOfOrigin.isEmpty() || countryOfOrigin.length() > 500 )
-      throw new IllegalArgumentException( "countryOfOrigin must be between 1-500 characters" );
-
-    this.countryOfOrigin = countryOfOrigin;
   }
 
   /**
@@ -1236,35 +2634,8 @@ public class ProductRec implements Jsonable
    * Max: 500
    * @return the safetyWarning
    */
-  public synchronized String getSafetyWarning() {
+  public String getSafetyWarning() {
     return safetyWarning;
-  }
-
-  /**
-   * If applicable, use to supply any associated warnings for your product.
-   * Max: 500
-   * @param safetyWarning the safetyWarning to set
-   */
-  public synchronized void setSafetyWarning(String safetyWarning) {
-    if ( safetyWarning == null || safetyWarning.isEmpty() || safetyWarning.length() > 500 )
-      throw new IllegalArgumentException( "safetyWarning must be between 1-500 characters" );
-
-    this.safetyWarning = safetyWarning;
-  }
-
-
-  /**
-   * If updating merchant SKU that has quantity = 0 at all FCs, date that the
-   * inventory in this message should be available for sale on Jet.com.
-   *
-   * You should only use this field if the quantity for the merchant SKU is 0
-   * at all merchant_fcs. This date should be in
-   * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
-   * Example: 1988-01-01T01:43:30.0000000-07:00
-   * @param startSellingDate the startSellingDate to set
-   */
-  public synchronized final void setStartSellingDate(JetDate startSellingDate) {
-    this.startSellingDate = startSellingDate;
   }
 
   
@@ -1272,43 +2643,18 @@ public class ProductRec implements Jsonable
    * Manufacturer's suggested retail price or list price for the product.
    * @return the msrp
    */
-  public synchronized Money getMsrp() {
+  public Money getMsrp() {
     return msrp;
   }
-
-  /**
-   * Manufacturer's suggested retail price or list price for the product.
-   * @param msrp the msrp to set
-   */
-  public synchronized void setMsrp( Money msrp) {
-    if ( msrp == null || msrp.lessThanZero())
-      throw new IllegalArgumentException( "msrp cannot be null or less than zero" );
-    
-    this.msrp = msrp;
-  }
-
 
   /**
    * Retailer price for the product for which member savings will be applied
    * (if applicable, see map_implementation)
    * @return the map price
    */
-  public synchronized Money getMapPrice() {
+  public Money getMapPrice() {
     return mapPrice;
   }
-
-  /**
-   * Retailer price for the product for which member savings will be applied
-   * (if applicable, see map_implementation)
-   * @param map the map to set
-   */
-  public synchronized void setMapPrice( Money map) {
-    if ( map == null || map.lessThanZero())
-      throw new IllegalArgumentException( "map cannot be null or less than zero" );
-    
-    mapPrice = map;
-  }
-
 
   /**
    * The type of rule that indicates how Jet member savings are allowed to be
@@ -1316,62 +2662,16 @@ public class ProductRec implements Jsonable
    * API documentation)
    * @return the mapImplementation
    */
-  public synchronized MAPType getMapImplementation() {
+  public MAPType getMapImplementation() {
     return mapImplementation;
   }
-
-  /**
-   * The type of rule that indicates how Jet member savings are allowed to be
-   * applied to an item’s base price (which is referred to as map_price in the
-   * API documentation)
-   * @param mapImplementation the mapImplementation to set
-   */
-  public synchronized void setMapImplementation(MAPType mapImplementation) {
-    this.mapImplementation = mapImplementation;
-  }
-
-
-  /**
-   * The type of rule that indicates how Jet member savings are allowed to be
-   * applied to an item’s base price (which is referred to as map_price in the
-   * API documentation)
-   * @param mapImplementation the mapImplementation to set
-   * @throws IllegalArgumentException if an invalid type is encountered and
-   * mapImplementation is NOT empty
-   */
-  public synchronized void setMapImplementation( String mapImplementation)
-  {
-    if ( mapImplementation.isEmpty())
-      return;
-
-    for ( MAPType m : MAPType.values())
-    {
-      if ( m.getType().equals( mapImplementation ))
-      {
-        this.mapImplementation = m;
-        return;
-      }
-    }
-
-    throw new IllegalArgumentException( "Invalid MAP Type encountered: " + mapImplementation );
-  }
-
-
   /**
    * Product Tax Code
    * @todo Make this an enum
    * @return the productTaxCode
    */
-  public synchronized ProductTaxCode getProductTaxCode() {
+  public ProductTaxCode getProductTaxCode() {
     return productTaxCode;
-  }
-
-  /**
-   * Product Tax Code
-   * @param productTaxCode the productTaxCode to set
-   */
-  public synchronized void setProductTaxCode( final ProductTaxCode productTaxCode) {
-    this.productTaxCode = productTaxCode;
   }
 
   /**
@@ -1382,20 +2682,8 @@ public class ProductRec implements Jsonable
    * of 15% to 17%, then you should enter '0.02'
    * @return the noReturnFeeAdj
    */
-  public synchronized Money getNoReturnFeeAdj() {
+  public Money getNoReturnFeeAdj() {
     return noReturnFeeAdj;
-  }
-
-  /**
-   * Overides the category level setting for this fee adjustment; this is the
-   * increase in commission you are willing to pay on this product if the
-   * customer waives their ability to return it.
-   * If you want to increase the commission you are willing to pay from a base rate
-   * of 15% to 17%, then you should enter '0.02'
-   * @param noReturnFeeAdj the noReturnFeeAdj to set
-   */
-  public synchronized void setNoReturnFeeAdj(final Money noReturnFeeAdj) {
-    this.noReturnFeeAdj = noReturnFeeAdj;
   }
 
   /**
@@ -1406,20 +2694,8 @@ public class ProductRec implements Jsonable
    * merchant_skus.
    * @return the shipsAlone
    */
-  public synchronized boolean isShipsAlone() {
+  public boolean isShipsAlone() {
     return shipsAlone;
-  }
-
-  /**
-   * If this field is 'true', it indicates that this 'merchant SKU' will always
-   * ship on its own.A separate 'merchant_order' will always be placed for this
-   * 'merchant_SKU', one consequence of this will be that this merchant_sku
-   * will never contriube to any basket size fee adjustments with any other
-   * merchant_skus.
-   * @param shipsAlone the shipsAlone to set
-   */
-  public synchronized void setShipsAlone(boolean shipsAlone) {
-    this.shipsAlone = shipsAlone;
   }
 
 
@@ -1428,17 +2704,8 @@ public class ProductRec implements Jsonable
    * if this field is 'true'
    * @return value
    */
-  public synchronized boolean isExcludeFromFeeAdjustments() {
+  public boolean isExcludeFromFeeAdjustments() {
     return excludeFromFeeAdjustments;
-  }
-
-  /**
-   * This SKU will not be subject to any fee adjustment rules that are set up
-   * if this field is 'true'
-   * @param exclude state
-   */
-  public synchronized void setExcludeFromFeeAdjustments(boolean exclude) {
-    excludeFromFeeAdjustments = exclude;
   }
 
 
@@ -1446,26 +2713,10 @@ public class ProductRec implements Jsonable
    * This is not documented
    * @return the attributesNodeSpecific
    */
-  public synchronized Set<SkuAttributeRec> getAttributesNodeSpecific() {
+  public Set<SkuAttributeRec> getAttributesNodeSpecific() {
     return attributesNodeSpecific;
   }
 
-  /**
-   * This is not documented
-   * @param attributesNodeSpecific the attributesNodeSpecific to set
-   */
-  public synchronized void setAttributesNodeSpecific(List<SkuAttributeRec> attributesNodeSpecific) {
-    this.attributesNodeSpecific.addAll( attributesNodeSpecific );
-  }
-
-
-  /**
-   * This is not documented
-   * @param attributesNodeSpecific the attributesNodeSpecific to set
-   */
-  public synchronized void setAttributesNodeSpecific( SkuAttributeRec attributesNodeSpecific) {
-    this.attributesNodeSpecific.add( attributesNodeSpecific );
-  }
 
   /**
    * A set of alternate image slots and locations
@@ -1476,36 +2727,10 @@ public class ProductRec implements Jsonable
    * value: The absolute location where Jet.com can retrieve the image
    * @return the alternateImages
    */
-  public synchronized Map<Integer,String> getAlternateImages() {
+  public Map<Integer,String> getAlternateImages() {
     return alternateImages;
   }
 
-  /**
-   * A set of alternate image slots and locations
-   *
-   * key: The slot that the alternate image should be uploaded to. Jet.com
-   * supports up to 8 images (or 8 image slots).
-   *
-   * value: The absolute location where Jet.com can retrieve the image
-   * @param alternateImages the alternateImages to set
-   */
-  public synchronized void setAlternateImages(Map<Integer,String> alternateImages) {
-    this.alternateImages.putAll( alternateImages );
-  }
-
-  /**
-   * A set of alternate image slots and locations
-   *
-   * key: The slot that the alternate image should be uploaded to. Jet.com
-   * supports up to 8 images (or 8 image slots).
-   *
-   * value: The absolute location where Jet.com can retrieve the image
-   * @param slot The image slot
-   * @param image The image
-   */
-  public synchronized void setAlternateImages( int slot, String image ) {
-    this.alternateImages.put( slot, image );
-  }
 
   /**
    * URL location where Jet.com can access the image. The images should be
@@ -1513,18 +2738,8 @@ public class ProductRec implements Jsonable
    * is acceptable. There is no limit to image size.
    * @return the mainImageUrl
    */
-  public synchronized String getMainImageUrl() {
+  public String getMainImageUrl() {
     return mainImageUrl;
-  }
-
-  /**
-   * URL location where Jet.com can access the image. The images should be
-   * 1500 x 1500 pixels or larger, but anything 500 x 500 pixels or larger
-   * is acceptable. There is no limit to image size.
-   * @param mainImageUrl the mainImageUrl to set
-   */
-  public synchronized void setMainImageUrl(String mainImageUrl) {
-    this.mainImageUrl = mainImageUrl;
   }
 
   /**
@@ -1534,19 +2749,8 @@ public class ProductRec implements Jsonable
    * image size.
    * @return the swatchImageUrl
    */
-  public synchronized String getSwatchImageUrl() {
+  public String getSwatchImageUrl() {
     return swatchImageUrl;
-  }
-
-  /**
-   * URL location where Jet.com can access an image of a color or fabric for a
-   * given merchant SKU. The images should be 1500 x 1500 pixels or larger, but
-   * anything 500 x 500 pixels or larger is acceptable. There is no limit to
-   * image size.
-   * @param swatchImageUrl the swatchImageUrl to set
-   */
-  public synchronized void setSwatchImageUrl(String swatchImageUrl) {
-    this.swatchImageUrl = swatchImageUrl;
   }
 
 
@@ -1555,95 +2759,35 @@ public class ProductRec implements Jsonable
    * The overall price that the merchant SKU is priced at
    * @return the price
    */
-  public synchronized Money getPrice() {
+  public Money getPrice() {
     return price;
-  }
-
-  /**
-   * The overall price that the merchant SKU is priced at
-   * @param price the price to set
-   */
-  public synchronized void setPrice( Money price) {
-    if ( price  == null || price.lessThanZero())
-      throw new IllegalArgumentException( "price cannot be null or less than zero" );
-    
-    this.price = price;
   }
 
   /**
    * Fulfillment node prices
    * @return the fNodePrices
    */
-  public synchronized Set<FNodePriceRec> getfNodePrices() {
+  public Set<FNodePriceRec> getfNodePrices() {
     return fNodePrices;
   }
 
-  /**
-   * Fulfillment node prices
-   * @param fNodePrices the fNodePrices to set
-   */
-  public synchronized void setfNodePrices(List<FNodePriceRec> fNodePrices) {
-    this.fNodePrices.addAll( fNodePrices );
-  }
-
-  /**
-   * Fulfillment node prices
-   * @param fNodePrices the fNodePrices to set
-   */
-  public synchronized void setfNodePrices( FNodePriceRec fNodePrices) {
-    this.fNodePrices.add( fNodePrices );
-  }
 
   /**
    * Fulfillment node inventory
    * @return the fNodeInventory
    */
-  public synchronized Set<FNodeInventoryRec> getfNodeInventory() {
+  public Set<FNodeInventoryRec> getfNodeInventory() {
     return fNodeInventory;
   }
 
-  /**
-   * Fulfillment node inventory
-   * @param fNodeInventory the fNodeInventory to set
-   */
-  public synchronized void setfNodeInventory(List<FNodeInventoryRec> fNodeInventory) {
-    this.fNodeInventory.addAll( fNodeInventory );
-  }
 
-  /**
-   * Fulfillment node inventory
-   * @param fNodeInventory the fNodeInventory to set
-   */
-  public synchronized void setfNodeInventory( FNodeInventoryRec fNodeInventory) {
-    this.fNodeInventory.add( fNodeInventory );
-  }
-
-
-  /**
-   * Add a list of shipping exception nodes
-   * @param nodes nodes to add
-   */
-  public synchronized void setShippingExceptionNodes( List<FNodeShippingRec> nodes )
-  {
-    this.shippingExceptionNodes.addAll( nodes );
-  }
-
-
-  /**
-   * Add a shipping exception node
-   * @param node node to add
-   */
-  public synchronized void setShippingExceptionNodes( FNodeShippingRec node )
-  {
-    this.shippingExceptionNodes.add( node );
-  }
 
 
   /**
    * Retrieve the shipping exception node list
    * @return node list
    */
-  public synchronized Set<FNodeShippingRec> getShippingExceptionNodes()
+  public Set<FNodeShippingRec> getShippingExceptionNodes()
   {
     return shippingExceptionNodes;
   }
@@ -2232,19 +3376,17 @@ public class ProductRec implements Jsonable
   
   
   /**
-   * Creates a deep copy of this object 
-   * @return 
+   * Turn this into a builder.
+   * Object references in lists are passed with a deep copy.
+   * @return builder
    */
-  public synchronized ProductRec createCopy()
+  public Builder toBuilder()
   {
-    final ProductRec out = new ProductRec();
+    final Builder out = new Builder();
     out.title = this.title;
     out.browseNodeId = this.browseNodeId;
     out.azItemTypeKeyword = this.azItemTypeKeyword;
     out.categoryPath = this.categoryPath;
-    
-    
-    
     
     for ( final ProductCodeRec r : this.productCodes )
     {
@@ -2338,6 +3480,16 @@ public class ProductRec implements Jsonable
     } catch( Exception e ) {} //..do nothing
     
     return out;
+  }
+  
+  
+  /**
+   * Creates a deep copy of this object 
+   * @return 
+   */
+  public ProductRec createCopy()
+  {
+    return toBuilder().build();
   }
 
 }

@@ -356,21 +356,19 @@ public class Aerodrome
   
   private static ProductRec getTestProduct()
   {
-    final ProductRec prod = new ProductRec();
-    prod.setMerchantSku( sku );
-    prod.setTitle( "8\" Chefs Knife with Fibrox Handle" );
-    prod.setProductDescription( "The Victorinox 47520 8\" Chefs Knife with Fibrox handle is a great chefs knife with a 2\" wide blade at the handle. The cutting edge is thin and extremely sharp. The blade is 8\" long." );
-    prod.setMultipackQuantity( 1 );
-    prod.setMsrp( new Money( "44.99" ));
-    prod.setPrice( new Money( "44.99" ));
-    prod.setMainImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/image/650x650/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
-    prod.setSwatchImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/thumbnail/65x65/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" );
-    prod.setBrand( "Victorinox" );
-    prod.setfNodeInventory( new FNodeInventoryRec( "5b7c27bd5bc247be912190096ec61101", 1 ));
-    
-    prod.setProductCode(new ProductCodeRec( "046928475209", ProductCodeType.UPC ));
-
-    return prod;    
+    return new ProductRec.Builder()
+      .setMerchantSku( sku )
+      .setTitle( "8\" Chefs Knife with Fibrox Handle" )
+      .setProductDescription( "The Victorinox 47520 8\" Chefs Knife with Fibrox handle is a great chefs knife with a 2\" wide blade at the handle. The cutting edge is thin and extremely sharp. The blade is 8\" long." )
+      .setMultipackQuantity( 1 )
+      .setMsrp( new Money( "44.99" ))
+      .setPrice( new Money( "44.99" ))
+      .setMainImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/image/650x650/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" )
+      .setSwatchImageUrl( "https://www.globeequipment.com/media/catalog/product/cache/1/thumbnail/65x65/9df78eab33525d08d6e5fb8d27136e95/4/7/47520_1.jpg" )
+      .setBrand( "Victorinox" )
+      .setfNodeInventory( new FNodeInventoryRec( "5b7c27bd5bc247be912190096ec61101", 1 ))
+      .setProductCode(new ProductCodeRec( "046928475209", ProductCodeType.UPC ))
+    .build();
   }
   
   
