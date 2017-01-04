@@ -114,4 +114,15 @@ public enum ProductTaxCode
   {
     return text;
   }
+  
+  
+  /**
+   * Returns jet api text 
+   * @return 
+   */
+  @Override
+  public String toString()
+  {
+    return text;
+  }
 }

@@ -26,7 +26,7 @@ public enum MAPType
   /**
    * Default, do not send to jet.
    */
-  NONE( "", "" ),
+  NONE( "", "Not Specified" ),
   
   /**
    * Jet member savings never applied to product
@@ -86,6 +86,13 @@ public enum MAPType
   
   
   public String getCaption()
+  {
+    return caption;
+  }
+  
+  
+  @Override
+  public String toString()
   {
     return caption;
   }

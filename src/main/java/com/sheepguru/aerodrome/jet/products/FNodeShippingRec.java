@@ -15,6 +15,8 @@
 package com.sheepguru.aerodrome.jet.products;
 
 import com.sheepguru.aerodrome.jet.Jsonable;
+import com.sheepguru.aerodrome.jet.ShippingMethod;
+import com.sheepguru.aerodrome.jet.ShippingServiceLevel;
 import com.sheepguru.aerodrome.jet.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,6 +68,22 @@ public class FNodeShippingRec implements Jsonable
     }
     
     return new FNodeShippingRec( json.getString( "fulfillment_node_id", "" ), ex );
+  }
+  
+  
+  /**
+   * Create a deep copy of this object
+   * @return copy
+   */
+  public FNodeShippingRec createCopy()
+  {
+    List<ShippingExceptionRec> l = new ArrayList<>();
+    for ( ShippingExceptionRec r : data )
+    {
+      l.add( r.createCopy());
+    }
+    
+    return new FNodeShippingRec( nodeId, l );
   }
   
 

@@ -103,7 +103,14 @@ public class ShippingExceptionRec implements Jsonable
     this.shippingExceptionType = shippingExceptionType;    
   }
   
-
+  
+  public ShippingExceptionRec createCopy()
+  {
+    return new ShippingExceptionRec( serviceLevel, shippingMethod, overrideType, 
+      shippingChargeAmount, shippingExceptionType );
+  }
+  
+  
   /**
    * Generic descriptions of shipment delivery times
    * @return the serviceLevel

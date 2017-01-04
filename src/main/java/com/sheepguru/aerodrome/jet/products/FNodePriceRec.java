@@ -54,6 +54,16 @@ public class FNodePriceRec implements Jsonable
     );
   }
 
+  
+  /**
+   * Create a deep copy of this object 
+   * @return a copy 
+   */
+  public FNodePriceRec createCopy()
+  {
+    return new FNodePriceRec( nodeId, price );
+  }
+  
 
   /**
    * Create a new Fulfillment node 

@@ -22,23 +22,17 @@ import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
 import com.sheepguru.utils.Money;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -47,23 +41,17 @@ import javax.json.JsonValue;
 /**
  * A record for holding Jet Product Data.
  *
- * This is not thread safe.
+ * This is now theoretically thread safe.
  * 
  * See:
  * https://developer.jet.com/docs/services/5565ca949a274a12b0b3a2a3/operations/5565d4be9a274a12b0b3a2ae
  *
- * @todo Update the date properties to instances of JetDate.
+ * @todo this class is not so great.  I really need to clean this up...
  * 
  * @author John Quinn
  */
 public class ProductRec implements Jsonable
 {
-  /**
-   * A date format
-   */
-  private final DateFormat fmt = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'.0000000'Z", Locale.ENGLISH );
-
-
   /**
    * Short product description
    * 5-500 characters
@@ -91,7 +79,7 @@ public class ProductRec implements Jsonable
   /**
    * Product codes
    */
-  private final List<ProductCodeRec> productCodes = new ArrayList<>();
+  private final Set<ProductCodeRec> productCodes = Collections.<ProductCodeRec>synchronizedSet( new HashSet());
 
   /**
    * ASIN Number.
@@ -141,7 +129,7 @@ public class ProductRec implements Jsonable
    * Max length: 500 characters
    * Maximum of 5 elements
    */
-  private final Set<String> bullets = new HashSet<>();
+  private final Set<String> bullets = Collections.<String>synchronizedSet( new HashSet());
 
   /**
    * For Price Per Unit calculations, the number of units included in
@@ -238,7 +226,7 @@ public class ProductRec implements Jsonable
    *
    * Max 7 elements
    */
-  private final Set<CPSIA> cpsiaStatements = new HashSet<>();
+  private final Set<CPSIA> cpsiaStatements = Collections.<CPSIA>synchronizedSet( new HashSet());
 
   /**
    * The country that the item was manufactured in.
@@ -261,12 +249,7 @@ public class ProductRec implements Jsonable
    * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
    * Example: 1988-01-01T01:43:30.0000000-07:00
    */
-  private Date startSellingDate;
-
-  /**
-   * The start selling date as a string ready for the jet api
-   */
-  private String startSellingDateStr;
+  private JetDate startSellingDate;
 
   /**
    * Manufacturer's suggested retail price or list price for the product.
@@ -281,12 +264,12 @@ public class ProductRec implements Jsonable
   /**
    * Fulfillment node prices
    */
-  private final List<FNodePriceRec> fNodePrices = new ArrayList<>();
+  private final Set<FNodePriceRec> fNodePrices = Collections.<FNodePriceRec>synchronizedSet( new HashSet());
 
   /**
    * Fulfillment node ivnentory
    */
-  private final List<FNodeInventoryRec> fNodeInventory = new ArrayList<>();
+  private final Set<FNodeInventoryRec> fNodeInventory = Collections.<FNodeInventoryRec>synchronizedSet( new HashSet());
 
   /**
    * The unique ID for an individually selectable product for sale on Jet.com.
@@ -344,7 +327,7 @@ public class ProductRec implements Jsonable
   /**
    * This is not documented
    */
-  private final List<SkuAttributeRec> attributesNodeSpecific = new ArrayList<>();
+  private final Set<SkuAttributeRec> attributesNodeSpecific = Collections.<SkuAttributeRec>synchronizedSet( new HashSet());
 
   /**
    * A set of alternate image slots and locations
@@ -354,7 +337,7 @@ public class ProductRec implements Jsonable
    *
    * value: The absolute location where Jet.com can retrieve the image
    */
-  private final Map<Integer,String> alternateImages = new HashMap<>();
+  private final Map<Integer,String> alternateImages = new ConcurrentHashMap<>();
 
   /**
    * URL location where Jet.com can access the image. The images should be
@@ -379,7 +362,7 @@ public class ProductRec implements Jsonable
   /**
    * Shipping exception node list
    */
-  private final List<FNodeShippingRec> shippingExceptionNodes = new ArrayList<>();
+  private final Set<FNodeShippingRec> shippingExceptionNodes = Collections.<FNodeShippingRec>synchronizedSet( new HashSet());
 
   /**
    * From Product Get response
@@ -404,7 +387,7 @@ public class ProductRec implements Jsonable
   /**
    * Product sub status
    */
-  private final List<ProductSubStatus> subStatus = new ArrayList<>();
+  private final Set<ProductSubStatus> subStatus = Collections.<ProductSubStatus>synchronizedSet( new HashSet());
 
   /**
    * Sku last update
@@ -494,7 +477,7 @@ public class ProductRec implements Jsonable
     out.skuLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "sku_last_update", "" ));
     out.inventoryLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "last_update", "" ));
     out.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "price_last_update", "" ));
-    out.setStartSellingDate( json.getString( "start_selling_date", "" ));
+    out.startSellingDate = ProductDate.fromJetValueOrNull( json.getString( "start_selling_date", "" ));
    
     
     //..End i donno section.
@@ -515,7 +498,7 @@ public class ProductRec implements Jsonable
    */
   public ProductRec()
   {
-    setStartSellingDate( new Date());
+    setStartSellingDate( new ISO8601Date());
   }
 
 
@@ -523,7 +506,7 @@ public class ProductRec implements Jsonable
    * Retrieve the product status
    * @return product status
    */
-  public ProductStatus getProductStatus()
+  public synchronized ProductStatus getProductStatus()
   {
     return status;
   }
@@ -533,7 +516,7 @@ public class ProductRec implements Jsonable
    * The unique ID for an individually selectable product for sale on Jet.com.
    * @return retail sku
    */
-  public String getJetRetailSku()
+  public synchronized String getJetRetailSku()
   {
     return jetRetailSku;
   }
@@ -543,7 +526,7 @@ public class ProductRec implements Jsonable
    * Retrieve the last update time (only after product get response is received)
    * @return last update
    */
-  public JetDate getSkuLastUpdate()
+  public synchronized JetDate getSkuLastUpdate()
   {
     return skuLastUpdate;
   }
@@ -552,7 +535,7 @@ public class ProductRec implements Jsonable
    * Retrieve the last inventory update time 
    * @return last update
    */
-  public JetDate getInventoryLastUpdate()
+  public synchronized JetDate getInventoryLastUpdate()
   {
     return inventoryLastUpdate;
   }
@@ -562,7 +545,7 @@ public class ProductRec implements Jsonable
    * Retrieve the last price update time 
    * @return last update
    */
-  public JetDate getPriceLastUpdate()
+  public synchronized JetDate getPriceLastUpdate()
   {
     return priceLastUpdate;
   }  
@@ -571,7 +554,7 @@ public class ProductRec implements Jsonable
    * Retrieve the producer id from the product get response
    * @return producer id
    */
-  public String getProducerId()
+  public synchronized String getProducerId()
   {
     return producerId;
   }
@@ -581,7 +564,7 @@ public class ProductRec implements Jsonable
    * Product get response correlation id
    * @return id
    */
-  public String getCorrelationId()
+  public synchronized String getCorrelationId()
   {
     return correlationId;
   }
@@ -591,7 +574,7 @@ public class ProductRec implements Jsonable
    * Retrieve the merchant sku id
    * @return sku id
    */
-  public String getMerchantSkuId()
+  public synchronized String getMerchantSkuId()
   {
     return merchantSkuId;
   }
@@ -605,12 +588,10 @@ public class ProductRec implements Jsonable
    *
    * @return sku
    */
-  public String getMerchantSku()
+  public synchronized String getMerchantSku()
   {
     ArrayList<String> skus = new ArrayList<>();
     skus.add( merchantSku );
-
-    Collections.sort( productCodes );
 
     for ( ProductCodeRec p : productCodes )
     {
@@ -632,7 +613,7 @@ public class ProductRec implements Jsonable
    * Set the merchant sku.
    * @param sku sku
    */
-  public void setMerchantSku( String sku )
+  public synchronized void setMerchantSku( String sku )
   {
     merchantSku = sku;
   }
@@ -648,7 +629,7 @@ public class ProductRec implements Jsonable
    *
    * @return int time
    */
-  public int getFulfillmentTime()
+  public synchronized int getFulfillmentTime()
   {
     return fulfillmentTime;
   }
@@ -664,7 +645,7 @@ public class ProductRec implements Jsonable
    *
    * @param time
    */
-  public void setFulfillmentTime( int time )
+  public synchronized void setFulfillmentTime( int time )
   {
     if ( time < 0 )
       time = 0;
@@ -677,7 +658,7 @@ public class ProductRec implements Jsonable
    * 5-500 characters
    * @return the title
    */
-  public String getTitle() {
+  public synchronized String getTitle() {
     return title;
   }
 
@@ -686,7 +667,7 @@ public class ProductRec implements Jsonable
    * 5-500 characters
    * @param title the title to set
    */
-  public void setTitle(String title) {
+  public synchronized void setTitle(String title) {
     if ( title == null || title.length() < 5 || title.length() > 500 )
       throw new IllegalArgumentException( "title must be between 5-500 characters" );
 
@@ -698,7 +679,7 @@ public class ProductRec implements Jsonable
    * Set the amazon item type keyword
    * @param keyword keyword 
    */
-  public void setAmazonItemTypeKeyword( final String keyword )
+  public synchronized void setAmazonItemTypeKeyword( final String keyword )
   {
     if ( keyword == null )
       throw new IllegalArgumentException( "keyword cannot be null" );
@@ -711,7 +692,7 @@ public class ProductRec implements Jsonable
    * Retrieve the amazon item type keyword 
    * @return keyword 
    */
-  public String getAmazonItemTypeKeyword()
+  public synchronized String getAmazonItemTypeKeyword()
   {
     return amazonItemTypeKeyword;
   }
@@ -722,7 +703,7 @@ public class ProductRec implements Jsonable
    * Jet.com browse structure
    * @return the browseNodeId
    */
-  public int getBrowseNodeId() {
+  public synchronized int getBrowseNodeId() {
     return browseNodeId;
   }
 
@@ -731,7 +712,7 @@ public class ProductRec implements Jsonable
    * Jet.com browse structure
    * @param browseNodeId the browseNodeId to set
    */
-  public void setBrowseNodeId(int browseNodeId) {
+  public synchronized void setBrowseNodeId(int browseNodeId) {
     this.browseNodeId = browseNodeId;
   }
 
@@ -741,7 +722,7 @@ public class ProductRec implements Jsonable
    * Amazon's browse tree guides
    * @return the azItemTypeKeyword
    */
-  public String getAzItemTypeKeyword() {
+  public synchronized String getAzItemTypeKeyword() {
     return azItemTypeKeyword;
   }
 
@@ -751,7 +732,7 @@ public class ProductRec implements Jsonable
    * Amazon's browse tree guides
    * @param azItemTypeKeyword the azItemTypeKeyword to set
    */
-  public void setAzItemTypeKeyword(String azItemTypeKeyword) {
+  public synchronized void setAzItemTypeKeyword(String azItemTypeKeyword) {
     this.azItemTypeKeyword = azItemTypeKeyword;
   }
 
@@ -759,7 +740,7 @@ public class ProductRec implements Jsonable
    * Please enter a category path using your own product taxonomy
    * @return the categoryPath
    */
-  public String getCategoryPath() {
+  public synchronized String getCategoryPath() {
     return categoryPath;
   }
 
@@ -767,7 +748,7 @@ public class ProductRec implements Jsonable
    * Please enter a category path using your own product taxonomy
    * @param categoryPath the categoryPath to set
    */
-  public void setCategoryPath(String categoryPath) {
+  public synchronized void setCategoryPath(String categoryPath) {
     this.categoryPath = categoryPath;
   }
 
@@ -776,7 +757,7 @@ public class ProductRec implements Jsonable
    * Get the sub status 
    * @return sub status 
    */
-  public List<ProductSubStatus> getSubstatus() {
+  public synchronized Set<ProductSubStatus> getSubstatus() {
     return subStatus;
   }
   
@@ -784,7 +765,7 @@ public class ProductRec implements Jsonable
    * Product codes
    * @return the productCodes
    */
-  public List<ProductCodeRec> getProductCodes() {
+  public synchronized Set<ProductCodeRec> getProductCodes() {
     return productCodes;
   }
 
@@ -792,7 +773,7 @@ public class ProductRec implements Jsonable
    * Add a set of product codes
    * @param productCodes the productCodes to set
    */
-  public void setProductCodes( List<ProductCodeRec> productCodes ) {
+  public synchronized void setProductCodes( List<ProductCodeRec> productCodes ) {
     this.productCodes.addAll( productCodes );
   }
 
@@ -800,7 +781,7 @@ public class ProductRec implements Jsonable
    * Add a single product code
    * @param productCode the productCode to set
    */
-  public void setProductCode( ProductCodeRec productCode ) {
+  public synchronized void setProductCode( ProductCodeRec productCode ) {
     this.productCodes.add( productCode );
   }
 
@@ -810,7 +791,7 @@ public class ProductRec implements Jsonable
    * Amazon standard identification number for this merchant SKU if available.
    * @return the asin
    */
-  public String getAsin() {
+  public synchronized String getAsin() {
     return asin;
   }
 
@@ -819,7 +800,7 @@ public class ProductRec implements Jsonable
    * Amazon standard identification number for this merchant SKU if available.
    * @param asin the asin to set
    */
-  public void setAsin(String asin) {
+  public synchronized void setAsin(String asin) {
     this.asin = asin;
   }
 
@@ -828,7 +809,7 @@ public class ProductRec implements Jsonable
    * your merchant SKU
    * @return the multipackQuantity
    */
-  public int getMultipackQuantity() {
+  public synchronized int getMultipackQuantity() {
     return multipackQuantity;
   }
 
@@ -837,7 +818,7 @@ public class ProductRec implements Jsonable
    * your merchant SKU
    * @param multipackQuantity the multipackQuantity to set
    */
-  public void setMultipackQuantity(int multipackQuantity) {
+  public synchronized void setMultipackQuantity(int multipackQuantity) {
     this.multipackQuantity = multipackQuantity;
   }
 
@@ -846,7 +827,7 @@ public class ProductRec implements Jsonable
    * 1-50 characters
    * @return the brand
    */
-  public String getBrand() {
+  public synchronized String getBrand() {
     return brand;
   }
 
@@ -855,7 +836,7 @@ public class ProductRec implements Jsonable
    * 1-50 characters
    * @param brand the brand to set
    */
-  public void setBrand(String brand) {
+  public synchronized void setBrand(String brand) {
     if ( brand == null || brand.isEmpty() || brand.length() > 50 )
       throw new IllegalArgumentException( "brand must be between 1-50 characters" );
 
@@ -867,7 +848,7 @@ public class ProductRec implements Jsonable
    * 1-50 characters
    * @return the manufacturer
    */
-  public String getManufacturer() {
+  public synchronized String getManufacturer() {
     return manufacturer;
   }
 
@@ -876,7 +857,7 @@ public class ProductRec implements Jsonable
    * 1-50 characters
    * @param manufacturer the manufacturer to set
    */
-  public void setManufacturer(String manufacturer) {
+  public synchronized void setManufacturer(String manufacturer) {
     if ( manufacturer == null || manufacturer.isEmpty() || manufacturer.length() > 50 )
       throw new IllegalArgumentException( "manufacturer must be between 1-50 characters" );
     this.manufacturer = manufacturer;
@@ -887,7 +868,7 @@ public class ProductRec implements Jsonable
    * Max length: 50 characters
    * @return the mfrPartNumber
    */
-  public String getMfrPartNumber() {
+  public synchronized String getMfrPartNumber() {
     return mfrPartNumber;
   }
 
@@ -896,7 +877,7 @@ public class ProductRec implements Jsonable
    * Max length: 50 characters
    * @param mfrPartNumber the mfrPartNumber to set
    */
-  public void setMfrPartNumber(String mfrPartNumber) {
+  public synchronized void setMfrPartNumber(String mfrPartNumber) {
     this.mfrPartNumber = mfrPartNumber;
   }
 
@@ -906,7 +887,7 @@ public class ProductRec implements Jsonable
    * 1-2000 characters
    * @return the productDescription
    */
-  public String getProductDescription() {
+  public synchronized String getProductDescription() {
     return productDescription;
   }
 
@@ -916,7 +897,7 @@ public class ProductRec implements Jsonable
    * 1-2000 characters
    * @param productDescription the productDescription to set
    */
-  public void setProductDescription(String productDescription) {
+  public synchronized void setProductDescription(String productDescription) {
     if ( productDescription == null || productDescription.isEmpty() || productDescription.length() > 2000 )
       throw new IllegalArgumentException( "productDescription must be between 1-2000 characters" );
 
@@ -929,7 +910,7 @@ public class ProductRec implements Jsonable
    * Maximum of 5 elements
    * @return the bullets
    */
-  public Set<String> getBullets() {
+  public synchronized Set<String> getBullets() {
     return bullets;
   }
 
@@ -939,7 +920,7 @@ public class ProductRec implements Jsonable
    * Maximum of 5 elements
    * @param bullet the bullet to add
    */
-  public void addBullet( String bullet ) {
+  public synchronized void addBullet( String bullet ) {
     if ( bullet == null || bullet.isEmpty() || bullet.length() > 500 )
       throw new IllegalArgumentException( "bullet must be between 1-500 characters" );
 
@@ -953,7 +934,7 @@ public class ProductRec implements Jsonable
    * Maximum of 5 elements
    * @param bullets the bullets to set
    */
-  public void addBullets( Set<String> bullets ) {
+  public synchronized void addBullets( Set<String> bullets ) {
     this.bullets.addAll( bullets );
   }
 
@@ -964,7 +945,7 @@ public class ProductRec implements Jsonable
    * indicate what is being measured by the unit-count.
    * @return the numberUnitsForPricePerUnit
    */
-  public BigDecimal getNumberUnitsForPricePerUnit() {
+  public synchronized BigDecimal getNumberUnitsForPricePerUnit() {
     return numberUnitsForPricePerUnit;
   }
 
@@ -974,7 +955,7 @@ public class ProductRec implements Jsonable
    * indicate what is being measured by the unit-count.
    * @param numberUnitsForPricePerUnit the numberUnitsForPricePerUnit to set
    */
-  public void setNumberUnitsForPricePerUnit(BigDecimal numberUnitsForPricePerUnit) {
+  public synchronized void setNumberUnitsForPricePerUnit(BigDecimal numberUnitsForPricePerUnit) {
     this.numberUnitsForPricePerUnit = numberUnitsForPricePerUnit;
   }
 
@@ -987,7 +968,7 @@ public class ProductRec implements Jsonable
    * price per unit = price per can.
    * @return the typeOfUnitForPricePerUnit
    */
-  public String getTypeOfUnitForPricePerUnit() {
+  public synchronized String getTypeOfUnitForPricePerUnit() {
     return typeOfUnitForPricePerUnit;
   }
 
@@ -1000,7 +981,7 @@ public class ProductRec implements Jsonable
    * price per unit = price per can.
    * @param typeOfUnitForPricePerUnit the typeOfUnitForPricePerUnit to set
    */
-  public void setTypeOfUnitForPricePerUnit(String typeOfUnitForPricePerUnit) {
+  public synchronized void setTypeOfUnitForPricePerUnit(String typeOfUnitForPricePerUnit) {
     this.typeOfUnitForPricePerUnit = typeOfUnitForPricePerUnit;
   }
 
@@ -1008,7 +989,7 @@ public class ProductRec implements Jsonable
    * Weight of the merchant SKU when in its shippable configuration
    * @return the shippingWeightPounds
    */
-  public BigDecimal getShippingWeightPounds() {
+  public synchronized BigDecimal getShippingWeightPounds() {
     return shippingWeightPounds;
   }
 
@@ -1016,7 +997,7 @@ public class ProductRec implements Jsonable
    * Weight of the merchant SKU when in its shippable configuration
    * @param shippingWeightPounds the shippingWeightPounds to set
    */
-  public void setShippingWeightPounds(BigDecimal shippingWeightPounds) {
+  public synchronized void setShippingWeightPounds(BigDecimal shippingWeightPounds) {
     this.shippingWeightPounds = shippingWeightPounds;
   }
 
@@ -1024,7 +1005,7 @@ public class ProductRec implements Jsonable
    * Length of the merchant SKU when in its shippable configuration
    * @return the packageLengthInches
    */
-  public BigDecimal getPackageLengthInches() {
+  public synchronized BigDecimal getPackageLengthInches() {
     return packageLengthInches;
   }
 
@@ -1032,7 +1013,7 @@ public class ProductRec implements Jsonable
    * Length of the merchant SKU when in its shippable configuration
    * @param packageLengthInches the packageLengthInches to set
    */
-  public void setPackageLengthInches(BigDecimal packageLengthInches) {
+  public synchronized void setPackageLengthInches(BigDecimal packageLengthInches) {
     this.packageLengthInches = packageLengthInches;
   }
 
@@ -1040,7 +1021,7 @@ public class ProductRec implements Jsonable
    * Width of the merchant SKU when in its shippable configuration
    * @return the packageWidthInches
    */
-  public BigDecimal getPackageWidthInches() {
+  public synchronized BigDecimal getPackageWidthInches() {
     return packageWidthInches;
   }
 
@@ -1048,7 +1029,7 @@ public class ProductRec implements Jsonable
    * Width of the merchant SKU when in its shippable configuration
    * @param packageWidthInches the packageWidthInches to set
    */
-  public void setPackageWidthInches(BigDecimal packageWidthInches) {
+  public synchronized void setPackageWidthInches(BigDecimal packageWidthInches) {
     this.packageWidthInches = packageWidthInches;
   }
 
@@ -1056,7 +1037,7 @@ public class ProductRec implements Jsonable
    * Height of the merchant SKU when in its shippable configuration
    * @return the packageHeightInches
    */
-  public BigDecimal getPackageHeightInches() {
+  public synchronized BigDecimal getPackageHeightInches() {
     return packageHeightInches;
   }
 
@@ -1064,7 +1045,7 @@ public class ProductRec implements Jsonable
    * Height of the merchant SKU when in its shippable configuration
    * @param packageHeightInches the packageHeightInches to set
    */
-  public void setPackageHeightInches(BigDecimal packageHeightInches) {
+  public synchronized void setPackageHeightInches(BigDecimal packageHeightInches) {
     this.packageHeightInches = packageHeightInches;
   }
 
@@ -1072,7 +1053,7 @@ public class ProductRec implements Jsonable
    * Length of the merchant SKU when in its fully assembled/usable condition
    * @return the displayLengthInches
    */
-  public BigDecimal getDisplayLengthInches() {
+  public synchronized BigDecimal getDisplayLengthInches() {
     return displayLengthInches;
   }
 
@@ -1080,7 +1061,7 @@ public class ProductRec implements Jsonable
    * Length of the merchant SKU when in its fully assembled/usable condition
    * @param displayLengthInches the displayLengthInches to set
    */
-  public void setDisplayLengthInches(BigDecimal displayLengthInches) {
+  public synchronized void setDisplayLengthInches(BigDecimal displayLengthInches) {
     this.displayLengthInches = displayLengthInches;
   }
 
@@ -1088,7 +1069,7 @@ public class ProductRec implements Jsonable
    * Width of the merchant SKU when in its fully assembled/usable condition
    * @return the displayWidthInches
    */
-  public BigDecimal getDisplayWidthInches() {
+  public synchronized BigDecimal getDisplayWidthInches() {
     return displayWidthInches;
   }
 
@@ -1096,7 +1077,7 @@ public class ProductRec implements Jsonable
    * Width of the merchant SKU when in its fully assembled/usable condition
    * @param displayWidthInches the displayWidthInches to set
    */
-  public void setDisplayWidthInches(BigDecimal displayWidthInches) {
+  public synchronized void setDisplayWidthInches(BigDecimal displayWidthInches) {
     this.displayWidthInches = displayWidthInches;
   }
 
@@ -1104,7 +1085,7 @@ public class ProductRec implements Jsonable
    * Height of the merchant SKU when in its fully assembled/usable condition
    * @return the displayHeightInches
    */
-  public BigDecimal getDisplayHeightInches() {
+  public synchronized BigDecimal getDisplayHeightInches() {
     return displayHeightInches;
   }
 
@@ -1112,7 +1093,7 @@ public class ProductRec implements Jsonable
    * Height of the merchant SKU when in its fully assembled/usable condition
    * @param displayHeightInches the displayHeightInches to set
    */
-  public void setDisplayHeightInches(BigDecimal displayHeightInches) {
+  public synchronized void setDisplayHeightInches(BigDecimal displayHeightInches) {
     this.displayHeightInches = displayHeightInches;
   }
 
@@ -1127,7 +1108,7 @@ public class ProductRec implements Jsonable
    * Please view this website for more information: http://www.oehha.ca.gov/.
    * @return the prop65
    */
-  public boolean isProp65() {
+  public synchronized boolean isProp65() {
     return prop65;
   }
 
@@ -1142,7 +1123,7 @@ public class ProductRec implements Jsonable
    * Please view this website for more information: http://www.oehha.ca.gov/.
    * @param prop65 the prop65 to set
    */
-  public void setProp65(boolean prop65) {
+  public synchronized void setProp65(boolean prop65) {
     this.prop65 = prop65;
   }
 
@@ -1151,7 +1132,7 @@ public class ProductRec implements Jsonable
    * Max Length: 500
    * @return the legalDisclaimerDescription
    */
-  public String getLegalDisclaimerDescription() {
+  public synchronized String getLegalDisclaimerDescription() {
     return legalDisclaimerDescription;
   }
 
@@ -1160,7 +1141,7 @@ public class ProductRec implements Jsonable
    * Max Length: 500
    * @param legalDisclaimerDescription the legalDisclaimerDescription to set
    */
-  public void setLegalDisclaimerDescription(String legalDisclaimerDescription) {
+  public synchronized void setLegalDisclaimerDescription(String legalDisclaimerDescription) {
     if ( legalDisclaimerDescription == null || legalDisclaimerDescription.isEmpty() || legalDisclaimerDescription.length() > 500 )
       throw new IllegalArgumentException( "legalDisclaimerDescription must be between 1-500 characters" );
 
@@ -1183,7 +1164,7 @@ public class ProductRec implements Jsonable
    * Max 7 elements
    * @return the cpsiaStatements
    */
-  public Set<CPSIA> getCpsiaStatements() {
+  public synchronized Set<CPSIA> getCpsiaStatements() {
     return cpsiaStatements;
   }
 
@@ -1203,7 +1184,7 @@ public class ProductRec implements Jsonable
    * Max 7 elements
    * @param cpsiaStatements the cpsiaStatements to set
    */
-  public void setCpsiaStatements(Set<CPSIA> cpsiaStatements) {
+  public synchronized void setCpsiaStatements(Set<CPSIA> cpsiaStatements) {
     this.cpsiaStatements.addAll( cpsiaStatements );
   }
 
@@ -1224,7 +1205,7 @@ public class ProductRec implements Jsonable
    * Max 7 elements
    * @param cpsiaStatement the cpsiaStatement to add
    */
-  public void setCpsiaStatements( CPSIA cpsiaStatement ) {
+  public synchronized void setCpsiaStatements( CPSIA cpsiaStatement ) {
     this.cpsiaStatements.add( cpsiaStatement );
   }
 
@@ -1234,7 +1215,7 @@ public class ProductRec implements Jsonable
    * Max: 50 chars
    * @return the countryOfOrigin
    */
-  public String getCountryOfOrigin() {
+  public synchronized String getCountryOfOrigin() {
     return countryOfOrigin;
   }
 
@@ -1243,7 +1224,7 @@ public class ProductRec implements Jsonable
    * Max: 50 chars
    * @param countryOfOrigin the countryOfOrigin to set
    */
-  public void setCountryOfOrigin(String countryOfOrigin) {
+  public synchronized void setCountryOfOrigin(String countryOfOrigin) {
     if ( countryOfOrigin == null || countryOfOrigin.isEmpty() || countryOfOrigin.length() > 500 )
       throw new IllegalArgumentException( "countryOfOrigin must be between 1-500 characters" );
 
@@ -1255,7 +1236,7 @@ public class ProductRec implements Jsonable
    * Max: 500
    * @return the safetyWarning
    */
-  public String getSafetyWarning() {
+  public synchronized String getSafetyWarning() {
     return safetyWarning;
   }
 
@@ -1264,26 +1245,13 @@ public class ProductRec implements Jsonable
    * Max: 500
    * @param safetyWarning the safetyWarning to set
    */
-  public void setSafetyWarning(String safetyWarning) {
+  public synchronized void setSafetyWarning(String safetyWarning) {
     if ( safetyWarning == null || safetyWarning.isEmpty() || safetyWarning.length() > 500 )
       throw new IllegalArgumentException( "safetyWarning must be between 1-500 characters" );
 
     this.safetyWarning = safetyWarning;
   }
 
-  /**
-   * If updating merchant SKU that has quantity = 0 at all FCs, date that the
-   * inventory in this message should be available for sale on Jet.com.
-   *
-   * You should only use this field if the quantity for the merchant SKU is 0
-   * at all merchant_fcs. This date should be in
-   * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
-   * Example: 1988-01-01T01:43:30.0000000-07:00
-   * @return the startSellingDate
-   */
-  public Date getStartSellingDate() {
-    return startSellingDate;
-  }
 
   /**
    * If updating merchant SKU that has quantity = 0 at all FCs, date that the
@@ -1295,42 +1263,16 @@ public class ProductRec implements Jsonable
    * Example: 1988-01-01T01:43:30.0000000-07:00
    * @param startSellingDate the startSellingDate to set
    */
-  public final void setStartSellingDate(Date startSellingDate) {
+  public synchronized final void setStartSellingDate(JetDate startSellingDate) {
     this.startSellingDate = startSellingDate;
-    this.startSellingDateStr = fmt.format( this.startSellingDate );
   }
 
-
-  /**
-   * If updating merchant SKU that has quantity = 0 at all FCs, date that the
-   * inventory in this message should be available for sale on Jet.com.
-   *
-   * You should only use this field if the quantity for the merchant SKU is 0
-   * at all merchant_fcs. This date should be in
-   * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
-   * Example: 1988-01-01T01:43:30.0000000-07:00
-   *
-   * (The above format string is for .net)
-   *
-   * Java format string should be this: "yyyy-MM-dd'T'HH:mm:ssZ"
-   *
-   * @param startSellingDate the startSellingDate to set
-   */
-  public final void setStartSellingDate( String startSellingDate )
-  {
-    try {
-      setStartSellingDate( fmt.parse( startSellingDate ));
-    } catch( ParseException e ) {
-      throw new IllegalArgumentException( "Failed to convert " + startSellingDate + " to Date" );
-    }
-  }
-
-
+  
   /**
    * Manufacturer's suggested retail price or list price for the product.
    * @return the msrp
    */
-  public Money getMsrp() {
+  public synchronized Money getMsrp() {
     return msrp;
   }
 
@@ -1338,7 +1280,7 @@ public class ProductRec implements Jsonable
    * Manufacturer's suggested retail price or list price for the product.
    * @param msrp the msrp to set
    */
-  public void setMsrp( Money msrp) {
+  public synchronized void setMsrp( Money msrp) {
     if ( msrp == null || msrp.lessThanZero())
       throw new IllegalArgumentException( "msrp cannot be null or less than zero" );
     
@@ -1351,7 +1293,7 @@ public class ProductRec implements Jsonable
    * (if applicable, see map_implementation)
    * @return the map price
    */
-  public Money getMapPrice() {
+  public synchronized Money getMapPrice() {
     return mapPrice;
   }
 
@@ -1360,7 +1302,7 @@ public class ProductRec implements Jsonable
    * (if applicable, see map_implementation)
    * @param map the map to set
    */
-  public void setMapPrice( Money map) {
+  public synchronized void setMapPrice( Money map) {
     if ( map == null || map.lessThanZero())
       throw new IllegalArgumentException( "map cannot be null or less than zero" );
     
@@ -1374,7 +1316,7 @@ public class ProductRec implements Jsonable
    * API documentation)
    * @return the mapImplementation
    */
-  public MAPType getMapImplementation() {
+  public synchronized MAPType getMapImplementation() {
     return mapImplementation;
   }
 
@@ -1384,7 +1326,7 @@ public class ProductRec implements Jsonable
    * API documentation)
    * @param mapImplementation the mapImplementation to set
    */
-  public void setMapImplementation(MAPType mapImplementation) {
+  public synchronized void setMapImplementation(MAPType mapImplementation) {
     this.mapImplementation = mapImplementation;
   }
 
@@ -1397,7 +1339,7 @@ public class ProductRec implements Jsonable
    * @throws IllegalArgumentException if an invalid type is encountered and
    * mapImplementation is NOT empty
    */
-  public void setMapImplementation( String mapImplementation)
+  public synchronized void setMapImplementation( String mapImplementation)
   {
     if ( mapImplementation.isEmpty())
       return;
@@ -1420,7 +1362,7 @@ public class ProductRec implements Jsonable
    * @todo Make this an enum
    * @return the productTaxCode
    */
-  public ProductTaxCode getProductTaxCode() {
+  public synchronized ProductTaxCode getProductTaxCode() {
     return productTaxCode;
   }
 
@@ -1428,7 +1370,7 @@ public class ProductRec implements Jsonable
    * Product Tax Code
    * @param productTaxCode the productTaxCode to set
    */
-  public void setProductTaxCode( final ProductTaxCode productTaxCode) {
+  public synchronized void setProductTaxCode( final ProductTaxCode productTaxCode) {
     this.productTaxCode = productTaxCode;
   }
 
@@ -1440,7 +1382,7 @@ public class ProductRec implements Jsonable
    * of 15% to 17%, then you should enter '0.02'
    * @return the noReturnFeeAdj
    */
-  public Money getNoReturnFeeAdj() {
+  public synchronized Money getNoReturnFeeAdj() {
     return noReturnFeeAdj;
   }
 
@@ -1452,7 +1394,7 @@ public class ProductRec implements Jsonable
    * of 15% to 17%, then you should enter '0.02'
    * @param noReturnFeeAdj the noReturnFeeAdj to set
    */
-  public void setNoReturnFeeAdj(final Money noReturnFeeAdj) {
+  public synchronized void setNoReturnFeeAdj(final Money noReturnFeeAdj) {
     this.noReturnFeeAdj = noReturnFeeAdj;
   }
 
@@ -1464,7 +1406,7 @@ public class ProductRec implements Jsonable
    * merchant_skus.
    * @return the shipsAlone
    */
-  public boolean isShipsAlone() {
+  public synchronized boolean isShipsAlone() {
     return shipsAlone;
   }
 
@@ -1476,7 +1418,7 @@ public class ProductRec implements Jsonable
    * merchant_skus.
    * @param shipsAlone the shipsAlone to set
    */
-  public void setShipsAlone(boolean shipsAlone) {
+  public synchronized void setShipsAlone(boolean shipsAlone) {
     this.shipsAlone = shipsAlone;
   }
 
@@ -1486,7 +1428,7 @@ public class ProductRec implements Jsonable
    * if this field is 'true'
    * @return value
    */
-  public boolean isExcludeFromFeeAdjustments() {
+  public synchronized boolean isExcludeFromFeeAdjustments() {
     return excludeFromFeeAdjustments;
   }
 
@@ -1495,7 +1437,7 @@ public class ProductRec implements Jsonable
    * if this field is 'true'
    * @param exclude state
    */
-  public void setExcludeFromFeeAdjustments(boolean exclude) {
+  public synchronized void setExcludeFromFeeAdjustments(boolean exclude) {
     excludeFromFeeAdjustments = exclude;
   }
 
@@ -1504,7 +1446,7 @@ public class ProductRec implements Jsonable
    * This is not documented
    * @return the attributesNodeSpecific
    */
-  public List<SkuAttributeRec> getAttributesNodeSpecific() {
+  public synchronized Set<SkuAttributeRec> getAttributesNodeSpecific() {
     return attributesNodeSpecific;
   }
 
@@ -1512,7 +1454,7 @@ public class ProductRec implements Jsonable
    * This is not documented
    * @param attributesNodeSpecific the attributesNodeSpecific to set
    */
-  public void setAttributesNodeSpecific(List<SkuAttributeRec> attributesNodeSpecific) {
+  public synchronized void setAttributesNodeSpecific(List<SkuAttributeRec> attributesNodeSpecific) {
     this.attributesNodeSpecific.addAll( attributesNodeSpecific );
   }
 
@@ -1521,7 +1463,7 @@ public class ProductRec implements Jsonable
    * This is not documented
    * @param attributesNodeSpecific the attributesNodeSpecific to set
    */
-  public void setAttributesNodeSpecific( SkuAttributeRec attributesNodeSpecific) {
+  public synchronized void setAttributesNodeSpecific( SkuAttributeRec attributesNodeSpecific) {
     this.attributesNodeSpecific.add( attributesNodeSpecific );
   }
 
@@ -1534,7 +1476,7 @@ public class ProductRec implements Jsonable
    * value: The absolute location where Jet.com can retrieve the image
    * @return the alternateImages
    */
-  public Map<Integer,String> getAlternateImages() {
+  public synchronized Map<Integer,String> getAlternateImages() {
     return alternateImages;
   }
 
@@ -1547,7 +1489,7 @@ public class ProductRec implements Jsonable
    * value: The absolute location where Jet.com can retrieve the image
    * @param alternateImages the alternateImages to set
    */
-  public void setAlternateImages(Map<Integer,String> alternateImages) {
+  public synchronized void setAlternateImages(Map<Integer,String> alternateImages) {
     this.alternateImages.putAll( alternateImages );
   }
 
@@ -1561,7 +1503,7 @@ public class ProductRec implements Jsonable
    * @param slot The image slot
    * @param image The image
    */
-  public void setAlternateImages( int slot, String image ) {
+  public synchronized void setAlternateImages( int slot, String image ) {
     this.alternateImages.put( slot, image );
   }
 
@@ -1571,7 +1513,7 @@ public class ProductRec implements Jsonable
    * is acceptable. There is no limit to image size.
    * @return the mainImageUrl
    */
-  public String getMainImageUrl() {
+  public synchronized String getMainImageUrl() {
     return mainImageUrl;
   }
 
@@ -1581,7 +1523,7 @@ public class ProductRec implements Jsonable
    * is acceptable. There is no limit to image size.
    * @param mainImageUrl the mainImageUrl to set
    */
-  public void setMainImageUrl(String mainImageUrl) {
+  public synchronized void setMainImageUrl(String mainImageUrl) {
     this.mainImageUrl = mainImageUrl;
   }
 
@@ -1592,7 +1534,7 @@ public class ProductRec implements Jsonable
    * image size.
    * @return the swatchImageUrl
    */
-  public String getSwatchImageUrl() {
+  public synchronized String getSwatchImageUrl() {
     return swatchImageUrl;
   }
 
@@ -1603,7 +1545,7 @@ public class ProductRec implements Jsonable
    * image size.
    * @param swatchImageUrl the swatchImageUrl to set
    */
-  public void setSwatchImageUrl(String swatchImageUrl) {
+  public synchronized void setSwatchImageUrl(String swatchImageUrl) {
     this.swatchImageUrl = swatchImageUrl;
   }
 
@@ -1613,7 +1555,7 @@ public class ProductRec implements Jsonable
    * The overall price that the merchant SKU is priced at
    * @return the price
    */
-  public Money getPrice() {
+  public synchronized Money getPrice() {
     return price;
   }
 
@@ -1621,7 +1563,7 @@ public class ProductRec implements Jsonable
    * The overall price that the merchant SKU is priced at
    * @param price the price to set
    */
-  public void setPrice( Money price) {
+  public synchronized void setPrice( Money price) {
     if ( price  == null || price.lessThanZero())
       throw new IllegalArgumentException( "price cannot be null or less than zero" );
     
@@ -1632,7 +1574,7 @@ public class ProductRec implements Jsonable
    * Fulfillment node prices
    * @return the fNodePrices
    */
-  public List<FNodePriceRec> getfNodePrices() {
+  public synchronized Set<FNodePriceRec> getfNodePrices() {
     return fNodePrices;
   }
 
@@ -1640,7 +1582,7 @@ public class ProductRec implements Jsonable
    * Fulfillment node prices
    * @param fNodePrices the fNodePrices to set
    */
-  public void setfNodePrices(List<FNodePriceRec> fNodePrices) {
+  public synchronized void setfNodePrices(List<FNodePriceRec> fNodePrices) {
     this.fNodePrices.addAll( fNodePrices );
   }
 
@@ -1648,7 +1590,7 @@ public class ProductRec implements Jsonable
    * Fulfillment node prices
    * @param fNodePrices the fNodePrices to set
    */
-  public void setfNodePrices( FNodePriceRec fNodePrices) {
+  public synchronized void setfNodePrices( FNodePriceRec fNodePrices) {
     this.fNodePrices.add( fNodePrices );
   }
 
@@ -1656,7 +1598,7 @@ public class ProductRec implements Jsonable
    * Fulfillment node inventory
    * @return the fNodeInventory
    */
-  public List<FNodeInventoryRec> getfNodeInventory() {
+  public synchronized Set<FNodeInventoryRec> getfNodeInventory() {
     return fNodeInventory;
   }
 
@@ -1664,7 +1606,7 @@ public class ProductRec implements Jsonable
    * Fulfillment node inventory
    * @param fNodeInventory the fNodeInventory to set
    */
-  public void setfNodeInventory(List<FNodeInventoryRec> fNodeInventory) {
+  public synchronized void setfNodeInventory(List<FNodeInventoryRec> fNodeInventory) {
     this.fNodeInventory.addAll( fNodeInventory );
   }
 
@@ -1672,7 +1614,7 @@ public class ProductRec implements Jsonable
    * Fulfillment node inventory
    * @param fNodeInventory the fNodeInventory to set
    */
-  public void setfNodeInventory( FNodeInventoryRec fNodeInventory) {
+  public synchronized void setfNodeInventory( FNodeInventoryRec fNodeInventory) {
     this.fNodeInventory.add( fNodeInventory );
   }
 
@@ -1681,7 +1623,7 @@ public class ProductRec implements Jsonable
    * Add a list of shipping exception nodes
    * @param nodes nodes to add
    */
-  public void setShippingExceptionNodes( List<FNodeShippingRec> nodes )
+  public synchronized void setShippingExceptionNodes( List<FNodeShippingRec> nodes )
   {
     this.shippingExceptionNodes.addAll( nodes );
   }
@@ -1691,7 +1633,7 @@ public class ProductRec implements Jsonable
    * Add a shipping exception node
    * @param node node to add
    */
-  public void setShippingExceptionNodes( FNodeShippingRec node )
+  public synchronized void setShippingExceptionNodes( FNodeShippingRec node )
   {
     this.shippingExceptionNodes.add( node );
   }
@@ -1701,7 +1643,7 @@ public class ProductRec implements Jsonable
    * Retrieve the shipping exception node list
    * @return node list
    */
-  public List<FNodeShippingRec> getShippingExceptionNodes()
+  public synchronized Set<FNodeShippingRec> getShippingExceptionNodes()
   {
     return shippingExceptionNodes;
   }
@@ -1712,7 +1654,7 @@ public class ProductRec implements Jsonable
    * Retrieve the JSON required for the merchant sku operation
    * @return json
    */
-  public JsonObject toSkuJson()
+  public synchronized JsonObject toSkuJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
       .add( "product_title", title )
@@ -1733,7 +1675,7 @@ public class ProductRec implements Jsonable
    * Retrieve the json needed for an image upload
    * @return json
    */
-  public JsonObject toImageJson()
+  public synchronized JsonObject toImageJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder();
     if ( !mainImageUrl.isEmpty())
@@ -1753,7 +1695,7 @@ public class ProductRec implements Jsonable
    * Retrieve the json for the set price operation
    * @return json
    */
-  public JsonObject toPriceJson()
+  public synchronized JsonObject toPriceJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
       .add( "price", price.asBigDecimal());
@@ -1769,7 +1711,7 @@ public class ProductRec implements Jsonable
    * Retrieve the json for the set inventory quantity operation
    * @return set inventory
    */
-  public JsonObject toInventoryJson()
+  public synchronized JsonObject toInventoryJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder();
 
@@ -1787,7 +1729,7 @@ public class ProductRec implements Jsonable
    * Retrieve the json for the shipping exceptions operation
    * @return json
    */
-  public JsonObject toShipExceptionJson()
+  public synchronized JsonObject toShipExceptionJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder();
 
@@ -1803,7 +1745,7 @@ public class ProductRec implements Jsonable
    * @return is mostly valid 
    * @throws ValidateException 
    */
-  public void validate() throws ValidateException
+  public synchronized void validate() throws ValidateException
   {
     //..Start Required
     
@@ -1858,7 +1800,7 @@ public class ProductRec implements Jsonable
    * @return JSON object for Jet
    */
   @Override
-  public JsonObject toJSON()
+  public synchronized JsonObject toJSON()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
       .add( "product_title", title )
@@ -1937,7 +1879,8 @@ public class ProductRec implements Jsonable
       if ( !safetyWarning.isEmpty())
         o.add( "safety_warning", safetyWarning );
 
-      o.add( "start_selling_date", startSellingDateStr );
+      if ( startSellingDate != null )
+        o.add( "start_selling_date", startSellingDate.getDateString());
 
       if ( fulfillmentTime > 0 )
         o.add( "fulfillment_time", fulfillmentTime );
@@ -2285,6 +2228,116 @@ public class ProductRec implements Jsonable
     }
 
     return obj;
+  }
+  
+  
+  /**
+   * Creates a deep copy of this object 
+   * @return 
+   */
+  public synchronized ProductRec createCopy()
+  {
+    final ProductRec out = new ProductRec();
+    out.title = this.title;
+    out.browseNodeId = this.browseNodeId;
+    out.azItemTypeKeyword = this.azItemTypeKeyword;
+    out.categoryPath = this.categoryPath;
+    
+    
+    
+    
+    for ( final ProductCodeRec r : this.productCodes )
+    {
+      out.productCodes.add( r.createCopy());
+    }
+    
+    out.asin = this.asin;
+    out.multipackQuantity = this.multipackQuantity;
+    out.brand = this.brand;
+    out.manufacturer = this.manufacturer;
+    out.mfrPartNumber = this.mfrPartNumber;
+    out.productDescription = this.productDescription;
+    out.amazonItemTypeKeyword = this.amazonItemTypeKeyword;
+    out.bullets.addAll( this.bullets );
+    
+    out.numberUnitsForPricePerUnit = this.numberUnitsForPricePerUnit;
+    out.typeOfUnitForPricePerUnit = this.typeOfUnitForPricePerUnit;
+    out.shippingWeightPounds = this.shippingWeightPounds;
+    out.packageLengthInches = this.packageLengthInches;
+    out.packageWidthInches = this.packageWidthInches;
+    out.packageHeightInches = this.packageHeightInches;
+    out.displayLengthInches = this.displayLengthInches;
+    out.displayWidthInches = this.displayWidthInches;
+    out.displayHeightInches = this.displayHeightInches;
+    out.fulfillmentTime = this.fulfillmentTime;
+    out.prop65 = prop65;
+    out.legalDisclaimerDescription = legalDisclaimerDescription;
+    out.cpsiaStatements.addAll( this.cpsiaStatements );
+    out.countryOfOrigin = this.countryOfOrigin;
+    out.safetyWarning = this.safetyWarning;
+    out.msrp = this.msrp;
+    out.price = this.price;
+    
+    for ( FNodePriceRec r : this.fNodePrices )
+    {
+      out.fNodePrices.add( r.createCopy());
+    }
+    
+    for ( FNodeInventoryRec r : this.fNodeInventory )
+    {
+      out.fNodeInventory.add( r.createCopy());
+    }
+
+    out.jetRetailSku = this.jetRetailSku;
+    
+    out.mapPrice = this.mapPrice;
+    out.mapImplementation = this.mapImplementation;
+    out.productTaxCode = this.productTaxCode;
+    out.noReturnFeeAdj = this.noReturnFeeAdj;
+    out.shipsAlone = this.shipsAlone;
+    out.excludeFromFeeAdjustments = this.excludeFromFeeAdjustments;
+    
+    for ( SkuAttributeRec r : this.attributesNodeSpecific )
+    {
+      out.attributesNodeSpecific.add(  r.createCopy());
+    }
+    
+    for ( int k : this.alternateImages.keySet())
+    {
+      out.alternateImages.put( k, alternateImages.get( k ));
+    }
+    
+    out.mainImageUrl = this.mainImageUrl;
+    out.swatchImageUrl = this.swatchImageUrl;
+    out.merchantSku = this.merchantSku;
+    
+    for ( FNodeShippingRec r : this.shippingExceptionNodes )
+    {
+      out.shippingExceptionNodes.add( r.createCopy());
+    }
+    
+    out.correlationId = this.correlationId;
+    out.merchantSkuId = this.merchantSkuId;
+    out.producerId = this.producerId;
+    out.status = this.status;
+    
+    out.subStatus.addAll( this.subStatus );
+    
+    try {
+      out.skuLastUpdate = new ISO8601UTCDate( this.skuLastUpdate.getDate());
+    } catch( Exception e ) {} //..intentional 
+    try {
+      out.inventoryLastUpdate = new ISO8601UTCDate( this.inventoryLastUpdate.getDate());
+    } catch( Exception e ) {} //..intentional 
+    try {
+      out.priceLastUpdate = new ISO8601UTCDate( this.priceLastUpdate.getDate());
+    } catch( Exception e ) {} //..intentional
+    
+    try {
+      out.startSellingDate = new ProductDate( this.startSellingDate.getDate());
+    } catch( Exception e ) {} //..do nothing
+    
+    return out;
   }
 
 }

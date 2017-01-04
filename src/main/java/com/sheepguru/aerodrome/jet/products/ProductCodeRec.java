@@ -46,6 +46,17 @@ public class ProductCodeRec implements Comparable, Jsonable
    */
   private final ProductCodeType standardProductCodeType;
 
+  
+  /**
+   * Creates a deep copy of this object 
+   * @return 
+   */
+  public ProductCodeRec createCopy()
+  {
+    return new ProductCodeRec( standardProductCode, standardProductCodeType );
+  }
+  
+  
   /**
    * Create a new ProductCode instance
    * @param code The code

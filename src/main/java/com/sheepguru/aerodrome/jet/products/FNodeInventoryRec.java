@@ -48,6 +48,16 @@ public class FNodeInventoryRec implements Jsonable
     
     return new FNodeInventoryRec( json.getString( "fulfillment_node_id", "" ), json.getInt( "quantity", 0 ));
   }
+
+
+  /**
+   * Create a copy of this object 
+   * @return a copy 
+   */
+  public FNodeInventoryRec createCopy()
+  {
+    return new FNodeInventoryRec( nodeId, quantity );
+  }
   
 
   /**

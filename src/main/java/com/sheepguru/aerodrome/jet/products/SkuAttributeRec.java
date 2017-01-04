@@ -42,6 +42,17 @@ public class SkuAttributeRec implements Jsonable
    * If the attribute_value requires a unit, then you pass the unit here
    */
   private final String unit;
+  
+  
+  /**
+   * Create a copy of this 
+   * @return a copy 
+   */
+  public SkuAttributeRec createCopy()
+  {
+    return new SkuAttributeRec( id, val, unit );
+  }
+  
 
   /**
    * Create a new SkuAttribute instance
