@@ -15,11 +15,12 @@
 package com.sheepguru.utils;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Currency;
 import java.util.Locale;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -71,6 +72,22 @@ public class Money implements Comparable<Money>
    */
   private final RoundingMode fMode;// = DEFAULT_ROUNDING;
 
+  
+  /**
+   * Create a new Money instance, and if something goes wrong return a money 
+   * instance with a zero amount.
+   * @param money
+   * @return 
+   */
+  public static Money createFromStringOrZero( final String money )
+  {
+    try {
+      return new Money( money );
+    } catch( ParseException e ) {
+      return new Money();
+    }
+  }
+  
   
   /**
    * Create a new default money instance with a zero value using default rounding 
@@ -160,11 +177,32 @@ public class Money implements Comparable<Money>
    * Create a new money instance
    * @param aAmount Amount
    */
-  public Money( String aAmount )
+  public Money( String aAmount ) throws ParseException
   {
-    this( new BigDecimal( aAmount ));
+    final BigDecimal amt = (BigDecimal)getFormatter().parse(aAmount.replaceAll("[^\\d.,]",""));
+    fLocale = new Locale( DEFAULT_LANGUAGE, DEFAULT_COUNTRY );
+    fCurrency = Currency.getInstance( fLocale );
+    fMode = DEFAULT_ROUNDING;
+    if ( !( amt instanceof BigDecimal ))
+      fAmount = BigDecimal.ZERO.setScale( getDecimals(), fMode );
+    else
+      fAmount = amt.setScale( getDecimals(), fMode );
+    
+    checkAmount();    
   }
 
+  
+  private NumberFormat getFormatter()
+  {
+    final NumberFormat fmt = NumberFormat.getNumberInstance( new Locale( DEFAULT_LANGUAGE, DEFAULT_COUNTRY ));
+    if ( fmt instanceof DecimalFormat )
+    {
+      ((DecimalFormat)fmt).setParseBigDecimal( true );
+    }
+    
+    return fmt;
+  }
+  
 
   /**
    * Create a new money instance

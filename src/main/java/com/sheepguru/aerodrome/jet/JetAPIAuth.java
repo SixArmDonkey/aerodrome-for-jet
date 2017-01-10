@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
  * @see <a href="https://developer.jet.com/docs/retrieving-a-token#request-body">https://developer.jet.com/docs/retrieving-a-token#request-body</a>
  * and the APIHeaders section for how to send a "logged in" request.
  * <br><a href="https://developer.jet.com/docs/retrieving-a-token#response-body">https://developer.jet.com/docs/retrieving-a-token#response-body</a>
+ * @deprecated This is built in to JetAPI base class.
  */
 public class JetAPIAuth extends JetAPI implements IJetAPIAuth
 {

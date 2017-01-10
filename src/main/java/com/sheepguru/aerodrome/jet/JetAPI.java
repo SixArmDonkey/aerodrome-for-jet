@@ -17,7 +17,6 @@ package com.sheepguru.aerodrome.jet;
 import static com.sheepguru.aerodrome.jet.JetAPIAuth.AUTH_TEST_RESPONSE;
 import com.sheepguru.api.API;
 import com.sheepguru.api.APIException;
-import com.sheepguru.api.APIHttpClient;
 import com.sheepguru.api.APILog;
 import com.sheepguru.api.APIResponse;
 import com.sheepguru.api.IAPIHttpClient;
@@ -25,10 +24,12 @@ import com.sheepguru.api.IAPIResponse;
 import com.sheepguru.api.PostFile;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.json.Json;
@@ -73,6 +74,8 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   private static final Log LOG = LogFactory.getLog( JetAPI.class );
   
   private static final Lock authLock = new ReentrantLock();
+  
+  private static final AtomicInteger reauthAttempts = new AtomicInteger( 0 );
 
   
   /**
@@ -177,7 +180,12 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   public IJetAPIResponse get( final String url, 
     final Map<String,String> headers ) throws APIException, JetException
   {
-    return JetAPIResponse.createFromAPIResponse( super.get( url, headers ));
+    try {
+      return JetAPIResponse.createFromAPIResponse( super.get( url, headers ));
+    } catch( JetException e ) {
+      //..try again
+      return get( url, tryLogin( e, headers ));
+    }            
   }
   
   
@@ -193,8 +201,13 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   public IJetAPIResponse post( final String url, final String payload, 
     final Map<String,String> headers ) throws APIException, JetException
   {
-    return JetAPIResponse.createFromAPIResponse( 
-      super.post( url, payload, headers ));
+    try {
+      return JetAPIResponse.createFromAPIResponse( 
+        super.post( url, payload, headers ));
+    } catch( JetException e ) {
+      //..try again
+      return post( url, payload, tryLogin( e, headers ));
+    }            
   }
   
   
@@ -211,16 +224,26 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     final long contentLength, final ContentType contentType, 
     final Map<String,String> headers ) throws APIException
   {
-    return JetAPIResponse.createFromAPIResponse( 
-      super.post( url, payload, contentLength, contentType, headers ));
+    try {
+      return JetAPIResponse.createFromAPIResponse( 
+        super.post( url, payload, contentLength, contentType, headers ));
+    } catch( JetException e ) {
+      //..try again
+      return post( url, payload, contentLength, contentType, tryLogin( e, headers ));
+    }      
   }
   
   
   @Override
   public IJetAPIResponse post( final String url, final PostFile file, Map<String,String> headers ) throws APIException
   {
-    return JetAPIResponse.createFromAPIResponse(
-      super.post( url, file, headers ));
+    try {
+      return JetAPIResponse.createFromAPIResponse(
+        super.post( url, file, headers ));
+    } catch( JetException e ) {
+      //..try again
+      return post( url, file, tryLogin( e, headers ));
+    }      
   }
   
   /**
@@ -235,8 +258,13 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   public IJetAPIResponse put( final String url, final String payload, 
     final Map<String,String> headers ) throws APIException, JetException
   {  
-    return JetAPIResponse.createFromAPIResponse( 
-      super.put( url, payload, headers ));
+    try {
+      return JetAPIResponse.createFromAPIResponse( 
+        super.put( url, payload, headers ));
+    } catch( JetException e ) {
+      //..try again
+      return put( url, payload, tryLogin( e, headers ));
+    }      
   }
   
   
@@ -253,8 +281,14 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     final long contentLength, final ContentType contentType, 
     final Map<String,String> headers ) throws APIException, JetException
   {
-    return JetAPIResponse.createFromAPIResponse(
-      super.put( url, payload, contentLength, contentType, headers ));
+    try {
+      return JetAPIResponse.createFromAPIResponse(
+        super.put( url, payload, contentLength, contentType, headers ));
+    } catch( JetException e ) {
+      //..try again
+      return put( url, payload, contentLength, contentType, tryLogin( e, headers ));
+    }
+      
   }
   
   
@@ -262,7 +296,58 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   public IJetAPIResponse put( final String url, final PostFile file, 
           Map<String,String> headers ) throws APIException, JetException 
   {
-    return JetAPIResponse.createFromAPIResponse( super.put( url, file, headers ));
+    try {
+      return JetAPIResponse.createFromAPIResponse( super.put( url, file, headers ));
+    } catch( JetException e ) {
+      //..try again
+      return put( url, file, tryLogin( e, headers ));
+    }
+  }
+  
+  
+  /**
+   * Take a jet exception, check the auth state and attempt a reauth..
+   * This throws an exception on failure.
+   * No exception is success.
+   * @param e exception
+   * @return modified headers 
+   * @throws APIException
+   * @throws JetException 
+   */
+  private Map<String,String> tryLogin( final JetException e, final Map<String,String> headers ) throws APIException, JetException
+  {
+    final IAPIResponse response = e.getResponse();
+    if ( response == null )
+      throw e;    
+    else if ( response.getStatusLine().getStatusCode() 
+      == JetAPIResponse.ResponseCode.UNAUTHORIZED.getCode())
+    {
+      if ( reauthAttempts.get() >= 5 )
+      {
+        //..This should be considered a fatal exception
+        throw new JetException( "5 attempts to reauthenticate have failed; I'm not going to try again.", e );
+      }
+      
+      reauthAttempts.incrementAndGet();
+      
+      //..The request was unauthorized, try to re-authenticate
+      try {
+        login();
+        //..success
+        reauthAttempts.set( 0 );
+        
+        Map<String,String> newHeaders = new HashMap<>( headers );
+        
+        //..Add the new auth header for this request 
+        newHeaders.put( "Authorization", config.getAuthorizationHeaderValue());
+        
+        return newHeaders;
+      } catch( JetAuthException authE ) {
+        throw new JetException( "Failed to reauthenticate", authE );
+      }
+    }    
+    else
+      throw e;
   }
   
   
@@ -287,8 +372,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
       setConfigurationDataFromLogin( post(
         config.getAuthenticationURL(),
         getLoginPayload().toString(),
-        JetHeaderBuilder.getJSONHeaderBuilder( 
-          config.getAuthorizationHeaderValue()).build()
+        JetHeaderBuilder.getJSONHeaderBuilder( "" ).build()
       ));
     } catch ( JetException e ) {
       APILog.info( LOG, "Failed to authenticate :-( " );
@@ -404,7 +488,6 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
           if ( !config.isAuthenticated())
           {
             performReauth( hr );
-            authTest();
           }
 
         } finally {

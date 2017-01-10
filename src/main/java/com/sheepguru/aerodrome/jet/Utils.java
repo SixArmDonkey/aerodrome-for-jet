@@ -327,7 +327,7 @@ public class Utils
   {
     if ( n == null )
       return new Money();
-    return new Money( n.toString());
+    return Money.createFromStringOrZero( n.toString());
   }
   
   

@@ -586,8 +586,7 @@ public class ProductRec implements Jsonable
      * @param title the title to set
      */
     public Builder setTitle(String title) {
-      if ( title == null || title.length() < 5 || title.length() > 500 )
-        throw new IllegalArgumentException( "title must be between 5-500 characters" );
+      Utils.checkNull( title, "title" );
 
       this.title = title;
       return this;
@@ -771,8 +770,7 @@ public class ProductRec implements Jsonable
      * @param brand the brand to set
      */
     public Builder setBrand(String brand) {
-      if ( brand == null || brand.isEmpty() || brand.length() > 50 )
-        throw new IllegalArgumentException( "brand must be between 1-50 characters" );
+      Utils.checkNull( brand, "brand" );
 
       this.brand = brand;
       return this;
@@ -793,8 +791,7 @@ public class ProductRec implements Jsonable
      * @param manufacturer the manufacturer to set
      */
     public Builder setManufacturer(String manufacturer) {
-      if ( manufacturer == null || manufacturer.isEmpty() || manufacturer.length() > 50 )
-        throw new IllegalArgumentException( "manufacturer must be between 1-50 characters" );
+      Utils.checkNull( manufacturer, "manufacturer" );
       this.manufacturer = manufacturer;
       return this;
     }
@@ -836,8 +833,7 @@ public class ProductRec implements Jsonable
      * @param productDescription the productDescription to set
      */
     public Builder setProductDescription(String productDescription) {
-      if ( productDescription == null || productDescription.isEmpty() || productDescription.length() > 2000 )
-        throw new IllegalArgumentException( "productDescription must be between 1-2000 characters" );
+      Utils.checkNull( productDescription, "productDescription" );
 
       this.productDescription = productDescription;
       return this;
@@ -860,8 +856,7 @@ public class ProductRec implements Jsonable
      * @param bullet the bullet to add
      */
     public void addBullet( String bullet ) {
-      if ( bullet == null || bullet.isEmpty() || bullet.length() > 500 )
-        throw new IllegalArgumentException( "bullet must be between 1-500 characters" );
+      Utils.checkNullEmpty( bullet, "bullet" );
 
       this.bullets.add( bullet );
     }
@@ -1102,8 +1097,7 @@ public class ProductRec implements Jsonable
      * @param legalDisclaimerDescription the legalDisclaimerDescription to set
      */
     public Builder setLegalDisclaimerDescription(String legalDisclaimerDescription) {
-      if ( legalDisclaimerDescription == null || legalDisclaimerDescription.isEmpty() || legalDisclaimerDescription.length() > 500 )
-        throw new IllegalArgumentException( "legalDisclaimerDescription must be between 1-500 characters" );
+      Utils.checkNull( legalDisclaimerDescription, "legalDisclaimerDescription" );
 
       this.legalDisclaimerDescription = legalDisclaimerDescription;
       return this;
@@ -1192,8 +1186,7 @@ public class ProductRec implements Jsonable
      * @param countryOfOrigin the countryOfOrigin to set
      */
     public Builder setCountryOfOrigin(String countryOfOrigin) {
-      if ( countryOfOrigin == null || countryOfOrigin.isEmpty() || countryOfOrigin.length() > 500 )
-        throw new IllegalArgumentException( "countryOfOrigin must be between 1-500 characters" );
+      Utils.checkNull( countryOfOrigin, "countryOfOrigin" );
 
       this.countryOfOrigin = countryOfOrigin;
       return this;
@@ -1214,8 +1207,7 @@ public class ProductRec implements Jsonable
      * @param safetyWarning the safetyWarning to set
      */
     public Builder setSafetyWarning(String safetyWarning) {
-      if ( safetyWarning == null || safetyWarning.isEmpty() || safetyWarning.length() > 500 )
-        throw new IllegalArgumentException( "safetyWarning must be between 1-500 characters" );
+      Utils.checkNull( safetyWarning, "safetyWarning" );
 
       this.safetyWarning = safetyWarning;
       return this;
@@ -2216,11 +2208,25 @@ public class ProductRec implements Jsonable
     
     this.subStatus = Collections.unmodifiableSet( b.subStatus );
     
-    this.skuLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.skuLastUpdate.getDateString());
+    if ( b.skuLastUpdate == null )
+      this.skuLastUpdate = null;
+    else
+      this.skuLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.skuLastUpdate.getDateString());
     
-    this.inventoryLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.inventoryLastUpdate.getDateString());
-    this.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.priceLastUpdate.getDateString());
-    this.startSellingDate = ProductDate.fromJetValueOrNull( b.startSellingDate.getDateString());
+    if ( b.inventoryLastUpdate == null )
+      this.inventoryLastUpdate = null;
+    else
+      this.inventoryLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.inventoryLastUpdate.getDateString());
+    
+    if ( b.priceLastUpdate == null )
+      this.priceLastUpdate = null;
+    else
+      this.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.priceLastUpdate.getDateString());
+    
+    if ( b.startSellingDate == null )
+      this.startSellingDate = null;
+    else
+      this.startSellingDate = ProductDate.fromJetValueOrNull( b.startSellingDate.getDateString());
   }
 
 
