@@ -116,4 +116,11 @@ public class FNodePriceRec implements Jsonable
       .add( "fulfillment_node_price", price.toString() )
       .build();
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return price.toString();
+  }
 }

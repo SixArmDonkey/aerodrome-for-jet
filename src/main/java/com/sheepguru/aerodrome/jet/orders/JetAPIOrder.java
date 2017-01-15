@@ -29,7 +29,7 @@ import java.util.List;
  * 
  * @author John Quinn
  */
-public class JetAPIOrder extends JetAPI implements IJetAPIOrder
+public class JetAPIOrder extends JetAPI implements IJetOrder, IJetAPIOrder
 {
   /**
    * Create a new API instance

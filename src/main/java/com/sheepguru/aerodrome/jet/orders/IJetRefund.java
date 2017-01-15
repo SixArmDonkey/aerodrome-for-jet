@@ -16,14 +16,15 @@ import com.sheepguru.aerodrome.jet.IJetAPIResponse;
 import com.sheepguru.aerodrome.jet.JetException;
 import com.sheepguru.api.APIException;
 import java.util.List;
+import com.sheepguru.aerodrome.jet.orders.IJetReturn;
+
 
 /**
- *
- * @author john
+ * Refunds API 
+ * @author John Quinn
  */
-public interface IJetAPIRefund extends IJetAPIReturn
+public interface IJetRefund extends IJetReturn
 {
-
   /**
    * Get details about a refund
    * @param refundAuthId auth id for the refund
@@ -31,16 +32,25 @@ public interface IJetAPIRefund extends IJetAPIReturn
    * @throws APIException
    * @throws JetException
    */
-  public IJetAPIResponse sendGetRefundDetail( final String refundAuthId ) 
+  public RefundRec getRefundDetail( final String refundAuthId ) 
     throws APIException, JetException;
 
   /**
    * Poll for refunds
    * @param status Status to poll
-   * @return api response
+   * @return refund uri list
    */
-  public IJetAPIResponse sendPollRefunds( final String status ) 
+  public List<String> pollRefunds( final RefundStatus status ) 
     throws APIException, JetException;
+
+  /**
+   * Poll for refunds
+   * @param status Status to poll
+   * @param includePath true = full path from jet, false = right part.
+   * @return refund uri list
+   */
+  public List<String> pollRefunds( final RefundStatus status, 
+    final boolean includePath ) throws APIException, JetException;
 
   /**
    * Merchant Initiated Refunds can be created using this API method
@@ -49,12 +59,12 @@ public interface IJetAPIRefund extends IJetAPIReturn
    * refund.
    * @param items A list of items that are included in the refund from the order
    * being refunded.
-   * @return api response
+   * @return refund authorization id
    * @throws APIException
    * @throws JetException
    */
-  public IJetAPIResponse sendPostCreateRefund( final String orderId, 
+  public String postCreateRefund( final String orderId, 
     final String altRefundId, final List<RefundItemRec> items ) 
     throws APIException, JetException;
-    
+
 }

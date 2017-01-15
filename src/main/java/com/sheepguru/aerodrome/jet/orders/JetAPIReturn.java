@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author John Quinn
  */
-public class JetAPIReturn extends JetAPI implements IJetAPIReturn
+public class JetAPIReturn extends JetAPI implements IJetReturn, IJetAPIReturn
 {
   /**
    * Logger 
@@ -218,5 +218,20 @@ public class JetAPIReturn extends JetAPI implements IJetAPIReturn
     final CompleteReturnRequestRec request ) throws APIException, JetException
   {
     return sendPutCompleteReturn( jetReturnId, request.toJSON().toString());
+  }
+  
+    /**
+   * Send a complete return command to jet
+   * @param jetReturnId
+   * @param payload The payload
+   * @return api response
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public boolean completeReturn(final String jetReturnId, 
+      final CompleteReturnRequestRec request) throws APIException, JetException
+  {
+    return sendPutCompleteReturn( jetReturnId, request.toJSON().toString()).isSuccess();
   }
 }

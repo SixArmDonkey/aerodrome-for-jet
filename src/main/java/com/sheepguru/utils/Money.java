@@ -89,6 +89,15 @@ public class Money implements Comparable<Money>
   }
   
   
+  public static Money fromDBInt( final int val )
+  {
+    BigDecimal bd = new BigDecimal( val );
+    bd.setScale( 2 );
+    
+    return new Money( bd.divide( new BigDecimal( 100 )));    
+  }
+  
+  
   /**
    * Create a new default money instance with a zero value using default rounding 
    */
@@ -177,9 +186,12 @@ public class Money implements Comparable<Money>
    * Create a new money instance
    * @param aAmount Amount
    */
-  public Money( String aAmount ) throws ParseException
-  {
-    final BigDecimal amt = (BigDecimal)getFormatter().parse(aAmount.replaceAll("[^\\d.,]",""));
+  public Money( String aAmount ) throws ParseException 
+  {          
+    if ( aAmount == null || aAmount.trim().isEmpty())
+      throw new ParseException( "Invalid Amount (null)", 0 );
+    
+    final BigDecimal amt = (BigDecimal)getFormatter().parse(aAmount.trim().replaceAll("[^\\d.,]",""));
     fLocale = new Locale( DEFAULT_LANGUAGE, DEFAULT_COUNTRY );
     fCurrency = Currency.getInstance( fLocale );
     fMode = DEFAULT_ROUNDING;

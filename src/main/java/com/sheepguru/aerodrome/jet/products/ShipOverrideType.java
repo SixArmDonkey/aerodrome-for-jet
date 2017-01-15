@@ -83,4 +83,11 @@ public enum ShipOverrideType
   {
     return val;
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return val;
+  }
 }

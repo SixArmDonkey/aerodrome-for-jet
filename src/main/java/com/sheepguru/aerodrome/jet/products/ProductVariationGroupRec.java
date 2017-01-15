@@ -14,17 +14,13 @@
 
 package com.sheepguru.aerodrome.jet.products;
 
-import com.sheepguru.api.APILog;
 import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonNumber;
 import javax.json.JsonObject;
-import javax.json.JsonString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

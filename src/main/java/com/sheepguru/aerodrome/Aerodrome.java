@@ -44,8 +44,6 @@ import com.sheepguru.aerodrome.jet.products.ProductCodeRec;
 import com.sheepguru.aerodrome.jet.products.ProductCodeType;
 import com.sheepguru.aerodrome.jet.orders.ChargeFeedback;
 import com.sheepguru.aerodrome.jet.orders.CompleteReturnRequestRec;
-import com.sheepguru.aerodrome.jet.orders.IJetAPIRefund;
-import com.sheepguru.aerodrome.jet.orders.IJetAPIReturn;
 import com.sheepguru.aerodrome.jet.orders.JetAPIRefund;
 import com.sheepguru.aerodrome.jet.orders.JetAPIReturn;
 import com.sheepguru.aerodrome.jet.orders.RefundFeedback;
@@ -67,7 +65,6 @@ import javax.json.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.entity.ContentType;
-import com.sheepguru.aerodrome.jet.orders.IJetAPIOrder;
 import com.sheepguru.aerodrome.jet.orders.ReturnReason;
 import com.sheepguru.aerodrome.jet.products.FNodeShippingRec;
 import com.sheepguru.aerodrome.jet.products.ProductVariationGroupRec;
@@ -78,6 +75,9 @@ import com.sheepguru.aerodrome.jet.settlement.JetAPISettlement;
 import com.sheepguru.aerodrome.jet.taxonomy.IJetAPITaxonomy;
 import com.sheepguru.aerodrome.jet.taxonomy.JetAPITaxonomy;
 import com.sheepguru.api.IAPIResponse;
+import com.sheepguru.aerodrome.jet.orders.IJetOrder;
+import com.sheepguru.aerodrome.jet.orders.IJetReturn;
+import com.sheepguru.aerodrome.jet.orders.IJetRefund;
 
 
 /**
@@ -130,7 +130,7 @@ public class Aerodrome
     
     //testOrders( client, jetConfig );
     
-    //testReturns( client, jetConfig );
+    testReturns( client, jetConfig );
     
     //testRefunds( client, jetConfig );
     
@@ -180,8 +180,8 @@ public class Aerodrome
   {
     try {
       //..Need the order api to use the refund api.
-      final IJetAPIOrder orderApi = new JetAPIOrder( client, jetConfig );      
-      final IJetAPIRefund refundApi = new JetAPIRefund( client, jetConfig );
+      final IJetOrder orderApi = new JetAPIOrder( client, jetConfig );      
+      final IJetRefund refundApi = new JetAPIRefund( client, jetConfig );
       
       //..Poll for a list of jet order id's to play with 
       List<String> orderTokens = orderApi.getOrderStatusTokens( OrderStatus.COMPLETE );
@@ -514,7 +514,7 @@ public class Aerodrome
   private static void testReturns( final APIHttpClient client, final JetConfig config )
   {
     try {
-      final IJetAPIReturn returnsApi = new JetAPIReturn( client, config );
+      final IJetReturn returnsApi = new JetAPIReturn( client, config );
       
       //..Find any returns waiting to be approved 
       for ( final String id : returnsApi.getReturnsStatusTokens( ReturnStatus.CREATED ))
@@ -541,7 +541,7 @@ public class Aerodrome
         }
         
         //..approve the return i guess
-        returnsApi.putCompleteReturn( id, new CompleteReturnRequestRec( ret.getMerchantOrderId(), "", true, ChargeFeedback.FRAUD, returnItems ));
+        returnsApi.completeReturn( id, new CompleteReturnRequestRec( ret.getMerchantOrderId(), "", true, ChargeFeedback.FRAUD, returnItems ));
       }
     } catch( Exception e ) {
       fail( "Failed to test returns", 0, e );

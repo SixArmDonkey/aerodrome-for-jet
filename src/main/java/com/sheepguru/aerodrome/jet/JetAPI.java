@@ -24,6 +24,7 @@ import com.sheepguru.api.IAPIResponse;
 import com.sheepguru.api.PostFile;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -341,7 +342,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         //..Add the new auth header for this request 
         newHeaders.put( "Authorization", config.getAuthorizationHeaderValue());
         
-        return newHeaders;
+        return Collections.unmodifiableMap( newHeaders );
       } catch( JetAuthException authE ) {
         throw new JetException( "Failed to reauthenticate", authE );
       }

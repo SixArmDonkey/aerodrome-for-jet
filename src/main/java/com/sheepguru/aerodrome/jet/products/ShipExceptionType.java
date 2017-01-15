@@ -92,4 +92,11 @@ public enum ShipExceptionType
   {
     return val;
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return val;
+  }
 }

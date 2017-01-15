@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  * The Jet Refund API 
  * @author John Quinn
  */
-public class JetAPIRefund extends JetAPIReturn implements IJetAPIRefund
+public class JetAPIRefund extends JetAPIReturn implements IJetRefund, IJetAPIRefund
 {
   /**
    * Logger 

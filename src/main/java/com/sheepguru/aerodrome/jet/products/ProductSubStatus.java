@@ -98,4 +98,10 @@ public enum ProductSubStatus
   {
     return val;
   }
+  
+  @Override
+  public String toString()
+  {
+    return val;
+  }
 }

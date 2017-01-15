@@ -21,6 +21,10 @@ package com.sheepguru.aerodrome.jet.products;
  */
 public enum CPSIA
 {
+  /**
+   * Do not send this to jet
+   */
+  NONE( "" ),
   NO_WARNING( "no warning applicable" ),
   IS_SMALL_PARTS( "choking hazard small parts" ),
   IS_SMALL_BALL( "choking hazard is a small ball" ),

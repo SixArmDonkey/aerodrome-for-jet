@@ -31,6 +31,134 @@ import javax.json.JsonObjectBuilder;
  */
 public class ShippingExceptionRec implements Jsonable
 {
+  public static class Builder
+  {
+    /**
+     * Generic descriptions of shipment delivery times
+     */
+    private ShippingServiceLevel serviceLevel = ShippingServiceLevel.NONE;
+
+    /**
+     * A specific shipping method e.g. UPS Ground, UPS Next Day Air,
+     * FedEx Home, Freight
+     *
+     * Logic
+     * This should be used if you want the change to apply to a specific
+     * shipping_method. If shipping_carrier is populated, this field will be
+     * ignored. Use this field if you are defining your shippingoptions by
+     * 'shipping_method'
+     */
+    private ShippingMethod shippingMethod = ShippingMethod.NONE;
+
+    /**
+     * The type of shipping override, "Additional charge" or "Override charge"
+     * (Override Charge could be used to lower shipping)
+     */
+    private ShipOverrideType overrideType = ShipOverrideType.NONE;
+
+    /**
+     * The amount added to your default shipping charge when
+     * "OverrideType"= "Additional charge" and the total amount charged
+     * when "OverrideType" = "Override charge"
+     *
+     * Logic
+     * This field is required if override_type is populated
+     */
+    private Money shippingChargeAmount = new Money();
+
+    /**
+     * Indicates if you want the product to be shipped exclusively (only with)
+     * or restrictively (not including) via the shipping level of shipping
+     * method provided
+     */
+    private ShipExceptionType shippingExceptionType = ShipExceptionType.NONE;
+
+    /**
+     * Generic descriptions of shipment delivery times
+     * @param serviceLevel the serviceLevel to set
+     * @return this
+     */
+    public Builder setServiceLevel( ShippingServiceLevel serviceLevel )
+    {
+      Utils.checkNull( serviceLevel, "serviceLevel" );
+      this.serviceLevel = serviceLevel;
+      return this;
+    }
+
+    /**
+     * A specific shipping method e.g. UPS Ground, UPS Next Day Air,
+     * FedEx Home, Freight
+     *
+     * Logic
+     * This should be used if you want the change to apply to a specific
+     * shipping_method. If shipping_carrier is populated, this field will be
+     * ignored. Use this field if you are defining your shippingoptions by
+     * 'shipping_method'
+     * @param shippingMethod the shippingMethod to set
+     * @return this
+     */
+    public Builder setShippingMethod( ShippingMethod shippingMethod )
+    {
+      Utils.checkNull( shippingMethod, "shippingMethod" );
+      this.shippingMethod = shippingMethod;
+      return this;
+    }
+
+    /**
+     * The type of shipping override, "Additional charge" or "Override charge"
+     * (Override Charge could be used to lower shipping)
+     * @param overrideType the overrideType to set
+     * @return this
+     */
+    public Builder setOverrideType( ShipOverrideType overrideType )
+    {
+      Utils.checkNull( overrideType, "overrideType" );
+      this.overrideType = overrideType;
+      
+      return this;
+    }
+
+    /**
+     * The amount added to your default shipping charge when
+     * "OverrideType"= "Additional charge" and the total amount charged
+     * when "OverrideType" = "Override charge"
+     *
+     * Logic
+     * This field is required if override_type is populated
+     * @param shippingChargeAmount the shippingChargeAmount to set
+     * @return this
+     */
+    public Builder setShippingChargeAmount( Money shippingChargeAmount )
+    {
+      Utils.checkNull( shippingChargeAmount, "shippingChargeAmount" );
+      this.shippingChargeAmount = shippingChargeAmount;
+      
+      return this;
+    }
+
+    /**
+     * Indicates if you want the product to be shipped exclusively (only with)
+     * or restrictively (not including) via the shipping level of shipping
+     * method provided
+     * @param shippingExceptionType the shippingExceptionType to set
+     * @return this
+     */
+    public Builder setShippingExceptionType( ShipExceptionType shippingExceptionType )
+    {
+      Utils.checkNull( shippingExceptionType, "shippingExceptionType" );
+      this.shippingExceptionType = shippingExceptionType;
+      return this;
+    }
+    
+    
+    public ShippingExceptionRec build()
+    {
+      return new ShippingExceptionRec( this );
+    }
+    
+  }
+  
+  
   /**
    * Generic descriptions of shipment delivery times
    */
@@ -101,6 +229,36 @@ public class ShippingExceptionRec implements Jsonable
     this.overrideType = overrideType;
     this.shippingChargeAmount = shippingChargeAmount;
     this.shippingExceptionType = shippingExceptionType;    
+  }
+  
+  
+  /**
+   * Turn this into a builder
+   * @return builder
+   */
+  public Builder toBuilder()
+  {
+    final Builder b = new Builder();
+    b.serviceLevel = this.serviceLevel;
+    b.shippingMethod = this.shippingMethod;
+    b.overrideType = this.overrideType;
+    b.shippingChargeAmount = this.shippingChargeAmount;
+    b.shippingExceptionType = this.shippingExceptionType;            
+    return b;
+  }
+  
+  
+  /**
+   * Builder constructor 
+   * @param b 
+   */
+  protected ShippingExceptionRec( final Builder b )
+  {
+    this.serviceLevel = b.serviceLevel;
+    this.shippingMethod = b.shippingMethod;
+    this.overrideType = b.overrideType;
+    this.shippingChargeAmount = b.shippingChargeAmount;
+    this.shippingExceptionType = b.shippingExceptionType;        
   }
   
   

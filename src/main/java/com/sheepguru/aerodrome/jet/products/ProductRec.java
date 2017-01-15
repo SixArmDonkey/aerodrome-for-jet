@@ -20,6 +20,7 @@ import com.sheepguru.aerodrome.jet.JetDate;
 import com.sheepguru.aerodrome.jet.ProductTaxCode;
 import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
+import com.sheepguru.api.APILog;
 import com.sheepguru.utils.Money;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -55,6 +56,18 @@ public class ProductRec implements Jsonable
   public static class Builder
   {
     /**
+     * Some non-jet related id 
+     */
+    private int id = 0;
+    
+    private boolean isArchived = false;
+    
+    private String correlationId = "";
+    
+    
+    
+    
+    /**
      * Short product description
      * 5-500 characters
      */
@@ -81,7 +94,7 @@ public class ProductRec implements Jsonable
     /**
      * Product codes
      */
-    private final Set<ProductCodeRec> productCodes = new HashSet();
+    private final List<ProductCodeRec> productCodes = new ArrayList();
 
     /**
      * ASIN Number.
@@ -131,7 +144,7 @@ public class ProductRec implements Jsonable
      * Max length: 500 characters
      * Maximum of 5 elements
      */
-    private final Set<String> bullets = new HashSet();
+    private final List<String> bullets = new ArrayList<>();
 
     /**
      * For Price Per Unit calculations, the number of units included in
@@ -228,7 +241,7 @@ public class ProductRec implements Jsonable
      *
      * Max 7 elements
      */
-    private final Set<CPSIA> cpsiaStatements = new HashSet();
+    private final List<CPSIA> cpsiaStatements = new ArrayList<>();
 
     /**
      * The country that the item was manufactured in.
@@ -266,12 +279,12 @@ public class ProductRec implements Jsonable
     /**
      * Fulfillment node prices
      */
-    private final Set<FNodePriceRec> fNodePrices = new HashSet();
+    private final List<FNodePriceRec> fNodePrices = new ArrayList<>();
 
     /**
      * Fulfillment node ivnentory
      */
-    private final Set<FNodeInventoryRec> fNodeInventory = new HashSet();
+    private final List<FNodeInventoryRec> fNodeInventory = new ArrayList<>();
 
     /**
      * The unique ID for an individually selectable product for sale on Jet.com.
@@ -329,7 +342,7 @@ public class ProductRec implements Jsonable
     /**
      * This is not documented
      */
-    private final Set<SkuAttributeRec> attributesNodeSpecific = new HashSet();
+    private final List<SkuAttributeRec> attributesNodeSpecific = new ArrayList<>();
 
     /**
      * A set of alternate image slots and locations
@@ -364,12 +377,7 @@ public class ProductRec implements Jsonable
     /**
      * Shipping exception node list
      */
-    private final Set<FNodeShippingRec> shippingExceptionNodes = new HashSet();
-
-    /**
-     * From Product Get response
-     */
-    private String correlationId = "";
+    private final List<FNodeShippingRec> shippingExceptionNodes = new ArrayList<>();
 
     /**
      * The merchant sku id returned in the product get response
@@ -389,7 +397,7 @@ public class ProductRec implements Jsonable
     /**
      * Product sub status
      */
-    private final Set<ProductSubStatus> subStatus = new HashSet();
+    private final List<ProductSubStatus> subStatus = new ArrayList<>();
 
     /**
      * Sku last update
@@ -406,6 +414,16 @@ public class ProductRec implements Jsonable
      */
     private JetDate priceLastUpdate = null;
     
+    /**
+     * Product variations 
+     */
+    private final List<ProductVariationGroupRec> variations = new ArrayList<>();
+    
+    /**
+     * Returns Exceptions 
+     */
+    private final List<ReturnsExceptionRec> returnsExceptions = new ArrayList<>();
+    
     
     /**
      * Build an instance 
@@ -414,6 +432,35 @@ public class ProductRec implements Jsonable
     public ProductRec build()
     {
       return new ProductRec( this );
+    }
+    
+    
+    public Builder setMerchantSkuId( final String id )
+    {
+      if ( id == null )
+        return this;
+      
+      this.merchantSkuId = id;
+      return this;
+    }
+    
+    /**
+     * Access the returns exceptions
+     * @return exceptions
+     */
+    public List<ReturnsExceptionRec> getReturnsExceptions()
+    {
+      return returnsExceptions;
+    }
+    
+    
+    /**
+     * Access the product variation data
+     * @return variations 
+     */
+    public List<ProductVariationGroupRec> getVariations()
+    {
+      return variations;
     }
 
 
@@ -425,6 +472,41 @@ public class ProductRec implements Jsonable
     {
       return status;
     }
+    
+    
+    public Builder setProductStatus( final ProductStatus status )
+    {
+      if ( status == null )
+        return this;
+      
+      this.status = status;
+      return this;
+    }
+    
+    
+    public Builder setProductSubStatus( final String status )
+    {
+      if ( status == null )
+        return this;
+      
+      
+      for ( final String s : status.split( "," ))
+      {
+        if ( s.isEmpty())
+          continue;
+        
+        try {
+          this.subStatus.add( ProductSubStatus.valueOf( s ));
+        } catch( Exception e ) {
+          System.err.println( e ) ;          
+        }
+      }
+      
+      return this;
+    }
+    
+    
+    
 
 
     /**
@@ -434,6 +516,14 @@ public class ProductRec implements Jsonable
     public String getJetRetailSku()
     {
       return jetRetailSku;
+    }
+    
+    
+    public Builder setJetRetailSku( final String sku )
+    {
+      Utils.checkNull( sku, "sku" );
+      this.jetRetailSku = sku;
+      return this;
     }
 
 
@@ -445,6 +535,16 @@ public class ProductRec implements Jsonable
     {
       return skuLastUpdate;
     }
+    
+    
+    public Builder setSkuLastUpdate( final JetDate date )
+    {
+      if ( date == null )
+        return this;
+      
+      this.skuLastUpdate = date;
+      return this;
+    }
 
     /**
      * Retrieve the last inventory update time 
@@ -453,6 +553,16 @@ public class ProductRec implements Jsonable
     public JetDate getInventoryLastUpdate()
     {
       return inventoryLastUpdate;
+    }
+    
+    
+    public Builder setInvLastUpdate( final JetDate date )
+    {
+      if ( date == null )
+        return this;
+      
+      this.inventoryLastUpdate = date;
+      return this;
     }
 
 
@@ -464,6 +574,16 @@ public class ProductRec implements Jsonable
     {
       return priceLastUpdate;
     }  
+    
+    
+    public Builder setPriceLastUpdate( final JetDate date )
+    {
+      if ( date == null )
+        return this;
+      
+      this.priceLastUpdate = date;
+      return this;
+    }
 
     /**
      * Retrieve the producer id from the product get response
@@ -675,13 +795,23 @@ public class ProductRec implements Jsonable
       this.categoryPath = categoryPath;
       return this;
     }
+    
+    /**
+     * Set the is archived flag.  This is never sent to jet, use it if you want.
+     * @param isArchived if this is archived or not 
+     * @return is archived
+     */
+    public Builder setIsArchived( final boolean isArchived ) {
+      this.isArchived = isArchived;
+      return this;      
+    }
 
 
     /**
      * Get the sub status 
      * @return sub status 
      */
-    public Set<ProductSubStatus> getSubstatus() {
+    public List<ProductSubStatus> getSubstatus() {
       return subStatus;
     }
 
@@ -689,7 +819,7 @@ public class ProductRec implements Jsonable
      * Product codes
      * @return the productCodes
      */
-    public Set<ProductCodeRec> getProductCodes() {
+    public List<ProductCodeRec> getProductCodes() {
       return productCodes;
     }
 
@@ -845,7 +975,7 @@ public class ProductRec implements Jsonable
      * Maximum of 5 elements
      * @return the bullets
      */
-    public Set<String> getBullets() {
+    public List<String> getBullets() {
       return bullets;
     }
 
@@ -1119,7 +1249,7 @@ public class ProductRec implements Jsonable
      * Max 7 elements
      * @return the cpsiaStatements
      */
-    public Set<CPSIA> getCpsiaStatements() {
+    public List<CPSIA> getCpsiaStatements() {
       return cpsiaStatements;
     }
 
@@ -1139,7 +1269,7 @@ public class ProductRec implements Jsonable
      * Max 7 elements
      * @param cpsiaStatements the cpsiaStatements to set
      */
-    public Builder setCpsiaStatements(Set<CPSIA> cpsiaStatements) {
+    public Builder setCpsiaStatements(List<CPSIA> cpsiaStatements) {
       if ( cpsiaStatements == null )
         this.cpsiaStatements.clear();
       else
@@ -1164,11 +1294,47 @@ public class ProductRec implements Jsonable
      * Max 7 elements
      * @param cpsiaStatement the cpsiaStatement to add
      */
-    public Builder setCpsiaStatements( CPSIA cpsiaStatement ) {
-      Utils.checkNull( cpsiaStatement, "cpsiaStatement" );
+    public Builder setCpsiaStatement( CPSIA cpsiaStatement ) {
+      if ( cpsiaStatement == null || cpsiaStatement.equals(  CPSIA.NONE ))
+        return this;
+      
       this.cpsiaStatements.add( cpsiaStatement );
       return this;
     }
+    
+    
+    /**
+     * Use this field to indicate if a cautionary statement relating to the
+     * choking hazards of children's toys and games applies to your product.
+     * These cautionary statements are defined in Section 24 of the Federal
+     * Hazardous Substances Act and Section 105 of the Consumer Product Safety
+     * Improvement Act of 2008. They must be displayed on the product packaging
+     * and in certain online and catalog advertisements. You are responsible for
+     * determining if a cautionary statement applies to the product. This can be
+     * verified by contacting the product manufacturer or checking the product
+     * packaging. Cautionary statements that you select will be displayed on the
+     * product detail page. If no cautionary statement applies to the product,
+     * select "no warning applicable".
+     *
+     * Max 7 elements
+     * @param cpsiaStatement the cpsiaStatement to add
+     */
+    public Builder setCpsiaStatement( String cpsiaStatement ) {
+      if ( cpsiaStatement == null || cpsiaStatement.isEmpty())
+        return this;
+      else
+      {
+        try {
+          this.cpsiaStatements.add( CPSIA.valueOf( cpsiaStatement ));
+        } catch( Exception e ) {
+          return this;
+        }
+      }
+      
+      
+      
+      return this;
+    }    
 
 
     /**
@@ -1179,6 +1345,26 @@ public class ProductRec implements Jsonable
     public String getCountryOfOrigin() {
       return countryOfOrigin;
     }
+    
+    public Builder setCorrelationId( final String id )
+    {
+      if ( id == null )
+        return this;
+      
+      this.correlationId = id;
+      return this;
+    }
+    
+    
+    public Builder setProducerId( final String id )
+    {
+      if ( id == null )
+        return this;
+      
+      this.producerId = id;
+      return this;
+    }
+    
 
     /**
      * The country that the item was manufactured in.
@@ -1419,7 +1605,7 @@ public class ProductRec implements Jsonable
      * This is not documented
      * @return the attributesNodeSpecific
      */
-    public Set<SkuAttributeRec> getAttributesNodeSpecific() {
+    public List<SkuAttributeRec> getAttributesNodeSpecific() {
       return attributesNodeSpecific;
     }
 
@@ -1458,6 +1644,20 @@ public class ProductRec implements Jsonable
     public Map<Integer,String> getAlternateImages() {
       return alternateImages;
     }
+    
+    
+    public Builder setId( final int id )
+    {
+      this.id = id;
+      return this;
+    }
+    
+    
+    public int getId()
+    {
+      return id;
+    }
+    
 
     /**
      * A set of alternate image slots and locations
@@ -1486,8 +1686,10 @@ public class ProductRec implements Jsonable
      * @param slot The image slot
      * @param image The image
      */
-    public Builder setAlternateImages( int slot, String image ) {
-      Utils.checkNull( image, "image" );
+    public Builder setAlternateImage( int slot, String image ) {
+      if ( image == null || image.isEmpty())
+        return this;
+      
       if ( slot < 0 ) 
         throw new IllegalArgumentException( "slot cannot be less than zero" );
       
@@ -1567,7 +1769,7 @@ public class ProductRec implements Jsonable
      * Fulfillment node prices
      * @return the fNodePrices
      */
-    public Set<FNodePriceRec> getfNodePrices() {
+    public List<FNodePriceRec> getfNodePrices() {
       return fNodePrices;
     }
 
@@ -1597,7 +1799,7 @@ public class ProductRec implements Jsonable
      * Fulfillment node inventory
      * @return the fNodeInventory
      */
-    public Set<FNodeInventoryRec> getfNodeInventory() {
+    public List<FNodeInventoryRec> getfNodeInventory() {
       return fNodeInventory;
     }
 
@@ -1654,7 +1856,7 @@ public class ProductRec implements Jsonable
      * Retrieve the shipping exception node list
      * @return node list
      */
-    public Set<FNodeShippingRec> getShippingExceptionNodes()
+    public List<FNodeShippingRec> getShippingExceptionNodes()
     {
       return shippingExceptionNodes;
     }
@@ -1665,8 +1867,10 @@ public class ProductRec implements Jsonable
      * Set a bullet
      * @param bullet the bullet
      */
-    public Builder setBullets( String bullet ) {
-      Utils.checkNullEmpty( bullet, "bullet" );
+    public Builder setBullet( String bullet ) {
+      if ( bullet == null || bullet.isEmpty())
+        return this;
+      
       this.bullets.add( bullet );
       return this;
     }
@@ -1703,6 +1907,11 @@ public class ProductRec implements Jsonable
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   
+  
+  /**
+   * Some non-jet id 
+   */
+  private final int id;
   
   /**
    * Short product description
@@ -1781,7 +1990,7 @@ public class ProductRec implements Jsonable
    * Max length: 500 characters
    * Maximum of 5 elements
    */
-  private final Set<String> bullets;
+  private final List<String> bullets;
 
   /**
    * For Price Per Unit calculations, the number of units included in
@@ -1878,7 +2087,7 @@ public class ProductRec implements Jsonable
    *
    * Max 7 elements
    */
-  private final Set<CPSIA> cpsiaStatements;
+  private final List<CPSIA> cpsiaStatements;
 
   /**
    * The country that the item was manufactured in.
@@ -2039,7 +2248,7 @@ public class ProductRec implements Jsonable
   /**
    * Product sub status
    */
-  private final Set<ProductSubStatus> subStatus;
+  private final List<ProductSubStatus> subStatus;
 
   /**
    * Sku last update
@@ -2056,6 +2265,21 @@ public class ProductRec implements Jsonable
    */
   private final JetDate priceLastUpdate;
 
+  
+  /**
+   * Product variations 
+   */
+  private final Set<ProductVariationGroupRec> variations;
+  
+  /**
+   * Returns exceptions
+   */
+  private final Set<ReturnsExceptionRec> returnsExceptions;
+  
+  /**
+   * Some archived flag not used with jet 
+   */
+  private final boolean isArchived;
 
   /**
    * Populate a product record from Jet API Json results
@@ -2100,7 +2324,7 @@ public class ProductRec implements Jsonable
     out.setProductTaxCode( ProductTaxCode.fromText( json.getString( "product_tax_code", "" )));
     out.setNoReturnFeeAdj( Utils.jsonNumberToMoney( json.getJsonNumber( "no_return_fee_adjustment" )));
     out.setExcludeFromFeeAdjustments( json.getBoolean( "exclude_from_fee_adjustments", false ));
-    out.setAttributesNodeSpecific( loadAttrNodeSpecific( json.getJsonArray( "attribute_node_specific" )));
+    out.setAttributesNodeSpecific( loadAttrNodeSpecific( json.getJsonArray( "attributes_node_specific" )));
     out.setMainImageUrl( json.getString( "main_image_url", "" ));
     out.setSwatchImageUrl( json.getString( "swatch_image_url", "" ));
     out.setAlternateImages( loadAltImages( json.getJsonArray( "alternate_images" )));
@@ -2131,6 +2355,11 @@ public class ProductRec implements Jsonable
     out.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "price_last_update", "" ));
     out.startSellingDate = ProductDate.fromJetValueOrNull( json.getString( "start_selling_date", "" ));
    
+    for ( final JsonObject o : Utils.jsonArrayToJsonObjectList( json.getJsonArray( "inventory_by_fulfillment_node" )))
+    {
+      out.fNodeInventory.add( FNodeInventoryRec.fromJSON( o ));
+    }
+    
     
     //..End i donno section.
     
@@ -2154,7 +2383,7 @@ public class ProductRec implements Jsonable
     this.browseNodeId = b.browseNodeId;
     this.azItemTypeKeyword = b.azItemTypeKeyword;
     this.categoryPath = b.categoryPath;
-    this.productCodes = Collections.unmodifiableSet( b.productCodes );
+    this.productCodes = Collections.unmodifiableSet( new HashSet<>( b.productCodes ));
     
     this.asin = b.asin;
     this.multipackQuantity = b.multipackQuantity;
@@ -2163,7 +2392,7 @@ public class ProductRec implements Jsonable
     this.mfrPartNumber = b.mfrPartNumber;
     this.productDescription = b.productDescription;
     this.amazonItemTypeKeyword = b.amazonItemTypeKeyword;
-    this.bullets = Collections.unmodifiableSet( b.bullets );
+    this.bullets = Collections.unmodifiableList( b.bullets );
     
     this.numberUnitsForPricePerUnit = b.numberUnitsForPricePerUnit;
     this.typeOfUnitForPricePerUnit = b.typeOfUnitForPricePerUnit;
@@ -2177,13 +2406,13 @@ public class ProductRec implements Jsonable
     this.fulfillmentTime = b.fulfillmentTime;
     this.prop65 = b.prop65;
     this.legalDisclaimerDescription = b.legalDisclaimerDescription;
-    this.cpsiaStatements = Collections.unmodifiableSet( b.cpsiaStatements );
+    this.cpsiaStatements = Collections.unmodifiableList( b.cpsiaStatements );
     this.countryOfOrigin = b.countryOfOrigin;
     this.safetyWarning = b.safetyWarning;
     this.msrp = b.msrp;
     this.price = b.price;
-    this.fNodePrices = Collections.unmodifiableSet( b.fNodePrices );
-    this.fNodeInventory = Collections.unmodifiableSet( b.fNodeInventory );
+    this.fNodePrices = Collections.unmodifiableSet( new HashSet<>( b.fNodePrices ));
+    this.fNodeInventory = Collections.unmodifiableSet( new HashSet<>( b.fNodeInventory ));
 
     this.jetRetailSku = b.jetRetailSku;
     
@@ -2193,20 +2422,20 @@ public class ProductRec implements Jsonable
     this.noReturnFeeAdj = b.noReturnFeeAdj;
     this.shipsAlone = b.shipsAlone;
     this.excludeFromFeeAdjustments = b.excludeFromFeeAdjustments;
-    this.attributesNodeSpecific = Collections.unmodifiableSet( b.attributesNodeSpecific );
+    this.attributesNodeSpecific = Collections.unmodifiableSet( new HashSet<>( b.attributesNodeSpecific ));
     this.alternateImages = Collections.unmodifiableMap( b.alternateImages );
     
     this.mainImageUrl = b.mainImageUrl;
     this.swatchImageUrl = b.swatchImageUrl;
     this.merchantSku = b.merchantSku;
-    this.shippingExceptionNodes = Collections.unmodifiableSet( b.shippingExceptionNodes );
+    this.shippingExceptionNodes = Collections.unmodifiableSet( new HashSet<>( b.shippingExceptionNodes ));
     
     this.correlationId = b.correlationId;
     this.merchantSkuId = b.merchantSkuId;
     this.producerId = b.producerId;
     this.status = b.status;
     
-    this.subStatus = Collections.unmodifiableSet( b.subStatus );
+    this.subStatus = Collections.unmodifiableList( b.subStatus );
     
     if ( b.skuLastUpdate == null )
       this.skuLastUpdate = null;
@@ -2227,8 +2456,43 @@ public class ProductRec implements Jsonable
       this.startSellingDate = null;
     else
       this.startSellingDate = ProductDate.fromJetValueOrNull( b.startSellingDate.getDateString());
+    
+    this.variations = Collections.unmodifiableSet( new HashSet<>( b.variations ));
+    this.returnsExceptions = Collections.unmodifiableSet( new HashSet<>( b.returnsExceptions ));
+    this.id = b.id;
+    this.isArchived = b.isArchived;
   }
+  
+  
+  /**
+   * If this is an archived sku.
+   * @return is archived.
+   */
+  public boolean isArchived()
+  {
+    return isArchived;
+  }
+  
+  
+  /**
+   * Get some non-jet related id
+   * @return id
+   */
+  public int getId()
+  {
+    return id;
+  }
+  
 
+  /**
+   * Get the start selling date
+   * @return start date
+   */
+  public JetDate getStartSellingDate()
+  {
+    return startSellingDate;
+  }
+  
 
   /**
    * Retrieve the product status
@@ -2266,6 +2530,26 @@ public class ProductRec implements Jsonable
   public JetDate getInventoryLastUpdate()
   {
     return inventoryLastUpdate;
+  }
+  
+  
+  /**
+   * Access the variations
+   * @return 
+   */
+  public Set<ProductVariationGroupRec> getVariations()
+  {
+    return variations;
+  }
+  
+  
+  /**
+   * Access the returns exceptions
+   * @return exceptions
+   */
+  public Set<ReturnsExceptionRec> getReturnsExceptions()
+  {
+    return returnsExceptions;
   }
   
   
@@ -2403,7 +2687,7 @@ public class ProductRec implements Jsonable
    * Get the sub status 
    * @return sub status 
    */
-  public Set<ProductSubStatus> getSubstatus() {
+  public List<ProductSubStatus> getSubstatus() {
     return subStatus;
   }
   
@@ -2476,7 +2760,7 @@ public class ProductRec implements Jsonable
    * Maximum of 5 elements
    * @return the bullets
    */
-  public Set<String> getBullets() {
+  public List<String> getBullets() {
     return bullets;
   }
 
@@ -2622,7 +2906,7 @@ public class ProductRec implements Jsonable
    * Max 7 elements
    * @return the cpsiaStatements
    */
-  public Set<CPSIA> getCpsiaStatements() {
+  public List<CPSIA> getCpsiaStatements() {
     return cpsiaStatements;
   }
 
@@ -2737,6 +3021,14 @@ public class ProductRec implements Jsonable
     return alternateImages;
   }
 
+  
+  public String getAlternateImageBySlot( final int slot ) 
+  {
+    if ( !alternateImages.containsKey( slot ))
+      return "";
+    return alternateImages.get( slot );
+  }
+  
 
   /**
    * URL location where Jet.com can access the image. The images should be
@@ -2784,6 +3076,66 @@ public class ProductRec implements Jsonable
    */
   public Set<FNodeInventoryRec> getfNodeInventory() {
     return fNodeInventory;
+  }
+  
+  
+  /**
+   * This retrieves a product code record by type.
+   * If the product code type does not exist in the list, this will still
+   * return an object for the specified type, but with an empty code string.
+   * @return 
+   */
+  public ProductCodeRec getProductCodeByType( final ProductCodeType type )
+  {
+    if ( type == null )
+      throw new IllegalArgumentException( "type cannot be null" );
+    
+    for ( final ProductCodeRec r : productCodes )
+    {
+      if ( r.getProductCodeType().equals( type ))
+        return r;
+    }
+    
+    return new ProductCodeRec( "", type );
+  }
+  
+  
+  /**
+   * Retrieve a bullet by slot 
+   * @param slot slot 
+   * @return bullet
+   * @throws IndexOutOfBoundsException if slot is less than zero or greater than 4
+   */
+  public String getBulletBySlot( final int slot )
+  {
+    if ( slot < 0 || slot > 4 )
+      throw new IndexOutOfBoundsException( "slot must be 0-4 inclusive" );
+    
+    try {
+      return bullets.get( slot );
+    } catch( IndexOutOfBoundsException e ) {
+      return "";
+    }
+  }
+  
+  
+  /**
+   * Retrieve a cpsia statement by slot as a string 
+   * @param slot slot 
+   * @return cpsia 
+   * @throws IndexOutOfBoundsException if slot is less than zero or greater than 4
+   */
+  public String getCPSIABySlot( final int slot )
+  {
+    if ( slot < 0 || slot > 6 )
+      throw new IndexOutOfBoundsException( "slot must be 0-6 inclusive" );
+    
+    try {
+      return cpsiaStatements.get( slot ).name();
+    } catch( IndexOutOfBoundsException e ) {
+      return "";
+    }
+    
   }
 
 
@@ -3153,9 +3505,9 @@ public class ProductRec implements Jsonable
    * @param a array 
    * @return set 
    */
-  private static Set<CPSIA> loadCPSIA( final JsonArray a )
+  private static List<CPSIA> loadCPSIA( final JsonArray a )
   {
-    final Set<CPSIA> out = new HashSet<>();
+    final List<CPSIA> out = new ArrayList<>();
     
     if ( a == null )    
       return out;

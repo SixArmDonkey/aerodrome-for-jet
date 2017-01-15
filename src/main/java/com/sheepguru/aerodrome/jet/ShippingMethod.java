@@ -93,4 +93,11 @@ public enum ShippingMethod
   {
     return text;
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return text;
+  }
 }

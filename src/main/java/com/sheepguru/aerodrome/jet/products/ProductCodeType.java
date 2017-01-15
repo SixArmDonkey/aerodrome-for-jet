@@ -88,5 +88,12 @@ public enum ProductCodeType
   {
     return type;
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return type;
+  }
 }
 

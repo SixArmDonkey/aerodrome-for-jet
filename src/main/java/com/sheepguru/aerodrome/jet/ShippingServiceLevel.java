@@ -103,4 +103,11 @@ public enum ShippingServiceLevel
   {
     return val;
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return val;
+  }
 }

@@ -1373,7 +1373,7 @@ public class DefaultJetConfig implements JetConfig
   @Override
   public String getProductReturnsExceptionUrl( final String sku )
   {
-    return uriReturnsException;
+    return uriReturnsException.replace( "{sku}", sku );
   }
   
   /**

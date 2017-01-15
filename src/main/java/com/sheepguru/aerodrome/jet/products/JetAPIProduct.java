@@ -14,6 +14,7 @@
 
 package com.sheepguru.aerodrome.jet.products;
 
+import com.sheepguru.aerodrome.jet.IJetAPI;
 import com.sheepguru.aerodrome.jet.JetAPI;
 import com.sheepguru.api.APIException;
 import com.sheepguru.api.APIHttpClient;
@@ -24,6 +25,7 @@ import com.sheepguru.aerodrome.jet.JetAPIResponse;
 import com.sheepguru.aerodrome.jet.JetConfig;
 import com.sheepguru.aerodrome.jet.JetException;
 import com.sheepguru.aerodrome.jet.Utils;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author John Quinn
  */
-public class JetAPIProduct extends JetAPI implements IJetAPIProduct
+public class JetAPIProduct extends JetAPI implements IJetProduct, IJetAPIProduct
 {
   /**
    * The log 
@@ -294,11 +296,13 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
       b.add( s );
     }
     
+    
+    
     APILog.info( LOG, "Sending", sku, "returns exceptions" );
     
     final IJetAPIResponse res = put( 
       config.getProductReturnsExceptionUrl( sku ),
-      b.build().toString(),
+      Json.createObjectBuilder().add(  "return_location_ids", b.build()).build().toString(),
       getJSONHeaderBuilder().build()
     );
     
@@ -425,6 +429,28 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
   public ProductRec getProduct( final String sku ) throws APIException, JetException
   {
     return ProductRec.fromJSON( sendGetProductSku( sku ).getJsonObject());
+  }
+  
+  
+  /**
+   * Retrieve product data, pricing, variations, returns exceptions and 
+   * shipping exceptions 
+   * @param sku product sku 
+   * @return Product data 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public ProductRec getFullProduct( final String sku ) throws APIException, JetException
+  {
+    final ProductRec.Builder b = getProduct( sku ).toBuilder();
+    ProductPriceRec p = getProductPrice( sku );
+    b.setfNodePrices( p.getFulfillmentNodes());
+    
+    b.getVariations().add( getProductVariations( sku ));
+    b.getReturnsExceptions().add( getReturnsExceptions( sku ));
+    b.setShippingExceptionNodes( getShippingExceptions( sku));
+
+    return b.build();    
   }
   
   
@@ -760,6 +786,152 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
         + "but Sales data had an invalid lastUpdate date", e );
     }    
   }
+  
+  
+
+  /**
+   * Archive a product sku.
+   *
+   * Archiving a SKU allows the retailer to "deactivate" a SKU from the catalog.
+   * At any point in time, a retailer may decide to "reactivate" the SKU
+   * @param sku
+   * @param isArchived Indicates whether the specified SKU is archived.
+  'true' - SKU is inactive
+  'false' - SKU is potentially sellable
+   * @return
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public boolean archiveSku(final String sku, 
+    final boolean isArchived) throws APIException, JetException
+  {
+    return sendPutArchiveSku( sku, isArchived ).isSuccess();
+  }
+
+  /**
+   * Adds image url's
+   * @param product product data
+   * @return success
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public boolean setProductImages(final ProductRec product) throws APIException, JetException
+  {
+    return sendPutProductImage( product ).isSuccess();
+  }
+
+  /**
+   * Adds product quantity and inventory data
+   * @param product product data
+   * @return success
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public boolean setProductInventory(final ProductRec product) 
+    throws APIException, JetException
+  {
+    return sendPutProductInventory( product ).isSuccess();
+  }
+
+  
+  /**
+   * Adds product price data
+   * @param product
+   * @return
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public boolean setProductPrice(final ProductRec product) 
+    throws APIException, JetException
+  {
+    return sendPutProductPrice( product ).isSuccess();
+  }
+
+  /**
+   * Send shipping exceptions to jet
+   * @param sku Sku
+   * @param nodes Filfillment nodes
+   * @return
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public boolean setProductShippingExceptions(final String sku, 
+    final List<FNodeShippingRec> nodes) throws APIException, JetException
+  {
+    return sendPutProductShippingExceptions( sku, nodes ).isSuccess();
+  }
+
+  /**
+   * Adds a product sku.
+   * Part of a multi-part operation.
+   * This will call merchant-skus/{sku-id}
+   *
+   * @param product product data
+   * @return success
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public boolean setProductSku(final ProductRec product) 
+    throws APIException, JetException
+  {
+    return sendPutProductSku( product ).isSuccess();
+  }
+
+  /**
+   * The variation request is used to create a variation-type relationship
+   * between several SKUs. To use this request, one must have already uploaded
+   * all the SKUs in question ; they should then choose one "parent" SKU and
+   * make the variation request to that SKU, adding as "children" any SKUs they
+   * want considered part of the relationship.
+   * To denote the particular variation refinements, one must have uploaded one
+   * or more attributes in the product call for all the SKUs in question;
+   * finally, they are expected to list these attributes in the variation
+   * request.
+   *
+   * @param group data to send
+   * @return response from jet
+   * @throws APIException if there's a problem
+   * @throws JetException
+   */
+  @Override
+  public boolean setProductVariations(
+    final ProductVariationGroupRec group) throws APIException, JetException
+  {
+    return sendPutProductVariation( group ).isSuccess();
+  }
+
+  /**
+   * The returns exceptions call is used to set up specific methods that will
+   * overwrite your default settings on a fulfillment node level for returns.
+   * This exception will be used to determine how and to where a product is
+   * returned unless the merchant specifies otherwise in the Ship Order message.
+   *
+   * @param sku Product SKU to modify
+   * @param hashes A list of md5 hashes - Each hash is the ID of the returns
+   * node that was created on partner.jet.com under fulfillment settings.
+   *
+   * Must be a valid return node ID set up by the merchant
+   *
+   * @return response
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public boolean setReturnsException(final String sku, 
+    final List<String> hashes) throws APIException, JetException
+  {
+    return sendPutReturnsException( sku, hashes ).isSuccess();
+  }
+  
+  
+  
+  
   
 
   /**

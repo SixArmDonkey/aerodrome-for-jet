@@ -86,7 +86,7 @@ public enum MAPType
   
   
   public String getCaption()
-  {
+  {   
     return caption;
   }
   

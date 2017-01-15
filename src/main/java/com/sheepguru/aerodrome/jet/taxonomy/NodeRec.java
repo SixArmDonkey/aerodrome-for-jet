@@ -62,7 +62,19 @@ public class NodeRec
      * The suggested tax related to the Jet node
      */
     private ProductTaxCode taxCode = ProductTaxCode.GENERIC_TAXABLE;
+    
+    /**
+     * Active flag 
+     */
+    private boolean isActive = true;
 
+    
+    public Builder setActive( final boolean active )
+    {
+      this.isActive = active;
+      return this;
+    }
+    
     
     /**
      * The Jet node ID representing the category node in Jet's taxonomy
@@ -206,6 +218,12 @@ public class NodeRec
    */
   private final ProductTaxCode taxCode;
   
+  /**
+   * Active flag 
+   */
+  private final boolean isActive;
+  
+  
   
   public static NodeRec fromJson( final JsonObject json )
   {
@@ -219,6 +237,7 @@ public class NodeRec
       .setJetParentNodeId( Utils.getJsonNumber( json.getJsonNumber( "parent_id" )).longValue())
       .setJetLevel( JetLevel.fromText( json.getInt(  "jet_level", 0 )))
       .setTaxCode( ProductTaxCode.fromText( json.getString(  "suggested_tax_code" )))
+      .setActive( json.getBoolean( "active", true ))
       .build();
   }
   
@@ -236,8 +255,19 @@ public class NodeRec
     this.jetParentNodeId = b.jetParentNodeId;
     this.jetLevel = b.jetLevel;
     this.taxCode = b.taxCode;    
+    this.isActive = b.isActive;
   }
   
+  
+  /**
+   * Jet active flag 
+   * @return active 
+   */
+  public boolean isActive()
+  {
+    return isActive;
+  }
+ 
   
   /**
    * The Jet node ID representing the category node in Jet's taxonomy
@@ -323,6 +353,7 @@ public class NodeRec
       .add( "parent_id", jetParentNodeId )
       .add( "jet_level", jetLevel.getText())
       .add( "suggested_tax_code", taxCode.getText())
+      .add( "active", isActive )
       .build();
   }
 }

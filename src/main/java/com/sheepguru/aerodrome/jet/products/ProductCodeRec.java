@@ -65,36 +65,39 @@ public class ProductCodeRec implements Comparable, Jsonable
    */
   public ProductCodeRec( final String code, final ProductCodeType type )
   {
-    if ( code.trim().isEmpty())
-      throw new IllegalArgumentException( "code cannot be empty" );
+    if ( code == null )
+      throw new IllegalArgumentException( "code cannot be null" );
     else if ( type == null )
       throw new IllegalArgumentException( "type cannot be null" );
 
-    switch( type )
+    if ( !code.isEmpty())
     {
-      case GTIN14:
-        if ( code.length() != 14 )
-          throw new IllegalArgumentException( "code must be 14 digits" );
-      break;
+      switch( type )
+      {
+        case GTIN14:
+          if ( code.length() != 14 )
+            throw new IllegalArgumentException( "code must be 14 digits" );
+        break;
 
-      case EAN: //..fall through
-      case ISBN13:
-        if ( code.length() != 13 )
-          throw new IllegalArgumentException( "code must be 13 digits" );
-      break;
+        case EAN: //..fall through
+        case ISBN13:
+          if ( code.length() != 13 )
+            throw new IllegalArgumentException( "code must be 13 digits" );
+        break;
 
-      case ISBN:
-        if ( code.length() != 10 )
-          throw new IllegalArgumentException( "code must be 10 digits" );
-      break;
+        case ISBN:
+          if ( code.length() != 10 )
+            throw new IllegalArgumentException( "code must be 10 digits" );
+        break;
 
-      case UPC:
-        if ( code.length() != 12 )
-          throw new IllegalArgumentException( "code must be 12 digits" );
-      break;
+        case UPC:
+          if ( code.length() != 12 )
+            throw new IllegalArgumentException( "code must be 12 digits" );
+        break;
 
-      default:
-        throw new IllegalArgumentException( "Unsupported product code type" );
+        default:
+          throw new IllegalArgumentException( "Unsupported product code type" );
+      }
     }
 
     standardProductCode = code;
