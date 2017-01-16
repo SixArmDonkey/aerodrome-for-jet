@@ -28,12 +28,12 @@ public enum ShippingServiceLevel
   /**
    * Ships 2 day
    */
-  SECOND_DAY( "SecondDay" ),
+  SECOND_DAY( "Second Day" ),
 
   /**
    * Ships overnight
    */
-  NEXT_DAY( "NextDay" ),
+  NEXT_DAY( "Next Day" ),
 
   /**
    * Scheduled?

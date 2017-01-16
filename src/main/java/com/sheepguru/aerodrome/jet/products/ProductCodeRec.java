@@ -58,6 +58,48 @@ public class ProductCodeRec implements Comparable, Jsonable
   
   
   /**
+   * Tests the product code against the type.
+   * Uses a simple length check.
+   * @param code Code
+   * @param type Type 
+   */
+  public static final void testCode( final String code, final ProductCodeType type )
+  {
+    if ( code == null )
+      throw new IllegalArgumentException( "code cannot be null" );
+    else if ( type == null )
+      throw new IllegalArgumentException( "type cannot be null" );
+
+    switch( type )
+    {
+      case GTIN14:
+        if ( code.length() != 14 )
+          throw new IllegalArgumentException( "code must be 14 digits" );
+      break;
+
+      case EAN: //..fall through
+      case ISBN13:
+        if ( code.length() != 13 )
+          throw new IllegalArgumentException( "code must be 13 digits" );
+      break;
+
+      case ISBN:
+        if ( code.length() != 10 )
+          throw new IllegalArgumentException( "code must be 10 digits" );
+      break;
+
+      case UPC:
+        if ( code.length() != 12 )
+          throw new IllegalArgumentException( "code must be 12 digits" );
+      break;
+
+      default:
+        throw new IllegalArgumentException( "Unsupported product code type" );
+    }
+  }
+  
+  
+  /**
    * Create a new ProductCode instance
    * @param code The code
    * @param type The code type
@@ -69,36 +111,9 @@ public class ProductCodeRec implements Comparable, Jsonable
       throw new IllegalArgumentException( "code cannot be null" );
     else if ( type == null )
       throw new IllegalArgumentException( "type cannot be null" );
-
+    
     if ( !code.isEmpty())
-    {
-      switch( type )
-      {
-        case GTIN14:
-          if ( code.length() != 14 )
-            throw new IllegalArgumentException( "code must be 14 digits" );
-        break;
-
-        case EAN: //..fall through
-        case ISBN13:
-          if ( code.length() != 13 )
-            throw new IllegalArgumentException( "code must be 13 digits" );
-        break;
-
-        case ISBN:
-          if ( code.length() != 10 )
-            throw new IllegalArgumentException( "code must be 10 digits" );
-        break;
-
-        case UPC:
-          if ( code.length() != 12 )
-            throw new IllegalArgumentException( "code must be 12 digits" );
-        break;
-
-        default:
-          throw new IllegalArgumentException( "Unsupported product code type" );
-      }
-    }
+      testCode( code, type );
 
     standardProductCode = code;
     standardProductCodeType = type;

@@ -71,7 +71,7 @@ public class ShippingExceptionRec implements Jsonable
      * or restrictively (not including) via the shipping level of shipping
      * method provided
      */
-    private ShipExceptionType shippingExceptionType = ShipExceptionType.NONE;
+    private ShipExceptionType shippingExceptionType = ShipExceptionType.INCLUDE;
 
     /**
      * Generic descriptions of shipment delivery times
@@ -361,12 +361,11 @@ public class ShippingExceptionRec implements Jsonable
     {
       o.add( "override_type", overrideType.getText());
       //..Don't use the currency formatted string here.  Jet wants a float.
-      o.add( "shipping_charge_amount", shippingChargeAmount.toString());
+      o.add( "shipping_charge_amount", shippingChargeAmount.asBigDecimal());
     }
 
 
-    if ( shippingExceptionType != ShipExceptionType.NONE )
-      o.add( "shipping_exception_type", shippingExceptionType.getText());
+    o.add( "shipping_exception_type", shippingExceptionType.getText());
 
     return o.build();
   }

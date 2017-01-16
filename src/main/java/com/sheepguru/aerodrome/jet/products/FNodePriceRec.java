@@ -18,6 +18,7 @@ import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
 import com.sheepguru.utils.Money;
 import javax.json.Json;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 
 /**
@@ -48,9 +49,11 @@ public class FNodePriceRec implements Jsonable
     if ( node == null )
       throw new IllegalArgumentException( "node cannot be null" );
     
+    JsonNumber n = node.getJsonNumber(  "fulfillment_node_price" );
+    
     return new FNodePriceRec(
       node.getString( "fulfillment_node_id", "0" ),
-      Utils.jsonNumberToMoney( node.getJsonNumber( "filfillment_node_price" ))
+      Utils.jsonNumberToMoney( n ) 
     );
   }
 
@@ -77,7 +80,7 @@ public class FNodePriceRec implements Jsonable
   {
     if ( id == null || id.isEmpty())
       throw new IllegalArgumentException( "Fulfillment node id cannot be null or empty" );
-    else if ( price == null || price.isEmpty())
+    else if ( price == null || price.lessThanZero())
       throw new IllegalArgumentException( "Fulfillment node price cannot be less than zero" );
     this.nodeId = id;
     this.price = price;
@@ -113,7 +116,7 @@ public class FNodePriceRec implements Jsonable
   {
     return Json.createObjectBuilder()
       .add( "fulfillment_node_id", nodeId )
-      .add( "fulfillment_node_price", price.toString() )
+      .add( "fulfillment_node_price", price.asBigDecimal())
       .build();
   }
   

@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -77,7 +78,7 @@ public class ProductRec implements Jsonable
      * The unique ID that defines where the product will be found in the
      * Jet.com browse structure
      */
-    private int browseNodeId = 0;
+    private long browseNodeId = 0;
 
     /**
      * ItemType allows customers to find your products as they browse to the
@@ -352,7 +353,7 @@ public class ProductRec implements Jsonable
      *
      * value: The absolute location where Jet.com can retrieve the image
      */
-    private final Map<Integer,String> alternateImages = new HashMap();
+    private final Map<ProductImageSlot,String> alternateImages = new HashMap();
 
     /**
      * URL location where Jet.com can access the image. The images should be
@@ -742,7 +743,7 @@ public class ProductRec implements Jsonable
      * Jet.com browse structure
      * @return the browseNodeId
      */
-    public int getBrowseNodeId() {
+    public long getBrowseNodeId() {
       return browseNodeId;
     }
 
@@ -751,7 +752,7 @@ public class ProductRec implements Jsonable
      * Jet.com browse structure
      * @param browseNodeId the browseNodeId to set
      */
-    public Builder setBrowseNodeId(int browseNodeId) {
+    public Builder setBrowseNodeId(long browseNodeId) {
       this.browseNodeId = browseNodeId;
       return this;
     }
@@ -998,7 +999,7 @@ public class ProductRec implements Jsonable
      * Maximum of 5 elements
      * @param bullets the bullets to set
      */
-    public Builder addBullets( Set<String> bullets ) {
+    public Builder addBullets( List<String> bullets ) {
       Utils.checkNull( bullets, "bullets" );
       this.bullets.addAll( bullets );
       return this;
@@ -1641,7 +1642,7 @@ public class ProductRec implements Jsonable
      * value: The absolute location where Jet.com can retrieve the image
      * @return the alternateImages
      */
-    public Map<Integer,String> getAlternateImages() {
+    public Map<ProductImageSlot,String> getAlternateImages() {
       return alternateImages;
     }
     
@@ -1668,7 +1669,7 @@ public class ProductRec implements Jsonable
      * value: The absolute location where Jet.com can retrieve the image
      * @param alternateImages the alternateImages to set
      */
-    public Builder setAlternateImages(Map<Integer,String> alternateImages) {
+    public Builder setAlternateImages(Map<ProductImageSlot,String> alternateImages) {
       if ( alternateImages == null )
         this.alternateImages.clear();
       else
@@ -1686,11 +1687,11 @@ public class ProductRec implements Jsonable
      * @param slot The image slot
      * @param image The image
      */
-    public Builder setAlternateImage( int slot, String image ) {
+    public Builder setAlternateImage( ProductImageSlot slot, String image ) {
       if ( image == null || image.isEmpty())
         return this;
       
-      if ( slot < 0 ) 
+      if ( !slot.isNumeric())
         throw new IllegalArgumentException( "slot cannot be less than zero" );
       
       this.alternateImages.put( slot, image );
@@ -1923,7 +1924,7 @@ public class ProductRec implements Jsonable
    * The unique ID that defines where the product will be found in the
    * Jet.com browse structure
    */
-  private final int browseNodeId;
+  private final long browseNodeId;
 
   /**
    * ItemType allows customers to find your products as they browse to the
@@ -1940,7 +1941,7 @@ public class ProductRec implements Jsonable
   /**
    * Product codes
    */
-  private final Set<ProductCodeRec> productCodes;
+  private final List<ProductCodeRec> productCodes;
 
   /**
    * ASIN Number.
@@ -2125,12 +2126,12 @@ public class ProductRec implements Jsonable
   /**
    * Fulfillment node prices
    */
-  private final Set<FNodePriceRec> fNodePrices;
+  private final List<FNodePriceRec> fNodePrices;
 
   /**
    * Fulfillment node ivnentory
    */
-  private final Set<FNodeInventoryRec> fNodeInventory;
+  private final List<FNodeInventoryRec> fNodeInventory;
 
   /**
    * The unique ID for an individually selectable product for sale on Jet.com.
@@ -2188,7 +2189,7 @@ public class ProductRec implements Jsonable
   /**
    * This is not documented
    */
-  private final Set<SkuAttributeRec> attributesNodeSpecific;
+  private final List<SkuAttributeRec> attributesNodeSpecific;
 
   /**
    * A set of alternate image slots and locations
@@ -2198,7 +2199,7 @@ public class ProductRec implements Jsonable
    *
    * value: The absolute location where Jet.com can retrieve the image
    */
-  private final Map<Integer,String> alternateImages;
+  private final Map<ProductImageSlot,String> alternateImages;
 
   /**
    * URL location where Jet.com can access the image. The images should be
@@ -2223,7 +2224,7 @@ public class ProductRec implements Jsonable
   /**
    * Shipping exception node list
    */
-  private final Set<FNodeShippingRec> shippingExceptionNodes;
+  private final List<FNodeShippingRec> shippingExceptionNodes;
 
   /**
    * From Product Get response
@@ -2269,12 +2270,12 @@ public class ProductRec implements Jsonable
   /**
    * Product variations 
    */
-  private final Set<ProductVariationGroupRec> variations;
+  private final List<ProductVariationGroupRec> variations;
   
   /**
    * Returns exceptions
    */
-  private final Set<ReturnsExceptionRec> returnsExceptions;
+  private final List<ReturnsExceptionRec> returnsExceptions;
   
   /**
    * Some archived flag not used with jet 
@@ -2293,8 +2294,11 @@ public class ProductRec implements Jsonable
     if ( json == null )
       return out.build();
 
-    out.setTitle( json.getString( "product_title", "" ));
-    out.setBrowseNodeId( json.getInt( "jet_browse_node_id", 0 ));
+    final JsonNumber bnId = json.getJsonNumber( "jet_browse_node_id" );
+    if ( bnId != null )
+      out.setBrowseNodeId( bnId.longValue());
+    
+    out.setTitle( json.getString( "product_title", "" ));    
     out.setAsin( json.getString( "ASIN", "" ));   
     out.setProductCodes( loadProductCodes( json.getJsonArray( "standard_product_codes" )));
     out.setMultipackQuantity( json.getInt( "multipack_quantity", 1 ));
@@ -2347,7 +2351,11 @@ public class ProductRec implements Jsonable
     out.excludeFromFeeAdjustments = json.getBoolean( "exclude_from_fee_adjustments", false );
     out.merchantSku = json.getString( "merchant_sku", "" );
     out.merchantSkuId = json.getString( "merchant_sku_id", "" );    
-    out.setMsrp( Utils.jsonNumberToMoney( json.getJsonNumber( "msrp2" )));
+    
+    final Money m2 = Utils.jsonNumberToMoney( json.getJsonNumber( "msrp2" ));
+    if ( out.getMsrp().lessThanEqualToZero() && m2.greaterThanZero())
+      out.setMsrp( m2 );
+    
     out.producerId = json.getString( "producer_id", "" );
     out.shipsAlone = json.getBoolean( "ships_alone", false );
     out.skuLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "sku_last_update", "" ));
@@ -2383,7 +2391,7 @@ public class ProductRec implements Jsonable
     this.browseNodeId = b.browseNodeId;
     this.azItemTypeKeyword = b.azItemTypeKeyword;
     this.categoryPath = b.categoryPath;
-    this.productCodes = Collections.unmodifiableSet( new HashSet<>( b.productCodes ));
+    this.productCodes = Collections.unmodifiableList( b.productCodes );
     
     this.asin = b.asin;
     this.multipackQuantity = b.multipackQuantity;
@@ -2411,8 +2419,8 @@ public class ProductRec implements Jsonable
     this.safetyWarning = b.safetyWarning;
     this.msrp = b.msrp;
     this.price = b.price;
-    this.fNodePrices = Collections.unmodifiableSet( new HashSet<>( b.fNodePrices ));
-    this.fNodeInventory = Collections.unmodifiableSet( new HashSet<>( b.fNodeInventory ));
+    this.fNodePrices = Collections.unmodifiableList( b.fNodePrices );
+    this.fNodeInventory = Collections.unmodifiableList( b.fNodeInventory );
 
     this.jetRetailSku = b.jetRetailSku;
     
@@ -2422,13 +2430,13 @@ public class ProductRec implements Jsonable
     this.noReturnFeeAdj = b.noReturnFeeAdj;
     this.shipsAlone = b.shipsAlone;
     this.excludeFromFeeAdjustments = b.excludeFromFeeAdjustments;
-    this.attributesNodeSpecific = Collections.unmodifiableSet( new HashSet<>( b.attributesNodeSpecific ));
+    this.attributesNodeSpecific = Collections.unmodifiableList( b.attributesNodeSpecific );
     this.alternateImages = Collections.unmodifiableMap( b.alternateImages );
     
     this.mainImageUrl = b.mainImageUrl;
     this.swatchImageUrl = b.swatchImageUrl;
     this.merchantSku = b.merchantSku;
-    this.shippingExceptionNodes = Collections.unmodifiableSet( new HashSet<>( b.shippingExceptionNodes ));
+    this.shippingExceptionNodes = Collections.unmodifiableList( b.shippingExceptionNodes );
     
     this.correlationId = b.correlationId;
     this.merchantSkuId = b.merchantSkuId;
@@ -2457,8 +2465,8 @@ public class ProductRec implements Jsonable
     else
       this.startSellingDate = ProductDate.fromJetValueOrNull( b.startSellingDate.getDateString());
     
-    this.variations = Collections.unmodifiableSet( new HashSet<>( b.variations ));
-    this.returnsExceptions = Collections.unmodifiableSet( new HashSet<>( b.returnsExceptions ));
+    this.variations = Collections.unmodifiableList( b.variations );
+    this.returnsExceptions = Collections.unmodifiableList( b.returnsExceptions );
     this.id = b.id;
     this.isArchived = b.isArchived;
   }
@@ -2537,7 +2545,7 @@ public class ProductRec implements Jsonable
    * Access the variations
    * @return 
    */
-  public Set<ProductVariationGroupRec> getVariations()
+  public List<ProductVariationGroupRec> getVariations()
   {
     return variations;
   }
@@ -2547,7 +2555,7 @@ public class ProductRec implements Jsonable
    * Access the returns exceptions
    * @return exceptions
    */
-  public Set<ReturnsExceptionRec> getReturnsExceptions()
+  public List<ReturnsExceptionRec> getReturnsExceptions()
   {
     return returnsExceptions;
   }
@@ -2661,7 +2669,7 @@ public class ProductRec implements Jsonable
    * Jet.com browse structure
    * @return the browseNodeId
    */
-  public int getBrowseNodeId() {
+  public long getBrowseNodeId() {
     return browseNodeId;
   }
 
@@ -2695,7 +2703,7 @@ public class ProductRec implements Jsonable
    * Product codes
    * @return the productCodes
    */
-  public Set<ProductCodeRec> getProductCodes() {
+  public List<ProductCodeRec> getProductCodes() {
     return productCodes;
   }
 
@@ -2783,7 +2791,7 @@ public class ProductRec implements Jsonable
    * Maximum of 5 elements
    * @param bullets the bullets to set
    */
-  public void addBullets( Set<String> bullets ) {
+  public void addBullets( List<String> bullets ) {
     this.bullets.addAll( bullets );
   }
 
@@ -3003,7 +3011,7 @@ public class ProductRec implements Jsonable
    * This is not documented
    * @return the attributesNodeSpecific
    */
-  public Set<SkuAttributeRec> getAttributesNodeSpecific() {
+  public List<SkuAttributeRec> getAttributesNodeSpecific() {
     return attributesNodeSpecific;
   }
 
@@ -3017,12 +3025,12 @@ public class ProductRec implements Jsonable
    * value: The absolute location where Jet.com can retrieve the image
    * @return the alternateImages
    */
-  public Map<Integer,String> getAlternateImages() {
+  public Map<ProductImageSlot,String> getAlternateImages() {
     return alternateImages;
   }
 
   
-  public String getAlternateImageBySlot( final int slot ) 
+  public String getAlternateImageBySlot( final ProductImageSlot slot ) 
   {
     if ( !alternateImages.containsKey( slot ))
       return "";
@@ -3065,7 +3073,7 @@ public class ProductRec implements Jsonable
    * Fulfillment node prices
    * @return the fNodePrices
    */
-  public Set<FNodePriceRec> getfNodePrices() {
+  public List<FNodePriceRec> getfNodePrices() {
     return fNodePrices;
   }
 
@@ -3074,7 +3082,7 @@ public class ProductRec implements Jsonable
    * Fulfillment node inventory
    * @return the fNodeInventory
    */
-  public Set<FNodeInventoryRec> getfNodeInventory() {
+  public List<FNodeInventoryRec> getfNodeInventory() {
     return fNodeInventory;
   }
   
@@ -3145,7 +3153,7 @@ public class ProductRec implements Jsonable
    * Retrieve the shipping exception node list
    * @return node list
    */
-  public Set<FNodeShippingRec> getShippingExceptionNodes()
+  public List<FNodeShippingRec> getShippingExceptionNodes()
   {
     return shippingExceptionNodes;
   }
@@ -3532,7 +3540,7 @@ public class ProductRec implements Jsonable
     {
       final JsonObject o = a.getJsonObject( i );
       out.add( new SkuAttributeRec( 
-        o.getInt( "attribute_id", 0 ), 
+        Utils.jsonNumberToBigDecimal( o.getJsonNumber("attribute_id" ), 0 ).longValue(), 
         o.getString( "attribute_value", "" ), 
         o.getString( "attribute_value_unit", "" ))
       );
@@ -3547,9 +3555,9 @@ public class ProductRec implements Jsonable
    * @param a array 
    * @return map 
    */
-  private static Map<Integer,String> loadAltImages( final JsonArray a )
+  private static Map<ProductImageSlot,String> loadAltImages( final JsonArray a )
   {
-    final Map<Integer,String> out = new HashMap<>();
+    final Map<ProductImageSlot,String> out = new HashMap<>();
     
     if ( a == null )
       return out;
@@ -3557,7 +3565,7 @@ public class ProductRec implements Jsonable
     for ( int i = 0; i < a.size(); i++ )
     {
       final JsonObject o = a.getJsonObject( i );
-      out.put( o.getInt( "image_slot_id", 1 ), 
+      out.put( ProductImageSlot.fromInt( o.getInt( "image_slot_id", 1 )), 
         o.getString( "image_url", "" )
       );
     }
@@ -3720,10 +3728,10 @@ public class ProductRec implements Jsonable
   {
     final JsonArrayBuilder obj = Json.createArrayBuilder();
 
-    for ( int key : alternateImages.keySet())
+    for ( ProductImageSlot key : alternateImages.keySet())
     {
       obj.add( Json.createObjectBuilder()
-       .add( "image_slot_id", key )
+       .add( "image_slot_id", key.getSlot())
        .add( "image_url", alternateImages.get( key ))
        .build()
       );
@@ -3799,10 +3807,10 @@ public class ProductRec implements Jsonable
     
     for ( SkuAttributeRec r : this.attributesNodeSpecific )
     {
-      out.attributesNodeSpecific.add(  r.createCopy());
+      out.attributesNodeSpecific.add( r.createCopy());
     }
     
-    for ( int k : this.alternateImages.keySet())
+    for ( ProductImageSlot k : this.alternateImages.keySet())
     {
       out.alternateImages.put( k, alternateImages.get( k ));
     }

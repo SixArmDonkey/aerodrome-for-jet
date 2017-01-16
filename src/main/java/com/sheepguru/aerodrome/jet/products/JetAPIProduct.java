@@ -33,6 +33,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -91,6 +92,11 @@ public class JetAPIProduct extends JetAPI implements IJetProduct, IJetAPIProduct
     {
       //..Add some inventory
       sendPutProductInventory( product );
+    }
+    
+    if ( !product.getShippingExceptionNodes().isEmpty())
+    {
+      sendPutProductShippingExceptions( product.getMerchantSku(), product.getShippingExceptionNodes());
     }
     
     //..pointless.
@@ -249,15 +255,21 @@ public class JetAPIProduct extends JetAPI implements IJetProduct, IJetAPIProduct
     
     APILog.info( LOG, "Sending", sku, "shipping exceptions" );
     
+    
     final JsonArrayBuilder b = Json.createArrayBuilder();
     for ( final FNodeShippingRec node : nodes )
     {
       b.add( node.toJSON());
     }
     
+    
+    final JsonObjectBuilder o = Json.createObjectBuilder();
+    o.add( "fulfillment_nodes", b );
+    
+    
     final IJetAPIResponse response = put(
       config.getAddProductShipExceptionUrl( sku ),
-      b.build().toString(),
+      o.build().toString(),
       getJSONHeaderBuilder().build()
     );
     
@@ -443,8 +455,12 @@ public class JetAPIProduct extends JetAPI implements IJetProduct, IJetAPIProduct
   public ProductRec getFullProduct( final String sku ) throws APIException, JetException
   {
     final ProductRec.Builder b = getProduct( sku ).toBuilder();
-    ProductPriceRec p = getProductPrice( sku );
-    b.setfNodePrices( p.getFulfillmentNodes());
+    try {
+      ProductPriceRec p = getProductPrice( sku );
+      b.setfNodePrices( p.getFulfillmentNodes());
+    } catch( Exception e ) {
+      System.err.println( e );
+    }
     
     b.getVariations().add( getProductVariations( sku ));
     b.getReturnsExceptions().add( getReturnsExceptions( sku ));

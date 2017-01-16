@@ -29,7 +29,7 @@ public enum ShipExceptionType
   /**
    * No exceptions
    */
-  NONE( "" ),
+//  NONE( "" ),
 
   /**
    * The product should only be shipped using the shipping method or
