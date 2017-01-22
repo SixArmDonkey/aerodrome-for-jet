@@ -497,7 +497,7 @@ public class ProductRec implements Jsonable
           continue;
         
         try {
-          this.subStatus.add( ProductSubStatus.valueOf( s ));
+          this.subStatus.add( ProductSubStatus.fromValue( s ));
         } catch( Exception e ) {
           System.err.println( e ) ;          
         }
@@ -2352,6 +2352,7 @@ public class ProductRec implements Jsonable
     out.merchantSku = json.getString( "merchant_sku", "" );
     out.merchantSkuId = json.getString( "merchant_sku_id", "" );    
     
+    //..I'm not sure why this is here.
     final Money m2 = Utils.jsonNumberToMoney( json.getJsonNumber( "msrp2" ));
     if ( out.getMsrp().lessThanEqualToZero() && m2.greaterThanZero())
       out.setMsrp( m2 );
