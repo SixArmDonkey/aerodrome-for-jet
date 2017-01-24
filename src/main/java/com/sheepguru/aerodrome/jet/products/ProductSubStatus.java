@@ -71,7 +71,7 @@ public enum ProductSubStatus
         return s;
     }
 
-    throw new IllegalArgumentException( val + " is not a valid value for ProductSubStatus" );
+    return NONE;
   }
 
 

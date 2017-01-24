@@ -462,7 +462,7 @@ public class JetAPIProduct extends JetAPI implements IJetProduct, IJetAPIProduct
       System.err.println( e );
     }
     
-    b.getVariations().add( getProductVariations( sku ));
+    b.setVariations( getProductVariations( sku ));
     b.getReturnsExceptions().add( getReturnsExceptions( sku ));
     b.setShippingExceptionNodes( getShippingExceptions( sku));
 

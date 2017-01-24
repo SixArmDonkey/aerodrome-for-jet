@@ -83,6 +83,8 @@ public class Utils
         out.add((JsonObjectBuilder)obj );
       else if ( obj instanceof JsonArrayBuilder )
         out.add((JsonArrayBuilder)obj );      
+      else
+        out.add( obj.toString());
     }
 
     return out.build();
@@ -103,6 +105,34 @@ public class Utils
     
     return ab.build();
   }
+  
+  
+  /**
+   * Convert a json array to a list of integers.
+   * if arr is null, then an empty List<Integer> instance is returned.
+   * 
+   * This is more safe than JsonArray.getValuesAs() as this method
+   * has built-in type checking and will throw a ClassCastException if 
+   * the type is incorrect or null.
+   * 
+   * @param arr array
+   * @return a list
+   * @throws ClassCastException if any element in arr is not an integer
+   */
+  public static List<Long> jsonArrayToLongList( final JsonArray arr )
+  {
+    final List<Long> out = new ArrayList<>();
+    if ( arr == null )
+      return out;
+    
+    for ( int i = 0; i < arr.size(); i++ )
+    {      
+      final long j = Utils.getJsonNumber( arr.getJsonNumber( i )).longValue();
+      out.add( j );
+    }
+    
+    return out;
+  }  
   
   
   /**

@@ -112,7 +112,7 @@ public class SkuAttributeRec implements Jsonable
     
     if ( id <= 0 )
       throw new IllegalArgumentException( "id must be greater than zero" );
-    else if ( val == null || val.isEmpty())
+    else if ( val == null )
       throw new IllegalArgumentException( "val cannot be null or empty" );
     else if ( unit == null )
       throw new IllegalArgumentException( "unit cannot be null" );

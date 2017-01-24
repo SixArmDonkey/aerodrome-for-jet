@@ -66,6 +66,7 @@ public class ProductRec implements Jsonable
     private String correlationId = "";
     
     
+    private String parentSku = "";
     
     
     /**
@@ -418,7 +419,7 @@ public class ProductRec implements Jsonable
     /**
      * Product variations 
      */
-    private final List<ProductVariationGroupRec> variations = new ArrayList<>();
+    private ProductVariationGroupRec variations = null;
     
     /**
      * Returns Exceptions 
@@ -459,9 +460,16 @@ public class ProductRec implements Jsonable
      * Access the product variation data
      * @return variations 
      */
-    public List<ProductVariationGroupRec> getVariations()
+    public ProductVariationGroupRec getVariations()
     {
       return variations;
+    }
+    
+    
+    public Builder setVariations( final ProductVariationGroupRec v )
+    {
+      this.variations = v;
+      return this;
     }
 
 
@@ -506,6 +514,19 @@ public class ProductRec implements Jsonable
       return this;
     }
     
+    
+    public Builder setParentSku( final String parentSku )
+    {
+      Utils.checkNull( parentSku, "parentSku" );
+      this.parentSku = parentSku;
+      return this;
+    }
+    
+    
+    public String getParentSku()
+    {
+      return parentSku;
+    }
     
     
 
@@ -2270,7 +2291,7 @@ public class ProductRec implements Jsonable
   /**
    * Product variations 
    */
-  private final List<ProductVariationGroupRec> variations;
+  private final ProductVariationGroupRec variations;
   
   /**
    * Returns exceptions
@@ -2282,6 +2303,8 @@ public class ProductRec implements Jsonable
    */
   private final boolean isArchived;
 
+  private final String parentSku;
+  
   /**
    * Populate a product record from Jet API Json results
    * @param json Json
@@ -2466,10 +2489,17 @@ public class ProductRec implements Jsonable
     else
       this.startSellingDate = ProductDate.fromJetValueOrNull( b.startSellingDate.getDateString());
     
-    this.variations = Collections.unmodifiableList( b.variations );
+    this.variations = b.variations;
     this.returnsExceptions = Collections.unmodifiableList( b.returnsExceptions );
     this.id = b.id;
     this.isArchived = b.isArchived;
+    this.parentSku = b.parentSku;
+  }
+  
+  
+  public String getParentSku()
+  {
+    return parentSku;
   }
   
   
@@ -2546,7 +2576,7 @@ public class ProductRec implements Jsonable
    * Access the variations
    * @return 
    */
-  public List<ProductVariationGroupRec> getVariations()
+  public ProductVariationGroupRec getVariations()
   {
     return variations;
   }
@@ -3831,6 +3861,8 @@ public class ProductRec implements Jsonable
     out.status = this.status;
     
     out.subStatus.addAll( this.subStatus );
+    out.parentSku = this.parentSku;
+    out.isArchived = this.isArchived;
     
     try {
       out.skuLastUpdate = new ISO8601UTCDate( this.skuLastUpdate.getDate());
@@ -3845,6 +3877,8 @@ public class ProductRec implements Jsonable
     try {
       out.startSellingDate = new ProductDate( this.startSellingDate.getDate());
     } catch( Exception e ) {} //..do nothing
+    
+    out.variations = this.variations;
     
     return out;
   }

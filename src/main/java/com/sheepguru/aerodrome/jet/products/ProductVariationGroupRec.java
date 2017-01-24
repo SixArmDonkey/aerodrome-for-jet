@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,7 +61,7 @@ public class ProductVariationGroupRec implements Jsonable
    * associated with the variation. These attributes must exist on all 
    * products in the group.  Each integer must be > 0
    */
-  private final List<Integer> variationRefinements;
+  private final List<Long> variationRefinements;
   
   /**
    * The merchant SKUs that are the child SKUs.
@@ -153,6 +154,13 @@ public class ProductVariationGroupRec implements Jsonable
     {
       return text;
     }
+    
+    
+    @Override
+    public String toString()
+    {
+      return text;
+    }
   }
   
   
@@ -170,17 +178,30 @@ public class ProductVariationGroupRec implements Jsonable
     Utils.checkNullEmpty( sku, "sku" );
     Utils.checkNull( json, "json" );
     
+    final List<String> childSkus = new ArrayList<>();
+    final JsonArray skus = json.getJsonArray( "children_skus" );
+    if ( skus != null )
+    {
+      for ( int i = 0; i < skus.size(); i++ )
+      {
+        final JsonObject entry = skus.getJsonObject( i );
+        if ( entry != null )
+        {
+          final String child = entry.getString( "merchant_sku", "" );
+          if ( !child.isEmpty())
+            childSkus.add( child );
+        }
+      }
+    }
     
     return new ProductVariationGroupRec(
       sku,
       Relationship.byText( json.getString( "relationship", "" )),
-      Utils.jsonArrayToIntList( json.getJsonArray( "variation_refinements" )),
-      Utils.jsonArrayToStringList( json.getJsonArray( "children_skus" )),
+      Utils.jsonArrayToLongList( json.getJsonArray( "variation_refinements" )),
+      childSkus,
       json.getString( "group_title", "" )
     );
   }
-  
-  
   
   
   /**
@@ -197,12 +218,12 @@ public class ProductVariationGroupRec implements Jsonable
    * @throws IllegalArgumentException If any args are invalid
    */
   public ProductVariationGroupRec( final String parentSku, 
-    final Relationship relationship, final List<Integer> variationRefinements, 
+    final Relationship relationship, final List<Long> variationRefinements, 
     final List<String> childSkus, final String groupTitle ) 
     throws IllegalArgumentException
   {
-    if ( parentSku == null || parentSku.isEmpty())
-      throw new IllegalArgumentException( "parentSku cannot be null or empty" );
+    if ( parentSku == null )
+      throw new IllegalArgumentException( "parentSku cannot be null" );
     else if ( variationRefinements == null )
     {
       throw new IllegalArgumentException( 
@@ -248,7 +269,7 @@ public class ProductVariationGroupRec implements Jsonable
    * Get the variation refinement node id's 
    * @return refinements
    */
-  public List<Integer> getVariationRefinements()
+  public List<Long> getVariationRefinements()
   {
     return variationRefinements;
   }
@@ -262,6 +283,13 @@ public class ProductVariationGroupRec implements Jsonable
   {
     return childSkus;
   }
+  
+  
+  public Relationship getRelationship()
+  {
+    return relationship;
+  }
+          
   
   
   /**

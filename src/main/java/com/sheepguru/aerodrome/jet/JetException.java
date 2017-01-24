@@ -125,6 +125,19 @@ public class JetException extends APIException
   }
   
   
+  public String implodeMessages( final String delim )
+  {
+    final StringBuilder s = new StringBuilder();
+    for ( final String s1 : getMessages())
+    {
+      s.append( s1 );
+      s.append( delim );
+    }  
+    
+    return s.toString();
+  }
+  
+  
   /**
    * Print this exception to the log 
    * @param log Log to print to
