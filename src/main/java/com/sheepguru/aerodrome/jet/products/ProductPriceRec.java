@@ -101,12 +101,14 @@ public class ProductPriceRec
   {
     if ( price == null || price.lessThanZero())
       throw new IllegalArgumentException( "price cannot be null or less than zero" );
-    else if ( lastUpdate == null || lastUpdate.isEmpty())
-      throw new IllegalArgumentException( "lastUpdate cannot be null or empty" );
     else if ( fNodes == null )
       throw new IllegalArgumentException( "fNodes cannot be null" );
     
-    this.lastUpdate = FORMAT.parse( lastUpdate );
+    if ( lastUpdate == null || lastUpdate.isEmpty())
+      this.lastUpdate = new Date();
+    else
+      this.lastUpdate = FORMAT.parse( lastUpdate );
+    
     this.price = price;
     this.fNodes = Collections.unmodifiableList( new ArrayList<>( fNodes ));
   }

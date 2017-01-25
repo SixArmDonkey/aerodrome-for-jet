@@ -3780,6 +3780,7 @@ public class ProductRec implements Jsonable
   public Builder toBuilder()
   {
     final Builder out = new Builder();
+    out.id = this.id;
     out.title = this.title;
     out.browseNodeId = this.browseNodeId;
     out.azItemTypeKeyword = this.azItemTypeKeyword;

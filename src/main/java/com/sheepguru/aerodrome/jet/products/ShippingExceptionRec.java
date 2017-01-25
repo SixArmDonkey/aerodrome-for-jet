@@ -154,8 +154,7 @@ public class ShippingExceptionRec implements Jsonable
     public ShippingExceptionRec build()
     {
       return new ShippingExceptionRec( this );
-    }
-    
+    }    
   }
   
   

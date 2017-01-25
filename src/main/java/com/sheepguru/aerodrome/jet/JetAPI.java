@@ -74,7 +74,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
    */
   private static final Log LOG = LogFactory.getLog( JetAPI.class );
   
-  private static final Lock authLock = new ReentrantLock();
+  private static final ReentrantLock authLock = new ReentrantLock();
   
   private static final AtomicInteger reauthAttempts = new AtomicInteger( 0 );
 
@@ -482,9 +482,10 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
    */
   private void checkAuth( final HttpUriRequest hr ) throws APIException
   {
-    try {
-      if ( authLock.tryLock( 1000L, TimeUnit.MILLISECONDS ) && !isReauth.get())
+    try {      
+      if ( !authLock.isHeldByCurrentThread() && authLock.tryLock( 1000L, TimeUnit.MILLISECONDS ) && !isReauth.get())
       {
+        APILog.info( LOG, "Thread " + Thread.currentThread().getName() + " obtained the lock" );
         try {
           if ( !config.isAuthenticated())
           {
@@ -492,14 +493,20 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
           }
 
         } finally {
-          authLock.unlock();            
+          try {
+            APILog.info( LOG, "Thread " + Thread.currentThread().getName() + " has unlocked" );
+            authLock.unlock();            
+          } catch( Exception e ) {
+            APILog.info( LOG, e, "Thread " + Thread.currentThread().getName() + " Caused an exception while trying to release it's lock" );
+          }
         }
       } 
       else 
       {
-        while( !config.isAuthenticated() && !isReauth.get())
+        int ct = 0;
+        while( !authLock.isHeldByCurrentThread() && !config.isAuthenticated() && !isReauth.get())
         {
-          Thread.sleep( 100L );
+          Thread.sleep( 100L );          
         }
 
         hr.setHeader( "Authorization", config.getAuthorizationHeaderValue());

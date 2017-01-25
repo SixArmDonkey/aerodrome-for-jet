@@ -89,11 +89,12 @@ public class ProductInventoryRec
   {
     if ( nodes == null )
       throw new IllegalArgumentException( "nodes cannot be null" );
-    else if ( lastUpdate == null || lastUpdate.isEmpty())
-      throw new IllegalArgumentException( "lastUpdate cannot be null or empty" );
-    
+   
     this.nodes = Collections.unmodifiableList( new ArrayList<>( nodes ));
-    this.lastUpdate = FORMAT.parse( lastUpdate );
+    if ( lastUpdate == null || lastUpdate.isEmpty())
+      this.lastUpdate = new Date();
+    else
+      this.lastUpdate = FORMAT.parse( lastUpdate );
   }
   
   
