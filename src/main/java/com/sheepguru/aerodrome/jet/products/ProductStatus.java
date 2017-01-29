@@ -32,19 +32,32 @@ public enum ProductStatus
   AVAILABLE( "Available For Purchase" ),
 
   /**
-   * The product can be listed on Jet.com and requires inventory
-   */
-  READY( "Ready To List" ),
-
-  /**
    * More data is needed to list the product on Jet.com
    */
-  DATA_NEEDED( "Listing Data Needed" ),
-
+  DATA_NEEDED( "Missing Listing Data" ),
+  
   /**
    * The SKU is current being processed in Jet's product catalog
    */
-  PROCESSING( "Processing" );
+  UNDER_REVIEW( "Under Jet Review" ),
+  
+  /**
+   * The SKU is not authorized to be sold
+   */
+  UNAUTHORIZED( "Unauthorized" ),
+  
+  /**
+   * The SKU is not able to be sold on Jet.com. 
+   * Please see Partner Policy for more details on SKUs accepted
+   */
+  EXCLUDED( "Excluded" ),
+  
+  /**
+   * The SKU is 'inactive' and is not available for purchase on Jet.com. 
+   * All updated to this SKU will be ignored.
+   */
+  ARCHIVED( "Archived" );
+  
 
   private static ProductStatus[] values = values();
 
@@ -84,6 +97,17 @@ public enum ProductStatus
    * @return value
    */
   public String getValue()
+  {
+    return val;
+  }
+  
+  
+  /**
+   * Retrieve the jet api value 
+   * @return value 
+   */
+  @Override
+  public String toString()
   {
     return val;
   }

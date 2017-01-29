@@ -569,7 +569,10 @@ public class APIHttpClient implements IAPIHttpClient
   protected RequestConfig createRequestConfig()
   {
     return RequestConfig.custom()
-      .setCookieSpec( CookieSpecs.BROWSER_COMPATIBILITY )
+      .setCookieSpec( CookieSpecs.DEFAULT )
+      .setConnectTimeout( 3000 )
+      .setConnectionRequestTimeout( 3000 )
+      .setSocketTimeout( 3000 )
       .build();
   }
   

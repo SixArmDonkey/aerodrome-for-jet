@@ -2386,7 +2386,8 @@ public class ProductRec implements Jsonable
     out.inventoryLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "last_update", "" ));
     out.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "price_last_update", "" ));
     out.startSellingDate = ProductDate.fromJetValueOrNull( json.getString( "start_selling_date", "" ));
-   
+    out.isArchived = json.getBoolean( "is_archived", false );
+    
     for ( final JsonObject o : Utils.jsonArrayToJsonObjectList( json.getJsonArray( "inventory_by_fulfillment_node" )))
     {
       out.fNodeInventory.add( FNodeInventoryRec.fromJSON( o ));
@@ -3115,6 +3116,25 @@ public class ProductRec implements Jsonable
    */
   public List<FNodeInventoryRec> getfNodeInventory() {
     return fNodeInventory;
+  }
+  
+  
+  /**
+   * Retrieve a total count across all fulfillment nodes.
+   * @return Total inventory
+   */
+  public int getTotalInventory()
+  {
+    if ( fNodeInventory == null )
+      return 0;
+    
+    int total = 0;
+    for ( FNodeInventoryRec rec : fNodeInventory )
+    {
+      total += rec.getQuantity();
+    }
+    
+    return total;
   }
   
   

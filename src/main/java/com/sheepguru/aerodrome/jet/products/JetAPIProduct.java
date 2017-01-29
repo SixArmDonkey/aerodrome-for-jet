@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author John Quinn
  */
-public class JetAPIProduct extends JetAPI implements IJetProduct, IJetAPIProduct
+public class JetAPIProduct extends JetAPI implements IJetAPIProduct
 {
   /**
    * The log 
@@ -452,6 +452,7 @@ public class JetAPIProduct extends JetAPI implements IJetProduct, IJetAPIProduct
    * @throws APIException
    * @throws JetException 
    */
+  @Override
   public ProductRec getFullProduct( final String sku ) throws APIException, JetException
   {
     final ProductRec.Builder b = getProduct( sku ).toBuilder();

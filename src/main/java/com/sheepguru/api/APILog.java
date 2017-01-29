@@ -163,7 +163,9 @@ public class APILog
   public static void error( final Log log, final Throwable t, final Object... message )
   {
     if ( log.isErrorEnabled())
+    {
       log.error( concat( message ), t );    
+    }
   }
 
   /**
