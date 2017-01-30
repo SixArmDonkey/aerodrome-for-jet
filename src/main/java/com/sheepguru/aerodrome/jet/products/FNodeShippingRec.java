@@ -21,6 +21,7 @@ import com.sheepguru.aerodrome.jet.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -84,6 +85,39 @@ public class FNodeShippingRec implements Jsonable
     }
     
     return new FNodeShippingRec( nodeId, l );
+  }
+
+  
+  @Override
+  public int hashCode()
+  {
+    int hash = 3;
+    hash = 67 * hash + Objects.hashCode( this.nodeId );
+    hash = 67 * hash + Objects.hashCode( this.data );
+    return hash;
+  }
+
+  
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final FNodeShippingRec other = (FNodeShippingRec) obj;
+    if ( !Objects.equals( this.nodeId, other.nodeId ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.data, other.data ) ) {
+      return false;
+    }
+    return true;
   }
   
 

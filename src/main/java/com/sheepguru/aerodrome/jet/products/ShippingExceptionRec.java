@@ -19,6 +19,7 @@ import com.sheepguru.aerodrome.jet.ShippingServiceLevel;
 import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
 import com.sheepguru.utils.Money;
+import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -258,6 +259,51 @@ public class ShippingExceptionRec implements Jsonable
     this.overrideType = b.overrideType;
     this.shippingChargeAmount = b.shippingChargeAmount;
     this.shippingExceptionType = b.shippingExceptionType;        
+  }
+
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 53 * hash + Objects.hashCode( this.serviceLevel );
+    hash = 53 * hash + Objects.hashCode( this.shippingMethod );
+    hash = 53 * hash + Objects.hashCode( this.overrideType );
+    hash = 53 * hash + Objects.hashCode( this.shippingChargeAmount );
+    hash = 53 * hash + Objects.hashCode( this.shippingExceptionType );
+    return hash;
+  }
+
+  
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final ShippingExceptionRec other = (ShippingExceptionRec) obj;
+    if ( this.serviceLevel != other.serviceLevel ) {
+      return false;
+    }
+    if ( this.shippingMethod != other.shippingMethod ) {
+      return false;
+    }
+    if ( this.overrideType != other.overrideType ) {
+      return false;
+    }
+    if ( !Objects.equals( this.shippingChargeAmount, other.shippingChargeAmount ) ) {
+      return false;
+    }
+    if ( this.shippingExceptionType != other.shippingExceptionType ) {
+      return false;
+    }
+    return true;
   }
   
   
