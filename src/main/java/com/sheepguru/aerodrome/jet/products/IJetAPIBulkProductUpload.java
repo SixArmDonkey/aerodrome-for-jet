@@ -30,23 +30,6 @@ import java.util.List;
  */
 public interface IJetAPIBulkProductUpload extends IJetAPI
 {
-
-  /**
-   * Generate a bulk Product Sku file to upload
-   * @param input
-   * @param outputFile
-   * @throws JetException
-   */
-  public void generateBulkSkuUploadFile(final InputStream input, final File outputFile) throws JetException;
-
-  /**
-   * Generate a bulk product sku file to upload
-   * @param products
-   * @param outputFile
-   * @throws JetException
-   */
-  public void generateBulkSkuUploadFile(final List<ProductRec> products, final File outputFile) throws JetException;
-
   /**
    * Query the status of an uploaded file..
    * @param fileId Jet File id

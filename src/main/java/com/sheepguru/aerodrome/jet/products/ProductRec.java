@@ -433,7 +433,30 @@ public class ProductRec implements Jsonable
      */
     public ProductRec build()
     {
+      fixCPSIA();
+      
+      
       return new ProductRec( this );
+    }
+    
+    
+    private void fixCPSIA()
+    {
+      boolean noWarning = false;
+      for ( int i = cpsiaStatements.size() - 1; i >= 0; i-- )
+      {
+        final CPSIA c = cpsiaStatements.get( i );
+        if ( c == CPSIA.NONE )
+          cpsiaStatements.remove( i );
+        else if ( c == CPSIA.NO_WARNING )
+          noWarning = true;
+      }
+      
+      if ( noWarning && cpsiaStatements.size() > 1 )
+      {
+        cpsiaStatements.clear();
+        cpsiaStatements.add( CPSIA.NO_WARNING );
+      }      
     }
     
     
@@ -852,8 +875,13 @@ public class ProductRec implements Jsonable
     public Builder setProductCodes( List<ProductCodeRec> productCodes ) {
       if ( productCodes == null )
         this.productCodes.clear();
-      else
-        this.productCodes.addAll( productCodes );
+      else {
+        for ( final ProductCodeRec r : productCodes )
+        {
+          setProductCode( r );
+        }        
+      }
+        
       return this;
     }
 
@@ -863,7 +891,9 @@ public class ProductRec implements Jsonable
      */
     public Builder setProductCode( ProductCodeRec productCode ) {
       Utils.checkNull( productCode, "productCode" );
-      this.productCodes.add( productCode );
+      if ( !productCode.getProductCode().isEmpty())
+        this.productCodes.add( productCode );
+      
       return this;
     }
 
@@ -1294,8 +1324,12 @@ public class ProductRec implements Jsonable
     public Builder setCpsiaStatements(List<CPSIA> cpsiaStatements) {
       if ( cpsiaStatements == null )
         this.cpsiaStatements.clear();
-      else
-        this.cpsiaStatements.addAll( cpsiaStatements );
+      else {
+        for( final CPSIA c : cpsiaStatements )
+        {
+          setCpsiaStatement( c );
+        }
+      }
       return this;
     }
 
@@ -1347,7 +1381,7 @@ public class ProductRec implements Jsonable
       else
       {
         try {
-          this.cpsiaStatements.add( CPSIA.valueOf( cpsiaStatement ));
+          setCpsiaStatement( CPSIA.valueOf( cpsiaStatement ));
         } catch( Exception e ) {
           return this;
         }
@@ -1547,6 +1581,7 @@ public class ProductRec implements Jsonable
      */
     public Builder setProductTaxCode( final ProductTaxCode productTaxCode) {
       Utils.checkNull( productTaxCode, "productTaxCode" );
+     
       this.productTaxCode = productTaxCode;
       return this;
     }
@@ -3345,6 +3380,9 @@ public class ProductRec implements Jsonable
     else if ( !safetyWarning.isEmpty() && safetyWarning.length() > 2000 )
       throw new ValidateException( "safetyWarning cannot be more than 2000 characters" );
     
+    
+    if ( productCodes.isEmpty() && asin.isEmpty())
+      throw new ValidateException( "You must select at least 1 product code or use asin" );
     
     
   }

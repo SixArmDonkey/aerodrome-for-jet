@@ -58,7 +58,7 @@ public enum MAPType
   {
     for ( MAPType m : values )
     {
-      if ( val.equals( m.getType()))
+      if ( val.equalsIgnoreCase( m.getType()))
         return m;
     }
 

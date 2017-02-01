@@ -14,26 +14,24 @@
 
 package com.sheepguru.aerodrome;
 
+import com.sheepguru.aerodrome.jet.AddressRec;
 import com.sheepguru.api.APIException;
 import com.sheepguru.api.APIHttpClient;
 import com.sheepguru.api.PostFile;
 import com.sheepguru.aerodrome.jet.DefaultJetConfig;
+import com.sheepguru.aerodrome.jet.ISO8601Date;
 import com.sheepguru.aerodrome.jet.JetAPIAuth;
 import com.sheepguru.aerodrome.jet.JetAuthException;
 import com.sheepguru.aerodrome.jet.JetConfig;
-import com.sheepguru.aerodrome.jet.ISO8601Date;
 import com.sheepguru.aerodrome.jet.JetException;
 import com.sheepguru.aerodrome.jet.orders.AckRequestItemRec;
 import com.sheepguru.aerodrome.jet.orders.AckRequestRec;
 import com.sheepguru.aerodrome.jet.orders.AckStatus;
-import com.sheepguru.aerodrome.jet.AddressRec;
+import com.sheepguru.aerodrome.jet.orders.ChargeFeedback;
+import com.sheepguru.aerodrome.jet.orders.CompleteReturnRequestRec;
 import com.sheepguru.aerodrome.jet.orders.JetAPIOrder;
-import com.sheepguru.aerodrome.jet.orders.OrderItemRec;
 import com.sheepguru.aerodrome.jet.orders.OrderRec;
 import com.sheepguru.aerodrome.jet.orders.OrderStatus;
-import com.sheepguru.aerodrome.jet.orders.ShipRequestRec;
-import com.sheepguru.aerodrome.jet.orders.ShipmentItemRec;
-import com.sheepguru.aerodrome.jet.orders.ShipmentRec;
 import com.sheepguru.aerodrome.jet.products.BulkUploadAuthRec;
 import com.sheepguru.aerodrome.jet.products.BulkUploadFileType;
 import com.sheepguru.aerodrome.jet.products.FNodeInventoryRec;
@@ -42,24 +40,15 @@ import com.sheepguru.aerodrome.jet.products.JetAPIProduct;
 import com.sheepguru.aerodrome.jet.products.ProductRec;
 import com.sheepguru.aerodrome.jet.products.ProductCodeRec;
 import com.sheepguru.aerodrome.jet.products.ProductCodeType;
-import com.sheepguru.aerodrome.jet.orders.ChargeFeedback;
-import com.sheepguru.aerodrome.jet.orders.CompleteReturnRequestRec;
 import com.sheepguru.aerodrome.jet.orders.JetAPIRefund;
-import com.sheepguru.aerodrome.jet.orders.JetAPIReturn;
-import com.sheepguru.aerodrome.jet.orders.RefundFeedback;
 import com.sheepguru.aerodrome.jet.orders.RefundItemRec;
 import com.sheepguru.aerodrome.jet.orders.RefundStatus;
-import com.sheepguru.aerodrome.jet.orders.ReturnItemRec;
-import com.sheepguru.aerodrome.jet.orders.ReturnMerchantSkuRec;
-import com.sheepguru.aerodrome.jet.orders.ReturnRec;
-import com.sheepguru.aerodrome.jet.orders.ReturnStatus;
 import com.sheepguru.api.APILog;
 import com.sheepguru.api.IAPIHttpClient;
 import com.sheepguru.utils.Money;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.json.JsonObject;
 import org.apache.commons.logging.Log;
@@ -70,14 +59,27 @@ import com.sheepguru.aerodrome.jet.products.FNodeShippingRec;
 import com.sheepguru.aerodrome.jet.products.ProductVariationGroupRec;
 import com.sheepguru.aerodrome.jet.products.ReturnsExceptionRec;
 import com.sheepguru.aerodrome.jet.products.ShippingExceptionRec;
-import com.sheepguru.aerodrome.jet.settlement.IJetAPISettlement;
-import com.sheepguru.aerodrome.jet.settlement.JetAPISettlement;
 import com.sheepguru.aerodrome.jet.taxonomy.IJetAPITaxonomy;
 import com.sheepguru.aerodrome.jet.taxonomy.JetAPITaxonomy;
 import com.sheepguru.api.IAPIResponse;
 import com.sheepguru.aerodrome.jet.orders.IJetOrder;
-import com.sheepguru.aerodrome.jet.orders.IJetReturn;
 import com.sheepguru.aerodrome.jet.orders.IJetRefund;
+import com.sheepguru.aerodrome.jet.orders.IJetReturn;
+import com.sheepguru.aerodrome.jet.orders.JetAPIReturn;
+import com.sheepguru.aerodrome.jet.orders.OrderItemRec;
+import com.sheepguru.aerodrome.jet.orders.RefundFeedback;
+import com.sheepguru.aerodrome.jet.orders.ReturnItemRec;
+import com.sheepguru.aerodrome.jet.orders.ReturnMerchantSkuRec;
+import com.sheepguru.aerodrome.jet.orders.ReturnRec;
+import com.sheepguru.aerodrome.jet.orders.ReturnStatus;
+import com.sheepguru.aerodrome.jet.orders.ShipRequestRec;
+import com.sheepguru.aerodrome.jet.orders.ShipmentItemRec;
+import com.sheepguru.aerodrome.jet.orders.ShipmentRec;
+import com.sheepguru.aerodrome.jet.products.BulkProductFileGenerator;
+import com.sheepguru.aerodrome.jet.settlement.IJetAPISettlement;
+import com.sheepguru.aerodrome.jet.settlement.JetAPISettlement;
+import java.io.IOException;
+import java.util.Date;
 
 
 /**
@@ -398,7 +400,7 @@ public class Aerodrome
   {
     try {
       final ProductRec res = product.getProduct( sku );
-      System.out.println( res.toJSON() );
+      System.out.println( res.toJSON());
 
       System.out.println( product.getProductPrice( sku ).getPrice());
 
@@ -441,13 +443,21 @@ public class Aerodrome
     List<ProductRec> products = new ArrayList<>();
     products.add( getTestProduct());
     
-    try {
-      //..The local filename to write the bulk product data to
-      final File file = new File( "/home/john/jetproducttext.json.gz" );
-      
+    //..The local filename to write the bulk product data to
+    final File file = new File( "/home/john/jetproducttext.json.gz" );
+    
+    try ( final BulkProductFileGenerator gen = new BulkProductFileGenerator( file )) 
+    {      
       //..Write the product json to a gzip file
-      up.generateBulkSkuUploadFile( products, file );
-            
+      for ( final ProductRec pRec : products )
+      {
+        gen.writeLine( pRec );
+      }
+    } catch( IOException e ) {
+      fail( "Failed to open output file", 0, e );
+    }
+     
+    try {
       //..Get authorization to upload a file
       final BulkUploadAuthRec uploadToken = up.getUploadToken();
       
