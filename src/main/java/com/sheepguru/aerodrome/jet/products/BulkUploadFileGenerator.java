@@ -12,22 +12,12 @@
  */
 package com.sheepguru.aerodrome.jet.products;
 
-import com.sheepguru.aerodrome.jet.JetException;
-import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.util.List;
 import java.util.zip.GZIPOutputStream;
 import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.stream.JsonGenerator;
 
@@ -36,7 +26,7 @@ import javax.json.stream.JsonGenerator;
  * 
  * @author John Quinn
  */
-public class BulkUploadFileGenerator implements Closeable
+public class BulkUploadFileGenerator implements IBulkUploadFileGenerator
 {
   /**
    * output file 
@@ -84,7 +74,7 @@ public class BulkUploadFileGenerator implements Closeable
   {
     if ( f == null )
       throw new IllegalArgumentException( "outputFile can't be null" );
-    else if ( !new File( f.getPath()).canWrite())
+    else if ( !new File( f.getParent()).canWrite())
       throw new IllegalArgumentException( "Can't write to " + f.getPath());
   }
           
@@ -102,6 +92,7 @@ public class BulkUploadFileGenerator implements Closeable
    * @param merchantSku
    * @param line 
    */
+  @Override
   public void writeLine( final String merchantSku, final JsonValue line )
   {
     if ( merchantSku == null )

@@ -14,6 +14,7 @@
 
 package com.sheepguru.aerodrome.jet.products;
 
+import com.sheepguru.aerodrome.jet.Jsonable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,8 +22,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 /**
  * An object representing the results from a Product Inventory query.
@@ -32,7 +36,7 @@ import javax.json.JsonObject;
  * 
  * @author John Quinn
  */
-public class ProductInventoryRec 
+public class ProductInventoryRec implements Jsonable
 {
   /**
    * A format for converting jet dates to a date
@@ -95,6 +99,31 @@ public class ProductInventoryRec
       this.lastUpdate = new Date();
     else
       this.lastUpdate = FORMAT.parse( lastUpdate );
+  }
+  
+  
+  /**
+   * Retrieve the JSON representation of this object
+   * @return JSON 
+   */
+  @Override
+  public JsonObject toJSON()
+  {
+    final JsonObjectBuilder b = Json.createObjectBuilder();
+      
+    if ( !nodes.isEmpty())
+    {
+      final JsonArrayBuilder a = Json.createArrayBuilder();
+      
+      for ( final FNodeInventoryRec rec : nodes )
+      {
+        a.add( rec.toJSON());
+      }
+      
+      b.add( "fulfillment_nodes", a );
+    }
+    
+    return b.build();         
   }
   
   

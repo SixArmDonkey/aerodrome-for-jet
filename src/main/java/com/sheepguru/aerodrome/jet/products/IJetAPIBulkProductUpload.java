@@ -75,17 +75,20 @@ public interface IJetAPIBulkProductUpload extends IJetAPI
   public IJetAPIResponse sendGetUploadToken() throws APIException, JetException;
 
   /**
-   * Get authorization to add an additional file to an existing uploadToken,
-   * AND/OR I'm pretty sure this is required to tell Jet what type of file
-   * was uploaded, and to start the batch import on Jet itself.
-   * The documentation on Jet is lacking, well documentation.
-   *
-   * @param file File to send
-   * @param uploadType File type
+   * Tell jet that a file has been uploaded and to start processing.
+   * Upload a file with sendAuthorizedFile() first.
+   * 
+   * @param file File to send 
+   * @param filename The basename of the local file sent to jet.
+   * If this does not match the name sent via sendAuthorizedFile(), then 
+   * jet will say "not found" in the partner portal and nothing will be found.
+   * @param uploadType File type 
    * @return
    * @throws APIException
-   * @throws JetException
+   * @throws JetException 
    */
-  public IJetAPIResponse sendPostUploadedFiles(final String uploadUrl, final PostFile file, BulkUploadFileType uploadType) throws APIException, JetException;
+  public IJetAPIResponse sendPostUploadedFiles( final String uploadUrl, 
+      final String filename, 
+      BulkUploadFileType uploadType ) throws APIException, JetException;
   
 }

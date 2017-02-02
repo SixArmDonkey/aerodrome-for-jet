@@ -13,6 +13,7 @@
  */
 package com.sheepguru.aerodrome.jet.products;
 
+import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
 import com.sheepguru.utils.Money;
 import java.text.ParseException;
@@ -22,8 +23,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 
 /**
@@ -31,7 +35,7 @@ import javax.json.JsonObject;
  * 
  * @author John Quinn
  */
-public class ProductPriceRec 
+public class ProductPriceRec implements Jsonable
 {
   /**
    * A format for converting jet dates to a date
@@ -145,5 +149,31 @@ public class ProductPriceRec
   public List<FNodePriceRec> getFulfillmentNodes()
   {
     return fNodes;
+  }
+  
+  
+  /**
+   * Retrieve the JSON representation of this object
+   * @return JSON 
+   */
+  @Override
+  public JsonObject toJSON()
+  {
+    final JsonObjectBuilder b = Json.createObjectBuilder()
+      .add( "price", price.asBigDecimal());
+    
+    if ( !fNodes.isEmpty())
+    {
+      final JsonArrayBuilder a = Json.createArrayBuilder();
+      
+      for ( final FNodePriceRec rec : fNodes )
+      {
+        a.add( rec.toJSON());
+      }
+      
+      b.add( "fulfillment_nodes", a );
+    }
+    
+    return b.build();      
   }
 }

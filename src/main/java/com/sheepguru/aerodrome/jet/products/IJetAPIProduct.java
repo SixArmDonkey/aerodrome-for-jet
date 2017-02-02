@@ -33,7 +33,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * library itself. A network issue, etc.
    * @throws ValidateException if the product fails pre-submit validation
    */
-  boolean addProduct( final ProductRec product ) throws APIException, JetException, ValidateException;
+  public boolean addProduct( final ProductRec product ) throws APIException, JetException, ValidateException;
 
   /**
    * Archive a product sku.
@@ -48,7 +48,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  boolean archiveSku( final String sku, final boolean isArchived ) throws APIException, JetException;
+  public boolean archiveSku( final String sku, final boolean isArchived ) throws APIException, JetException;
 
   /**
    * Retrieve product data, pricing, variations, returns exceptions and
@@ -58,7 +58,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  ProductRec getFullProduct( final String sku ) throws APIException, JetException;
+  public ProductRec getFullProduct( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product data
@@ -67,7 +67,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  ProductRec getProduct( final String sku ) throws APIException, JetException;
+  public ProductRec getProduct( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product inventory by sku.
@@ -79,7 +79,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  ProductInventoryRec getProductInventory( final String sku ) throws APIException, JetException;
+  public ProductInventoryRec getProductInventory( final String sku ) throws APIException, JetException;
 
   /**
    * At Jet, the price the retailer sets is not the same as the price the
@@ -93,7 +93,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  ProductPriceRec getProductPrice( final String sku ) throws APIException, JetException;
+  public ProductPriceRec getProductPrice( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product variations exceptions by sku.
@@ -103,7 +103,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  ProductVariationGroupRec getProductVariations( final String sku ) throws APIException, JetException;
+  public ProductVariationGroupRec getProductVariations( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product returns exceptions by sku.
@@ -113,7 +113,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  ReturnsExceptionRec getReturnsExceptions( final String sku ) throws APIException, JetException;
+  public ReturnsExceptionRec getReturnsExceptions( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve a set of product shipping exceptions.
@@ -122,7 +122,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  List<FNodeShippingRec> getShippingExceptions( final String sku ) throws APIException, JetException;
+  public List<FNodeShippingRec> getShippingExceptions( final String sku ) throws APIException, JetException;
 
   /**
    * This call allows you visibility into the total number of SKUs you have
@@ -134,7 +134,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  List<String> getSkuList( final int offset, final int limit ) throws APIException, JetException;
+  public List<String> getSkuList( final int offset, final int limit ) throws APIException, JetException;
 
   /**
    * Get sales data.
@@ -159,7 +159,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  ProductSalesDataRec getSkuSalesData( final String sku ) throws APIException, JetException;
+  public ProductSalesDataRec getSkuSalesData( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product inventory by sku.
@@ -171,7 +171,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendGetProductInventory( final String sku ) throws APIException, JetException;
+  public IJetAPIResponse sendGetProductInventory( final String sku ) throws APIException, JetException;
 
   /**
    * At Jet, the price the retailer sets is not the same as the price the
@@ -185,7 +185,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendGetProductPrice( final String sku ) throws APIException, JetException;
+  public IJetAPIResponse sendGetProductPrice( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product returns exceptions by sku.
@@ -195,7 +195,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendGetProductReturnsExceptions( final String sku ) throws APIException, JetException;
+  public IJetAPIResponse sendGetProductReturnsExceptions( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product shipping exceptions by sku.
@@ -208,7 +208,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendGetProductShippingExceptions( final String sku ) throws APIException, JetException;
+  public IJetAPIResponse sendGetProductShippingExceptions( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve a single product by sku.
@@ -219,7 +219,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendGetProductSku( final String sku ) throws APIException, JetException;
+  public IJetAPIResponse sendGetProductSku( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product variations exceptions by sku.
@@ -229,7 +229,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendGetProductVariations( final String sku ) throws APIException, JetException;
+  public IJetAPIResponse sendGetProductVariations( final String sku ) throws APIException, JetException;
 
   /**
    * This call allows you visibility into the total number of SKUs you have
@@ -241,7 +241,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendGetSkuList( final int offset, final int limit ) throws APIException, JetException;
+  public IJetAPIResponse sendGetSkuList( final int offset, final int limit ) throws APIException, JetException;
 
   /**
    * Get sales data.
@@ -266,7 +266,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendGetSkuSalesData( final String sku ) throws APIException, JetException;
+ public  IJetAPIResponse sendGetSkuSalesData( final String sku ) throws APIException, JetException;
 
   /**
    * Archive a product sku.
@@ -281,7 +281,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendPutArchiveSku( final String sku, final boolean isArchived ) throws APIException, JetException;
+  public IJetAPIResponse sendPutArchiveSku( final String sku, final boolean isArchived ) throws APIException, JetException;
 
   /**
    * Adds image url's
@@ -290,7 +290,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendPutProductImage( final ProductRec product ) throws APIException, JetException;
+  public IJetAPIResponse sendPutProductImage( final ProductRec product ) throws APIException, JetException;
 
   /**
    * Adds product quantity and inventory data
@@ -299,7 +299,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendPutProductInventory( final ProductRec product ) throws APIException, JetException;
+ public  IJetAPIResponse sendPutProductInventory( final ProductRec product ) throws APIException, JetException;
 
   /**
    * Adds product price data
@@ -308,8 +308,18 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendPutProductPrice( final ProductRec product ) throws APIException, JetException;
+  public IJetAPIResponse sendPutProductPrice( final ProductRec product ) throws APIException, JetException;
 
+  /**
+   * Send product price data
+   * @param sku merchant sku
+   * @param price price data
+   * @return response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  public IJetAPIResponse sendPutProductPrice( final String sku, final ProductPriceRec price ) throws APIException, JetException;
+  
   /**
    * Send shipping exceptions to jet
    * @param sku Sku
@@ -318,7 +328,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendPutProductShippingExceptions( final String sku, final List<FNodeShippingRec> nodes ) throws APIException, JetException;
+  public IJetAPIResponse sendPutProductShippingExceptions( final String sku, final List<FNodeShippingRec> nodes ) throws APIException, JetException;
 
   /**
    * Adds a product sku.
@@ -330,7 +340,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendPutProductSku( final ProductRec product ) throws APIException, JetException;
+  public IJetAPIResponse sendPutProductSku( final ProductRec product ) throws APIException, JetException;
 
   /**
    * The variation request is used to create a variation-type relationship
@@ -348,7 +358,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException if there's a problem
    * @throws JetException
    */
-  IJetAPIResponse sendPutProductVariation( final ProductVariationGroupRec group ) throws APIException, JetException;
+  public IJetAPIResponse sendPutProductVariation( final ProductVariationGroupRec group ) throws APIException, JetException;
 
   /**
    * The returns exceptions call is used to set up specific methods that will
@@ -366,7 +376,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  IJetAPIResponse sendPutReturnsException( final String sku, final List<String> hashes ) throws APIException, JetException;
+  public IJetAPIResponse sendPutReturnsException( final String sku, final List<String> hashes ) throws APIException, JetException;
 
   /**
    * Adds image url's
@@ -375,7 +385,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  boolean setProductImages( final ProductRec product ) throws APIException, JetException;
+  public boolean setProductImages( final ProductRec product ) throws APIException, JetException;
 
   /**
    * Adds product quantity and inventory data
@@ -384,7 +394,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  boolean setProductInventory( final ProductRec product ) throws APIException, JetException;
+  public boolean setProductInventory( final ProductRec product ) throws APIException, JetException;
 
   /**
    * Adds product price data
@@ -393,7 +403,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  boolean setProductPrice( final ProductRec product ) throws APIException, JetException;
+  public boolean setProductPrice( final ProductRec product ) throws APIException, JetException;
 
   /**
    * Send shipping exceptions to jet
@@ -403,7 +413,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  boolean setProductShippingExceptions( final String sku, final List<FNodeShippingRec> nodes ) throws APIException, JetException;
+  public boolean setProductShippingExceptions( final String sku, final List<FNodeShippingRec> nodes ) throws APIException, JetException;
 
   /**
    * Adds a product sku.
@@ -415,7 +425,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  boolean setProductSku( final ProductRec product ) throws APIException, JetException;
+  public boolean setProductSku( final ProductRec product ) throws APIException, JetException;
 
   /**
    * The variation request is used to create a variation-type relationship
@@ -433,7 +443,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException if there's a problem
    * @throws JetException
    */
-  boolean setProductVariations( final ProductVariationGroupRec group ) throws APIException, JetException;
+  public boolean setProductVariations( final ProductVariationGroupRec group ) throws APIException, JetException;
 
   /**
    * The returns exceptions call is used to set up specific methods that will
@@ -451,6 +461,6 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  boolean setReturnsException( final String sku, final List<String> hashes ) throws APIException, JetException;
+  public boolean setReturnsException( final String sku, final List<String> hashes ) throws APIException, JetException;
   
 }

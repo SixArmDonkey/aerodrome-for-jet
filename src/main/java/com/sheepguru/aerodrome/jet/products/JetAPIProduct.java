@@ -14,25 +14,19 @@
 
 package com.sheepguru.aerodrome.jet.products;
 
-import com.sheepguru.aerodrome.jet.IJetAPI;
 import com.sheepguru.aerodrome.jet.JetAPI;
 import com.sheepguru.api.APIException;
-import com.sheepguru.api.APIHttpClient;
 import com.sheepguru.api.APILog;
 import com.sheepguru.api.IAPIHttpClient;
 import com.sheepguru.aerodrome.jet.IJetAPIResponse;
-import com.sheepguru.aerodrome.jet.JetAPIResponse;
 import com.sheepguru.aerodrome.jet.JetConfig;
 import com.sheepguru.aerodrome.jet.JetException;
-import com.sheepguru.aerodrome.jet.Utils;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -172,6 +166,33 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
     );
     
     return response;
+  }
+  
+  
+  /**
+   * Send product price data
+   * @param sku merchant sku
+   * @param price price data
+   * @return response 
+   * @throws APIException
+   * @throws JetException 
+   */
+  @Override
+  public IJetAPIResponse sendPutProductPrice( final String sku, final ProductPriceRec price )
+    throws APIException, JetException
+  {
+    if ( sku == null || sku.isEmpty())
+      throw new IllegalArgumentException( "sku can't be null or empty" );
+    
+    APILog.info( LOG, "Sending", sku, "price" );
+    
+    final IJetAPIResponse response = put(
+      config.getAddProductPriceUrl( sku ),
+      price.toJSON().toString(),
+      getJSONHeaderBuilder().build()
+    );
+    
+    return response;    
   }
 
 

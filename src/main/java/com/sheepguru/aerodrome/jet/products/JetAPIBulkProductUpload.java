@@ -99,6 +99,9 @@ public class JetAPIBulkProductUpload extends JetAPI implements IJetAPIBulkProduc
    * The documentation on Jet is lacking, well documentation.
    * 
    * @param file File to send 
+   * @param filename The basename of the local file sent to jet.
+   * If this does not match the name sent via sendAuthorizedFile(), then 
+   * jet will say "not found" in the partner portal and nothing will be found.
    * @param uploadType File type 
    * @return
    * @throws APIException
@@ -106,15 +109,15 @@ public class JetAPIBulkProductUpload extends JetAPI implements IJetAPIBulkProduc
    */
   @Override
   public IJetAPIResponse sendPostUploadedFiles( final String uploadUrl, 
-    final PostFile file, 
-    BulkUploadFileType uploadType ) throws APIException, JetException
+      final String filename, 
+      BulkUploadFileType uploadType ) throws APIException, JetException
   {
-    Utils.checkNull( file, "file" );
+    Utils.checkNullEmpty( filename, "filename" );
+    Utils.checkNull( uploadType, "uploadType" );
     
     JsonObject o = Json.createObjectBuilder().add("url", uploadUrl)
       .add( "file_type", uploadType.getText())
-      .add( "file_name", file.getFilename()).build();
-    
+      .add( "file_name", filename ).build();    
     
     return JetAPIResponse.createFromAPIResponse( post(
       config.getPostBulkUploadedFilesUrl(), o.toString(), getJSONHeaderBuilder().build()

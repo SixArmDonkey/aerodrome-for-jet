@@ -46,6 +46,11 @@ public class FileIdRec
     ACKNOWLEDGED( "Acknowledged" ),
     
     /**
+     * This was returned instead of ack one day...  So here it is.
+     */
+    MERCHANT_ACKNOWLEDGED( "Merchant acknowledged" ),
+    
+    /**
      * Jet is currently processing whatever file was uploaded.
      */
     PROCESSING( "Processing" ),

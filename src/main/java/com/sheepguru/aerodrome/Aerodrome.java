@@ -468,7 +468,7 @@ public class Aerodrome
       final PostFile pf = new PostFile( file, ContentType.DEFAULT_BINARY, "gzip", file.getName());
       
       //..Post the request for a file addition to 
-      JsonObject addRes = up.sendPostUploadedFiles( uploadToken.getUrl(), pf, BulkUploadFileType.MERCHANT_SKUS ).getJsonObject();
+      JsonObject addRes = up.sendPostUploadedFiles( uploadToken.getUrl(), pf.getFilename(), BulkUploadFileType.MERCHANT_SKUS ).getJsonObject();
       
       //..Send the next file up to the batch 
       up.sendAuthorizedFile( addRes.getString( "url" ), pf );

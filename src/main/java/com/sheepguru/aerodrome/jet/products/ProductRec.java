@@ -136,12 +136,6 @@ public class ProductRec implements Jsonable
     private String productDescription = "";
 
     /**
-     * ItemType allows customers to find your products as they browse to 
-     * the most specific item types.
-     */
-    private String amazonItemTypeKeyword = "";
-
-    /**
      * Merchant SKU feature description
      * Max length: 500 characters
      * Maximum of 5 elements
@@ -757,31 +751,7 @@ public class ProductRec implements Jsonable
       return this;
     }
 
-
-    /**
-     * Set the amazon item type keyword
-     * @param keyword keyword 
-     */
-    public Builder setAmazonItemTypeKeyword( final String keyword )
-    {
-      if ( keyword == null )
-        throw new IllegalArgumentException( "keyword cannot be null" );
-
-      amazonItemTypeKeyword = keyword;
-      return this;
-    }
-
-
-    /**
-     * Retrieve the amazon item type keyword 
-     * @return keyword 
-     */
-    public String getAmazonItemTypeKeyword()
-    {
-      return amazonItemTypeKeyword;
-    }
-
-
+    
     /**
      * The unique ID that defines where the product will be found in the
      * Jet.com browse structure
@@ -2035,12 +2005,6 @@ public class ProductRec implements Jsonable
    * 1-2000 characters
    */
   private final String productDescription;
-
-  /**
-   * ItemType allows customers to find your products as they browse to 
-   * the most specific item types.
-   */
-  private final String amazonItemTypeKeyword;
   
   /**
    * Merchant SKU feature description
@@ -2390,7 +2354,7 @@ public class ProductRec implements Jsonable
     out.setMainImageUrl( json.getString( "main_image_url", "" ));
     out.setSwatchImageUrl( json.getString( "swatch_image_url", "" ));
     out.setAlternateImages( loadAltImages( json.getJsonArray( "alternate_images" )));
-    out.setAmazonItemTypeKeyword( json.getString( "amazon_item_type_keyword", "" ));
+    out.setAzItemTypeKeyword( json.getString( "amazon_item_type_keyword", "" ));
     out.setCategoryPath( json.getString( "category_path", "" ));
     out.setPrice( Utils.jsonNumberToMoney( json.getJsonNumber( "price" )));
     
@@ -2459,7 +2423,6 @@ public class ProductRec implements Jsonable
     this.manufacturer = b.manufacturer;
     this.mfrPartNumber = b.mfrPartNumber;
     this.productDescription = b.productDescription;
-    this.amazonItemTypeKeyword = b.amazonItemTypeKeyword;
     this.bullets = Collections.unmodifiableList( b.bullets );
     
     this.numberUnitsForPricePerUnit = b.numberUnitsForPricePerUnit;
@@ -2718,16 +2681,6 @@ public class ProductRec implements Jsonable
    */
   public String getTitle() {
     return title;
-  }
-
-  
-  /**
-   * Retrieve the amazon item type keyword 
-   * @return keyword 
-   */
-  public String getAmazonItemTypeKeyword()
-  {
-    return amazonItemTypeKeyword;
   }
   
 
@@ -3404,16 +3357,7 @@ public class ProductRec implements Jsonable
     JsonObjectBuilder o = Json.createObjectBuilder()
       .add( "product_title", title )
       .add( "multipack_quantity", multipackQuantity );
-
-      if ( browseNodeId > 0 )
-        o.add( "jet_browse_node_id", browseNodeId );
-
-      if ( !azItemTypeKeyword.isEmpty())
-        o.add( "amazon_item_type_keyword", azItemTypeKeyword );
-
-      if ( !categoryPath.isEmpty())
-        o.add( "category_path", categoryPath );
-
+    
       if ( !productCodes.isEmpty())
         o.add( "standard_product_codes", productCodesToJSON());
 
@@ -3423,19 +3367,42 @@ public class ProductRec implements Jsonable
       if ( !brand.isEmpty())
         o.add( "brand", brand );
 
-      if ( !manufacturer.isEmpty())
-        o.add( "manufacturer", manufacturer );
-      
-      if ( !amazonItemTypeKeyword.isEmpty())
-        o.add( "amazon_item_type_keyword", amazonItemTypeKeyword );
+      if ( !mainImageUrl.isEmpty())
+        o.add( "main_image_url", mainImageUrl );
 
-      if ( !mfrPartNumber.isEmpty())
-        o.add( "mfr_part_number", mfrPartNumber );
       if ( !productDescription.isEmpty())
         o.add( "product_description", productDescription );
 
+      if ( !manufacturer.isEmpty())
+        o.add( "manufacturer", manufacturer );
+      
+      if ( !mfrPartNumber.isEmpty())
+        o.add( "mfr_part_number", mfrPartNumber );
+      
       if ( !bullets.isEmpty())
         o.add( "bullets", bulletsToJSON());
+
+      if ( shippingWeightPounds.compareTo( BigDecimal.ZERO ) > 0 )
+        o.add( "shipping_weight_pounds", shippingWeightPounds );
+      
+      if ( mapPrice.greaterThanZero())
+        o.add( "map_price", mapPrice.asBigDecimal());
+
+      if ( mapImplementation != MAPType.NONE )
+        o.add( "map_implementation", mapImplementation.getType());
+
+      if ( browseNodeId > 0 )
+        o.add( "jet_browse_node_id", browseNodeId );
+
+      if ( !attributesNodeSpecific.isEmpty())
+        o.add( "attributes_node_specific", attrsToJSON());
+      
+      
+      if ( !azItemTypeKeyword.isEmpty())
+        o.add( "amazon_item_type_keyword", azItemTypeKeyword );
+
+      if ( !categoryPath.isEmpty())
+        o.add( "category_path", categoryPath );
 
       if ( numberUnitsForPricePerUnit.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "number_units_for_price_per_unit", numberUnitsForPricePerUnit );
@@ -3443,9 +3410,7 @@ public class ProductRec implements Jsonable
       if ( !typeOfUnitForPricePerUnit.isEmpty())
         o.add( "type_of_unit_for_price_per_unit", typeOfUnitForPricePerUnit );
 
-      if ( shippingWeightPounds.compareTo( BigDecimal.ZERO ) > 0 )
-        o.add( "shipping_weight_pounds", shippingWeightPounds );
-
+      
       if ( packageLengthInches.compareTo( BigDecimal.ZERO ) > 0 )
         o.add( "package_length_inches", packageLengthInches );
 
@@ -3463,7 +3428,7 @@ public class ProductRec implements Jsonable
 
       if ( displayHeightInches.compareTo( BigDecimal.ZERO ) > 0 )
        o.add( "display_height_inches", displayHeightInches );
-
+      
       o.add( "prop_65", prop65 );
 
       if ( !legalDisclaimerDescription.isEmpty())
@@ -3478,22 +3443,21 @@ public class ProductRec implements Jsonable
       if ( !safetyWarning.isEmpty())
         o.add( "safety_warning", safetyWarning );
 
-      if ( startSellingDate != null )
-        o.add( "start_selling_date", startSellingDate.getDateString());
-
-      if ( fulfillmentTime > 0 )
-        o.add( "fulfillment_time", fulfillmentTime );
-
-      if ( msrp.greaterThanZero())
-        o.add( "msrp", msrp.asBigDecimal());
-
-      if ( mapPrice.greaterThanZero())
-        o.add( "map_price", mapPrice.asBigDecimal());
-
-      o.add( "map_implementation", mapImplementation.getType());
-
       if ( !productTaxCode.equals( ProductTaxCode.NO_VALUE ))
         o.add( "product_tax_code", productTaxCode.getText());
+      
+      if ( msrp.greaterThanZero())
+        o.add( "msrp", msrp.asBigDecimal());
+      
+      if ( !alternateImages.isEmpty())
+        o.add( "alternate_images", altImgToJSON());
+      
+      
+      //////////////////////////////////////////////////////////////////////////
+      // These fields appear in the json examples, and they are properly accepted
+      //  on jet.  There is currently no documentation for these as of 2/1/17
+      if ( fulfillmentTime > 0 )
+        o.add( "fulfillment_time", fulfillmentTime );
 
       if ( noReturnFeeAdj.greaterThanZero())
         o.add( "no_return_fee_adjustment", noReturnFeeAdj.toString());
@@ -3502,18 +3466,16 @@ public class ProductRec implements Jsonable
 
       o.add( "ships_alone", shipsAlone );
 
-      if ( !attributesNodeSpecific.isEmpty())
-        o.add( "attributes_node_specific", attrsToJSON());
-
-      if ( !mainImageUrl.isEmpty())
-        o.add( "main_image_url", mainImageUrl );
-
       if ( !swatchImageUrl.isEmpty())
         o.add( "swatch_image_url", swatchImageUrl );
+      
+      //////////////////////////////////////////////////////////////////////////
+      
+      //..I don't think this is part of sku uploads.
+      //if ( startSellingDate != null )
+      //  o.add( "start_selling_date", startSellingDate.getDateString());
 
-      if ( !alternateImages.isEmpty())
-        o.add( "alternate_images", altImgToJSON());
-  
+
       /*
       if ( inventoryLastUpdate != null )
         o.add( "inventory_last_update", inventoryLastUpdate.getDateString());
@@ -3855,7 +3817,6 @@ public class ProductRec implements Jsonable
     out.manufacturer = this.manufacturer;
     out.mfrPartNumber = this.mfrPartNumber;
     out.productDescription = this.productDescription;
-    out.amazonItemTypeKeyword = this.amazonItemTypeKeyword;
     out.bullets.addAll( this.bullets );
     
     out.numberUnitsForPricePerUnit = this.numberUnitsForPricePerUnit;

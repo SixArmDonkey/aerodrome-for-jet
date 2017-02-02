@@ -27,43 +27,46 @@ public enum BulkUploadFileType
   /**
    * Send a batch of merchant sku's 
    */
-  MERCHANT_SKUS( "MerchantSKUs" ),
+  MERCHANT_SKUS( "MerchantSKUs", "Products", "merchant-sku" ),
   
   /**
    * Send a batch of inventory updates 
    */
-  INVENTORY( "Inventory" ),
+  INVENTORY( "Inventory", "Inventory", "inventory" ),
   
   /**
    * Send a batch of product price updates
    */
-  PRICE( "price" ),
+  PRICE( "Price", "Prices", "prices" ),
   
   /**
    * Send a batch of product variations 
    */
-  VARIATION( "Variation" ),
+  VARIATION( "Variation", "Variations", "variations" ),
   
   /**
    * Send a batch of product returns exceptions 
    */
-  RETURNS_EXCEPTION( "ReturnsException" ),
+  RETURNS_EXCEPTION( "ReturnsException", "Returns Exceptions", "returns" ),
   
   /**
    * Send a batch of product shipping exceptions
    */
-  SHIPPING_EXCEPTION( "ShippingException" ),
+  SHIPPING_EXCEPTION( "ShippingException", "Shipping Exceptions", "shipex" ),
   
   /**
    * Send a batch of sku's to archive 
    */
-  ARCHIVE_SKU( "Archive" );
+  ARCHIVE_SKU( "Archive", "Archive Products", "archive" );
   
   
   /**
    * The Jet API Text to send 
    */
   private final String text;
+
+  private final String displayText;
+  private final String filenameText;  
   
   private static final BulkUploadFileType[] values = values();
   
@@ -90,9 +93,11 @@ public enum BulkUploadFileType
    * Create a new BulkUploadFileType instance 
    * @param text The Jet API Text 
    */
-  BulkUploadFileType( final String text )
+  BulkUploadFileType( final String text, final String displayText, final String filenameText )
   {
     this.text = text;
+    this.displayText = displayText;
+    this.filenameText = filenameText;
   }
   
   
@@ -103,5 +108,32 @@ public enum BulkUploadFileType
   public String getText()
   {
     return text;
+  }
+  
+  
+  /**
+   * A snippet of text for adding as a suffix to something
+   * @return suffix
+   */
+  public String getSuffix()
+  {
+    return filenameText;
+  }
+  
+  
+  /**
+   * Some text for displaying the value in a nice way.
+   * @return text
+   */
+  public String getDisplayText()
+  {
+    return displayText;
+  }
+  
+  
+  @Override
+  public String toString()
+  {
+    return displayText;
   }
 }
