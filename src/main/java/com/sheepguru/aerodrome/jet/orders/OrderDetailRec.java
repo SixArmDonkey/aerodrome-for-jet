@@ -175,4 +175,11 @@ public class OrderDetailRec implements Jsonable
       .add( "request_delivery_by", requestDeliveryBy.getDateString())
       .build();
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return requestShippingCarrier.getText() + " " + requestShippingMethod.getText() + " " + requestServiceLevel.getText();
+  }
 }

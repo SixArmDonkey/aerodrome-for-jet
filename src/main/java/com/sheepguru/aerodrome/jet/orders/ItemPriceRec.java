@@ -58,10 +58,10 @@ public class ItemPriceRec implements Jsonable
     Utils.checkNull( json, "json" );
     
     return new ItemPriceRec(
-      Utils.jsonNumberToMoney( json.getJsonNumber( "base_price" )),
-      Utils.jsonNumberToMoney( json.getJsonNumber( "item_tax" )),
-      Utils.jsonNumberToMoney( json.getJsonNumber( "item_shipping_cost" )),
-      Utils.jsonNumberToMoney( json.getJsonNumber( "item_shipping_tax" ))
+      new Money( Utils.getJsonNumber( json, "base_price" )),
+      new Money( Utils.getJsonNumber( json, "item_tax" )),
+      new Money( Utils.getJsonNumber( json, "item_shipping_cost" )),
+      new Money( Utils.getJsonNumber( json, "item_shipping_tax" ))
     );
   }
   

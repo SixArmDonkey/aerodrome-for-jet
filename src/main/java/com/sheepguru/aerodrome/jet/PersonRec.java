@@ -48,7 +48,7 @@ public class PersonRec implements Jsonable
     
     return new PersonRec(
       json.getString( "name", "" ),
-      json.getString( "phone", "" )      
+      json.getString( "phone_number", "" )      
     );      
   }
   
@@ -97,7 +97,17 @@ public class PersonRec implements Jsonable
   {
     return Json.createObjectBuilder()
       .add( "name", name )
-      .add( "phone", phone )
+      .add( "phone_number", phone )
       .build();
+  }
+  
+  
+  
+  @Override
+  public String toString()
+  {
+    if ( !phone.isEmpty())
+      return name + " (" + phone + ")";
+    return name;
   }
 }

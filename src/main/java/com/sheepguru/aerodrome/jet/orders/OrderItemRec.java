@@ -117,8 +117,6 @@ public class OrderItemRec
    * Order item price 
    */
   private final ItemPriceRec itemPrice;
-    
-  
   
   private static final Log LOG = LogFactory.getLog( OrderItemRec.class );
 
@@ -712,4 +710,10 @@ public class OrderItemRec
   }
   
   
+  
+  @Override
+  public String toString()
+  {
+    return title;
+  }
 }

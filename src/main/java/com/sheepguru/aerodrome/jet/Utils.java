@@ -353,6 +353,16 @@ public class Utils
   }  
   
   
+  public static BigDecimal getJsonNumber( final JsonObject obj, final String property )
+  {
+    try {
+      return obj.getJsonNumber( property ).bigDecimalValue();
+    } catch( ClassCastException e ) {
+      return new BigDecimal( 0 );
+    }
+  }
+  
+  
   public static Money jsonNumberToMoney( final JsonNumber n )
   {
     if ( n == null )
