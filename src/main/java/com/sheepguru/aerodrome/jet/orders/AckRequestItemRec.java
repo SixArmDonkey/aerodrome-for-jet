@@ -100,6 +100,13 @@ public class AckRequestItemRec implements Jsonable
     {
       return text;
     }
+    
+    
+    @Override
+    public String toString()
+    {
+      return text;
+    }
   }
   
   /**
@@ -120,6 +127,10 @@ public class AckRequestItemRec implements Jsonable
    */
   private final String altItemId;
   
+  /**
+   * A convenience field for the merchant sku
+   */
+  private final String merchantSku;
   
   
   /**
@@ -135,7 +146,8 @@ public class AckRequestItemRec implements Jsonable
       Status.fromText( json.getString( 
         "order_item_acknowledgement_status", "" )),
       json.getString( "order_item_id", "" ),
-      json.getString( "alt_order_item_id", "" )
+      json.getString( "alt_order_item_id", "" ),
+      ""
     );
   }
 
@@ -156,7 +168,8 @@ public class AckRequestItemRec implements Jsonable
     return new AckRequestItemRec(
       ackStatus,
       item.getOrderItemId(),
-      item.getAltOrderItemId()
+      item.getAltOrderItemId(),
+      item.getMerchantSku()
     );
   }
 
@@ -175,7 +188,8 @@ public class AckRequestItemRec implements Jsonable
     return new AckRequestItemRec(
       Status.fromOrderItemAckStatus( item.getItemAckStatus()),
       item.getOrderItemId(),
-      item.getAltOrderItemId()
+      item.getAltOrderItemId(),
+      item.getMerchantSku()
     );
   }
   
@@ -189,19 +203,36 @@ public class AckRequestItemRec implements Jsonable
    * this value is specified with the Jet's order_item_id, Jet will map the two 
    * IDs and you can then use your own order item ID for subsequent feeds 
    * relating to that order item.
+   * @param merchantSku a convenience field for the merchant sku.
    */
   public AckRequestItemRec(
     final Status status,
     final String itemId,
-    final String altItemId
+    final String altItemId,
+    final String merchantSku
   ) {
     Utils.checkNull( status, "status" );
     Utils.checkNullEmpty( itemId, "itemId" );
     Utils.checkNull( altItemId, "altItemId" );
+    Utils.checkNull( merchantSku, "merchantSku" );
     
     this.status = status;
     this.itemId = itemId;
     this.altItemId = altItemId;
+    this.merchantSku = merchantSku;
+  }
+  
+  
+  /**
+   * Get the merchant sku
+   * This is only available when this record is created via fromOrderItem() or
+   * if you specify it in the constructor.  This is NOT contained in any 
+   * Jet Json.
+   * @return sku 
+   */
+  public String getMerchantSku()
+  {
+    return merchantSku;
   }
   
   
