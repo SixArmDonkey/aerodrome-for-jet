@@ -3,5 +3,7 @@ com.sheepguru.api
 com.sheepguru.aerodrome
 com.sheepguru.aerodrome.jet
 com.sheepguru.aerodrome.jet.products
+com.sheepguru.aerodrome.jet.settlement
+com.sheepguru.aerodrome.jet.reports
 com.sheepguru.aerodrome.jet.taxonomy
 com.sheepguru.aerodrome.jet.orders

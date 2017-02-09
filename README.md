@@ -1,7 +1,7 @@
 # Aerodrome for Jet
 ## Jet.com API integration library
 
-[![Aerodrome](https://img.shields.io/badge/Aerodrome-Not%20Tested; In Development-red.svg)](https://sheepguru.github.io/aerodrome-for-jet)
+[![Aerodrome](https://img.shields.io/badge/Aerodrome; In Development-red.svg)](https://sheepguru.github.io/aerodrome-for-jet)
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 [![Authentication](https://img.shields.io/badge/Authentication-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#quick-start-guide)
@@ -18,8 +18,6 @@
 The source is completely documented, check out the JavaDoc here: https://sheepguru.github.io/aerodrome-for-jet/ .
 
 There is a makeshift test set up in the Main class, see that for usage for now.  
-
-Yes, I will be writing tests for everything...
 
 For questions, please feel free to email johnquinn3@gmail.com.
 
@@ -82,25 +80,25 @@ a product.
 
 First we create a product.  The minimum required properties are shown.
 
-Note: This needs a builder class, and will be immutable in the near future.
 
 [ProductRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductRec.html)
 
 ```java
-  ProductRec prod = new ProductRec();
-  prod.setMerchantSku( "Your unique local sku" );
-  prod.setTitle( "Product title" );
-  prod.setProductDescription( "Product description" );
-  prod.setMultipackQuantity( 1 );
-  prod.setMsrp( new Money( "44.99" ));
-  prod.setPrice( new Money( "44.99" ));
-  prod.setMainImageUrl( "https://www.example.com/image.jpg" );
-  prod.setSwatchImageUrl( "https://www.example.com/thumbnail.jpg" );
-  prod.setBrand( "Manufacturer Name" );
+  ProductRec prod = new ProductRec().Builder()
+  .setMerchantSku( "Your unique local sku" )
+  .setTitle( "Product title" )
+  .setProductDescription( "Product description" )
+  .setMultipackQuantity( 1 )
+  .setMsrp( new Money( "44.99" ))
+  .setPrice( new Money( "44.99" ))
+  .setMainImageUrl( "https://www.example.com/image.jpg" )
+  .setSwatchImageUrl( "https://www.example.com/thumbnail.jpg" )
+  .setBrand( "Manufacturer Name" )
   //..Your fulfillment node id's are unique to your account, and are found in your
   //  Jet Partner Portal 
-  prod.setfNodeInventory( new FNodeInventoryRec( "Fulfillment Node Id", 1 ));
-  prod.setProductCode(new ProductCodeRec( "111111111111", ProductCodeType.UPC ));
+  .setfNodeInventory( new FNodeInventoryRec( "Fulfillment Node Id", 1 ))
+  .setProductCode(new ProductCodeRec( "111111111111", ProductCodeType.UPC ))
+  .build();
 ```
 
 The next step is to send this product to Jet.  Please note, adding and editing
