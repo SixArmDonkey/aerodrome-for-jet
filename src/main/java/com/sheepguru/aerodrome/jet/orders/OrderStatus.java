@@ -68,7 +68,7 @@ public enum OrderStatus
   {
     for ( final OrderStatus s : values )
     {
-      if ( s.getText().equalsIgnoreCase( text ))
+      if ( s.getText().equalsIgnoreCase( text.trim()))
         return s;
     }
     

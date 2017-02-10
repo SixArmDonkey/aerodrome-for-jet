@@ -24,6 +24,7 @@ import com.sheepguru.aerodrome.jet.Jsonable;
 import com.sheepguru.aerodrome.jet.Utils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -41,6 +42,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public class OrderRec implements Jsonable
 {
+  /**
+   * some non-jet id 
+   */
+  private final int id;
+  
   /**
    * Jet's unique ID for a given merchant order.
    */
@@ -192,6 +198,11 @@ public class OrderRec implements Jsonable
   public static class Builder
   {
     /**
+     * Some non jet id 
+     */
+    private int id;
+    
+    /**
      * Jet's unique ID for a given merchant order.
      */
     private String merchantOrderId = "";
@@ -339,6 +350,12 @@ public class OrderRec implements Jsonable
       return this;
     }
 
+    public Builder setId( final int id )
+    {
+      this.id = id;
+      return this;
+    }
+    
     
     /**
      * @param customerReferenceOrderId the customerReferenceOrderId to set
@@ -533,8 +550,11 @@ public class OrderRec implements Jsonable
      */
     public Builder setOrderItems( final List<OrderItemRec> orderItems )
     {
-      Utils.checkNull( orderItems, "orderItems" );
-      this.orderItems.addAll( orderItems );
+      if ( orderItems == null )
+        this.getOrderItems().clear();
+      else      
+        this.getOrderItems().addAll( orderItems );
+      
       return this;
     }
     
@@ -604,9 +624,11 @@ public class OrderRec implements Jsonable
      */
     public Builder setShipments( final List<ShipmentRec> shipments) 
     {
-      Utils.checkNull( shipments, "shipments cannot be null" );
+      if ( shipments == null )
+        this.getShipments().clear();
+      else
+        this.getShipments().addAll( shipments );
       
-      this.shipments.addAll( shipments );
       return this;
       /*
       if ( shipments == null )
@@ -622,6 +644,190 @@ public class OrderRec implements Jsonable
       
       return this;
       */
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId()
+    {
+      return id;
+    }
+
+    /**
+     * @return the merchantOrderId
+     */
+    public String getMerchantOrderId()
+    {
+      return merchantOrderId;
+    }
+
+    /**
+     * @return the referenceOrderId
+     */
+    public String getReferenceOrderId()
+    {
+      return referenceOrderId;
+    }
+
+    /**
+     * @return the customerReferenceOrderId
+     */
+    public String getCustomerReferenceOrderId()
+    {
+      return customerReferenceOrderId;
+    }
+
+    /**
+     * @return the fulfillmentNode
+     */
+    public String getFulfillmentNode()
+    {
+      return fulfillmentNode;
+    }
+
+    /**
+     * @return the altOrderId
+     */
+    public String getAltOrderId()
+    {
+      return altOrderId;
+    }
+
+    /**
+     * @return the hashEmail
+     */
+    public String getHashEmail()
+    {
+      return hashEmail;
+    }
+
+    /**
+     * @return the status
+     */
+    public OrderStatus getStatus()
+    {
+      return status;
+    }
+
+    /**
+     * @return the exceptionState
+     */
+    public OrderExceptionState getExceptionState()
+    {
+      return exceptionState;
+    }
+
+    /**
+     * @return the orderPlacedDate
+     */
+    public IJetDate getOrderPlacedDate()
+    {
+      return orderPlacedDate;
+    }
+
+    /**
+     * @return the orderTransmissionDate
+     */
+    public IJetDate getOrderTransmissionDate()
+    {
+      return orderTransmissionDate;
+    }
+
+    /**
+     * @return the jetRequestDirectedCancel
+     */
+    public boolean isJetRequestDirectedCancel()
+    {
+      return jetRequestDirectedCancel;
+    }
+
+    /**
+     * @return the orderDetail
+     */
+    public OrderDetailRec getOrderDetail()
+    {
+      return orderDetail;
+    }
+
+    /**
+     * @return the buyer
+     */
+    public PersonRec getBuyer()
+    {
+      return buyer;
+    }
+
+    /**
+     * @return the shippingTo
+     */
+    public PersonRec getShippingTo()
+    {
+      return shippingTo;
+    }
+
+    /**
+     * @return the shippingToAddress
+     */
+    public AddressRec getShippingToAddress()
+    {
+      return shippingToAddress;
+    }
+
+    /**
+     * @return the orderTotals
+     */
+    public OrderTotalRec getOrderTotals()
+    {
+      return orderTotals;
+    }
+
+    /**
+     * @return the hasShipments
+     */
+    public boolean isHasShipments()
+    {
+      return hasShipments;
+    }
+
+    /**
+     * @return the orderReadyDate
+     */
+    public IJetDate getOrderReadyDate()
+    {
+      return orderReadyDate;
+    }
+
+    /**
+     * @return the orderAckDate
+     */
+    public IJetDate getOrderAckDate()
+    {
+      return orderAckDate;
+    }
+
+    /**
+     * @return the ackStatus
+     */
+    public AckStatus getAckStatus()
+    {
+      return ackStatus;
+    }
+
+    /**
+     * @return the shipments
+     */
+    public List<ShipmentRec> getShipments()
+    {
+      return shipments;
+    }
+
+    /**
+     * @return the orderItems
+     */
+    public List<OrderItemRec> getOrderItems()
+    {
+      return orderItems;
     }
   }
   
@@ -759,28 +965,35 @@ public class OrderRec implements Jsonable
    */
   private OrderRec( final Builder b )
   {
-    this.merchantOrderId = b.merchantOrderId;
-    this.referenceOrderId = b.referenceOrderId;
-    this.customerReferenceOrderId = b.customerReferenceOrderId;
-    this.fulfillmentNode = b.fulfillmentNode;
-    this.altOrderId = b.altOrderId;
-    this.hashEmail = b.hashEmail;
-    this.status = b.status;
-    this.exceptionState = b.exceptionState;
-    this.orderPlacedDate = b.orderPlacedDate;
-    this.orderTransmissionDate = b.orderTransmissionDate;
-    this.jetRequestDirectedCancel = b.jetRequestDirectedCancel;
-    this.orderDetail = b.orderDetail;
-    this.buyer = b.buyer;
-    this.shippingTo = b.shippingTo;
-    this.shippingToAddress = b.shippingToAddress;
-    this.orderTotals = b.orderTotals;
-    this.hasShipments = b.hasShipments;
-    this.orderReadyDate = b.orderReadyDate;
-    this.orderAckDate = b.orderAckDate;    
-    this.ackStatus = b.ackStatus;
-    this.shipments = b.shipments;
-    this.orderItems = b.orderItems;
+    this.merchantOrderId = b.getMerchantOrderId();
+    this.referenceOrderId = b.getReferenceOrderId();
+    this.customerReferenceOrderId = b.getCustomerReferenceOrderId();
+    this.fulfillmentNode = b.getFulfillmentNode();
+    this.altOrderId = b.getAltOrderId();
+    this.hashEmail = b.getHashEmail();
+    this.status = b.getStatus();
+    this.exceptionState = b.getExceptionState();
+    this.orderPlacedDate = b.getOrderPlacedDate();
+    this.orderTransmissionDate = b.getOrderTransmissionDate();
+    this.jetRequestDirectedCancel = b.isJetRequestDirectedCancel();
+    this.orderDetail = b.getOrderDetail();
+    this.buyer = b.getBuyer();
+    this.shippingTo = b.getShippingTo();
+    this.shippingToAddress = b.getShippingToAddress();
+    this.orderTotals = b.getOrderTotals();
+    this.hasShipments = b.isHasShipments();
+    this.orderReadyDate = b.getOrderReadyDate();
+    this.orderAckDate = b.getOrderAckDate();    
+    this.ackStatus = b.getAckStatus();
+    this.shipments = b.getShipments();
+    this.orderItems = b.getOrderItems();
+    this.id = b.getId();
+  }
+  
+  
+  public int getId()
+  {
+    return id;
   }
   
   
@@ -990,6 +1203,34 @@ public class OrderRec implements Jsonable
     return shipments;
   }
   
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 3;
+    hash = 67 * hash + Objects.hashCode( this.merchantOrderId );
+    return hash;
+  }  
+  
+
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final OrderRec other = (OrderRec) obj;
+    return Objects.equals( this.merchantOrderId, other.merchantOrderId );
+  }
+  
+  
+
   
   /**
    * Turn this object into Jet json 
@@ -1096,4 +1337,11 @@ public class OrderRec implements Jsonable
     return ab.build();
     
   }  
+  
+  
+  @Override
+  public String toString()
+  {
+    return merchantOrderId;
+  }
 }

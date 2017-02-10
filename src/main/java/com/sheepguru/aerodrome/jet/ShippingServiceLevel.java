@@ -76,10 +76,16 @@ public enum ShippingServiceLevel
   public static ShippingServiceLevel fromText( final String text )
     throws IllegalArgumentException
   {
+    //..there's something weird going on
+    if ( text.equalsIgnoreCase( "SecondDay" ))
+      return SECOND_DAY;
+    else if ( text.equalsIgnoreCase( "NextDay" ))
+      return NEXT_DAY;
+    
     for ( final ShippingServiceLevel c : values )
     {
       if ( c != null && c.getText().equalsIgnoreCase( text ))
-        return c;
+        return c;      
     }
     
     throw new IllegalArgumentException( "Invalid value " + text );
