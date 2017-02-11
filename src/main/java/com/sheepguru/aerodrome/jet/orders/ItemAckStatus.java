@@ -32,8 +32,10 @@ public enum ItemAckStatus
   
   /**
    * Cannot be fulfilled 
+   * The documentation clearly states "nonfulfillable", but 
+   * the API is returning "nonfulfillable - no inventory".
    */
-  NOT_FULFILLABLE( "nonfulfillable" );
+  NOT_FULFILLABLE( "nonfulfillable - no inventory" );
   
   
   /**

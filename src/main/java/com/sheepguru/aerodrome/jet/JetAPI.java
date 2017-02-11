@@ -78,6 +78,8 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   
   private static final AtomicInteger reauthAttempts = new AtomicInteger( 0 );
 
+  private static final List<IJetErrorHandler> errorHandlers = Collections.synchronizedList( new ArrayList<IJetErrorHandler>());
+  
   
   /**
    * Create a new API instance
@@ -94,6 +96,13 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     config = conf;
   }
 
+  
+  @Override
+  public void setErrorHandler( IJetErrorHandler handler )
+  {
+    errorHandlers.add( handler );
+  }
+  
   
   /**
    * Create a new API instance
@@ -181,12 +190,32 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   public IJetAPIResponse get( final String url, 
     final Map<String,String> headers ) throws APIException, JetException
   {
+    IAPIResponse response = null;
     try {
-      return JetAPIResponse.createFromAPIResponse( super.get( url, headers ));
-    } catch( JetException e ) {
-      //..try again
-      return get( url, tryLogin( e, headers ));
-    }            
+      response = super.get( url, headers );
+      
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return get( url, tryLogin( e, headers ));
+      }            
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }
+  }
+  
+  
+  private void notifyErrorHandlers( final IAPIResponse res, final Exception e ) 
+  {
+    for ( final IJetErrorHandler handler : errorHandlers )
+    {
+      if ( e instanceof JetException )
+        handler.onAPIError( res, (JetException)e );
+      else
+        handler.onAPIError( res, e );
+    }
   }
   
   
@@ -202,13 +231,19 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   public IJetAPIResponse post( final String url, final String payload, 
     final Map<String,String> headers ) throws APIException, JetException
   {
+    IAPIResponse response = null;
     try {
-      return JetAPIResponse.createFromAPIResponse( 
-        super.post( url, payload, headers ));
-    } catch( JetException e ) {
-      //..try again
-      return post( url, payload, tryLogin( e, headers ));
-    }            
+      response = super.post( url, payload, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return post( url, payload, tryLogin( e, headers ));
+      }            
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }    
   }
   
   
@@ -225,26 +260,38 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     final long contentLength, final ContentType contentType, 
     final Map<String,String> headers ) throws APIException
   {
+    IAPIResponse response = null;
     try {
-      return JetAPIResponse.createFromAPIResponse( 
-        super.post( url, payload, contentLength, contentType, headers ));
-    } catch( JetException e ) {
-      //..try again
-      return post( url, payload, contentLength, contentType, tryLogin( e, headers ));
-    }      
+      response = super.post( url, payload, contentLength, contentType, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return post( url, payload, contentLength, contentType, tryLogin( e, headers ));
+      }      
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }          
   }
   
   
   @Override
   public IJetAPIResponse post( final String url, final PostFile file, Map<String,String> headers ) throws APIException
   {
+    IAPIResponse response = null;
     try {
-      return JetAPIResponse.createFromAPIResponse(
-        super.post( url, file, headers ));
-    } catch( JetException e ) {
-      //..try again
-      return post( url, file, tryLogin( e, headers ));
-    }      
+      response = super.post( url, file, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return post( url, file, tryLogin( e, headers ));
+      }      
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }        
   }
   
   /**
@@ -259,13 +306,19 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   public IJetAPIResponse put( final String url, final String payload, 
     final Map<String,String> headers ) throws APIException, JetException
   {  
+    IAPIResponse response = null;
     try {
-      return JetAPIResponse.createFromAPIResponse( 
-        super.put( url, payload, headers ));
-    } catch( JetException e ) {
-      //..try again
-      return put( url, payload, tryLogin( e, headers ));
-    }      
+      response = super.put( url, payload, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return put( url, payload, tryLogin( e, headers ));
+      }      
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }    
   }
   
   
@@ -282,13 +335,19 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     final long contentLength, final ContentType contentType, 
     final Map<String,String> headers ) throws APIException, JetException
   {
+    IAPIResponse response = null;
     try {
-      return JetAPIResponse.createFromAPIResponse(
-        super.put( url, payload, contentLength, contentType, headers ));
-    } catch( JetException e ) {
-      //..try again
-      return put( url, payload, contentLength, contentType, tryLogin( e, headers ));
-    }
+      response = super.put( url, payload, contentLength, contentType, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return put( url, payload, contentLength, contentType, tryLogin( e, headers ));
+      }
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }    
       
   }
   
@@ -297,12 +356,20 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   public IJetAPIResponse put( final String url, final PostFile file, 
           Map<String,String> headers ) throws APIException, JetException 
   {
+    IAPIResponse response = null;
     try {
-      return JetAPIResponse.createFromAPIResponse( super.put( url, file, headers ));
-    } catch( JetException e ) {
-      //..try again
-      return put( url, file, tryLogin( e, headers ));
-    }
+      response = super.put( url, file, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return put( url, file, tryLogin( e, headers ));
+      }
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }    
+
   }
   
   
@@ -349,6 +416,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     }    
     else
       throw e;
+
   }
   
   

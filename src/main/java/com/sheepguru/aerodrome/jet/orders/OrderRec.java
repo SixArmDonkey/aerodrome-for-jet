@@ -991,6 +991,38 @@ public class OrderRec implements Jsonable
   }
   
   
+  
+  public Builder toBuilder()
+  {
+    final Builder b = new Builder();    
+    b.merchantOrderId = this.getMerchantOrderId();
+    b.referenceOrderId = this.getReferenceOrderId();
+    b.customerReferenceOrderId = this.getCustomerReferenceOrderId();
+    b.fulfillmentNode = this.getFulfillmentNode();
+    b.altOrderId = this.getAltOrderId();
+    b.hashEmail = this.getHashEmail();
+    b.status = this.getStatus();
+    b.exceptionState = this.getExceptionState();
+    b.orderPlacedDate = this.getOrderPlacedDate();
+    b.orderTransmissionDate = this.getOrderTransmissionDate();
+    b.jetRequestDirectedCancel = this.isJetRequestDirectedCancel();
+    b.orderDetail = this.getOrderDetail();
+    b.buyer = this.getBuyer();
+    b.shippingTo = this.getShippingTo();
+    b.shippingToAddress = this.getShippingToAddress();
+    b.orderTotals = this.getOrderTotals();
+    b.hasShipments = this.hasShipments();
+    b.orderReadyDate = this.getOrderReadyDate();
+    b.orderAckDate = this.getOrderAckDate();    
+    b.ackStatus = this.getAckStatus();
+    b.shipments = this.getShipments();
+    b.orderItems = this.getOrderItems();
+    b.id = this.getId();    
+    
+    return b;
+  }
+  
+  
   public int getId()
   {
     return id;

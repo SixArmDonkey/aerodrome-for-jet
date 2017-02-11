@@ -525,6 +525,34 @@ public class OrderItemRec
     else
       this.itemPrice = b.itemPrice;    
   }
+
+
+  public Builder toBuilder()
+  {
+    final Builder b = new Builder();
+    b.orderItemId = this.orderItemId;
+    b.altOrderItemId = this.altOrderItemId;
+    b.merchantSku = this.merchantSku;
+    b.title = this.title;
+    b.requestOrderQty = this.requestOrderQty;
+    b.requestOrderCancelQty = this.requestOrderCancelQty;
+    b.adjReason = this.adjReason;
+    b.taxCode = this.taxCode;
+    b.url = this.url;
+    b.priceAdj = new Money( this.priceAdj );
+    b.fees = new Money( this.fees );
+    b.adjustments.addAll( this.adjustments );
+    b.taxInfo = this.taxInfo; 
+    b.regFees = new Money( this.regFees );
+    b.itemAckStatus = this.itemAckStatus;
+    
+    if ( this.itemPrice == null )
+      b.itemPrice = new ItemPriceRec(); 
+    else
+      b.itemPrice = this.itemPrice;
+    
+    return b;
+  }
   
   
 

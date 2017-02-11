@@ -60,6 +60,9 @@ public interface IJetAPI extends IApi
    * @return plain text builder
    */
   public JetHeaderBuilder getPlainHeaderBuilder();
+  
+  public void setErrorHandler( IJetErrorHandler handler );
+          
 
   /**
    * Send arbitrary post data to some endpoint

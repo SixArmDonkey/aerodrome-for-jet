@@ -784,7 +784,7 @@ public class API implements IApi
     {
       return processResponse( response, hr );
     } catch( IOException e ) {
-      throw new APIException( "Failed to make request", e );
+      throw new APIException( "Failed to make request\n" + e.getMessage(), e );
     }
   }
 }
