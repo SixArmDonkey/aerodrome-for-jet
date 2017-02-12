@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.sheepguru</groupId>
+    <groupId>com.buffalokiwi</groupId>
     <artifactId>Aerodrome</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -81,16 +81,16 @@
 
     <scm>
       <!-- Replace the connection below with your project connection -->
-      <connection>scm:git:https://github.com/SheepGuru/aerodrome-for-jet.git</connection>
+      <connection>scm:git:https://github.com/SixArmDonkey/aerodrome-for-jet</connection>
     </scm>
 
     <developers>
       <developer>
-	<id>sheepguru</id>
+	<id>sixarmdonkey</id>
 	<name>John Quinn</name>
 	<email>johnquinn3@gmail.com</email>
-	<organization>Sheep Gruru</organization>
-	<organizationUrl>http://www.sheepguru.com</organizationUrl>
+	<organization>Buffalo Kiwi</organization>
+	<organizationUrl></organizationUrl>
 	<roles>
 	  <role>Owner</role>
 	  <role>Programmer</role>
@@ -134,7 +134,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>com.sheepguru.aerodrome.Aerodrome</mainClass>
+              <mainClass>com.buffalokiwi.aerodrome.Aerodrome</mainClass>
             </manifest>
             <manifestEntries>
               <JI-Version>${buildNumber}</JI-Version>

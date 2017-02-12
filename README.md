@@ -1,21 +1,21 @@
 # Aerodrome for Jet
 ## Jet.com API integration library
 
-[![Aerodrome](https://img.shields.io/badge/Aerodrome; In Development-red.svg)](https://sheepguru.github.io/aerodrome-for-jet)
+[![Aerodrome](https://img.shields.io/badge/Aerodrome; In Development-red.svg)](https://sixarmdonkey.github.io/aerodrome-for-jet)
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-[![Authentication](https://img.shields.io/badge/Authentication-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#quick-start-guide)
-[![ProductAPI](https://img.shields.io/badge/Product%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#product-api)
-[![BulkProductAPI](https://img.shields.io/badge/Bulk%20Product%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#bulk-product-upload-api)
-[![OrdersAPI](https://img.shields.io/badge/Orders%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#1-check-for-orders)
-[![ReturnsAPI](https://img.shields.io/badge/Returns%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#returns-api)
-[![RefundssAPI](https://img.shields.io/badge/Refunds%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#refund-api)
-[![TaxonomyAPI](https://img.shields.io/badge/Taxonomy%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#taxonomy-api)
-[![SettlementAPI](https://img.shields.io/badge/Settlement%20API-working-yellowgreen.svg)](https://github.com/SheepGuru/aerodrome-for-jet#settlement-api)
+[![Authentication](https://img.shields.io/badge/Authentication-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#quick-start-guide)
+[![ProductAPI](https://img.shields.io/badge/Product%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#product-api)
+[![BulkProductAPI](https://img.shields.io/badge/Bulk%20Product%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#bulk-product-upload-api)
+[![OrdersAPI](https://img.shields.io/badge/Orders%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#1-check-for-orders)
+[![ReturnsAPI](https://img.shields.io/badge/Returns%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#returns-api)
+[![RefundssAPI](https://img.shields.io/badge/Refunds%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#refund-api)
+[![TaxonomyAPI](https://img.shields.io/badge/Taxonomy%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#taxonomy-api)
+[![SettlementAPI](https://img.shields.io/badge/Settlement%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#settlement-api)
 
 
 
-The source is completely documented, check out the JavaDoc here: https://sheepguru.github.io/aerodrome-for-jet/ .
+The source is completely documented, check out the JavaDoc here: https://sixarmdonkey.github.io/aerodrome-for-jet/ .
 
 There is a makeshift test set up in the Main class, see that for usage for now.  
 
@@ -27,7 +27,7 @@ For questions, please feel free to email johnquinn3@gmail.com.
 
 At minimum, you need to add your merchant id, username, password
 
-[JetConfig JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/DefaultJetConfig.html)
+[JetConfig JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/DefaultJetConfig.html)
 
 ```java
 JetConfig config = new DefaultJetConfig.Builder();
@@ -39,7 +39,7 @@ JetConfig config = new DefaultJetConfig.Builder();
 
 ### 2: Create a shared Http Client to use 
 
-[APIHttpClient JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/api/APIHttpClient.html)
+[APIHttpClient JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/api/APIHttpClient.html)
 
 ```java
 IAPIHttpClient client = new APIHttpClient.Builder().build();    
@@ -51,7 +51,7 @@ Authentication is thread safe, and a single config object is designed to be
 shared between threads.  Aerodrome keeps track of your authentication status, 
 and will automatically authenticate.  There is no need to manually call login().
 
-[IJetAPIAuth JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/IJetAPIAuth.html)
+[IJetAPIAuth JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/IJetAPIAuth.html)
 
 The JetConfig object keeps track of the shared authentication data and is 
 automatically updated.
@@ -65,7 +65,7 @@ Jet API Authentication is required.
 
 ### 1: Initialize the product API
 
-[JetAPIProduct JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/JetAPIProduct.html)
+[JetAPIProduct JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/JetAPIProduct.html)
 
 ```java
 IJetAPIProduct productApi = new JetAPIProduct( client, jetConfig );
@@ -81,7 +81,7 @@ a product.
 First we create a product.  The minimum required properties are shown.
 
 
-[ProductRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductRec.html)
+[ProductRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ProductRec.html)
 
 ```java
   ProductRec prod = new ProductRec().Builder()
@@ -125,7 +125,7 @@ they are expected to list these attributes in the variation request.
 
 [Jet Taxonomy Spreadsheet](https://www.dropbox.com/s/wh2ud1q2ujucdt2/Jet_Taxonomy_8.28.2015.xlsx?dl=0)
 
-[ProductVariationGroupRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductVariationGroupRec.html)
+[ProductVariationGroupRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ProductVariationGroupRec.html)
 
 ```java
 //..This is a list of jet-defined node attribute id's.
@@ -160,12 +160,12 @@ drill down to the fulfillment node level.
 Shipping Exceptions are configured per fulfillment node, and are sent in a 
 batch using FNodeShippingRec 
 
-[FNodeShippingRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeShippingRec.html)
+[FNodeShippingRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/FNodeShippingRec.html)
 
 Shipping exceptions are configured individually and are added to an 
 FNodeShippingRec instance 
 
-[ShippingExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ShippingExceptionRec.html)
+[ShippingExceptionRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ShippingExceptionRec.html)
 
 ```java
 //..A shipping exception must be added to a fulfillment node
@@ -243,9 +243,9 @@ for the same SKU.
 
 You can retrieve just pricing data for a sku
 
-[ProductPriceRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductPriceRec.html)
+[ProductPriceRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ProductPriceRec.html)
 
-[FNodePriceRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodePriceRec.html)
+[FNodePriceRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/FNodePriceRec.html)
 
 ```java
 ProductPriceRec priceData = product.getProductPrice( "YOUR merchant sku" );
@@ -266,9 +266,9 @@ not the quantity that is currently sellable on Jet.com
 If you want to find the quantity listed of a given sku within any fulfillment
 node, use getProductInventory()
 
-[ProductInventoryRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductInventoryRec.html)
+[ProductInventoryRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ProductInventoryRec.html)
 
-[FNodeInventoryRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeInventoryRec.html)
+[FNodeInventoryRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/FNodeInventoryRec.html)
 
 ```java
 //..Retrieve the inventory for a product sku 
@@ -287,7 +287,7 @@ for( FNodeInventoryRec node : inventory.getNodes())
 
 You can retrieve a variation group for a given sku.
 
-[ProductVariationGroupRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductVariationGroupRec.html)
+[ProductVariationGroupRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ProductVariationGroupRec.html)
 
 ```java
 //..Get the list of variations
@@ -306,8 +306,8 @@ drill down to the fulfillment node level.
 
 This is the same as adding an exception, just backwards.
 
-[FNodeShippingRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FNodeShippingRec.html)
-[ShippingExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ShippingExceptionRec.html)
+[FNodeShippingRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/FNodeShippingRec.html)
+[ShippingExceptionRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ShippingExceptionRec.html)
 
 
 ```java
@@ -318,7 +318,7 @@ List<ShippingExceptionRec> shippingExceptions = exceptions.get( 0 ).getItemData(
 
 ### 10: Retrieve an exception that you have configured 
 
-[ReturnsExceptionRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ReturnsExceptionRec.html)
+[ReturnsExceptionRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ReturnsExceptionRec.html)
 
 ```java
 ReturnsExceptionRec returnsException = product.getReturnsExceptions( "YOUR merchant sku" );
@@ -330,7 +330,7 @@ ReturnsExceptionRec returnsException = product.getReturnsExceptions( "YOUR merch
 Any information about the SKU that was previously uploaded (price, inventory, 
 shipping exception) will show up here
 
-[ProductRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductRec.html)
+[ProductRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ProductRec.html)
 
 ```java
 //..It's that easy
@@ -380,9 +380,9 @@ item and shipping prices.
 
 You can retrieve stats about each sku individually using this command
 
-[ProductSalesDataRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/ProductSalesDataRec.html)
+[ProductSalesDataRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/ProductSalesDataRec.html)
 
-[OfferRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/OfferRec.html)
+[OfferRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/OfferRec.html)
 
 ```java
 ProductSalesDataRec data = product.getSkuSalesData( "YOUR merchant sku" );
@@ -401,11 +401,11 @@ for ( OfferRec offer : data.getBestOffers())
 Bulk uploads can be done by creating an in-memory list of ProductRec instances
 or simply streaming some json file through the library.
 
-[JetAPIBulkProductUpload JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/JetAPIBulkProductUpload.html)
+[JetAPIBulkProductUpload JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/JetAPIBulkProductUpload.html)
 
-[BulkUploadAuthRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/BulkUploadAuthRec.html)
+[BulkUploadAuthRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/BulkUploadAuthRec.html)
 
-[PostFile JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/api/PostFile.html)
+[PostFile JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/api/PostFile.html)
 
 
 #### This example is for merchant sku's, but the technique is similar for all file types
@@ -457,7 +457,7 @@ up.sendAuthorizedFile( addRes.getString( "url" ), pf );
 
 Then you can retrieve the status for any of the uploads
 
-[FileIdRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/products/FileIdRec.html)
+[FileIdRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/products/FileIdRec.html)
 
 
 ```java
@@ -476,7 +476,7 @@ FileIdRec file2Stats = up.getJetFileId( addRes.getString( "jet_file_id" ));
 
 #### Create an IJetAPIOrder instance
 
-[JetOrderAPI JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/JetAPIOrder.html)
+[JetOrderAPI JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/orders/JetAPIOrder.html)
 
 ```java
 IJetAPIOrder orderApi = new JetAPIOrder( client, config );
@@ -492,7 +492,7 @@ List<String> orderIds = orderApi.getOrderStatusTokens( OrderStatus.READY );
 
 
 ### 2: Directed Cancel 
-#### This is deprecated 2/17, [Use This](https://github.com/SheepGuru/aerodrome-for-jet#6-cancel-order) instead
+#### This is deprecated 2/17, [Use This](https://github.com/SixArmDonkey/aerodrome-for-jet#6-cancel-order) instead
 
 
 ### 3: Get Order Details
@@ -500,7 +500,7 @@ List<String> orderIds = orderApi.getOrderStatusTokens( OrderStatus.READY );
 This endpoint will provide you with requisite fulfillment information for the 
 order denoted by the Jet Defined Order ID.
 
-[OrderRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/OrderRec.html)
+[OrderRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/orders/OrderRec.html)
 
 ```java
 OrderRec order = orderApi.getOrderDetail( jetOrderId );
@@ -513,9 +513,9 @@ The order acknowledge call is utilized to allow a retailer to accept or
 reject an order. If there are any skus in the order that cannot be 
 fulfilled then you will reject the order.
 
-[AckRequestItemRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/AckRequestItemRec.html)
+[AckRequestItemRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/orders/AckRequestItemRec.html)
 
-[AckRequestRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/AckRequestRec.html)
+[AckRequestRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/orders/AckRequestRec.html)
 
 ```java
 //..Poll for READY orders 
@@ -551,15 +551,15 @@ The order shipped call is utilized to provide Jet with the SKUs that have been
 shipped or cancelled in an order, the tracking information, carrier information 
 and any additional returns information for the order.
 
-[ShipmentRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/ShipmentRec.html)
+[ShipmentRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/orders/ShipmentRec.html)
 
-[ShipmentItemRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/ShipmentItemRec.html)
+[ShipmentItemRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/orders/ShipmentItemRec.html)
 
-[AddressRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/AddressRec.html) 
+[AddressRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/AddressRec.html) 
 
-[OrderItemRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/OrderItemRec.html)
+[OrderItemRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/orders/OrderItemRec.html)
 
-[ShipRequestRec JavaDoc](https://sheepguru.github.io/aerodrome-for-jet/com/sheepguru/aerodrome/jet/orders/ShipRequestRec.html)
+[ShipRequestRec JavaDoc](https://sixarmdonkey.github.io/aerodrome-for-jet/com/buffalokiwi/aerodrome/jet/orders/ShipRequestRec.html)
 
 ```java
 for ( String jetOrderId : orderApi.getOrderStatusTokens( OrderStatus.ACK, false ))
