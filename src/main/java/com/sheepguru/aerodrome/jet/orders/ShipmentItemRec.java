@@ -319,6 +319,22 @@ public class ShipmentItemRec implements Jsonable
   }
   
   
+  public Builder toBuilder()
+  {
+    final Builder b = new Builder();
+    b.itemId = this.itemId;
+    b.altItemId = this.altItemId;
+    b.merchantSku = this.merchantSku;
+    b.quantity = this.quantity;
+    b.cancelQuantity = this.cancelQuantity;
+    b.rmaNumber = this.rmaNumber;
+    b.returnDays = this.returnDays;
+    b.returnTo = this.returnTo;    
+    
+    return b;
+  }
+  
+  
   /**
    * Get Jet's unique identifier for an item in a shipment.
    * @return the itemId

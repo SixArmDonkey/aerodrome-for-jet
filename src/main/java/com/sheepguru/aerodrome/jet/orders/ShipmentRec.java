@@ -377,6 +377,24 @@ public class ShipmentRec implements Jsonable
   }
   
   
+  public Builder toBuilder()
+  {
+    final Builder b = new Builder();
+    b.shipmentId = this.shipmentId;
+    b.altShipmentId = this.altShipmentId;
+    b.trackingNumber = this.trackingNumber;
+    b.shipmentDate = this.shipmentDate;
+    b.shippingMethod = this.shippingMethod;
+    b.expectedDeliveryDate = this.expectedDeliveryDate;
+    b.shipFromZip = this.shipFromZip;
+    b.carrier = this.carrier;
+    b.pickupDate = this.pickupDate;
+    b.items = this.items;
+    
+    return b;
+  }
+  
+  
   /**
    * Get Jet's unique ID for a given shipment. This is not currently supported 
    * in any workflow.
