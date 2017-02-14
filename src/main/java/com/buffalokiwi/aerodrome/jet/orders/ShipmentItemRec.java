@@ -18,6 +18,7 @@ import com.buffalokiwi.aerodrome.jet.AddressRec;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import java.math.BigDecimal;
+import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -240,6 +241,63 @@ public class ShipmentItemRec implements Jsonable
       this.returnTo = returnTo;
       return this;
     }
+
+    
+    @Override
+    public int hashCode()
+    {
+      int hash = 7;
+      hash = 11 * hash + Objects.hashCode( this.itemId );
+      hash = 11 * hash + Objects.hashCode( this.altItemId );
+      hash = 11 * hash + Objects.hashCode( this.merchantSku );
+      hash = 11 * hash + this.quantity;
+      hash = 11 * hash + this.cancelQuantity;
+      hash = 11 * hash + Objects.hashCode( this.rmaNumber );
+      hash = 11 * hash + this.returnDays;
+      hash = 11 * hash + Objects.hashCode( this.returnTo );
+      return hash;
+    }
+
+    
+    @Override
+    public boolean equals( Object obj )
+    {
+      if ( this == obj ) {
+        return true;
+      }
+      if ( obj == null ) {
+        return false;
+      }
+      if ( getClass() != obj.getClass() ) {
+        return false;
+      }
+      final Builder other = (Builder) obj;
+      if ( this.quantity != other.quantity ) {
+        return false;
+      }
+      if ( this.cancelQuantity != other.cancelQuantity ) {
+        return false;
+      }
+      if ( this.returnDays != other.returnDays ) {
+        return false;
+      }
+      if ( !Objects.equals( this.itemId, other.itemId ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.altItemId, other.altItemId ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.merchantSku, other.merchantSku ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.rmaNumber, other.rmaNumber ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.returnTo, other.returnTo ) ) {
+        return false;
+      }
+      return true;
+    }
     
     
     /**
@@ -250,6 +308,70 @@ public class ShipmentItemRec implements Jsonable
     {
       return new ShipmentItemRec( this );
     }    
+
+    /**
+     * @return the itemId
+     */
+    public String getItemId()
+    {
+      return itemId;
+    }
+
+    /**
+     * @return the altItemId
+     */
+    public String getAltItemId()
+    {
+      return altItemId;
+    }
+
+    /**
+     * @return the merchantSku
+     */
+    public String getMerchantSku()
+    {
+      return merchantSku;
+    }
+
+    /**
+     * @return the quantity
+     */
+    public int getQuantity()
+    {
+      return quantity;
+    }
+
+    /**
+     * @return the cancelQuantity
+     */
+    public int getCancelQuantity()
+    {
+      return cancelQuantity;
+    }
+
+    /**
+     * @return the rmaNumber
+     */
+    public String getRmaNumber()
+    {
+      return rmaNumber;
+    }
+
+    /**
+     * @return the returnDays
+     */
+    public int getReturnDays()
+    {
+      return returnDays;
+    }
+
+    /**
+     * @return the returnTo
+     */
+    public AddressRec getReturnTo()
+    {
+      return returnTo;
+    }
   }
   
   
@@ -308,14 +430,14 @@ public class ShipmentItemRec implements Jsonable
   private ShipmentItemRec( final Builder b )
   {
     Utils.checkNull( b, "b" );
-    this.itemId = b.itemId;
-    this.altItemId = b.altItemId;
-    this.merchantSku = b.merchantSku;
-    this.quantity = b.quantity;
-    this.cancelQuantity = b.cancelQuantity;
-    this.rmaNumber = b.rmaNumber;
-    this.returnDays = b.returnDays;
-    this.returnTo = b.returnTo;
+    this.itemId = b.getItemId();
+    this.altItemId = b.getAltItemId();
+    this.merchantSku = b.getMerchantSku();
+    this.quantity = b.getQuantity();
+    this.cancelQuantity = b.getCancelQuantity();
+    this.rmaNumber = b.getRmaNumber();
+    this.returnDays = b.getReturnDays();
+    this.returnTo = b.getReturnTo();
   }
   
   

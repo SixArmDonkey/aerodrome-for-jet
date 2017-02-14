@@ -24,6 +24,7 @@ import com.buffalokiwi.aerodrome.jet.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -165,6 +166,25 @@ public class ShipmentRec implements Jsonable
     private List<ShipmentItemRec> items = null;
 
     
+    public void validate() throws Exception
+    {
+      if ( getTrackingNumber().trim().isEmpty())
+        throw new Exception( "Tracking number can't be empty" );
+      else if ( getShipFromZip().trim().isEmpty())
+        throw new Exception( "ship from zip can't be empty" );
+      else if ( getCarrier() == ShippingCarrier.NONE )
+        throw new Exception( "You must select a shipping carrier" );
+      else if ( getShippingMethod() == ShippingMethod.NONE )
+        throw new Exception( "You must select a shipping method" );
+      else if ( getPickupDate() == null )
+        throw new Exception( "You must set a pickup date" );
+      else if ( getExpectedDeliveryDate() == null )
+        throw new Exception( "You must set an expected delivery date" );
+      else if ( getItems() == null || getItems().isEmpty())
+        throw new Exception( "All shipments must contain at least 1 item to ship" );      
+    }
+    
+    
     /**
      * Set Jet's unique ID for a given shipment. This is not currently supported 
      * in any workflow.
@@ -178,8 +198,108 @@ public class ShipmentRec implements Jsonable
       this.shipmentId = shipmentId;
       return this;
     }
-    
 
+    @Override
+    public int hashCode()
+    {
+      int hash = 7;
+      hash = 29 * hash + Objects.hashCode(this.getShipmentId());
+      hash = 29 * hash + Objects.hashCode(this.getAltShipmentId());
+      hash = 29 * hash + Objects.hashCode(this.getTrackingNumber());
+      hash = 29 * hash + Objects.hashCode(this.getShipmentDate());
+      hash = 29 * hash + Objects.hashCode(this.getShippingMethod());
+      hash = 29 * hash + Objects.hashCode(this.getExpectedDeliveryDate());
+      hash = 29 * hash + Objects.hashCode(this.getShipFromZip());
+      hash = 29 * hash + Objects.hashCode(this.getCarrier());
+      hash = 29 * hash + Objects.hashCode(this.getPickupDate());
+      hash = 29 * hash + Objects.hashCode(this.getItems());
+      return hash;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+      if ( this == obj ) {
+        return true;
+      }
+      if ( obj == null ) {
+        return false;
+      }
+      if ( getClass() != obj.getClass() ) {
+        return false;
+      }
+      final Builder other = (Builder) obj;
+      if ( !Objects.equals( this.shipmentId, other.shipmentId ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.altShipmentId, other.altShipmentId ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.trackingNumber, other.trackingNumber ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.shipFromZip, other.shipFromZip ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.shipmentDate, other.shipmentDate ) ) {
+        return false;
+      }
+      if ( this.getShippingMethod() != other.getShippingMethod() ) {
+        return false;
+      }
+      if ( !Objects.equals( this.expectedDeliveryDate, other.expectedDeliveryDate ) ) {
+        return false;
+      }
+      if ( this.getCarrier() != other.getCarrier() ) {
+        return false;
+      }
+      if ( !Objects.equals( this.pickupDate, other.pickupDate ) ) {
+        return false;
+      }
+      if ( !Objects.equals( this.items, other.items ) ) {
+        return false;
+      }
+      return true;
+    }
+    
+    
+    /**
+     * To String 
+     * @return some string
+     */
+    @Override
+    public String toString()
+    {
+      if ( !altShipmentId.isEmpty())
+        return getAltShipmentId();
+
+      final StringBuilder s = new StringBuilder();
+
+      if ( !carrier.equals( ShippingCarrier.NONE ))
+      {
+        s.append(getCarrier().getText());
+        s.append( ' ' );
+      }
+
+      if ( !shippingMethod.equals(  ShippingMethod.NONE ))
+      {
+        s.append(getShippingMethod().getText());
+        s.append( ' ' );
+      }
+
+      if ( !trackingNumber.isEmpty())
+      {
+        s.append(getTrackingNumber());
+        s.append( ' ' );
+      }
+
+      if ( s.length() > 0 )
+        return s.toString();
+
+      return "Shipment";
+
+    }
+  
     /**
      * Set Optional merchant supplied shipment ID. Jet will map this ID to the 
      * Jet's shipment_id and you can then use this ID in subsequent messages 
@@ -306,10 +426,10 @@ public class ShipmentRec implements Jsonable
         return this;
       }
       
-      if ( this.items == null )
+      if ( this.getItems() == null )
         this.items = new ArrayList<>();
       
-      this.items.addAll( items );
+      this.getItems().addAll( items );
       
       return this;
     }
@@ -323,6 +443,86 @@ public class ShipmentRec implements Jsonable
     {
       return new ShipmentRec( this );
     }    
+
+    /**
+     * @return the shipmentId
+     */
+    public String getShipmentId()
+    {
+      return shipmentId;
+    }
+
+    /**
+     * @return the altShipmentId
+     */
+    public String getAltShipmentId()
+    {
+      return altShipmentId;
+    }
+
+    /**
+     * @return the trackingNumber
+     */
+    public String getTrackingNumber()
+    {
+      return trackingNumber;
+    }
+
+    /**
+     * @return the shipmentDate
+     */
+    public IJetDate getShipmentDate()
+    {
+      return shipmentDate;
+    }
+
+    /**
+     * @return the shippingMethod
+     */
+    public ShippingMethod getShippingMethod()
+    {
+      return shippingMethod;
+    }
+
+    /**
+     * @return the expectedDeliveryDate
+     */
+    public IJetDate getExpectedDeliveryDate()
+    {
+      return expectedDeliveryDate;
+    }
+
+    /**
+     * @return the shipFromZip
+     */
+    public String getShipFromZip()
+    {
+      return shipFromZip;
+    }
+
+    /**
+     * @return the carrier
+     */
+    public ShippingCarrier getCarrier()
+    {
+      return carrier;
+    }
+
+    /**
+     * @return the pickupDate
+     */
+    public IJetDate getPickupDate()
+    {
+      return pickupDate;
+    }
+
+    /**
+     * @return the items
+     */
+    public List<ShipmentItemRec> getItems()
+    {
+      return items;
+    }
   }
   
   
@@ -364,16 +564,16 @@ public class ShipmentRec implements Jsonable
    */
   private ShipmentRec( final Builder b )
   {
-    this.shipmentId = b.shipmentId;
-    this.altShipmentId = b.altShipmentId;
-    this.trackingNumber = b.trackingNumber;
-    this.shipmentDate = b.shipmentDate;
-    this.shippingMethod = b.shippingMethod;
-    this.expectedDeliveryDate = b.expectedDeliveryDate;
-    this.shipFromZip = b.shipFromZip;
-    this.carrier = b.carrier;
-    this.pickupDate = b.pickupDate;
-    this.items = Collections.unmodifiableList( b.items );
+    this.shipmentId = b.getShipmentId();
+    this.altShipmentId = b.getAltShipmentId();
+    this.trackingNumber = b.getTrackingNumber();
+    this.shipmentDate = b.getShipmentDate();
+    this.shippingMethod = b.getShippingMethod();
+    this.expectedDeliveryDate = b.getExpectedDeliveryDate();
+    this.shipFromZip = b.getShipFromZip();
+    this.carrier = b.getCarrier();
+    this.pickupDate = b.getPickupDate();
+    this.items = Collections.unmodifiableList(b.getItems());
   }
   
   
@@ -393,6 +593,66 @@ public class ShipmentRec implements Jsonable
     
     return b;
   }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 67 * hash + Objects.hashCode( this.altShipmentId );
+    hash = 67 * hash + Objects.hashCode( this.trackingNumber );
+    hash = 67 * hash + Objects.hashCode( this.shipmentDate );
+    hash = 67 * hash + Objects.hashCode( this.shippingMethod );
+    hash = 67 * hash + Objects.hashCode( this.expectedDeliveryDate );
+    hash = 67 * hash + Objects.hashCode( this.shipFromZip );
+    hash = 67 * hash + Objects.hashCode( this.carrier );
+    hash = 67 * hash + Objects.hashCode( this.pickupDate );
+    hash = 67 * hash + Objects.hashCode( this.items );
+    return hash;
+  }
+
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final ShipmentRec other = (ShipmentRec) obj;
+    if ( !Objects.equals( this.altShipmentId, other.altShipmentId ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.trackingNumber, other.trackingNumber ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.shipFromZip, other.shipFromZip ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.shipmentDate, other.shipmentDate ) ) {
+      return false;
+    }
+    if ( this.shippingMethod != other.shippingMethod ) {
+      return false;
+    }
+    if ( !Objects.equals( this.expectedDeliveryDate, other.expectedDeliveryDate ) ) {
+      return false;
+    }
+    if ( this.carrier != other.carrier ) {
+      return false;
+    }
+    if ( !Objects.equals( this.pickupDate, other.pickupDate ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.items, other.items ) ) {
+      return false;
+    }
+    return true;
+  }
+  
   
   
   /**
@@ -503,6 +763,44 @@ public class ShipmentRec implements Jsonable
   public List<ShipmentItemRec> getItems() 
   {
     return items;
+  }
+  
+  
+  /**
+   * To String 
+   * @return some string
+   */
+  @Override
+  public String toString()
+  {
+    if ( !altShipmentId.isEmpty())
+      return altShipmentId;
+    
+    final StringBuilder s = new StringBuilder();
+    
+    if ( !carrier.equals( ShippingCarrier.NONE ))
+    {
+      s.append( carrier.getText());
+      s.append( ' ' );
+    }
+    
+    if ( !shippingMethod.equals(  ShippingMethod.NONE ))
+    {
+      s.append( shippingMethod.getText());
+      s.append( ' ' );
+    }
+    
+    if ( !trackingNumber.isEmpty())
+    {
+      s.append( trackingNumber );
+      s.append( ' ' );
+    }
+    
+    if ( s.length() > 0 )
+      return s.toString();
+    
+    return "Shipment";
+    
   }
   
   
