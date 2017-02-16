@@ -865,6 +865,21 @@ public class OrderRec implements Jsonable
       APILog.error( LOG, e, "Failed to generate order items" );
     }
     
+    
+    //..Build the shipments
+    final JsonArray shipments = json.getJsonArray( "shipments" );
+    if ( shipments != null )
+    {
+      for ( int i = 0; i < shipments.size(); i++ )
+      {
+        final JsonObject shipment = shipments.getJsonObject( i );
+        if ( shipment == null )
+          continue;
+        
+        b.getShipments().add( ShipmentRec.fromJson( shipment ));
+      }
+    }
+    
     return new OrderRec( b );
   }
   

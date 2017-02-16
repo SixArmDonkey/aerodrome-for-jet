@@ -548,7 +548,7 @@ public class ShipmentRec implements Jsonable
       .setTrackingNumber( json.getString( "shipment_tracking_number", "" ))
       .setShipmentDate(ISO8601Date.fromJetValueOrNull( json.getString( "response_shipment_date", "" )))
       .setShippingMethod( ShippingMethod.fromText( json.getString( "response_shipping_method", "" )))
-      .setExpectedDeliveryDate(ISO8601Date.fromJetValueOrNull( json.getString( "expected_delivery_date" )))
+      .setExpectedDeliveryDate(ISO8601Date.fromJetValueOrNull( json.getString( "expected_delivery_date", "" )))
       .setShipFromZip( json.getString( "ship_from_zip_code", "" ))
       .setCarrier( ShippingCarrier.fromText( json.getString( "carrier", "" )))
       .setPickupDate(ISO8601Date.fromJetValueOrNull( json.getString( "carrier_pick_up_date", "" )))

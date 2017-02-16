@@ -35,7 +35,12 @@ public enum ItemAckStatus
    * The documentation clearly states "nonfulfillable", but 
    * the API is returning "nonfulfillable - no inventory".
    */
-  NOT_FULFILLABLE( "nonfulfillable - no inventory" );
+  NOT_FULFILLABLE( "nonfulfillable - no inventory" ),
+ 
+  /**
+   * An invalid sku was in the order - cannot be fulfilled.
+   */
+  INVALID_SKU( "nonfulfillable - invalid merchant SKU" );
   
   
   /**
