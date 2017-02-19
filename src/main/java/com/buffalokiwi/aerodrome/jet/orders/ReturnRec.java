@@ -16,19 +16,17 @@ package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.AddressRec;
 import com.buffalokiwi.aerodrome.jet.IJetDate;
+import com.buffalokiwi.aerodrome.jet.ISO8601Date;
 import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
-import com.buffalokiwi.aerodrome.jet.JsonableList;
 import com.buffalokiwi.aerodrome.jet.ShippingCarrier;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.utils.Money;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 
@@ -38,7 +36,12 @@ import javax.json.JsonObject;
  * @author John Quinn
  */
 public class ReturnRec implements Jsonable
-{  
+{ 
+  /**
+   * Some non jet id 
+   */
+  private final int id;
+  
   /**
    * This field set by order refund message. Specifies if the merchant 
    * agrees to the return charge for the return notification.
@@ -133,6 +136,7 @@ public class ReturnRec implements Jsonable
    */
   public static class Builder
   {
+    private int id = 0;
     private boolean agreeToReturnCharge = false;
     private String altOrderId = "";
     private String altReturnAuthId = "";
@@ -150,6 +154,31 @@ public class ReturnRec implements Jsonable
     private final List<ReturnMerchantSkuRec> returnMerchantSkus = new ArrayList<>();
     private final List<ReturnItemRec> items = new ArrayList<>();
 
+    
+    /**
+     * Set some non jet id
+     * @param id id
+     * @return this
+     */
+    public Builder setId( final int id )
+    {
+      if ( id < 0 )
+        throw new IllegalArgumentException( "id can't be less than zero" );
+      
+      this.id = id;
+      return this;
+    }
+    
+    
+    /**
+     * Retrieve some non jet id
+     * @return id
+     */
+    public int getId()
+    {
+      return id;
+    }
+    
     
     /**
      * This field set by order refund message. Specifies if the merchant agrees 
@@ -396,7 +425,7 @@ public class ReturnRec implements Jsonable
       .setReferenceOrderId( json.getString( "reference_order_id", "" ))
       .setReferenceReturnAuthId( json.getString( "reference_return_authorization_id", "" ))
       .setRefundWithoutReturn( json.getBoolean( "refund_without_return", false ))
-      .setReturnDate( new JetDate( json.getString( "return_date", "" )))
+      .setReturnDate( ISO8601UTCDate.fromJetValueOrNull( json.getString( "return_date", "" )))
       .setStatus( ReturnStatus.fromText( json.getString( "return_status", "" )))
       .setCarrier( ShippingCarrier.fromText( json.getString( "shipping_carrier", "" )))
       .setTrackingNumber( json.getString( "tracking_number", "" ))
@@ -429,6 +458,7 @@ public class ReturnRec implements Jsonable
     this.returnLocations = Collections.unmodifiableList( b.returnLocations );
     this.returnMerchantSkus = Collections.unmodifiableList( b.returnMerchantSkus );
     this.items = Collections.unmodifiableList( b.items );
+    this.id = b.id;
   }
   
   
@@ -631,5 +661,15 @@ public class ReturnRec implements Jsonable
       .add( "return_merchant_SKUs", Utils.jsonableToArray( returnMerchantSkus ))
       .add( "items", Utils.jsonableToArray( items ))
       .build();
+  }
+  
+  
+  /**
+   * Retrieve some non jet id
+   * @return id
+   */
+  public int getId()
+  {
+    return id;
   }
 }

@@ -16,6 +16,7 @@ package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
+import com.buffalokiwi.utils.Money;
 import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
@@ -31,6 +32,11 @@ import javax.json.JsonObjectBuilder;
 public class ReturnItemRec implements Jsonable
 {
   /**
+   * Some non-jet id 
+   */
+  private final int id;
+  
+  /**
    * Order item id
    */
   private final String orderItemId;
@@ -45,6 +51,11 @@ public class ReturnItemRec implements Jsonable
    */
   private final int qtyReturned;
 
+  /**
+   * Quantity of the given item that was returned 
+   */
+  private final int totalQtyReturned;  
+  
   /**
    * Quantity of the given item that was refunded
    */
@@ -64,6 +75,27 @@ public class ReturnItemRec implements Jsonable
    * Refund amount 
    */
   private final RefundAmountRec amount;  
+  
+  /**
+   * The merchant SKU that is being returned
+   */
+  private final String merchantSku;
+  
+  /**
+   * The short description of the merchant SKU being returned
+   */
+  private final String merchantSkuTitle;
+  
+  /**
+   * The reason the customer is returning the item
+   */
+  private final ReturnReason returnReason;
+  
+  /**
+   * The amount the retailer is willing to refund to the customer
+   */
+  private final RefundAmountRec requestedRefundAmount;
+
 
   
   /**
@@ -71,6 +103,11 @@ public class ReturnItemRec implements Jsonable
    */
   public static class Builder
   {
+    /**
+     * Some non-jet id 
+     */
+    private int id = 0;
+    
     /**
      * Order item id
      */
@@ -85,6 +122,11 @@ public class ReturnItemRec implements Jsonable
      * Quantity of the given item that was returned 
      */
     private int qtyReturned = 0;
+    
+    /**
+     * Quantity of the given item that was returned 
+     */
+    private int totalQtyReturned = 0;
     
     /**
      * Quantity of the given item that was refunded
@@ -105,6 +147,37 @@ public class ReturnItemRec implements Jsonable
      * Refund amount 
      */
     private RefundAmountRec amount = null;
+    
+    /**
+     * The merchant SKU that is being returned
+     */
+    private String merchantSku = "";
+
+    /**
+     * The short description of the merchant SKU being returned
+     */
+    private String merchantSkuTitle = "";
+
+    /**
+     * The reason the customer is returning the item
+     */
+    private ReturnReason returnReason = ReturnReason.NONE;
+
+    /**
+     * The amount the retailer is willing to refund to the customer
+     */
+    private RefundAmountRec requestedRefundAmount = null;
+    
+    
+    public Builder setId( final int id )
+    {
+      if ( id < 0 )
+        throw new IllegalArgumentException( "id can't be less than zero" );
+      
+      this.id = id;
+      return this;
+    }
+    
     
     /**
      * Jet's unique identifier for an item in a merchant order.
@@ -209,6 +282,15 @@ public class ReturnItemRec implements Jsonable
       return this;
     }
     
+    public Builder setTotalQtyReturned( final int qty )
+    {
+      if ( qty < 0 )
+        throw new IllegalArgumentException( "qty must be greater than or equal to zero" );
+      this.totalQtyReturned = qty;
+      return this;
+    }
+    
+    
     
     /**
      * Build the object
@@ -217,6 +299,46 @@ public class ReturnItemRec implements Jsonable
     public ReturnItemRec build()
     {
       return new ReturnItemRec( this );
+    }
+
+    /**
+     * @param merchantSku the merchantSku to set
+     */
+    public Builder setMerchantSku( String merchantSku )
+    {
+      Utils.checkNull( merchantSku, "merchantSku" );
+      this.merchantSku = merchantSku;
+      return this;
+    }
+
+    /**
+     * @param merchantSkuTitle the merchantSkuTitle to set
+     */
+    public Builder setMerchantSkuTitle( String merchantSkuTitle )
+    {
+      Utils.checkNull( merchantSkuTitle, "merchantSkuTitle" );
+      this.merchantSkuTitle = merchantSkuTitle;
+      return this;
+    }
+
+    /**
+     * @param returnReason the returnReason to set
+     */
+    public Builder setReturnReason( ReturnReason returnReason )
+    {
+      Utils.checkNull( returnReason, "returnReason" );
+      this.returnReason = returnReason;
+      return this;
+    }
+
+    /**
+     * @param requestedRefundAmount the requestedRefundAmount to set
+     */
+    public Builder setRequestedRefundAmount( RefundAmountRec requestedRefundAmount )
+    {
+      Utils.checkNull( requestedRefundAmount, "requestedRefundAmount" );
+      this.requestedRefundAmount = requestedRefundAmount;
+      return this;
     }
   } //..Builder
   
@@ -270,10 +392,18 @@ public class ReturnItemRec implements Jsonable
     final Builder b = new Builder()
       .setOrderItemId( json.getString( "order_item_id", "" ))
       .setAltOrderItemId( json.getString( "alt_order_item_id", "" ))
-      .setQtyReturned( json.getInt( "total_quantity_returned", 0 ))
+      .setMerchantSku( json.getString( "merchant_sku", "" ))
+      .setMerchantSkuTitle( json.getString( "merchant_sku_title", "" ))
+      .setReturnReason( ReturnReason.fromText( json.getString(  "reason", "" )))
+      .setQtyReturned( json.getInt( "return_quantity", 0 ))
+      .setTotalQtyReturned( json.getInt( "total_quantity_returned", 0 ))            
       .setOrderReturnRefundQty( json.getInt( "order_return_refund_qty", 0 ))
       .setFeedback( RefundFeedback.fromText( json.getString( "return_refund_feedback", "" )))
       .setNotes( json.getString( "notes", "" ));
+    
+    final JsonObject reqAmt = json.getJsonObject( "requested_refund_amount" );
+    if ( reqAmt != null )
+      b.setRequestedRefundAmount( RefundAmountRec.fromJson( reqAmt ));
     
     final JsonObject refAmt = json.getJsonObject( "refund_amount" );
     if ( refAmt != null )
@@ -307,6 +437,18 @@ public class ReturnItemRec implements Jsonable
     this.feedback = b.feedback;
     this.notes = b.notes;
     this.amount = b.amount;            
+    this.merchantSku = b.merchantSku;
+    this.merchantSkuTitle = b.merchantSkuTitle;
+    this.requestedRefundAmount = b.requestedRefundAmount;
+    this.returnReason = b.returnReason;
+    this.totalQtyReturned = b.totalQtyReturned;
+    this.id = b.id;
+  }
+  
+  
+  public int getId()
+  {
+    return id;
   }
     
 
@@ -341,6 +483,16 @@ public class ReturnItemRec implements Jsonable
     return qtyReturned;
   }
 
+  
+  /**
+   * Quantity of the given item that was returned.
+   * @return total
+   */
+  public int getTotalQtyReturned()
+  {
+    return totalQtyReturned;
+  }
+  
   
   /**
    * Quantity of the given item that was refunded.
@@ -383,7 +535,38 @@ public class ReturnItemRec implements Jsonable
   }
   
 
-  
+  /**
+   * @return the merchantSku
+   */
+  public String getMerchantSku()
+  {
+    return merchantSku;
+  }
+
+  /**
+   * @return the merchantSkuTitle
+   */
+  public String getMerchantSkuTitle()
+  {
+    return merchantSkuTitle;
+  }
+
+  /**
+   * @return the returnReason
+   */
+  public ReturnReason getReturnReason()
+  {
+    return returnReason;
+  }
+
+  /**
+   * @return the requestedRefundAmount
+   */
+  public RefundAmountRec getRequestedRefundAmount()
+  {
+    return requestedRefundAmount;
+  }
+    
   
   /**
    * Turn this into jet json
