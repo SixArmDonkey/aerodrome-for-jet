@@ -566,7 +566,7 @@ public class API implements IApi
   private URI stringToURI( final String url ) throws APIException
   {
     try {
-      final URIBuilder b = new URIBuilder( url );
+      final URIBuilder b = new URIBuilder( url.replace( " ", "%20" ));
       
       //..Overwrite the host if necessary 
       if ( lockHost && client.getHost().getHost() != null 

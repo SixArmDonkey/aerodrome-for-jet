@@ -115,6 +115,12 @@ public class RefundAmountRec implements Jsonable
   }
   
   
+  public RefundAmountRec()
+  {
+    this( new Money(), new Money(), new Money(), new Money());
+  }
+  
+  
   /**
    * Amount to be refunded for the given item in USD associated 
    * with the item itself. This should be the total cost for this item not 

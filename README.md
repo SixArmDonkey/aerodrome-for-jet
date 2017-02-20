@@ -1,7 +1,6 @@
 # Aerodrome for Jet
 ## Jet.com API integration library
 
-[![Aerodrome](https://img.shields.io/badge/Aerodrome; In Development-red.svg)](https://sixarmdonkey.github.io/aerodrome-for-jet)
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 [![Authentication](https://img.shields.io/badge/Authentication-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#quick-start-guide)
@@ -17,7 +16,7 @@
 
 The source is completely documented, check out the JavaDoc here: https://sixarmdonkey.github.io/aerodrome-for-jet/ .
 
-There is a makeshift test set up in the Main class, see that for usage for now.  
+Some of the documentation below is slightly out of date.
 
 For questions, please feel free to email johnquinn3@gmail.com.
 

@@ -425,7 +425,7 @@ public class ReturnRec implements Jsonable
       .setReferenceOrderId( json.getString( "reference_order_id", "" ))
       .setReferenceReturnAuthId( json.getString( "reference_return_authorization_id", "" ))
       .setRefundWithoutReturn( json.getBoolean( "refund_without_return", false ))
-      .setReturnDate( ISO8601UTCDate.fromJetValueOrNull( json.getString( "return_date", "" )))
+      .setReturnDate( JetDate.fromJetValueOrNull( json.getString( "return_date", "" )))
       .setStatus( ReturnStatus.fromText( json.getString( "return_status", "" )))
       .setCarrier( ShippingCarrier.fromText( json.getString( "shipping_carrier", "" )))
       .setTrackingNumber( json.getString( "tracking_number", "" ))

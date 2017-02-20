@@ -298,6 +298,12 @@ public class ReturnItemRec implements Jsonable
      */
     public ReturnItemRec build()
     {
+      if ( this.amount == null )
+        this.amount = new RefundAmountRec();
+      
+      if ( this.requestedRefundAmount == null )
+        this.requestedRefundAmount = new RefundAmountRec();
+      
       return new ReturnItemRec( this );
     }
 
@@ -430,16 +436,24 @@ public class ReturnItemRec implements Jsonable
    */
   protected ReturnItemRec( final Builder b )
   {
+    if ( b.amount == null )
+      this.amount = new RefundAmountRec();
+    else
+      this.amount = b.amount;            
+    
+    if ( b.requestedRefundAmount == null )
+      this.requestedRefundAmount = new RefundAmountRec();
+    else
+      this.requestedRefundAmount = b.requestedRefundAmount;
+    
     this.orderItemId = b.orderItemId;
     this.altOrderItemId = b.altOrderItemId;
     this.qtyReturned = b.qtyReturned;
     this.orderReturnRefundQty = b.orderReturnRefundQty;
     this.feedback = b.feedback;
     this.notes = b.notes;
-    this.amount = b.amount;            
     this.merchantSku = b.merchantSku;
     this.merchantSkuTitle = b.merchantSkuTitle;
-    this.requestedRefundAmount = b.requestedRefundAmount;
     this.returnReason = b.returnReason;
     this.totalQtyReturned = b.totalQtyReturned;
     this.id = b.id;

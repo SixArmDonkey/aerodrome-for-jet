@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author John Quinn
  */
-public class JetAPIReturn extends JetAPI implements IJetReturn, IJetAPIReturn
+public class JetAPIReturn extends JetAPI implements IJetAPIReturn
 {
   /**
    * Logger 
@@ -118,7 +118,7 @@ public class JetAPIReturn extends JetAPI implements IJetReturn, IJetAPIReturn
   public List<String> getReturnsStatusTokens( final ReturnStatus status ) 
     throws APIException, JetException    
   {    
-    return getReturnStatusTokens( status, false );
+    return getReturnsStatusTokens( status, false );
   } 
   
   
@@ -133,7 +133,7 @@ public class JetAPIReturn extends JetAPI implements IJetReturn, IJetAPIReturn
    * @throws JetException 
    */
   @Override
-  public List<String> getReturnStatusTokens( final ReturnStatus status, 
+  public List<String> getReturnsStatusTokens( final ReturnStatus status, 
     final boolean includePath ) throws APIException, JetException    
   {    
     Utils.checkNull( status, "status" );

@@ -33,7 +33,7 @@ public interface IJetReturn
    * @throws APIException
    * @throws JetException
    */
-  List<String> getReturnsStatusTokens(final ReturnStatus status) 
+  public List<String> getReturnsStatusTokens(final ReturnStatus status) 
           throws APIException, JetException;
 
   /**
@@ -43,7 +43,7 @@ public interface IJetReturn
    * @throws APIException
    * @throws JetException
    */
-  ReturnRec getReturnDetail(final String jetReturnId) 
+  public ReturnRec getReturnDetail(final String jetReturnId) 
           throws APIException, JetException;
 
   /**
@@ -56,7 +56,7 @@ public interface IJetReturn
    * @throws APIException
    * @throws JetException
    */
-  List<String> getReturnStatusTokens(final ReturnStatus status, 
+  public List<String> getReturnsStatusTokens(final ReturnStatus status, 
           final boolean includePath) throws APIException, JetException;
   
   /**
@@ -67,6 +67,6 @@ public interface IJetReturn
    * @throws APIException
    * @throws JetException
    */
-  boolean completeReturn(final String jetReturnId, 
+  public boolean completeReturn(final String jetReturnId, 
       final CompleteReturnRequestRec request) throws APIException, JetException;  
 }

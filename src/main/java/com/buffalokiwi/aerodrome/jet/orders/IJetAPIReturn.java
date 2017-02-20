@@ -21,7 +21,7 @@ import com.buffalokiwi.api.APIException;
  *
  * @author john
  */
-public interface IJetAPIReturn extends IJetAPI
+public interface IJetAPIReturn extends IJetAPI, IJetReturn
 {
   /**
    * Retrieve detail about a specific return
