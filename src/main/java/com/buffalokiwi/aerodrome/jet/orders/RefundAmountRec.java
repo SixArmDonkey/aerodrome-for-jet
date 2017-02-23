@@ -28,6 +28,113 @@ import javax.json.JsonObject;
  */
 public class RefundAmountRec implements Jsonable
 {
+  public static class Builder
+  {
+    /**
+     * Amount to be refunded for the given item in USD associated with the item 
+     * itself. This should be the total cost for this item not the unit cost.
+     */
+    private Money principal = new Money();
+
+    /**
+     * Amount to be refunded for the given item in USD associated with tax that 
+     * was charged for the item.
+     */
+    private Money tax = new Money();
+
+    /**
+     * Amount to be refunded for the given item in USD associated with the 
+     * shipping cost that was allocated to this item.
+     * 
+     */
+    private Money shippingCost = new Money();
+
+    /**
+     * Amount to be refunded for the given item in USD associated with the tax 
+     * that was charged on shipping
+     */
+    private Money shippingTax = new Money();
+
+    /**
+     * @return the principal
+     */
+    public Money getPrincipal()
+    {
+      return principal;
+    }
+
+    /**
+     * @param principal the principal to set
+     */
+    public Builder setPrincipal( Money principal )
+    {
+      Utils.checkNull( principal, "principal" );          
+      this.principal = principal;
+      return this;
+    }
+
+    /**
+     * @return the tax
+     */
+    public Money getTax()
+    {
+      return tax;
+    }
+
+    /**
+     * @param tax the tax to set
+     */
+    public Builder setTax( Money tax )
+    {
+      Utils.checkNull( tax, "tax" );
+      this.tax = tax;
+      return this;
+    }
+
+    /**
+     * @return the shippingCost
+     */
+    public Money getShippingCost()
+    {
+      return shippingCost;
+    }
+
+    /**
+     * @param shippingCost the shippingCost to set
+     */
+    public Builder setShippingCost( Money shippingCost )
+    {
+      Utils.checkNull( shippingCost, "shippingCost" );
+      this.shippingCost = shippingCost;
+      return this;
+    }
+
+    /**
+     * @return the shippingTax
+     */
+    public Money getShippingTax()
+    {
+      return shippingTax;
+    }
+
+    /**
+     * @param shippingTax the shippingTax to set
+     */
+    public Builder setShippingTax( Money shippingTax )
+    {
+      Utils.checkNull( shippingTax, "shippingTax" );
+      this.shippingTax = shippingTax;
+      return this;
+    }
+    
+    
+    public RefundAmountRec build()
+    {
+      return new RefundAmountRec( this );
+    }
+  }
+  
+  
   /**
    * Amount to be refunded for the given item in USD associated with the item 
    * itself. This should be the total cost for this item not the unit cost.
@@ -118,6 +225,30 @@ public class RefundAmountRec implements Jsonable
   public RefundAmountRec()
   {
     this( new Money(), new Money(), new Money(), new Money());
+  }
+  
+  
+  protected RefundAmountRec( final Builder b )
+  {
+    this( b.principal, b.tax, b.shippingCost, b.shippingTax );
+  }
+  
+  
+  /**
+   * Returns principal + tax + shipping cost + shipping tax
+   * @return total
+   */
+  public Money getTotal()
+  {
+    return principal.plus( tax ).plus(  shippingCost ).plus(  shippingTax );
+  }
+  
+  
+  public Builder toBuilder()
+  {
+    return new Builder()
+      .setPrincipal( principal ).setShippingCost( shippingCost )
+      .setShippingTax( shippingTax ).setTax( tax );
   }
   
   

@@ -16,8 +16,6 @@ package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.AddressRec;
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601Date;
-import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.ShippingCarrier;
@@ -37,6 +35,12 @@ import javax.json.JsonObject;
  */
 public class ReturnRec implements Jsonable
 { 
+  /**
+   * The reason the merchant does not agree to the return charge for the 
+   * return notification.
+   */  
+  private final ChargeFeedback feedback;
+  
   /**
    * Some non jet id 
    */
@@ -153,6 +157,7 @@ public class ReturnRec implements Jsonable
     private final List<AddressRec> returnLocations = new ArrayList<>();
     private final List<ReturnMerchantSkuRec> returnMerchantSkus = new ArrayList<>();
     private final List<ReturnItemRec> items = new ArrayList<>();
+    private ChargeFeedback feedback = ChargeFeedback.NONE;
 
     
     /**
@@ -167,6 +172,30 @@ public class ReturnRec implements Jsonable
       
       this.id = id;
       return this;
+    }
+    
+    
+    /**
+     * The reason the merchant does not agree to the return charge for the return notification.
+     * @param feedback Feedback
+     * @return This
+     */
+    public Builder setFeedback( final ChargeFeedback feedback )
+    {
+      Utils.checkNull( feedback, "feedback" );
+      
+      this.feedback = feedback;
+      return this;
+    }
+    
+    
+    /**
+     * The reason the merchant does not agree to the return charge for the return notification.
+     * @return Feedback
+     */
+    public ChargeFeedback getFeedback()
+    {
+      return feedback;
     }
     
     
@@ -308,7 +337,6 @@ public class ReturnRec implements Jsonable
      */
     public Builder setReturnDate( final IJetDate returnDate )
     {
-      Utils.checkNull( returnDate, "returnDate" );
       this.returnDate = returnDate;
       return this;
     }
@@ -368,6 +396,7 @@ public class ReturnRec implements Jsonable
      * Set merchant skus 
      * @param returnMerchantSkus the returnMerchantSkus to set
      * @return this
+     * @deprecated use setReturnItems
      */
     public Builder setReturnMerchantSkus( 
       final List<ReturnMerchantSkuRec> returnMerchantSkus )
@@ -415,8 +444,9 @@ public class ReturnRec implements Jsonable
    */
   public static ReturnRec fromJson( final JsonObject json )
   {
-    return new Builder()     
+    final Builder b = new Builder()     
       .setAgreeToReturnCharge( json.getBoolean( "agree_to_return_charge", false ))
+      .setFeedback( ChargeFeedback.fromText( json.getString( "return_charge_feedback", "" )))
       .setAltOrderId( json.getString( "alt_order_id", "" ))
       .setAltReturnAuthId( json.getString( "alt_return_authorization_id", "" ))
       .setMerchantOrderId( json.getString( "merchant_order_id", "" ))
@@ -430,9 +460,18 @@ public class ReturnRec implements Jsonable
       .setCarrier( ShippingCarrier.fromText( json.getString( "shipping_carrier", "" )))
       .setTrackingNumber( json.getString( "tracking_number", "" ))
       .setReturnLocations( AddressRec.fromJsonArray( json.getJsonArray( "return_location" )))
-      .setReturnMerchantSkus( ReturnMerchantSkuRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )))
-      .setReturnItems( ReturnItemRec.fromJsonArray( json.getJsonArray( "items" )))
-      .build();
+      .setReturnMerchantSkus( ReturnMerchantSkuRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )));
+    
+    //..This is retarded, but it's jet so here we go.
+    //..If the status is "created", the items array is called "return_merchant_SKUs" with some fun underscores and camel case.
+    //  For any other status, it's just "items"
+    
+    if ( b.status == ReturnStatus.CREATED )
+      b.setReturnItems( ReturnItemRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )));
+    else 
+      b.setReturnItems( ReturnItemRec.fromJsonArray( json.getJsonArray( "items" )));
+      
+    return b.build();
   }
   
   
@@ -459,6 +498,45 @@ public class ReturnRec implements Jsonable
     this.returnMerchantSkus = Collections.unmodifiableList( b.returnMerchantSkus );
     this.items = Collections.unmodifiableList( b.items );
     this.id = b.id;
+    this.feedback = b.feedback;
+  }
+  
+  
+  public Builder toBuilder()
+  {
+    final Builder b = new Builder();
+    
+    b.agreeToReturnCharge = this.agreeToReturnCharge;
+    b.altOrderId = this.altOrderId;
+    b.altReturnAuthId = this.altReturnAuthId;
+    b.merchantOrderId = this.merchantOrderId;
+    b.merchantReturnAuthId = this.merchantReturnAuthId;
+    b.merchantReturnCharge = this.merchantReturnCharge;
+    b.referenceOrderId = this.referenceOrderId;
+    b.referenceReturnAuthId = this.referenceReturnAuthId;
+    b.refundWithoutReturn = this.refundWithoutReturn;
+    b.returnDate = this.returnDate;
+    b.status = this.status;
+    b.carrier = this.carrier;
+    b.trackingNumber = this.trackingNumber;
+    
+    b.returnLocations.addAll( this.returnLocations );
+    b.returnMerchantSkus.addAll( this.returnMerchantSkus );
+    b.items.addAll( this.items );
+    b.id = this.id;
+    b.feedback = this.feedback;
+    
+    return b;
+  }
+  
+  
+  /**
+   * The reason the merchant does not agree to the return charge for the return notification.
+   * @return feedback
+   */
+  public ChargeFeedback getFeedback()
+  {
+    return feedback;
   }
   
   
@@ -671,5 +749,12 @@ public class ReturnRec implements Jsonable
   public int getId()
   {
     return id;
+  }
+  
+  
+  @Override
+  public String toString()
+  {
+    return merchantReturnAuthId;
   }
 }

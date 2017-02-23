@@ -460,6 +460,35 @@ public class ReturnItemRec implements Jsonable
   }
   
   
+  public Builder toBuilder()
+  {
+    final Builder b = new Builder();
+    if ( this.amount == null )
+      b.amount = new RefundAmountRec();
+    else
+      b.amount = this.amount;            
+    
+    if ( this.requestedRefundAmount == null )
+      b.requestedRefundAmount = new RefundAmountRec();
+    else
+      b.requestedRefundAmount = this.requestedRefundAmount;
+    
+    b.orderItemId = this.orderItemId;
+    b.altOrderItemId = this.altOrderItemId;
+    b.qtyReturned = this.qtyReturned;
+    b.orderReturnRefundQty = this.orderReturnRefundQty;
+    b.feedback = this.feedback;
+    b.notes = this.notes;
+    b.merchantSku = this.merchantSku;
+    b.merchantSkuTitle = this.merchantSkuTitle;
+    b.returnReason = this.returnReason;
+    b.totalQtyReturned = this.totalQtyReturned;
+    b.id = this.id;
+    
+    return b;
+  }
+  
+  
   public int getId()
   {
     return id;

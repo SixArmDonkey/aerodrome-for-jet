@@ -159,4 +159,15 @@ public enum ReturnReason
   {
     return text;
   }
+  
+  
+  /**
+   * Get the text for the jet api 
+   * @return jet text
+   */
+  @Override
+  public String toString()
+  {
+    return text;
+  }
 }

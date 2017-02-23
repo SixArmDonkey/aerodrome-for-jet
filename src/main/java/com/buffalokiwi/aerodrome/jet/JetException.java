@@ -121,6 +121,9 @@ public class JetException extends APIException
    */
   public List<String> getMessages()
   {
+    if ( messages == null )
+      return new ArrayList<>();
+    
     return messages;
   }
   
