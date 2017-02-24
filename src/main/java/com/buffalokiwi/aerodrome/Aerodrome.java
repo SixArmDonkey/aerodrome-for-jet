@@ -537,9 +537,10 @@ public class Aerodrome
         
         //..Convert merchant sku items from the detail response into items for 
         //  the put return complete command
-        for ( final ReturnMerchantSkuRec m : ret.getReturnMerchantSkus())
+        
+        for ( final ReturnItemRec m : ret.getReturnItems())
         {
-          returnItems.add( ReturnItemRec.fromReturnMerchantSkuRec( m )
+          returnItems.add( m.toBuilder()
             //..Set some custom attributes for jet 
             //..Any property can be overridden
             .setFeedback( RefundFeedback.OPENED )

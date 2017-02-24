@@ -127,7 +127,7 @@ public class ReturnRec implements Jsonable
   /**
    * merchant skus 
    */
-  private final List<ReturnMerchantSkuRec> returnMerchantSkus;
+  //private final List<ReturnMerchantSkuRec> returnMerchantSkus;
   
   /**
    * This is included if status is inprogress or completed.
@@ -155,7 +155,7 @@ public class ReturnRec implements Jsonable
     private ShippingCarrier carrier = ShippingCarrier.NONE;
     private String trackingNumber = "";
     private final List<AddressRec> returnLocations = new ArrayList<>();
-    private final List<ReturnMerchantSkuRec> returnMerchantSkus = new ArrayList<>();
+    //private final List<ReturnMerchantSkuRec> returnMerchantSkus = new ArrayList<>();
     private final List<ReturnItemRec> items = new ArrayList<>();
     private ChargeFeedback feedback = ChargeFeedback.NONE;
 
@@ -396,8 +396,8 @@ public class ReturnRec implements Jsonable
      * Set merchant skus 
      * @param returnMerchantSkus the returnMerchantSkus to set
      * @return this
-     * @deprecated use setReturnItems
      */
+    /*
     public Builder setReturnMerchantSkus( 
       final List<ReturnMerchantSkuRec> returnMerchantSkus )
     {
@@ -408,6 +408,7 @@ public class ReturnRec implements Jsonable
       
       return this;
     }
+    */
     
     
     /**
@@ -459,17 +460,59 @@ public class ReturnRec implements Jsonable
       .setStatus( ReturnStatus.fromText( json.getString( "return_status", "" )))
       .setCarrier( ShippingCarrier.fromText( json.getString( "shipping_carrier", "" )))
       .setTrackingNumber( json.getString( "tracking_number", "" ))
-      .setReturnLocations( AddressRec.fromJsonArray( json.getJsonArray( "return_location" )))
-      .setReturnMerchantSkus( ReturnMerchantSkuRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )));
+      .setReturnLocations( AddressRec.fromJsonArray( json.getJsonArray( "return_location" )));
+    
+    
+    final List<ReturnMerchantSkuRec> skus = ReturnMerchantSkuRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" ));
     
     //..This is retarded, but it's jet so here we go.
     //..If the status is "created", the items array is called "return_merchant_SKUs" with some fun underscores and camel case.
     //  For any other status, it's just "items"
     
-    if ( b.status == ReturnStatus.CREATED )
-      b.setReturnItems( ReturnItemRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )));
-    else 
-      b.setReturnItems( ReturnItemRec.fromJsonArray( json.getJsonArray( "items" )));
+    //if ( b.status == ReturnStatus.CREATED )
+    //  b.setReturnItems( ReturnItemRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )));
+    //else 
+    
+    
+    final List<ReturnItemRec> items = new ArrayList<>();
+    
+    for ( final ReturnItemRec rec : ReturnItemRec.fromJsonArray( json.getJsonArray( "items" )))
+    {
+      ReturnMerchantSkuRec mRec = null;
+      for ( int i = skus.size() - 1; i >= 0; i-- )
+      {
+        final ReturnMerchantSkuRec m = skus.get( i );
+        if ( m.getOrderItemId().equals( rec.getOrderItemId()))
+        {
+          mRec = m;
+          skus.remove( i );
+          break;
+        }
+      }
+      
+      
+      if ( mRec == null )
+        items.add(  rec );
+      else
+      {
+        items.add( rec.toBuilder()
+          .setAltOrderItemId( mRec.getAltOrderItemId())
+          .setReturnReason( mRec.getReason())
+          .setRequestedRefundAmount( mRec.getRefundAmount())
+          .setQtyReturned( mRec.getQuantity())
+          .setMerchantSkuTitle( mRec.getTitle())
+          .setMerchantSku( mRec.getMerchantsku())
+          .build()
+        );
+      }
+    }
+    
+    for ( final ReturnMerchantSkuRec rec : skus )
+    {
+      items.add( ReturnItemRec.fromReturnMerchantSkuRec( rec ).build());
+    }
+    
+    b.setReturnItems( items );
       
     return b.build();
   }
@@ -495,7 +538,7 @@ public class ReturnRec implements Jsonable
     this.carrier = b.carrier;
     this.trackingNumber = b.trackingNumber;
     this.returnLocations = Collections.unmodifiableList( b.returnLocations );
-    this.returnMerchantSkus = Collections.unmodifiableList( b.returnMerchantSkus );
+//    this.returnMerchantSkus = Collections.unmodifiableList( b.returnMerchantSkus );
     this.items = Collections.unmodifiableList( b.items );
     this.id = b.id;
     this.feedback = b.feedback;
@@ -521,7 +564,7 @@ public class ReturnRec implements Jsonable
     b.trackingNumber = this.trackingNumber;
     
     b.returnLocations.addAll( this.returnLocations );
-    b.returnMerchantSkus.addAll( this.returnMerchantSkus );
+//    b.returnMerchantSkus.addAll( this.returnMerchantSkus );
     b.items.addAll( this.items );
     b.id = this.id;
     b.feedback = this.feedback;
@@ -695,16 +738,6 @@ public class ReturnRec implements Jsonable
 
   
   /**
-   * 
-   * @return the returnMerchantSkus
-   */
-  public List<ReturnMerchantSkuRec> getReturnMerchantSkus() 
-  {
-    return returnMerchantSkus;
-  }
-  
-  
-  /**
    * Access the items returned if in inprogress or complete state.
    * @return items
    */
@@ -736,7 +769,7 @@ public class ReturnRec implements Jsonable
       .add( "shipping_carrier", carrier.getText())
       .add( "tracking_number", trackingNumber )
       .add( "return_location", Utils.jsonableToArray( returnLocations ))
-      .add( "return_merchant_SKUs", Utils.jsonableToArray( returnMerchantSkus ))
+      //.add( "return_merchant_SKUs", Utils.jsonableToArray( returnMerchantSkus ))
       .add( "items", Utils.jsonableToArray( items ))
       .build();
   }

@@ -41,7 +41,6 @@ public class ShipmentRec implements Jsonable
   /**
    * Jet's unique ID for a given shipment. This is not currently supported in 
    * any workflow.
-   * @deprecated
    */
   private final String shipmentId;
   
@@ -659,7 +658,6 @@ public class ShipmentRec implements Jsonable
    * Get Jet's unique ID for a given shipment. This is not currently supported 
    * in any workflow.
    * @return the shipmentId
-   * @deprecated
    */
   public String getShipmentId() 
   {

@@ -25,7 +25,10 @@ import javax.json.JsonObject;
 /**
  * Return merchant skus response.
  * 
+ * This is currently only for internal use and will be removed in a future release.
+ * 
  * @author John Quinn
+ * @deprecated 
  */
 public class ReturnMerchantSkuRec implements Jsonable
 {

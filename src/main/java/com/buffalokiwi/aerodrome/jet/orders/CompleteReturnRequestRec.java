@@ -16,13 +16,13 @@ package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 /**
  * The record used to send as a request for completing a return.
@@ -190,12 +190,19 @@ public class CompleteReturnRequestRec implements Jsonable
   @Override
   public JsonObject toJSON()
   {
-    return Json.createObjectBuilder()
+    final JsonObjectBuilder b = Json.createObjectBuilder()
       .add( "merchant_order_id", merchantOrderId )
-      .add( "alt_order_id", altOrderId )
-      .add( "agree_to_return_charge", agreeToReturnCharge )
-      .add( "return_charge_feedback", feedback.getText())
-      .add( "items", Utils.jsonableToArray( items ))
-      .build();
+      .add( "agree_to_return_charge", agreeToReturnCharge );
+    
+    if ( feedback != ChargeFeedback.NONE )
+      b.add( "return_charge_feedback", feedback.getText());
+    
+    if ( !altOrderId.isEmpty())
+      b.add( "alt_order_id", altOrderId );
+    
+    if ( !items.isEmpty())
+      b.add( "items", Utils.jsonableToArray( items ));
+    
+    return b.build();
   }
 }

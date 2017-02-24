@@ -359,12 +359,14 @@ public class ReturnItemRec implements Jsonable
    */
   public static Builder fromReturnMerchantSkuRec( final ReturnMerchantSkuRec from )
   {
-    return new Builder()
-      .setAltOrderItemId( from.getAltOrderItemId())
-      .setAmount( from.getRefundAmount())
+    return new ReturnItemRec.Builder()
       .setOrderItemId( from.getOrderItemId())
-      .setOrderReturnRefundQty( from.getQuantity())
-      .setQtyReturned( from.getQuantity());
+      .setAltOrderItemId( from.getAltOrderItemId())
+      .setReturnReason( from.getReason())
+      .setRequestedRefundAmount( from.getRefundAmount())
+      .setQtyReturned( from.getQuantity())
+      .setMerchantSkuTitle( from.getTitle())
+      .setMerchantSku( from.getMerchantsku());
   }
   
   
@@ -620,12 +622,18 @@ public class ReturnItemRec implements Jsonable
   {
     final JsonObjectBuilder b = Json.createObjectBuilder()
       .add( "order_item_id", orderItemId )
-      .add( "alt_order_item_id", altOrderItemId )
       .add( "total_quantity_returned", qtyReturned )
       .add( "order_return_refund_qty", orderReturnRefundQty )
-      .add( "return_refund_feedback", feedback.getText())
-      .add( "notes", notes )
       .add( "refund_amount", amount.toJSON());
+    
+    if ( !altOrderItemId.isEmpty())
+      b.add( "alt_order_item_id", altOrderItemId );
+    
+    if ( feedback != RefundFeedback.NONE )
+      b.add( "return_refund_feedback", feedback.getText());
+    
+    if ( !notes.isEmpty())
+      b.add( "notes", notes );
       
     return b.build();
   }
