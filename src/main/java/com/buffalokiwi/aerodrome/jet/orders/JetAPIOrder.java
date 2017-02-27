@@ -21,6 +21,7 @@ import com.buffalokiwi.aerodrome.jet.JetAPI;
 import com.buffalokiwi.aerodrome.jet.JetConfig;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.aerodrome.jet.Utils;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,7 +30,7 @@ import java.util.List;
  * 
  * @author John Quinn
  */
-public class JetAPIOrder extends JetAPI implements IJetOrder, IJetAPIOrder
+public class JetAPIOrder extends JetAPI implements IJetAPIOrder
 {
   /**
    * Create a new API instance
@@ -251,5 +252,39 @@ public class JetAPIOrder extends JetAPI implements IJetOrder, IJetAPIOrder
   }
   
     
+  /**
+   * Cancels an order.
+   * @param curRec Full order details
+   * @param altShipmentId
+   * @return
+   * @throws JetException
+   * @throws APIException 
+   */
+  public IJetAPIResponse cancelOrder( final OrderRec curRec, final String altShipmentId ) throws JetException, APIException
+  {
+    Utils.checkNull( altShipmentId, "altShipmentId" );
+    Utils.checkNull( curRec, "curRec" );
+    
+    if ( curRec.getStatus() != OrderStatus.ACK )
+      throw new IllegalStateException( "You cannot cancel any order that is not in the acknowledged state" );
+    
+    final List<ShipmentRec> shipments = new ArrayList<>();
+    final List<ShipmentItemRec> shipmentItems = new ArrayList<>();
+    
+    for ( final OrderItemRec item : curRec.getOrderItems())
+    {
+      shipmentItems.add( ShipmentItemRec.fromOrderItem( item )
+       .setQuantity( 0 )
+       .setCancelQuantity( item.getRequestOrderQty()).build());
+    }
+    
+    shipments.add( new ShipmentRec.Builder()
+      .setItems( shipmentItems )
+      .setAltShipmentId( altShipmentId )
+      .build());
+    
+    return sendPutShipOrder( curRec.getMerchantOrderId(), new ShipRequestRec( curRec.getAltOrderId(), shipments ));
+  }
+  
   
 }

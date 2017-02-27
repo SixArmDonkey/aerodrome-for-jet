@@ -45,6 +45,11 @@ public class ShipmentRec implements Jsonable
   private final String shipmentId;
   
   /**
+   * merchant order id if available 
+   */
+  private final String orderId;
+  
+  /**
    * Optional merchant supplied shipment ID. Jet will map this ID to the Jet's 
    * shipment_id and you can then use this ID in subsequent messages relating 
    * to this shipment.
@@ -163,6 +168,11 @@ public class ShipmentRec implements Jsonable
      * table below.
      */
     private List<ShipmentItemRec> items = null;
+    
+    /**
+     * Merchant order id if available (not from jet json)
+     */
+    private String orderId = "";
 
     
     public void validate() throws Exception
@@ -408,6 +418,19 @@ public class ShipmentRec implements Jsonable
       this.pickupDate = pickupDate;
       return this;
     }
+    
+    
+    /**
+     * Sets the merchant order id (not available from jet json)
+     * @param orderId order id 
+     * @return this
+     */
+    public Builder setOrderId( final String orderId )
+    {
+      Utils.checkNull( orderId, "orderId" );
+      this.orderId = orderId;
+      return this;
+    }
 
     
     /**
@@ -522,6 +545,16 @@ public class ShipmentRec implements Jsonable
     {
       return items;
     }
+    
+    
+    /**
+     * Retrieve the merchant order id (not from jet json)
+     * @return merchant id 
+     */
+    public String getOrderId()
+    {
+      return orderId;
+    }
   }
   
   
@@ -573,6 +606,7 @@ public class ShipmentRec implements Jsonable
     this.carrier = b.getCarrier();
     this.pickupDate = b.getPickupDate();
     this.items = Collections.unmodifiableList(b.getItems());
+    this.orderId = b.orderId;
   }
   
   
@@ -589,6 +623,7 @@ public class ShipmentRec implements Jsonable
     b.carrier = this.carrier;
     b.pickupDate = this.pickupDate;
     b.items = this.items;
+    b.orderId = this.orderId;
     
     return b;
   }
@@ -694,6 +729,17 @@ public class ShipmentRec implements Jsonable
   public IJetDate getShipmentDate() 
   {
     return shipmentDate;
+  }
+  
+  
+  /**
+   * Retrieve the merchant order id for this shipment.
+   * This is not available from jet json.
+   * @return order id
+   */
+  public String getOrderId()
+  {
+    return orderId;
   }
 
   

@@ -67,5 +67,13 @@ public interface IJetOrder
    */
   public List<String> getOrderStatusTokens(final OrderStatus status, final boolean includePath) throws APIException, JetException;
 
-  
+  /**
+   * Cancels an order.
+   * @param curRec Full order details
+   * @param altShipmentId
+   * @return
+   * @throws JetException
+   * @throws APIException 
+   */
+  public IJetAPIResponse cancelOrder( final OrderRec curRec, final String altShipmentId ) throws JetException, APIException;  
 }

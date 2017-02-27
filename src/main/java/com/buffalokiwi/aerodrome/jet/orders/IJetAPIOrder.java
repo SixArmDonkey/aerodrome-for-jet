@@ -14,18 +14,15 @@ package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.IJetAPI;
 import com.buffalokiwi.aerodrome.jet.IJetAPIResponse;
-import com.buffalokiwi.aerodrome.jet.JetConfig;
 import com.buffalokiwi.aerodrome.jet.JetException;
-import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.api.APIException;
-import com.buffalokiwi.api.IAPIHttpClient;
 import java.util.List;
 
 /**
  *
  * @author john
  */
-public interface IJetAPIOrder extends IJetAPI
+public interface IJetAPIOrder extends IJetAPI, IJetOrder
 {
   /**
    * Poll Jet for some orders by status. 

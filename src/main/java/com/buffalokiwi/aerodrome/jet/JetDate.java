@@ -62,10 +62,13 @@ public class JetDate implements IJetDate
    * @param value Jet value 
    * @return date or null
    */
-  public static JetDate fromJetValueOrNull( final String value )
+  public static JetDate fromJetValueOrNull( String value )
   {
     if ( value == null || value.isEmpty())
       return null;
+    
+    if ( value.endsWith( "Z" ))
+      value = value.substring( 0, value.length() - 1 );
     
     try {
       return new JetDate( new SimpleDateFormat( 

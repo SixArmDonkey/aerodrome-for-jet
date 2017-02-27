@@ -16,10 +16,13 @@ package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.AddressRec;
 import com.buffalokiwi.aerodrome.jet.IJetDate;
+import com.buffalokiwi.aerodrome.jet.ISO8601Date;
+import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.ShippingCarrier;
 import com.buffalokiwi.aerodrome.jet.Utils;
+import com.buffalokiwi.aerodrome.jet.products.ProductDate;
 import com.buffalokiwi.utils.Money;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -133,6 +136,11 @@ public class ReturnRec implements Jsonable
    * This is included if status is inprogress or completed.
    */
   private final List<ReturnItemRec> items;
+  
+  /**
+   * The date the return was compelted 
+   */
+  private final IJetDate completeDate;
 
   
   /**
@@ -158,6 +166,7 @@ public class ReturnRec implements Jsonable
     //private final List<ReturnMerchantSkuRec> returnMerchantSkus = new ArrayList<>();
     private final List<ReturnItemRec> items = new ArrayList<>();
     private ChargeFeedback feedback = ChargeFeedback.NONE;
+    private IJetDate completeDate = null;
 
     
     /**
@@ -340,6 +349,19 @@ public class ReturnRec implements Jsonable
       this.returnDate = returnDate;
       return this;
     }
+    
+    
+    /**
+     * Sets the date that the return was completed 
+     * @param completeDate date 
+     * @return this 
+     */
+    public Builder setCompleteDate( final IJetDate completeDate )
+    {
+      this.completeDate = completeDate;
+      return this;
+    }
+    
 
     /**
      * Current status of the return.
@@ -460,7 +482,9 @@ public class ReturnRec implements Jsonable
       .setStatus( ReturnStatus.fromText( json.getString( "return_status", "" )))
       .setCarrier( ShippingCarrier.fromText( json.getString( "shipping_carrier", "" )))
       .setTrackingNumber( json.getString( "tracking_number", "" ))
-      .setReturnLocations( AddressRec.fromJsonArray( json.getJsonArray( "return_location" )));
+      .setReturnLocations( AddressRec.fromJsonArray( json.getJsonArray( "return_location" )))
+      .setFeedback( ChargeFeedback.fromText( json.getString( "return_charge_feedback", "" )))
+      .setCompleteDate( JetDate.fromJetValueOrNull( json.getString( "completed_date", "" )));
     
     
     final List<ReturnMerchantSkuRec> skus = ReturnMerchantSkuRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" ));
@@ -470,7 +494,7 @@ public class ReturnRec implements Jsonable
     //  For any other status, it's just "items"
     
     //if ( b.status == ReturnStatus.CREATED )
-    //  b.setReturnItems( ReturnItemRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )));
+    //  b.setReturIntems( ReturnItemRec.fromJsonArray( json.getJsonArray( "return_merchant_SKUs" )));
     //else 
     
     
@@ -542,6 +566,7 @@ public class ReturnRec implements Jsonable
     this.items = Collections.unmodifiableList( b.items );
     this.id = b.id;
     this.feedback = b.feedback;
+    this.completeDate = b.completeDate;
   }
   
   
@@ -568,8 +593,14 @@ public class ReturnRec implements Jsonable
     b.items.addAll( this.items );
     b.id = this.id;
     b.feedback = this.feedback;
-    
+    b.completeDate = this.completeDate;
     return b;
+  }
+  
+  
+  public IJetDate getCompleteDate()
+  {
+    return completeDate;
   }
   
   
