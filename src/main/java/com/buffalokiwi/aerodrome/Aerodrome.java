@@ -68,6 +68,7 @@ import com.buffalokiwi.aerodrome.jet.orders.IJetReturn;
 import com.buffalokiwi.aerodrome.jet.orders.JetAPIReturn;
 import com.buffalokiwi.aerodrome.jet.orders.OrderItemRec;
 import com.buffalokiwi.aerodrome.jet.orders.RefundFeedback;
+import com.buffalokiwi.aerodrome.jet.orders.RefundReason;
 import com.buffalokiwi.aerodrome.jet.orders.ReturnItemRec;
 import com.buffalokiwi.aerodrome.jet.orders.ReturnMerchantSkuRec;
 import com.buffalokiwi.aerodrome.jet.orders.ReturnRec;
@@ -206,7 +207,7 @@ public class Aerodrome
       {
         refundItems.add( 
          b.setNotes( "Some notes about the item" )
-         .setRefundReason( ReturnReason.DAMAGED_ITEM )
+         .setRefundReason( RefundReason.ACCIDENTAL_ORDER )
          .build());
       }      
 

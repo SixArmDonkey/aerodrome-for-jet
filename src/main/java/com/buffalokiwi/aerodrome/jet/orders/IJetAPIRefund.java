@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author john
  */
-public interface IJetAPIRefund extends IJetAPIReturn
+public interface IJetAPIRefund extends IJetAPIReturn, IJetRefund
 {
 
   /**

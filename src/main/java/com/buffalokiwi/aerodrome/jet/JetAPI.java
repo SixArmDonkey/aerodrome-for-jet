@@ -551,16 +551,15 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     try {      
       if ( !authLock.isHeldByCurrentThread() && authLock.tryLock( 1000L, TimeUnit.MILLISECONDS ) && !isReauth.get())
       {
-        APILog.debug( LOG, "Thread " + Thread.currentThread().getName() + " obtained the lock" );
+        APILog.debug( LOG, "Thread " + Thread.currentThread().getName() + " obtained the authentication lock" );
         try {
           if ( !config.isAuthenticated())
           {
             performReauth( hr );
           }
-
         } finally {
           try {
-            APILog.debug( LOG, "Thread " + Thread.currentThread().getName() + " has unlocked" );
+            APILog.debug( LOG, "Thread " + Thread.currentThread().getName() + " has released the authentication lock" );
             authLock.unlock();            
           } catch( Exception e ) {
             APILog.debug( LOG, e, "Thread " + Thread.currentThread().getName() + " Caused an exception while trying to release it's lock" );
@@ -569,10 +568,13 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
       } 
       else 
       {
+        if ( !authLock.isHeldByCurrentThread())
+          APILog.debug(  LOG, "Thread " + Thread.currentThread().getName() + " is waiting for authentication" );
+        
         int ct = 0;
         while( !authLock.isHeldByCurrentThread() && !config.isAuthenticated() && !isReauth.get())
         {
-          Thread.sleep( 100L );          
+          Thread.sleep( 1000L );          
         }
 
         hr.setHeader( "Authorization", config.getAuthorizationHeaderValue());

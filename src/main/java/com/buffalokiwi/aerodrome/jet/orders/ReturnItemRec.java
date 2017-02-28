@@ -298,10 +298,10 @@ public class ReturnItemRec implements Jsonable
      */
     public ReturnItemRec build()
     {
-      if ( this.amount == null )
+      if ( this.getAmount() == null )
         this.amount = new RefundAmountRec();
       
-      if ( this.requestedRefundAmount == null )
+      if ( this.getRequestedRefundAmount() == null )
         this.requestedRefundAmount = new RefundAmountRec();
       
       return new ReturnItemRec( this );
@@ -345,6 +345,110 @@ public class ReturnItemRec implements Jsonable
       Utils.checkNull( requestedRefundAmount, "requestedRefundAmount" );
       this.requestedRefundAmount = requestedRefundAmount;
       return this;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId()
+    {
+      return id;
+    }
+
+    /**
+     * @return the orderItemId
+     */
+    public String getOrderItemId()
+    {
+      return orderItemId;
+    }
+
+    /**
+     * @return the altOrderItemId
+     */
+    public String getAltOrderItemId()
+    {
+      return altOrderItemId;
+    }
+
+    /**
+     * @return the qtyReturned
+     */
+    public int getQtyReturned()
+    {
+      return qtyReturned;
+    }
+
+    /**
+     * @return the totalQtyReturned
+     */
+    public int getTotalQtyReturned()
+    {
+      return totalQtyReturned;
+    }
+
+    /**
+     * @return the orderReturnRefundQty
+     */
+    public int getOrderReturnRefundQty()
+    {
+      return orderReturnRefundQty;
+    }
+
+    /**
+     * @return the feedback
+     */
+    public RefundFeedback getFeedback()
+    {
+      return feedback;
+    }
+
+    /**
+     * @return the notes
+     */
+    public String getNotes()
+    {
+      return notes;
+    }
+
+    /**
+     * @return the amount
+     */
+    public RefundAmountRec getAmount()
+    {
+      return amount;
+    }
+
+    /**
+     * @return the merchantSku
+     */
+    public String getMerchantSku()
+    {
+      return merchantSku;
+    }
+
+    /**
+     * @return the merchantSkuTitle
+     */
+    public String getMerchantSkuTitle()
+    {
+      return merchantSkuTitle;
+    }
+
+    /**
+     * @return the returnReason
+     */
+    public ReturnReason getReturnReason()
+    {
+      return returnReason;
+    }
+
+    /**
+     * @return the requestedRefundAmount
+     */
+    public RefundAmountRec getRequestedRefundAmount()
+    {
+      return requestedRefundAmount;
     }
   } //..Builder
   
@@ -438,27 +542,27 @@ public class ReturnItemRec implements Jsonable
    */
   protected ReturnItemRec( final Builder b )
   {
-    if ( b.amount == null )
+    if ( b.getAmount() == null )
       this.amount = new RefundAmountRec();
     else
-      this.amount = b.amount;            
+      this.amount = b.getAmount();            
     
-    if ( b.requestedRefundAmount == null )
+    if ( b.getRequestedRefundAmount() == null )
       this.requestedRefundAmount = new RefundAmountRec();
     else
-      this.requestedRefundAmount = b.requestedRefundAmount;
+      this.requestedRefundAmount = b.getRequestedRefundAmount();
     
-    this.orderItemId = b.orderItemId;
-    this.altOrderItemId = b.altOrderItemId;
-    this.qtyReturned = b.qtyReturned;
-    this.orderReturnRefundQty = b.orderReturnRefundQty;
-    this.feedback = b.feedback;
-    this.notes = b.notes;
-    this.merchantSku = b.merchantSku;
-    this.merchantSkuTitle = b.merchantSkuTitle;
-    this.returnReason = b.returnReason;
-    this.totalQtyReturned = b.totalQtyReturned;
-    this.id = b.id;
+    this.orderItemId = b.getOrderItemId();
+    this.altOrderItemId = b.getAltOrderItemId();
+    this.qtyReturned = b.getQtyReturned();
+    this.orderReturnRefundQty = b.getOrderReturnRefundQty();
+    this.feedback = b.getFeedback();
+    this.notes = b.getNotes();
+    this.merchantSku = b.getMerchantSku();
+    this.merchantSkuTitle = b.getMerchantSkuTitle();
+    this.returnReason = b.getReturnReason();
+    this.totalQtyReturned = b.getTotalQtyReturned();
+    this.id = b.getId();
   }
   
   

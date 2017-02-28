@@ -14,11 +14,9 @@ package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
-import com.buffalokiwi.aerodrome.jet.orders.ItemPriceRec;
-import com.buffalokiwi.aerodrome.jet.orders.OrderItemRec;
-import com.buffalokiwi.aerodrome.jet.orders.OrderRec;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -36,6 +34,11 @@ public class RefundRec implements Jsonable
    */
   public static class Builder
   {
+    /**
+     * Some non-jet id 
+     */
+    private int id = 0;
+    
     /**
      * Jet's human readable return authorization number that may have a small 
      * chance of collision overtime.
@@ -68,11 +71,32 @@ public class RefundRec implements Jsonable
      */
     private String altOrderId = "";
     
+    
+    private String refMerchantOrderId = "";
+    
     /**
      * Items refunded in the order 
      */
     private List<RefundItemRec> items = new ArrayList<>();    
+    
+    
+    private Date createdDate = null;
 
+    private RefundStatus rStatus = RefundStatus.NONE;
+    
+    
+    public Builder setRefundStatus( final RefundStatus status )
+    {
+      Utils.checkNull( status, "status" );
+      this.rStatus = status;
+      return this;
+    }
+    
+    
+    public RefundStatus getRefundStatus()
+    {
+      return rStatus;
+    }
     
     /**
      * Jet's human readable return authorization number that may have a small 
@@ -84,6 +108,13 @@ public class RefundRec implements Jsonable
     {
       Utils.checkNull( refundAuthId, "refundAuthId" );
       this.refundAuthId = refundAuthId;
+      return this;
+    }
+    
+    
+    public Builder setCreatedDate( final Date created )
+    {
+      this.createdDate = created;      
       return this;
     }
 
@@ -110,6 +141,29 @@ public class RefundRec implements Jsonable
     {
       Utils.checkNull( status, "status" );
       this.status = status;
+      return this;
+    }
+    
+    
+    public Builder setRefMerchantOrderId( final String id )
+    {
+      Utils.checkNull( id, "id" );
+      this.refMerchantOrderId = id;
+      return this;
+    }
+    
+    
+    /**
+     * Sets some non jet id  
+     * @param id id
+     * @return this
+     */
+    public Builder setId( final int id )
+    {
+      if ( id < 0 )
+        throw new IllegalArgumentException( "id can't be less than zero" );
+      
+      this.id = id;
       return this;
     }
     
@@ -168,6 +222,105 @@ public class RefundRec implements Jsonable
       
       return this;
     }
+
+    
+    /**
+     * This might return null
+     * @return 
+     */
+    public Date getCreatedDate()
+    {
+      return createdDate;
+    }
+
+
+    /**
+     * Jet's human readable return authorization number that may have a small 
+     * chance of collision overtime.
+     * @return the refundAuthId
+     */
+    public String getRefundAuthId()
+    {
+      return refundAuthId;
+    }
+
+
+    public String getRefMerchantOrderId()
+    {
+      return refMerchantOrderId;
+    }
+
+
+    /**
+     * Retrieve some non jet id 
+     * @return id 
+     */
+    public int getId()
+    {
+      return id;
+    }
+
+
+    /**
+     * The refund ID in the merchant's system associated with this refund.
+     * @return the altRefundId
+     */
+    public String getAltRefundId()
+    {
+      return altRefundId;
+    }
+
+
+    /**
+     * Jet's return message for whether the refund was accepted
+     * @return the status
+     */
+    public RefundAcceptedStatus getStatus()
+    {
+      return status;
+    }
+
+
+    /**
+     * Jet's unique ID for a given merchant order.
+     * @return the merchantOrderId
+     */
+    public String getMerchantOrderId()
+    {
+      return merchantOrderId;
+    }
+
+
+    /**
+     * Jet's human readable merchant order ID that may have a small chance of
+     * collision overtime.
+     * @return the referenceOrderId
+     */
+    public String getReferenceOrderId()
+    {
+      return referenceOrderId;
+    }
+
+
+    /**
+     * Optional merchant supplied order ID.
+     * @return the altOrderId
+     */
+    public String getAltOrderId()
+    {
+      return altOrderId;
+    }
+
+
+    /**
+     * Items in the refund 
+     * @return the items
+     */
+    public List<RefundItemRec> getItems()
+    {
+      return items;
+    }
+
     
     
     /**
@@ -205,7 +358,14 @@ public class RefundRec implements Jsonable
   }
   
   
+  private final RefundStatus rStatus;
   
+  /**
+   * Some non-jet id 
+   */
+  private final int id;
+  
+  private final String refMerchantOrderId;
   
   /**
    * Jet's human readable return authorization number that may have a small 
@@ -244,6 +404,10 @@ public class RefundRec implements Jsonable
    */
   private final List<RefundItemRec> items;
   
+  /**
+   * Created date
+   */
+  private final Date created;
   
   
   /**
@@ -258,10 +422,12 @@ public class RefundRec implements Jsonable
     return new Builder()
       .setRefundAuthId( json.getString( "refund_authorization_id", "" ))
       .setAltOrderId( json.getString( "alt_refund_id", "" ))
-      .setStatus(  RefundAcceptedStatus.fromText( json.getString( "refund_status", "" )))
+      .setStatus( RefundAcceptedStatus.fromText( json.getString( "refund_status", "" )))
+      .setRefundStatus( RefundStatus.fromText( json.getString( "refund_status", "" )))
       .setMerchantOrderId( json.getString( "merchant_order_id", "" ))
       .setReferenceOrderId( json.getString( "reference_order_id" ))
       .setAltOrderId( json.getString( "alt_order_id", "" ))
+      .setRefMerchantOrderId( json.getString( "reference_merchant_order_id", "" ))
       .setItems( jsonToItems( json.getJsonArray( "items" )))
       .build();      
   }
@@ -303,6 +469,44 @@ public class RefundRec implements Jsonable
     this.referenceOrderId = b.referenceOrderId;
     this.altOrderId = b.altOrderId;
     this.items = Collections.unmodifiableList( b.items );
+    this.id = b.id;
+    this.refMerchantOrderId = b.refMerchantOrderId;
+    this.created = b.createdDate;
+    this.rStatus = b.rStatus;
+  }
+  
+  
+  public Builder toBuilder()
+  {
+    final Builder b = new Builder();
+    b.refundAuthId = this.refundAuthId;
+    b.altRefundId = this.altRefundId;
+    b.status = this.status;
+    b.merchantOrderId = this.merchantOrderId;
+    b.referenceOrderId = this.referenceOrderId;
+    b.altOrderId = this.altOrderId;
+    b.items.addAll( this.items );
+    b.id = this.id;
+    b.refMerchantOrderId = this.refMerchantOrderId;
+    b.createdDate = this.created;
+    b.rStatus = this.rStatus;
+    return b;
+  }
+  
+  
+  public RefundStatus getRefundStatus()
+  {
+    return rStatus;
+  }
+  
+  
+  /**
+   * This might return null
+   * @return 
+   */
+  public Date getCreatedDate()
+  {
+    return created;
   }
   
   
@@ -314,6 +518,22 @@ public class RefundRec implements Jsonable
   public String getRefundAuthId()
   {
     return refundAuthId;
+  }
+  
+  
+  public String getRefMerchantOrderId()
+  {
+    return refMerchantOrderId;
+  }
+  
+  
+  /**
+   * Retrieve some non jet id 
+   * @return id 
+   */
+  public int getId()
+  {
+    return id;
   }
 
   
