@@ -1205,6 +1205,18 @@ public class OrderRec implements Jsonable
   {
     return orderItems;
   }
+  
+  
+  public List<AckRequestItemRec> getOrderAckItems()
+  {
+    final List<AckRequestItemRec> out = new ArrayList<>();
+    for ( final OrderItemRec item : orderItems )
+    {
+      out.add( AckRequestItemRec.fromOrderItem( item, AckRequestItemRec.Status.FULFILLABLE ));
+    }
+    
+    return out;
+  }
 //////////////////////////
   
   /**
@@ -1342,6 +1354,32 @@ public class OrderRec implements Jsonable
     
     return itemsToRefund;    
   }
+  
+  
+  public String getShippingToText()
+  {
+    final StringBuilder s = new StringBuilder()
+      .append( getShippingTo().getName())
+      .append( "\n" )
+      .append( getShippingTo().getPhone())
+      .append( "\n" )
+      .append( getShippingToAddress().getAddress1())
+      .append( "\n" );
+      if ( !getShippingToAddress().getAddress2().isEmpty())
+      {
+        s.append( getShippingToAddress().getAddress2())
+        .append( "\n" );
+      }
+      
+      return s.append( getShippingToAddress().getCity())
+      .append( ", " )
+      .append( getShippingToAddress().getState())
+      .append( ' ' )
+      .append( getShippingToAddress().getZip())
+      .append( "\n" )
+      .toString();
+  }
+  
   
   
   /**
