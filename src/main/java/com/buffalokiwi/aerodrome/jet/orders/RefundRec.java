@@ -618,4 +618,11 @@ public class RefundRec implements Jsonable
     
     return b.build();
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return refundAuthId + " (" + status.getText() + ")";
+  }
 }

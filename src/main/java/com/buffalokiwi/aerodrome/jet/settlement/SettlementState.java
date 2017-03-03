@@ -92,4 +92,11 @@ public enum SettlementState
   {
     return text;
   }  
+  
+  
+  @Override
+  public String toString()
+  {
+    return text;
+  }
 }

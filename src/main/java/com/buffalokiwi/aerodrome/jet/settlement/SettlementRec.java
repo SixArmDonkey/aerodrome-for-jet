@@ -17,7 +17,6 @@ import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.utils.Money;
-import java.math.BigDecimal;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -41,7 +40,7 @@ public class SettlementRec implements Jsonable
      * The unique ID for this settlement report. This ID should be referenced 
      * when creating a dispute with Jet.com
      */
-    private int reportId = 0;
+    private String reportId = "";
 
     /**
      * The status of the current settlement
@@ -107,9 +106,9 @@ public class SettlementRec implements Jsonable
      * @param reportId the reportId to set
      * @return this
      */
-    public Builder setReportId( final int reportId )
+    public Builder setReportId( final String reportId )
     {
-      Utils.checkIntGTEZ( reportId, "reportId" );
+      Utils.checkNull( reportId, "reportId" );
       this.reportId = reportId;
       return this;
     }
@@ -272,7 +271,7 @@ public class SettlementRec implements Jsonable
    * The unique ID for this settlement report. This ID should be referenced 
    * when creating a dispute with Jet.com
    */
-  private final int reportId;
+  private final String reportId;
   
   /**
    * The status of the current settlement
@@ -344,7 +343,7 @@ public class SettlementRec implements Jsonable
       throw new IllegalArgumentException( "json cannot be null" );
     
     final Builder b = new Builder()
-      .setReportId( json.getInt(  "settlement_report_id", 0 ))
+      .setReportId( json.getString(  "settlement_report_id", "" ))
       .setState( SettlementState.fromText( 
         json.getString(  "settlement_state", "" )))
       .setCurrency( json.getString( "currency", "" ))
@@ -395,7 +394,7 @@ public class SettlementRec implements Jsonable
    * The unique ID for this settlement report. This ID should be referenced when creating a dispute with Jet.com
    * @return the reportId
    */
-  public int getReportId()
+  public String getReportId()
   {
     return reportId;
   }

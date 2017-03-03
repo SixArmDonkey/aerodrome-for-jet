@@ -183,4 +183,11 @@ public class JetDate implements IJetDate
       return new Date( 0 );
     }    
   }
+  
+  
+  @Override
+  public String toString()
+  {
+    return getDateString();
+  }
 }
