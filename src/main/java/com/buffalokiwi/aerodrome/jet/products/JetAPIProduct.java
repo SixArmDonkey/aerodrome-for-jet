@@ -55,6 +55,15 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
     super( client, conf );
   }
 
+  
+  @Override
+  public boolean addProductSku( final ProductRec product ) throws APIException, JetException, ValidateException
+  {
+    product.validate();
+    sendPutProductSku( product );  
+    return true;
+  }
+  
 
   /**
    * Add a product to the Jet catalog

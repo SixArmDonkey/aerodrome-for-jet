@@ -25,6 +25,17 @@ import java.util.List;
 public interface IJetAPIProduct extends IJetAPI {
 
   /**
+   * This will only use the sendPutProductSku() method.
+   * Use addProduct to save everything in 1 call.
+   * @param product
+   * @return
+   * @throws APIException
+   * @throws JetException
+   * @throws ValidateException 
+   */
+  public boolean addProductSku( final ProductRec product ) throws APIException, JetException, ValidateException;
+  
+  /**
    * Add a product to the Jet catalog
    * @param product Product to add
    * @return Success
