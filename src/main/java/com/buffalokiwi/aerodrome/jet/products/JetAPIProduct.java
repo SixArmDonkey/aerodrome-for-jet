@@ -83,7 +83,7 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
     sendPutProductSku( product );
     
     //..Add an image
-    sendPutProductImage( product );
+   // sendPutProductImage( product );
 
     if ( !product.getPrice().isEmpty())
     {
@@ -138,6 +138,7 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
    * @return success
    * @throws APIException
    * @throws JetException
+   * @deprecated Removed from Jet 
    */
   @Override
   public IJetAPIResponse sendPutProductImage( final ProductRec product )
@@ -862,6 +863,7 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
    * @return success
    * @throws APIException
    * @throws JetException
+   * @deprecated Removed from Jet 
    */
   @Override
   public boolean setProductImages(final ProductRec product) throws APIException, JetException
