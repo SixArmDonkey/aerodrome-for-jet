@@ -65,7 +65,7 @@ public class APIHttpClient implements IAPIHttpClient
     /**
      * Default socket read timeout 
      */
-    public static final long DEFAULT_READ_TIMEOUT = 5000L;
+    public static final long DEFAULT_READ_TIMEOUT = 10000L;
 
     /**
      * Default accept header value 
@@ -393,7 +393,7 @@ public class APIHttpClient implements IAPIHttpClient
     this.allowgzip = allowgzip;
     this.allowUntrustedSSL = allowUntrustedSSL;
     this.userAgent = userAgent;
-    this.crawlDelay = crawlDelay;
+    this.crawlDelay = crawlDelay;    
   }
 
 
@@ -572,7 +572,7 @@ public class APIHttpClient implements IAPIHttpClient
       .setCookieSpec( CookieSpecs.DEFAULT )
       .setConnectTimeout( 3000 )
       .setConnectionRequestTimeout( 3000 )
-      .setSocketTimeout( 3000 )
+      .setSocketTimeout((int)readTimeout )
       .build();
   }
   

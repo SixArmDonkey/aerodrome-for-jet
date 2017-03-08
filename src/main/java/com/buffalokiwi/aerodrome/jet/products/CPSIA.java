@@ -48,10 +48,10 @@ public enum CPSIA
    */
   public static CPSIA fromString( final String text )
     throws IllegalArgumentException
-  {
+  {    
     for ( final CPSIA c : values )
     {
-      if ( c.getText().equalsIgnoreCase( text ))
+      if ( c.getText().equalsIgnoreCase( text.replace( "\"", "" ))) //..This is my screwup... crapola..
         return c;
     }
     

@@ -374,7 +374,7 @@ public class RefundItemRec extends ReturnItemRec
         b.add( entry.getKey(), entry.getValue());
     }
     
-    b.add(  "refund_reason", refundReason.getText());
+    b.add( "refund_reason", refundReason.getText());
     
     return b.build();
   }  

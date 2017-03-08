@@ -14,30 +14,24 @@
 
 package com.buffalokiwi.aerodrome.jet.products;
 
-import com.buffalokiwi.aerodrome.jet.ISO8601Date;
 import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.ProductTaxCode;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
-import com.buffalokiwi.api.APILog;
 import com.buffalokiwi.utils.Money;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
 
 
 /**
@@ -1890,24 +1884,31 @@ public class ProductRec implements Jsonable
 
     
     
-    /**
-     * Set a bullet
-     * @param bullet the bullet
-     */
-    public Builder setBullet( String bullet ) {
+   /**
+    * Merchant SKU feature description
+    * Max length: 500 characters
+    * Maximum of 5 elements
+    * @param bullet the bullets to set
+    */
+    public Builder setBullet( final String bullet ) {
       if ( bullet == null || bullet.isEmpty())
         return this;
       
       this.bullets.add( bullet );
       return this;
     }
+    
+    
 
 
-    /**
-     * Add a list of shipping exception nodes
-     * @param nodes nodes to add
-     */
-    public Builder setBullets( List<String> bullets )
+   /**
+    * Merchant SKU feature description
+    * Max length: 500 characters
+    * Maximum of 5 elements
+    * @param bullets the bullets to add
+    * Set to null to clear the list.
+    */
+    public Builder setBullets( final List<String> bullets )
     {
       if ( bullets == null )
         this.bullets.clear();
@@ -1915,7 +1916,6 @@ public class ProductRec implements Jsonable
         this.bullets.addAll( bullets );
       return this;
     }    
-    
   } //..Builder
   
   //////////////////////////////////////////////////////////////////////////////
@@ -2793,29 +2793,6 @@ public class ProductRec implements Jsonable
   }
 
   /**
-   * Merchant SKU feature description
-   * Max length: 500 characters
-   * Maximum of 5 elements
-   * @param bullet the bullet to add
-   */
-  public void addBullet( String bullet ) {
-    if ( bullet == null || bullet.isEmpty() || bullet.length() > 500 )
-      throw new IllegalArgumentException( "bullet must be between 1-500 characters" );
-
-    this.bullets.add( bullet );
-  }
-
-  /**
-   * Merchant SKU feature description
-   * Max length: 500 characters
-   * Maximum of 5 elements
-   * @param bullets the bullets to set
-   */
-  public void addBullets( List<String> bullets ) {
-    this.bullets.addAll( bullets );
-  }
-
-  /**
    * For Price Per Unit calculations, the number of units included in
    * the merchant SKU. The unit of measure must be specified in order to
    * indicate what is being measured by the unit-count.
@@ -3503,10 +3480,10 @@ public class ProductRec implements Jsonable
     if ( a == null )
       return out;
     
-    for ( final JsonValue val : a )
+    for ( int i = 0; i < a.size(); i++ )
     {
       try {
-        out.add( ProductSubStatus.fromValue( val.toString()));
+        out.add( ProductSubStatus.fromValue( a.getString( i, "" )));
       } catch( Exception e ) {
         //..do nothing
       }
@@ -3550,9 +3527,9 @@ public class ProductRec implements Jsonable
     if ( a == null )
       return out;
     
-    for ( final JsonValue v : a )
-    {
-      out.add( v.toString());
+    for ( int i = 0; i < a.size(); i++ )
+    {     
+      out.add( a.getString( i, "" ));
     }
     
     return out;
@@ -3571,9 +3548,9 @@ public class ProductRec implements Jsonable
     if ( a == null )    
       return out;
     
-    for ( final JsonValue v : a )
+    for ( int i = 0; i < a.size(); i++ )
     {
-      out.add( CPSIA.fromString( v.toString()));
+      out.add( CPSIA.fromString( a.getString(  i, "" )));
     }
     
     return out;

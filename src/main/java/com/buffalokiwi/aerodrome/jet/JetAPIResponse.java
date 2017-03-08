@@ -209,9 +209,9 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
       final JsonArray errors = res.getJsonArray( "errors" );
       ArrayList<String> messages = new ArrayList<>();
 
-      for ( final JsonValue error : errors )
+      for ( int i = 0; i < errors.size(); i++ )
       {
-        messages.add( error.toString());
+        messages.add( errors.getString( i, "" ));
       }
 
       throw new JetException( messages, null, apiRes );

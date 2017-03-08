@@ -85,22 +85,13 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
     //..Add an image
    // sendPutProductImage( product );
 
-    if ( !product.getPrice().isEmpty())
-    {
-      //..Add the price
-      sendPutProductPrice( product );
-    }
+    //..Add the price
+    sendPutProductPrice( product );
 
-    if ( !product.getfNodeInventory().isEmpty())
-    {
-      //..Add some inventory
-      sendPutProductInventory( product );
-    }
+    //..Add some inventory
+    sendPutProductInventory( product );
     
-    if ( !product.getShippingExceptionNodes().isEmpty())
-    {
-      sendPutProductShippingExceptions( product.getMerchantSku(), product.getShippingExceptionNodes());
-    }
+    sendPutProductShippingExceptions( product.getMerchantSku(), product.getShippingExceptionNodes());
     
     //..pointless.
     return true;

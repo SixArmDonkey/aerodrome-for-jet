@@ -14,6 +14,7 @@
 
 package com.buffalokiwi.aerodrome.jet;
 
+import com.buffalokiwi.api.APILog;
 import com.buffalokiwi.utils.Money;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,6 +28,8 @@ import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Some helper functions
@@ -34,6 +37,8 @@ import javax.json.JsonValue;
  */
 public class Utils
 {
+  private final static Log LOG = LogFactory.getLog( Utils.class );
+  
   /**
    * Round something with bankers rounding
    * @param d float to round
@@ -155,7 +160,14 @@ public class Utils
     
     for ( int i = 0; i < arr.size(); i++ )
     {      
-      final Integer j = arr.getInt( i );
+      final Integer j;
+      try {
+        j = arr.getInt( i );
+      } catch( ClassCastException e ) {
+        APILog.error( LOG, e, arr.get( i ));
+        continue;
+      }
+      
       if ( j == null )
       {
         throw new ClassCastException( "Element at position " 
@@ -189,7 +201,14 @@ public class Utils
     
     for ( int i = 0; i < arr.size(); i++ )
     {
-      final String s = arr.getString( i );
+      final String s;
+      try {
+        s = arr.getString( i );
+      } catch( ClassCastException e ) {
+        APILog.error( LOG, e, arr.get( i ));
+        continue;
+      }
+      
       if ( s == null )
       {
         throw new ClassCastException( "Element at position " 
