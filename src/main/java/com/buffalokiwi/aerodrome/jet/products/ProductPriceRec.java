@@ -13,6 +13,8 @@
  */
 package com.buffalokiwi.aerodrome.jet.products;
 
+import com.buffalokiwi.aerodrome.jet.IJetDate;
+import com.buffalokiwi.aerodrome.jet.ISO8601Date;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.utils.Money;
@@ -38,12 +40,6 @@ import javax.json.JsonObjectBuilder;
 public class ProductPriceRec implements Jsonable
 {
   /**
-   * A format for converting jet dates to a date
-   */
-  private final SimpleDateFormat FORMAT = new SimpleDateFormat( 
-    "yyyy-MM-dd'T'HH:mm:ssX", Locale.ENGLISH );
-  
-  /**
    * Fulfillment nodes 
    */
   private final List<FNodePriceRec> fNodes;
@@ -56,7 +52,7 @@ public class ProductPriceRec implements Jsonable
   /**
    * Last update 
    */
-  private final Date lastUpdate;
+  private final IJetDate lastUpdate;
 
   
   /**
@@ -66,7 +62,6 @@ public class ProductPriceRec implements Jsonable
    * @throws ParseException 
    */
   public static ProductPriceRec fromJSON( final JsonObject json )
-    throws ParseException 
   {
     final JsonArray a = json.getJsonArray( "fulfillment_nodes" );
     final List<FNodePriceRec> nodes = new ArrayList<>();
@@ -81,7 +76,7 @@ public class ProductPriceRec implements Jsonable
     
     return new ProductPriceRec(
       Utils.jsonNumberToMoney( json.getJsonNumber( "price" )),
-      json.getString( "price_last_update", "" ),
+      ISO8601Date.fromJetValueOrNull( json.getString( "price_last_update", "" )),
       nodes
     );
   }
@@ -100,18 +95,15 @@ public class ProductPriceRec implements Jsonable
    * @param fNodes The price a retailer would like to set for this SKU sold at a fulfillment node
    * @throws ParseException if the date is invalid 
    */
-  public ProductPriceRec( final Money price, final String lastUpdate, 
-    final List<FNodePriceRec> fNodes ) throws ParseException 
+  public ProductPriceRec( final Money price, final IJetDate lastUpdate, 
+    final List<FNodePriceRec> fNodes ) 
   {
     if ( price == null || price.lessThanZero())
       throw new IllegalArgumentException( "price cannot be null or less than zero" );
     else if ( fNodes == null )
       throw new IllegalArgumentException( "fNodes cannot be null" );
     
-    if ( lastUpdate == null || lastUpdate.isEmpty())
-      this.lastUpdate = new Date();
-    else
-      this.lastUpdate = FORMAT.parse( lastUpdate );
+    this.lastUpdate = lastUpdate;
     
     this.price = price;
     this.fNodes = Collections.unmodifiableList( new ArrayList<>( fNodes ));
@@ -120,9 +112,10 @@ public class ProductPriceRec implements Jsonable
   
   /**
    * Retrieve the timestamp for when this product's price was last updated
+   * This can be null
    * @return last update
    */
-  public Date getLastUpdate()
+  public IJetDate getLastUpdate()
   {
     return lastUpdate;
   }

@@ -79,7 +79,7 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
   {
     product.validate();
     
-    //..Add Sku
+    //..Add Sku    
     sendPutProductSku( product );
     
     //..Add an image
@@ -92,6 +92,8 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
     sendPutProductInventory( product );
     
     sendPutProductShippingExceptions( product.getMerchantSku(), product.getShippingExceptionNodes());
+    
+    sendPutReturnsException( product.getMerchantSku(), product.getAllReturnLocationIds());
     
     //..pointless.
     return true;
@@ -422,12 +424,7 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
   public ProductPriceRec getProductPrice( final String sku )
     throws APIException, JetException
   {
-    try {
-      return ProductPriceRec.fromJSON( sendGetProductPrice( sku ).getJsonObject());
-    } catch( ParseException e ) {
-      APILog.error( LOG, "Failed to parse Jet Fulfillment Node lastUpdate Date:", e.getMessage());
-      throw new JetException( "getProductPrice result was successful, but Fulfillment node had an invalid lastUpdate date", e );
-    }
+    return ProductPriceRec.fromJSON( sendGetProductPrice( sku ).getJsonObject());
   }
   
   

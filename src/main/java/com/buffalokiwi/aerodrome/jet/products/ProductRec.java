@@ -14,8 +14,8 @@
 
 package com.buffalokiwi.aerodrome.jet.products;
 
+import com.buffalokiwi.aerodrome.jet.IJetDate;
 import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
-import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.ProductTaxCode;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
@@ -24,8 +24,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -254,7 +257,7 @@ public class ProductRec implements Jsonable
      * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
      * Example: 1988-01-01T01:43:30.0000000-07:00
      */
-    private JetDate startSellingDate = new ProductDate();
+    private IJetDate startSellingDate = new ProductDate();
 
     /**
      * Manufacturer's suggested retail price or list price for the product.
@@ -392,17 +395,17 @@ public class ProductRec implements Jsonable
     /**
      * Sku last update
      */
-    private JetDate skuLastUpdate = null;
+    private IJetDate skuLastUpdate = null;
 
     /**
      * Inventory last update
      */
-    private JetDate inventoryLastUpdate = null;
+    private IJetDate inventoryLastUpdate = null;
 
     /**
      * Price last update
      */
-    private JetDate priceLastUpdate = null;
+    private IJetDate priceLastUpdate = null;
     
     /**
      * Product variations 
@@ -564,13 +567,13 @@ public class ProductRec implements Jsonable
      * Retrieve the last update time (only after product get response is received)
      * @return last update
      */
-    public JetDate getSkuLastUpdate()
+    public IJetDate getSkuLastUpdate()
     {
       return skuLastUpdate;
     }
     
     
-    public Builder setSkuLastUpdate( final JetDate date )
+    public Builder setSkuLastUpdate( final IJetDate date )
     {
       if ( date == null )
         return this;
@@ -583,13 +586,13 @@ public class ProductRec implements Jsonable
      * Retrieve the last inventory update time 
      * @return last update
      */
-    public JetDate getInventoryLastUpdate()
+    public IJetDate getInventoryLastUpdate()
     {
       return inventoryLastUpdate;
     }
     
     
-    public Builder setInvLastUpdate( final JetDate date )
+    public Builder setInvLastUpdate( final IJetDate date )
     {
       if ( date == null )
         return this;
@@ -603,13 +606,13 @@ public class ProductRec implements Jsonable
      * Retrieve the last price update time 
      * @return last update
      */
-    public JetDate getPriceLastUpdate()
+    public IJetDate getPriceLastUpdate()
     {
       return priceLastUpdate;
     }  
     
     
-    public Builder setPriceLastUpdate( final JetDate date )
+    public Builder setPriceLastUpdate( final IJetDate date )
     {
       if ( date == null )
         return this;
@@ -1430,7 +1433,7 @@ public class ProductRec implements Jsonable
      * Example: 1988-01-01T01:43:30.0000000-07:00
      * @param startSellingDate the startSellingDate to set
      */
-    public final Builder setStartSellingDate(JetDate startSellingDate) {
+    public final Builder setStartSellingDate(IJetDate startSellingDate) {
       this.startSellingDate = startSellingDate;
       return this;
     }
@@ -2131,7 +2134,7 @@ public class ProductRec implements Jsonable
    * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
    * Example: 1988-01-01T01:43:30.0000000-07:00
    */
-  private final JetDate startSellingDate;
+  private final IJetDate startSellingDate;
 
   /**
    * Manufacturer's suggested retail price or list price for the product.
@@ -2274,17 +2277,17 @@ public class ProductRec implements Jsonable
   /**
    * Sku last update
    */
-  private final JetDate skuLastUpdate;
+  private final IJetDate skuLastUpdate;
   
   /**
    * Inventory last update
    */
-  private final JetDate inventoryLastUpdate;
+  private final IJetDate inventoryLastUpdate;
   
   /**
    * Price last update
    */
-  private final JetDate priceLastUpdate;
+  private final IJetDate priceLastUpdate;
 
   
   /**
@@ -2526,7 +2529,7 @@ public class ProductRec implements Jsonable
    * Get the start selling date
    * @return start date
    */
-  public JetDate getStartSellingDate()
+  public IJetDate getStartSellingDate()
   {
     return startSellingDate;
   }
@@ -2556,7 +2559,7 @@ public class ProductRec implements Jsonable
    * Retrieve the last update time (only after product get response is received)
    * @return last update
    */
-  public JetDate getSkuLastUpdate()
+  public IJetDate getSkuLastUpdate()
   {
     return skuLastUpdate;
   }
@@ -2565,7 +2568,7 @@ public class ProductRec implements Jsonable
    * Retrieve the last inventory update time 
    * @return last update
    */
-  public JetDate getInventoryLastUpdate()
+  public IJetDate getInventoryLastUpdate()
   {
     return inventoryLastUpdate;
   }
@@ -2591,11 +2594,24 @@ public class ProductRec implements Jsonable
   }
   
   
+  public List<String> getAllReturnLocationIds()
+  {
+    final Set<String> out = new HashSet<>();
+    
+    for ( final ReturnsExceptionRec rec: returnsExceptions )
+    {
+      out.addAll( rec.getReturnLocationIds());
+    }
+    
+    return new ArrayList<>( out );
+  }
+  
+  
   /**
    * Retrieve the last price update time 
    * @return last update
    */
-  public JetDate getPriceLastUpdate()
+  public IJetDate getPriceLastUpdate()
   {
     return priceLastUpdate;
   }  
@@ -3877,6 +3893,8 @@ public class ProductRec implements Jsonable
     
     out.variations = this.variations;
     
+    out.returnsExceptions.addAll( this.returnsExceptions );
+    
     return out;
   }
   
@@ -3890,4 +3908,34 @@ public class ProductRec implements Jsonable
     return toBuilder().build();
   }
 
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 67 * hash + Objects.hashCode( this.merchantSku );
+    return hash;
+  }
+
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final ProductRec other = (ProductRec) obj;
+    if ( !Objects.equals( this.merchantSku, other.merchantSku ) ) {
+      return false;
+    }
+    return true;
+  }
+
+  
+  
+  
 }

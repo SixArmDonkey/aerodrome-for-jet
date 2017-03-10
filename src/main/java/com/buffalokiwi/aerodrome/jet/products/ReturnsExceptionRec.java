@@ -76,6 +76,15 @@ public class ReturnsExceptionRec
   }
   
   
+  public ReturnsExceptionRec( final List<String> returnLocationIds )
+  {
+    Utils.checkNull( returnLocationIds, "returnLocationIds" );
+    this.timeToReturn = 0;
+    this.returnShippingMethods = new ArrayList<>();
+    this.returnLocationIds = returnLocationIds;    
+  }
+  
+  
   /**
    * Create a new instance.
    * @param timeToReturn Time to return
