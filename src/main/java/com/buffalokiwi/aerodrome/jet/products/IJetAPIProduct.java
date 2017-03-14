@@ -170,7 +170,7 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
-  public ProductSalesDataRec getSkuSalesData( final String sku ) throws APIException, JetException;
+  public SkuSalesDataRec getSkuSalesData( final String sku ) throws APIException, JetException;
 
   /**
    * Retrieve product inventory by sku.

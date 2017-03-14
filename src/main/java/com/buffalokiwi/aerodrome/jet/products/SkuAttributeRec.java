@@ -74,6 +74,15 @@ public class SkuAttributeRec implements Jsonable
   }
   
 
+  public SkuAttributeRec()
+  {
+    id = 0;
+    val = "";
+    unit = "";
+    name = "";
+  }
+  
+  
   /**
    * Create a new SkuAttribute instance
    * @param id The node attribute ID number that you get from Jet provided

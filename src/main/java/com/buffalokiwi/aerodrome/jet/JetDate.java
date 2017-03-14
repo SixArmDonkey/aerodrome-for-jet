@@ -15,6 +15,7 @@
 package com.buffalokiwi.aerodrome.jet;
 
 import com.buffalokiwi.api.APILog;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -165,6 +166,19 @@ public class JetDate implements IJetDate
   {
     return javaDate;
   }
+  
+  
+  /**
+   * Convert this date into some sql representation.
+   * This effectively drops timezone information.
+   * @return timestamp
+   */
+  @Override
+  public Timestamp toSqlTimestamp()
+  {
+    return new Timestamp( javaDate.getTime());
+  }
+  
   
   
   /**

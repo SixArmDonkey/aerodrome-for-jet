@@ -15,6 +15,8 @@
 
 package com.buffalokiwi.aerodrome.jet.products;
 
+import com.buffalokiwi.aerodrome.jet.IJetDate;
+import com.buffalokiwi.aerodrome.jet.ISO8601Date;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.utils.Money;
 import java.text.DateFormat;
@@ -55,7 +57,7 @@ public class OfferRec
    * necessarily change if the best price does not change, even if the price 
    * is more up to date than this time.
    */
-  private final String lastUpdate;
+  private final IJetDate lastUpdate;
   
   /**
    * A date format
@@ -68,10 +70,8 @@ public class OfferRec
    * Create a new OfferRec instance from Jet Json.
    * @param json Json 
    * @return object  
-   * @throws ParseException if the date cant be turned into a date object 
    */
   public static OfferRec fromJSON( final JsonObject json )
-    throws ParseException 
   {
     Utils.checkNull( json, "json" );
     
@@ -79,7 +79,7 @@ public class OfferRec
       json.getString( "shipping_method", "" ),
       Utils.jsonNumberToMoney( json.getJsonNumber( "item_price")),
       Utils.jsonNumberToMoney( json.getJsonNumber( "shipping_price" )),
-      json.getString( "last_update", "" )
+      ISO8601Date.fromJetValueOrNull( json.getString( "last_update", "" ))
     );
   }
   
@@ -90,14 +90,13 @@ public class OfferRec
    * @param itemPrice item price 
    * @param shippingPrice ship price
    * @param lastUpdate last update 
-   * @throws ParseException if the date fails to format 
    */
   public OfferRec(
     final String shippingMethod,
     final Money itemPrice,
     final Money shippingPrice,
-    final String lastUpdate
-  ) throws ParseException
+    final IJetDate lastUpdate
+  ) 
   {
     if ( shippingMethod == null )
       this.shippingMethod = "";
@@ -152,9 +151,12 @@ public class OfferRec
    * The last time these prices were updated. The last_update time does not 
    * necessarily change if the best price does not change, even if the price 
    * is more up to date than this time.
+   * 
+   * This may return null.
+   * 
    * @return date
    */
-  public String getLastUpdate()
+  public IJetDate getLastUpdate()
   {
     return lastUpdate;
   }

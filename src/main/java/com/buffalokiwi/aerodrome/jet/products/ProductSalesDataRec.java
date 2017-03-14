@@ -45,6 +45,7 @@ import javax.json.JsonObject;
  * 
  * 
  * @author John Quinn
+ * @deprecated Use SkuSalesDataRec 
  */
 public class ProductSalesDataRec 
 {

@@ -809,18 +809,11 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
    * @throws JetException 
    */  
   @Override
-  public ProductSalesDataRec getSkuSalesData( final String sku )
+  public SkuSalesDataRec getSkuSalesData( final String sku )
     throws APIException, JetException
   {
-    try {
-      return ProductSalesDataRec.fromJSON( sku, 
-        sendGetSkuSalesData( sku ).getJsonObject());
-    } catch( ParseException e ) {
-      APILog.error( LOG, "Failed to parse Jet sales data lastUpdate Date:", 
-        e.getMessage());
-      throw new JetException( "getSkuSalesData result was successful, "
-        + "but Sales data had an invalid lastUpdate date", e );
-    }    
+    return SkuSalesDataRec.fromJSON( sku, 
+      sendGetSkuSalesData( sku ).getJsonObject());
   }
   
   

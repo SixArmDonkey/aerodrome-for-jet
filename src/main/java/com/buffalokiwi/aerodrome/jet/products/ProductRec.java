@@ -541,9 +541,7 @@ public class ProductRec implements Jsonable
     {
       return parentSku;
     }
-    
-    
-
+        
 
     /**
      * The unique ID for an individually selectable product for sale on Jet.com.
@@ -3572,6 +3570,19 @@ public class ProductRec implements Jsonable
     return out;
   }
   
+  
+  public SkuAttributeRec getAttributeBySlot( final int slot )
+  {
+    if ( slot < 0 || slot > attributesNodeSpecific.size() - 1 )
+      return new SkuAttributeRec();
+    
+    try {
+      return attributesNodeSpecific.get( slot );
+    } catch( IndexOutOfBoundsException e ) {
+      return new SkuAttributeRec();
+    }
+  }
+  
 
   
   private static List<SkuAttributeRec> loadAttrNodeSpecific( final JsonArray a )
@@ -3934,8 +3945,4 @@ public class ProductRec implements Jsonable
     }
     return true;
   }
-
-  
-  
-  
 }

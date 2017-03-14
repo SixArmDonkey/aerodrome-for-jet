@@ -14,6 +14,7 @@
 
 package com.buffalokiwi.aerodrome.jet;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -37,4 +38,12 @@ public interface IJetDate
    * @return date string
    */
   public String getDateString();  
+  
+  
+  /**
+   * Convert this date into some sql representation.
+   * This effectively drops timezone information.
+   * @return timestamp
+   */
+  public Timestamp toSqlTimestamp();
 }
