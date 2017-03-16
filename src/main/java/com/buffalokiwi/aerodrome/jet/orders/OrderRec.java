@@ -18,10 +18,13 @@ import com.buffalokiwi.aerodrome.jet.AddressRec;
 import com.buffalokiwi.aerodrome.jet.PersonRec;
 import com.buffalokiwi.api.APILog;
 import com.buffalokiwi.aerodrome.jet.IJetDate;
+import com.buffalokiwi.aerodrome.jet.ISO8601Date;
 import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
+import com.buffalokiwi.aerodrome.jet.products.ProductDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -852,6 +855,10 @@ public class OrderRec implements Jsonable
       .setOrderPlacedDate(new ISO8601UTCDate( json.getString( "order_placed_date", "" )))
       .setOrderTransmissionDate(new ISO8601UTCDate( json.getString( "order_transmission_date", "" )))
       .setJetRequestDirectedCancel( json.getBoolean( "jet_requested_directed_cancel", false ))
+      .setOrderReadyDate( JetDate.fromJetValueOrNull( json.getString( "order_ready_date", "" )))
+      .setHasShipments( json.getBoolean( "has_shipments", false ))
+      .setOrderAckDate( JetDate.fromJetValueOrNull( json.getString( "order_acknowledge_date", "" )))
+      .setAckStatus( AckStatus.fromText( json.getString( "acknowledgement_status", "" )))
       ;
     
     buildOrderDetail( b, json.getJsonObject( "order_detail" ));    

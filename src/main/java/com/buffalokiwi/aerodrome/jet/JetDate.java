@@ -20,7 +20,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -59,6 +58,7 @@ public class JetDate implements IJetDate
   /**
    * Attempt to take some value and turn it into a valid JetDate.
    * If it isn't valid, then this returns null.
+   * This will accept a date with a freakin' Z at the end.
    * 
    * @param value Jet value 
    * @return date or null
