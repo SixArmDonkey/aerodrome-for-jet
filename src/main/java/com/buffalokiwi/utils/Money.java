@@ -30,6 +30,16 @@ import java.util.Collection;
  * This makes money work properly.
  * As a bonus, I'm fairly certain this is thread safe.
  * 
+ * WARNING: The scale is initially set to "2", when it should be "4".
+ * asDBInteger() and friends have a hard coded multiplier of 100.  This will be
+ * corrected in a future release.
+ * 
+ * @todo In order to be compliant with Generally Accepted Accounting Principles,
+ * the scale must be set to 4.  
+ * 
+ * @todo Convert asDBInteger() to multiply based on the scale instead of 
+ * using a fixed multiplier.
+ * 
  * @todo See about making default language, currency and rounding mode 
  * configurable.
  * 
