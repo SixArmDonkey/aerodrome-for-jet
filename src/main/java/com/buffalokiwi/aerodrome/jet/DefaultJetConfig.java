@@ -42,6 +42,8 @@ import org.apache.commons.logging.LogFactory;
  * @author John Quinn
  * 
  * @todo Fix the stupid exception text so it makes sense...
+ * @todo Copy exception handling into builder.  It's no good to have it all jammed
+ * in the constructor.
  */
 public class DefaultJetConfig implements JetConfig
 {
@@ -222,6 +224,7 @@ public class DefaultJetConfig implements JetConfig
 
     /**
      * Uri for getting a list of order url's 
+     * @deprecated
      */
     private String uriGetDirectedCancel = "/orders/directedCancel";
 
@@ -240,6 +243,16 @@ public class DefaultJetConfig implements JetConfig
      */
     private String uriPutOrderShipped = "/orders/{jet_defined_order_id}/shipped";  
 
+    /**
+     * Uri for adding a tag to an order
+     */
+    private String uriPutTagOrder = "/orders/{jet_defined_order_id}/tag";
+    
+    /**
+     * Uri for retrieving url's for retrieving details based on a state and tag
+     */
+    private String uriGetTaggedOrders = "/orders/{status}/{tag}/{include}";
+    
     /**
      * Get returns uri
      */
@@ -742,6 +755,7 @@ public class DefaultJetConfig implements JetConfig
      * details I think.  
      * @param uri The uri
      * @return builder
+     * @deprecated
      */
     public Builder setGetOrderDirectCancelUrl( final String uri )
     {
@@ -790,6 +804,43 @@ public class DefaultJetConfig implements JetConfig
       this.uriPutOrderShipped = uri;
       return this;
     }  
+    
+    
+    /**
+     * The PUT tagging functionality allows a user to: apply to an order a 
+     * string of the user's choice; group SKUs by a common string; and when 
+     * combined with a GET request for orders by status and tag, manage which 
+     * orders are returned. It is generally meant to be used to achieve 
+     * pseudo-pagination. 
+     * 
+     * @param uri Uri
+     * @return this
+     */
+    public Builder setPutTagOrderUrl( final String uri )
+    {
+      this.uriPutTagOrder = uri;
+      return this;
+    }
+    
+    
+    
+    /**
+     * The PUT tagging functionality allows a user to: apply to an order a 
+     * string of the user's choice; group SKUs by a common string; and when 
+     * combined with a GET request for orders by status and tag, manage which 
+     * orders are returned. It is generally meant to be used to achieve 
+     * pseudo-pagination.
+     * Using this endpoint you can access the first 1000 orders in a certain 
+     * status. 
+     * 
+     * @param uri uri
+     * @return this
+     */
+    public Builder setGetTaggedOrdersUrl( final String uri )
+    {
+      this.uriGetTaggedOrders = uri;
+      return this;
+    }
 
 
     /**
@@ -1129,6 +1180,7 @@ public class DefaultJetConfig implements JetConfig
   
   /**
    * Uri for getting a list of order url's 
+   * @deprecated
    */
   private final String uriGetDirectedCancel;
   
@@ -1146,6 +1198,16 @@ public class DefaultJetConfig implements JetConfig
    * Uri for telling jet an order has shipped
    */
   private final String uriPutOrderShipped;
+
+  /**
+   * Uri for adding a tag to an order
+   */
+  private final String uriPutTagOrder;
+
+  /**
+   * Uri for retrieving url's for retrieving details based on a state and tag
+   */
+  private final String uriGetTaggedOrders;
   
   /**
    * Lock the host 
@@ -1284,6 +1346,8 @@ public class DefaultJetConfig implements JetConfig
     checkStringEmpty( b.getTaxonomyAttrUrl,"getTaxonomyAttrUrl cannot be empty" );
     checkStringEmpty( b.getSettlementDaysUrl, "getSettlementDaysUrl cannot be empty" );
     checkStringEmpty( b.getSettlementReportUrl, "getSettlementReportUrl cannot be empty" );
+    checkStringEmpty( b.uriGetTaggedOrders, "uriGetTaggedOrders cannot be emoty" );
+    checkStringEmpty( b.uriPutTagOrder, "uriPutTagOrder cannot be empty" );
     
     
     if ( b.readTimeout < 0 )
@@ -1339,6 +1403,8 @@ public class DefaultJetConfig implements JetConfig
     this.getTaxonomyAttrUrl = b.getTaxonomyAttrUrl;
     this.getSettlementDaysUrl = b.getSettlementDaysUrl;
     this.getSettlementReportUrl = b.getSettlementReportUrl;
+    this.uriPutTagOrder = b.uriPutTagOrder;
+    this.uriGetTaggedOrders = b.uriGetTaggedOrders;
   }
   
   
@@ -1899,6 +1965,7 @@ public class DefaultJetConfig implements JetConfig
    * This provides a list of order url's that can be used to retrieve order
    * details I think.  
    * @return url
+   * @deprecated
    */
   @Override
   public String getGetOrderDirectCancelUrl()
@@ -2117,4 +2184,47 @@ public class DefaultJetConfig implements JetConfig
     Utils.checkNullEmpty( id, "id" );
     return getSettlementReportUrl.replace( "{settlement_id}", id );
   }
+  
+  
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined with 
+   * a GET request for orders by status and tag, manage which orders are returned. 
+   * It is generally meant to be used to achieve pseudo-pagination. 
+   * 
+   * @param jetDefinedOrderId The Jet defined order ID
+   * @return Url
+   */
+  @Override
+  public String getPutTagOrderUrl( final String jetDefinedOrderId )
+  {
+    Utils.checkNullEmpty( jetDefinedOrderId, "jetDefinedOrderId" );
+    return uriPutTagOrder.replace( "{jet_defined_order_id}", jetDefinedOrderId );
+  }
+  
+  
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined with 
+   * a GET request for orders by status and tag, manage which orders are 
+   * returned. It is generally meant to be used to achieve pseudo-pagination.
+   * Using this endpoint you can access the first 1000 orders in a certain status. 
+   * @param status The current status of merchant orders
+   * @param tag A tag that has previously been applied to one or more orders
+   * @param include Indication of whether results with the {tag} or without the 
+   * {tag} should be returned
+   * @return Url
+   */
+  @Override
+  public String getGetTaggedOrdersUrl( final String status, final String tag, 
+    final boolean include )
+  {
+    Utils.checkNullEmpty( status, "status" );
+    Utils.checkNullEmpty( tag, "tag" );
+    
+    return uriGetTaggedOrders.replace( "{status}", status )
+      .replace( "{tag}", tag )
+      .replace( "{include}", (include) ? "true" : "false" );
+  }
+  
 }

@@ -16,7 +16,7 @@ import com.buffalokiwi.aerodrome.jet.IJetAPI;
 import com.buffalokiwi.aerodrome.jet.IJetAPIResponse;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.api.APIException;
-import java.util.List;
+
 
 /**
  *
@@ -34,55 +34,15 @@ public interface IJetAPIOrder extends IJetAPI, IJetOrder
   public IJetAPIResponse sendPollOrders( final OrderStatus status )
     throws APIException, JetException;
   
-
-  /**
-   * Poll Jet and retrieve a list of order status tokens for doing stuff
-   * with orders.  This will ONLY return the jet order id string, NOT the 
-   * complete uri.
-   * @param status status to poll
-   * @return token list 
-   * @throws APIException
-   * @throws JetException 
-   */
-  public List<String> getOrderStatusTokens( final OrderStatus status ) 
-    throws APIException, JetException;    
-
-  
-  
-  /**
-   * Poll Jet and retrieve a list of order status tokens for doing stuff
-   * with orders.  
-   * @param status status to poll
-   * @param includePath If this is false, only the rightmost path part
-   * is returned from the uri.
-   * @return token list 
-   * @throws APIException
-   * @throws JetException 
-   */
-  public List<String> getOrderStatusTokens( final OrderStatus status, 
-    final boolean includePath ) throws APIException, JetException;    
- 
-  
   
   /**
    * Poll jet for directed cancel uri's
    * @return response
    * @throws APIException
    * @throws JetException
+   * @deprecated
    */
   public IJetAPIResponse sendPollDirectedCancel()
-    throws APIException, JetException;
-  
-  
-  
-  /**
-   * Poll jet for direct cancel uri's and return the list of tokens 
-   * @param includePath Toggle including full uri 
-   * @return list 
-   * @throws APIException
-   * @throws JetException 
-   */
-  public List<String> getDirectCancelTokens( final boolean includePath )
     throws APIException, JetException;
   
   
@@ -94,17 +54,6 @@ public interface IJetAPIOrder extends IJetAPI, IJetOrder
    * @throws JetException 
    */
   public IJetAPIResponse sendGetOrderDetail( final String jetOrderId )
-    throws APIException, JetException;
-  
-  
-  /**
-   * Retrieve details about an order 
-   * @param jetOrderId Jet order id (need to poll for these first)
-   * @return detail
-   * @throws APIException
-   * @throws JetException 
-   */
-  public OrderRec getOrderDetail( final String jetOrderId )
     throws APIException, JetException;
   
   
@@ -135,4 +84,42 @@ public interface IJetAPIOrder extends IJetAPI, IJetOrder
    */
   public IJetAPIResponse sendPutShipOrder( final String jetOrderId,
     final ShipRequestRec req ) throws APIException, JetException;
+  
+  
+ /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined 
+   * with a GET request for orders by status and tag, manage which orders are 
+   * returned. It is generally meant to be used to achieve pseudo-pagination.
+   * 
+   * Only one tag can be applied to a given merchant order id at a time. Thus, 
+   * if one tag is applied and then later overwritten, the order will retain 
+   * only the most recent tag.
+   * To clear a tag, simply send a blank object.
+   * 
+   * @param orderId The jet defined order id 
+   * @param tag Some arbitrary tag value 
+   * @return Jet's response 
+   * @throws JetException
+   * @throws APIException 
+   */
+  public IJetAPIResponse sendPutTag( final String orderId, final String tag )
+    throws JetException, APIException;
+  
+  
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined 
+   * with a GET request for orders by status and tag, manage which orders are 
+   * returned. It is generally meant to be used to achieve pseudo-pagination.
+   * Using this endpoint you can access the first 1000 orders in a certain status. 
+   * @param status Order status to query
+   * @param tag Arbitrary tag value to query 
+   * @param include Whether to include or exclude orders with the tag 
+   * @return Response
+   * @throws JetException
+   * @throws APIException
+   */
+  public IJetAPIResponse sendGetTaggedOrders( final OrderStatus status, 
+    final String tag, final boolean include ) throws JetException, APIException;  
 }

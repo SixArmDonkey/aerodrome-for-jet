@@ -154,6 +154,7 @@ public class OrderRec implements Jsonable
    * requested to be cancelled by Jet.com. Please see the 
    * request_order_cancel_qty to determine which item and how much of the 
    * item should be cancelled.
+   * @deprecated
    */
   private final boolean jetRequestDirectedCancel;
   
@@ -264,6 +265,7 @@ public class OrderRec implements Jsonable
      * requested to be cancelled by Jet.com. Please see the 
      * request_order_cancel_qty to determine which item and how much 
      * of the item should be cancelled.
+     * @deprecated
      */
     private boolean jetRequestDirectedCancel = false;
     
@@ -474,7 +476,8 @@ public class OrderRec implements Jsonable
      * of the item should be cancelled.
      * @param jetRequestDirectedCancel the jetRequestDirectedCancel to set
      * @return this
-     */
+     * @deprecated
+     */    
     public Builder setJetRequestDirectedCancel( boolean jetRequestDirectedCancel ) 
     {
       this.jetRequestDirectedCancel = jetRequestDirectedCancel;
@@ -738,6 +741,7 @@ public class OrderRec implements Jsonable
 
     /**
      * @return the jetRequestDirectedCancel
+     * @deprecated
      */
     public boolean isJetRequestDirectedCancel()
     {
@@ -1152,6 +1156,7 @@ public class OrderRec implements Jsonable
    * request_order_cancel_qty to determine which item and how much of the 
    * item should be cancelled.
    * @return the jetRequestDirectedCancel
+   * @deprecated
    */
   public boolean isJetRequestDirectedCancel() {
     return jetRequestDirectedCancel;
@@ -1321,7 +1326,7 @@ public class OrderRec implements Jsonable
      .add( "exception_state", exceptionState.getText())
      .add( "order_placed_date", orderPlacedDate.getDateString())
      .add( "order_transmission_date", orderTransmissionDate.getDateString())
-     .add( "jet_request_directed_cancel", (( jetRequestDirectedCancel ) ? "true" : "false" ))
+     //.add( "jet_request_directed_cancel", (( jetRequestDirectedCancel ) ? "true" : "false" ))
      .add( "order_detail", orderDetail.toJSON())
      .add( "buyer", buyer.toJSON())
      .add( "shipping_to", shipTo )

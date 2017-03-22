@@ -32,6 +32,7 @@ public interface IJetOrder
    * @return list
    * @throws APIException
    * @throws JetException
+   * @deprecated
    */
   public List<String> getDirectCancelTokens(final boolean includePath) throws APIException, JetException;
 
@@ -76,4 +77,21 @@ public interface IJetOrder
    * @throws APIException 
    */
   public IJetAPIResponse cancelOrder( final OrderRec curRec, final String altShipmentId ) throws JetException, APIException;  
+  
+  
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined 
+   * with a GET request for orders by status and tag, manage which orders are 
+   * returned. It is generally meant to be used to achieve pseudo-pagination.
+   * Using this endpoint you can access the first 1000 orders in a certain status. 
+   * @param status Order status to query
+   * @param tag Arbitrary tag value to query 
+   * @param include Whether to include or exclude orders with the tag 
+   * @return Response
+   * @throws JetException
+   * @throws APIException
+   */
+  public List<String> pollOrdersByTag( final OrderStatus status, 
+    final String tag, final boolean include ) throws JetException, APIException;  
 }

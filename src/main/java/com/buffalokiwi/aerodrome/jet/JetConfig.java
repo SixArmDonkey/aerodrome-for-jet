@@ -382,6 +382,7 @@ public interface JetConfig
    * This provides a list of order url's that can be used to retrieve order
    * details I think.  
    * @return url
+   * @deprecated
    */
   public String getGetOrderDirectCancelUrl();
   
@@ -413,6 +414,33 @@ public interface JetConfig
    * @return url
    */
   public String getPutOrderShipNotificationUrl( final String jetDefinedOrderId );
+  
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined with 
+   * a GET request for orders by status and tag, manage which orders are returned. 
+   * It is generally meant to be used to achieve pseudo-pagination. 
+   * 
+   * @param jetDefinedOrderId The Jet defined order ID
+   * @return Url
+   */
+  public String getPutTagOrderUrl( final String jetDefinedOrderId );
+  
+  
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined with 
+   * a GET request for orders by status and tag, manage which orders are 
+   * returned. It is generally meant to be used to achieve pseudo-pagination.
+   * Using this endpoint you can access the first 1000 orders in a certain status. 
+   * @param status The current status of merchant orders
+   * @param tag A tag that has previously been applied to one or more orders
+   * @param include Indication of whether results with the {tag} or without the 
+   * {tag} should be returned
+   * @return Url
+   */
+  public String getGetTaggedOrdersUrl( final String status, final String tag, 
+    final boolean include );
   
   ////////////// END ORDERS //////////////////////////////////////////////////// 
   ////////////// START RETURNS ///////////////////////////////////////////////// 

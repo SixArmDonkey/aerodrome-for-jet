@@ -21,8 +21,10 @@ import com.buffalokiwi.aerodrome.jet.JetAPI;
 import com.buffalokiwi.aerodrome.jet.JetConfig;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.aerodrome.jet.Utils;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.json.Json;
 
 
 /**
@@ -138,6 +140,7 @@ public class JetAPIOrder extends JetAPI implements IJetAPIOrder
    * @return response
    * @throws APIException
    * @throws JetException
+   * @deprecated
    */
   @Override
   public IJetAPIResponse sendPollDirectedCancel()
@@ -156,6 +159,7 @@ public class JetAPIOrder extends JetAPI implements IJetAPIOrder
    * @return list 
    * @throws APIException
    * @throws JetException 
+   * @deprecated
    */
   @Override
   public List<String> getDirectCancelTokens( final boolean includePath )
@@ -255,11 +259,12 @@ public class JetAPIOrder extends JetAPI implements IJetAPIOrder
   /**
    * Cancels an order.
    * @param curRec Full order details
-   * @param altShipmentId
+   * @param altShipmentId Alternate shipment id (this is required )
    * @return
    * @throws JetException
    * @throws APIException 
    */
+  @Override
   public IJetAPIResponse cancelOrder( final OrderRec curRec, final String altShipmentId ) throws JetException, APIException
   {
     Utils.checkNull( altShipmentId, "altShipmentId" );
@@ -287,4 +292,87 @@ public class JetAPIOrder extends JetAPI implements IJetAPIOrder
   }
   
   
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined 
+   * with a GET request for orders by status and tag, manage which orders are 
+   * returned. It is generally meant to be used to achieve pseudo-pagination.
+   * 
+   * Only one tag can be applied to a given merchant order id at a time. Thus, 
+   * if one tag is applied and then later overwritten, the order will retain 
+   * only the most recent tag.
+   * To clear a tag, simply send a blank object.
+   * 
+   * @param orderId The jet defined order id 
+   * @param tag Some arbitrary tag value 
+   * @return Jet's response 
+   * @throws JetException
+   * @throws APIException 
+   */
+  @Override
+  public IJetAPIResponse sendPutTag( final String orderId, final String tag )
+    throws JetException, APIException
+  {
+    Utils.checkNullEmpty( orderId, "orderId" );
+    Utils.checkNullEmpty( tag, "tag" );
+    
+    return put( 
+      config.getPutTagOrderUrl( orderId ), 
+      Json.createObjectBuilder().add( "tag", tag ).build().toString(),
+      getJSONHeaderBuilder().build()
+    );
+  }
+  
+  
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined 
+   * with a GET request for orders by status and tag, manage which orders are 
+   * returned. It is generally meant to be used to achieve pseudo-pagination.
+   * Using this endpoint you can access the first 1000 orders in a certain status. 
+   * @param status Order status to query
+   * @param tag Arbitrary tag value to query 
+   * @param include Whether to include or exclude orders with the tag 
+   * @return Response
+   * @throws JetException
+   * @throws APIException
+   */
+  @Override
+  public IJetAPIResponse sendGetTaggedOrders( final OrderStatus status, 
+    final String tag, final boolean include ) throws JetException, APIException
+  {
+    Utils.checkNull( status, "status" );
+    Utils.checkNullEmpty( tag, "tag" );
+
+    return get( 
+      config.getGetTaggedOrdersUrl( status.getText(), tag, include ),
+      getJSONHeaderBuilder().build()    
+    );
+  }
+  
+  
+  /**
+   * The PUT tagging functionality allows a user to: apply to an order a string 
+   * of the user's choice; group SKUs by a common string; and when combined 
+   * with a GET request for orders by status and tag, manage which orders are 
+   * returned. It is generally meant to be used to achieve pseudo-pagination.
+   * Using this endpoint you can access the first 1000 orders in a certain status. 
+   * @param status Order status to query
+   * @param tag Arbitrary tag value to query 
+   * @param include Whether to include or exclude orders with the tag 
+   * @return Response
+   * @throws JetException
+   * @throws APIException
+   */
+  @Override
+  public List<String> pollOrdersByTag( final OrderStatus status, 
+    final String tag, final boolean include ) throws JetException, APIException
+  {
+    Utils.checkNull( status, "status" );
+    Utils.checkNullEmpty( tag, "tag" );
+
+    return jsonArrayToTokenList( 
+      sendGetTaggedOrders( status, tag, include )
+      .getJsonObject().getJsonArray( "order_urls" ), false );
+  }
 }
