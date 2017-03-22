@@ -20,6 +20,7 @@ import java.util.Date;
 
 /**
  * A jet date 
+ * @todo Remove all of this shit and replace it with the java 8 java.time stuff.
  * @author John Quinn
  */
 public interface IJetDate 

@@ -23,7 +23,7 @@ import java.util.Date;
  * 
  * Uses format: yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX
  * 
- * 
+ * @todo Remove all of this shit and replace it with the java 8 java.time stuff.
  * 
  * @author john
  */

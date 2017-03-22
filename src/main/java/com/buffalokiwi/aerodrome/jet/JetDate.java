@@ -30,6 +30,8 @@ import org.apache.commons.logging.LogFactory;
  * yyyy-MM-dd'T'HH:mm:ss 
  * 
  * 
+ * @todo Remove all of this shit and replace it with the java 8 java.time stuff.
+ * 
  * @author John Quinn
  */
 public class JetDate implements IJetDate 

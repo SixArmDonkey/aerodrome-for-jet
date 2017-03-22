@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Represents a Date from a Jet API Response.
  * Uses format: yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z' 
+ * @todo Remove all of this shit and replace it with the java 8 java.time stuff.
  * @author John Quinn
  */
 public class ISO8601UTCDate extends JetDate implements IJetDate 
