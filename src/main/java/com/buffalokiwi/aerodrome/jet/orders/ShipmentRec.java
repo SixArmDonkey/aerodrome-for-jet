@@ -15,7 +15,6 @@
 package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
 import com.buffalokiwi.aerodrome.jet.ISO8601Date;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.ShippingCarrier;
@@ -102,6 +101,12 @@ public class ShipmentRec implements Jsonable
    */
   private final List<ShipmentItemRec> items;
 
+  /**
+   * This is an object for indicating if a shipment has come out of a 
+   * different fulfillment node than the one originally asserted by Jet. 
+   */
+  private final RedirectNotificationRec redirectNotification;
+  
   
   /**
    * Builder object 
@@ -173,6 +178,12 @@ public class ShipmentRec implements Jsonable
      * Merchant order id if available (not from jet json)
      */
     private String orderId = "";
+    
+    /**
+     * This is an object for indicating if a shipment has come out of a 
+     * different fulfillment node than the one originally asserted by Jet. 
+     */
+    private RedirectNotificationRec redirectNotification = null;
 
     
     public void validate() throws Exception
@@ -308,6 +319,21 @@ public class ShipmentRec implements Jsonable
       return "Shipment";
 
     }
+    
+    
+    /**
+     * This is an object for indicating if a shipment has come out of a 
+     * different fulfillment node than the one originally asserted by Jet. 
+     * @param rec Some data or null 
+     * @return this
+     */
+    public Builder setRedirectNotification( final RedirectNotificationRec rec )
+    {
+      this.redirectNotification = rec;
+      return this;
+    }
+    
+    
   
     /**
      * Set Optional merchant supplied shipment ID. Jet will map this ID to the 
@@ -466,6 +492,12 @@ public class ShipmentRec implements Jsonable
       return new ShipmentRec( this );
     }    
 
+    
+    public RedirectNotificationRec getRedirectNotification()
+    {
+      return redirectNotification;
+    }
+    
     /**
      * @return the shipmentId
      */
@@ -574,7 +606,10 @@ public class ShipmentRec implements Jsonable
     }
     
     
-    return new Builder()
+    
+    
+    
+    final Builder b = new Builder()
       .setShipmentId( json.getString( "shipment_id", "" ))
       .setAltShipmentId( json.getString( "alt_shipment_id", "" ))
       .setTrackingNumber( json.getString( "shipment_tracking_number", "" ))
@@ -584,8 +619,15 @@ public class ShipmentRec implements Jsonable
       .setShipFromZip( json.getString( "ship_from_zip_code", "" ))
       .setCarrier( ShippingCarrier.fromText( json.getString( "carrier", "" )))
       .setPickupDate(ISO8601Date.fromJetValueOrNull( json.getString( "carrier_pick_up_date", "" )))
-      .setItems( items )
-      .build();
+      .setItems( items );
+    
+    final JsonObject rNote = json.getJsonObject( "redirect_notification" );
+    if ( rNote != null )
+    {
+      b.setRedirectNotification( RedirectNotificationRec.fromJson( rNote ));
+    }
+    
+    return b.build();
   }
   
   
@@ -607,6 +649,7 @@ public class ShipmentRec implements Jsonable
     this.pickupDate = b.getPickupDate();
     this.items = Collections.unmodifiableList(b.getItems());
     this.orderId = b.orderId;
+    this.redirectNotification = b.redirectNotification;
   }
   
   
@@ -624,6 +667,7 @@ public class ShipmentRec implements Jsonable
     b.pickupDate = this.pickupDate;
     b.items = this.items;
     b.orderId = this.orderId;
+    b.redirectNotification = this.redirectNotification;
     
     return b;
   }
@@ -811,6 +855,17 @@ public class ShipmentRec implements Jsonable
   
   
   /**
+   * This is an object for indicating if a shipment has come out of a different 
+   * fulfillment node than the one originally asserted by Jet. 
+   * @return record or null
+   */
+  public RedirectNotificationRec getRedirectNotification()
+  {
+    return redirectNotification;
+  }
+  
+  
+  /**
    * To String 
    * @return some string
    */
@@ -879,6 +934,9 @@ public class ShipmentRec implements Jsonable
     
     if ( items != null )
       b.add( "shipment_items", getItemsArray());    
+    
+    if ( redirectNotification != null )
+      b.add( "redirect_notification", redirectNotification.toJSON());
     
     return b.build();
   }  
