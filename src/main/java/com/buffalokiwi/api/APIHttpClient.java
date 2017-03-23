@@ -60,7 +60,7 @@ public class APIHttpClient implements IAPIHttpClient
     /**
      * Default user agent 
      */
-    public static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (compatible; Aerodrome/1.0; +http://www.sheepguru.com)";
+    public static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (compatible; Aerodrome/1.0; +http://www.buffalokiwi.com)";
 
     /**
      * Default socket read timeout 

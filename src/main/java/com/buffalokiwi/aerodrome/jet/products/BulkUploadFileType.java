@@ -14,8 +14,6 @@
 
 package com.buffalokiwi.aerodrome.jet.products;
 
-import static com.buffalokiwi.aerodrome.jet.ProductTaxCode.values;
-import static com.buffalokiwi.aerodrome.jet.ProductTaxCode.values;
 
 /**
  * Represents the type of file being uploaded.
@@ -57,7 +55,12 @@ public enum BulkUploadFileType
   /**
    * Send a batch of sku's to archive 
    */
-  ARCHIVE_SKU( "Archive", "Archive Products", "archive" );
+  ARCHIVE_SKU( "Archive", "Archive Products", "archive" ),
+  
+  /**
+   * Import a batch of shipments and tracking numbers
+   */
+  SHIPMENTS( "Shipments", "Shipments and Tracking", "shipments" );
   
   
   /**

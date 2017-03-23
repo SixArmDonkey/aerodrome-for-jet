@@ -49,6 +49,11 @@ public class ShipmentRec implements Jsonable
   private final String orderId;
   
   /**
+   * Alt order id 
+   */
+  private final String altOrderId;
+  
+  /**
    * Optional merchant supplied shipment ID. Jet will map this ID to the Jet's 
    * shipment_id and you can then use this ID in subsequent messages relating 
    * to this shipment.
@@ -169,15 +174,19 @@ public class ShipmentRec implements Jsonable
     private IJetDate pickupDate = null;
   
     /**
-     * This is an array of shipment items. Please see our shipment item array 
-     * table below.
+     * This is an array of shipment items. 
      */
-    private List<ShipmentItemRec> items = null;
+    private final List<ShipmentItemRec> items = new ArrayList<>();
     
     /**
      * Merchant order id if available (not from jet json)
      */
     private String orderId = "";
+    
+    /**
+     * Alt order id
+     */
+    private String altOrderId = "";
     
     /**
      * This is an object for indicating if a shipment has come out of a 
@@ -457,6 +466,19 @@ public class ShipmentRec implements Jsonable
       this.orderId = orderId;
       return this;
     }
+    
+    
+    /**
+     * Sets the alt order id (not available from jet json)
+     * @param altOrderId alt order id
+     * @return this
+     */
+    public Builder setAltOrderId( final String altOrderId )
+    {
+      Utils.checkNull( altOrderId, "altOrderId" );
+      this.altOrderId = altOrderId;
+      return this;
+    }
 
     
     /**
@@ -470,12 +492,9 @@ public class ShipmentRec implements Jsonable
     {
       if ( items == null )
       {
-        this.items = null;
+        this.items.clear();
         return this;
       }
-      
-      if ( this.getItems() == null )
-        this.items = new ArrayList<>();
       
       this.getItems().addAll( items );
       
@@ -587,6 +606,12 @@ public class ShipmentRec implements Jsonable
     {
       return orderId;
     }
+    
+    
+    public String getAltOrderId()
+    {
+      return altOrderId;
+    }
   }
   
   
@@ -650,6 +675,7 @@ public class ShipmentRec implements Jsonable
     this.items = Collections.unmodifiableList(b.getItems());
     this.orderId = b.orderId;
     this.redirectNotification = b.redirectNotification;
+    this.altOrderId = b.altOrderId;
   }
   
   
@@ -665,10 +691,10 @@ public class ShipmentRec implements Jsonable
     b.shipFromZip = this.shipFromZip;
     b.carrier = this.carrier;
     b.pickupDate = this.pickupDate;
-    b.items = this.items;
+    b.items.addAll( this.items );
     b.orderId = this.orderId;
     b.redirectNotification = this.redirectNotification;
-    
+    b.altOrderId = this.altOrderId;
     return b;
   }
 
@@ -855,6 +881,16 @@ public class ShipmentRec implements Jsonable
   
   
   /**
+   * Retrieve an arbitrary alt order id (not available from jet json)
+   * @return alt order id
+   */
+  public String getAltOrderId()
+  {
+    return altOrderId;
+  }
+  
+  
+  /**
    * This is an object for indicating if a shipment has come out of a different 
    * fulfillment node than the one originally asserted by Jet. 
    * @return record or null
@@ -935,7 +971,7 @@ public class ShipmentRec implements Jsonable
     if ( items != null )
       b.add( "shipment_items", getItemsArray());    
     
-    if ( redirectNotification != null )
+    if ( redirectNotification != null && !redirectNotification.getRedirectNode().isEmpty())
       b.add( "redirect_notification", redirectNotification.toJSON());
     
     return b.build();

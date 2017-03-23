@@ -549,7 +549,7 @@ public class ShipmentItemRec implements Jsonable
       .add( "RMA_number", rmaNumber )
       .add( "days_to_return", returnDays );
     
-    if ( returnTo != null )
+    if ( returnTo != null && !returnTo.getAddress1().isEmpty())
     {
       out.add( "return_location", returnTo.toJSON());
     }
