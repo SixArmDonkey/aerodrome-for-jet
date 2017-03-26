@@ -14,6 +14,7 @@
 
 package com.buffalokiwi.aerodrome.jet;
 
+import com.buffalokiwi.api.APILog;
 import com.buffalokiwi.api.APIResponse;
 import com.buffalokiwi.api.IAPIResponse;
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
@@ -147,8 +147,9 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
     
     //..Return the response copied into a jet response 
     try {
-      return JetAPIResponse.copyFrom( that, JetAPIResponse.class );
+      return JetAPIResponse.<JetAPIResponse>copyFrom( that, JetAPIResponse.class );
     } catch( NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalArgumentException | IllegalAccessException e ) {
+      APILog.error( LOG, e );
       throw new JetException( "Failed to create an instance of JetAPIResponse.class.  Ensure constructor matches APIResponse" );
     }
   }

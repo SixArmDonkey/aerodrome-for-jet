@@ -15,15 +15,14 @@
 package com.buffalokiwi.api;
 
 import java.io.StringReader;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.stream.JsonParsingException;
-import org.apache.commons.logging.Log;
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
@@ -79,9 +78,19 @@ public class APIResponse implements IAPIResponse
   public static <T extends APIResponse> T copyFrom( final IAPIResponse that, Class<T> type ) 
     throws NoSuchMethodException, InstantiationException, InvocationTargetException, IllegalArgumentException, IllegalAccessException 
   {    
-    T r = type.getConstructor( ProtocolVersion.class, StatusLine.class, List.class ).newInstance( that.getProtocolVersion(), that.getStatusLine(), that.headers());
-    r.setContent( that.getResponseContent(), that.getResponseCharsetName());
-    return r;    
+    for ( final Constructor<?> c: type.getConstructors())
+    {
+      if ( c.getParameterCount() == 3 )
+      {
+        final T r = (T)c.newInstance( that.getProtocolVersion(), that.getStatusLine(), that.headers());
+        r.setContent( that.getResponseContent(), that.getResponseCharsetName());
+        return r;
+      }
+    }
+    //T r = type.getConstructor( ProtocolVersion.class, StatusLine.class, List.class ).newInstance( that.getProtocolVersion(), that.getStatusLine(), that.headers());
+    //r.setContent( that.getResponseContent(), that.getResponseCharsetName());
+    //return r;    
+    throw new NoSuchMethodException( "Failed to locate constructor in class " + type );
   }
   
 
