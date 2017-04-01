@@ -18,12 +18,10 @@ import com.buffalokiwi.aerodrome.jet.AddressRec;
 import com.buffalokiwi.aerodrome.jet.PersonRec;
 import com.buffalokiwi.api.APILog;
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
-import com.buffalokiwi.aerodrome.jet.products.ProductDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -855,10 +853,10 @@ public class OrderRec implements Jsonable
       .setHashEmail( json.getString( "hash_email", "" ))
       .setStatus( OrderStatus.fromText( json.getString( "status", "" )))
       .setExceptionState( OrderExceptionState.fromText( json.getString( "exception_state", "" )))
-      .setOrderPlacedDate(new ISO8601UTCDate( json.getString( "order_placed_date", "" )))
-      .setOrderTransmissionDate(new ISO8601UTCDate( json.getString( "order_transmission_date", "" )))
+      .setOrderPlacedDate( JetDate.fromJetValueOrNull(json.getString( "order_placed_date", "" )))
+      .setOrderTransmissionDate( JetDate.fromJetValueOrNull( json.getString( "order_transmission_date", "" )))
       .setJetRequestDirectedCancel( json.getBoolean( "jet_requested_directed_cancel", false ))
-      .setOrderReadyDate( ProductDate.fromJetValueOrNull( json.getString( "order_ready_date", "" )))
+      .setOrderReadyDate( JetDate.fromJetValueOrNull( json.getString( "order_ready_date", "" )))
       .setHasShipments( json.getBoolean( "has_shipments", false ))
       .setOrderAckDate( JetDate.fromJetValueOrNull( json.getString( "order_acknowledge_date", "" )))
       .setAckStatus( AckStatus.fromText( json.getString( "acknowledgement_status", "" )))
@@ -1324,8 +1322,8 @@ public class OrderRec implements Jsonable
      .add( "hash_email", hashEmail )
      .add( "status", status.getText())
      .add( "exception_state", exceptionState.getText())
-     .add( "order_placed_date", orderPlacedDate.getDateString())
-     .add( "order_transmission_date", orderTransmissionDate.getDateString())
+     .add( "order_placed_date", orderPlacedDate.getDateString( JetDate.FMT_ZULU ))
+     .add( "order_transmission_date", orderTransmissionDate.getDateString( JetDate.FMT_ZULU ))
      //.add( "jet_request_directed_cancel", (( jetRequestDirectedCancel ) ? "true" : "false" ))
      .add( "order_detail", orderDetail.toJSON())
      .add( "buyer", buyer.toJSON())
@@ -1335,10 +1333,10 @@ public class OrderRec implements Jsonable
      .add( "acknowledgement_status", ackStatus.getText());
     
     if ( orderReadyDate != null )
-      b.add( "order_ready_date", orderReadyDate.getDateString());
+      b.add( "order_ready_date", orderReadyDate.getDateString( JetDate.FMT_ZULU_ZERO ));
     
     if ( orderAckDate != null )
-      b.add( "order_acknowledge_date", orderAckDate.getDateString());
+      b.add( "order_acknowledge_date", orderAckDate.getDateString( JetDate.FMT_LOCAL_MICRO ));
     
     if ( shipments != null )
       b.add( "shipments", shipmentsToJson());

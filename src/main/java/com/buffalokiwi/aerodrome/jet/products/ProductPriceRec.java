@@ -14,17 +14,14 @@
 package com.buffalokiwi.aerodrome.jet.products;
 
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601Date;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.utils.Money;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -76,7 +73,7 @@ public class ProductPriceRec implements Jsonable
     
     return new ProductPriceRec(
       Utils.jsonNumberToMoney( json.getJsonNumber( "price" )),
-      ISO8601Date.fromJetValueOrNull( json.getString( "price_last_update", "" )),
+      JetDate.fromJetValueOrNull( json.getString( "price_last_update", "" )),
       nodes
     );
   }

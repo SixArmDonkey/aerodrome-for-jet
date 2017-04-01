@@ -15,14 +15,11 @@
 package com.buffalokiwi.aerodrome.jet.products;
 
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601Date;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Utils;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
@@ -319,7 +316,7 @@ public class SkuSalesDataRec
     if ( sr != null )
     {
       b.setSalesRank( sr.getInt( "level0", 0 ))
-       .setLastSalesRankUpdate( ISO8601Date.fromJetValueOrNull( sr.getString( "last_update", "" )));
+       .setLastSalesRankUpdate( JetDate.fromJetValueOrNull( sr.getString( "last_update", "" )));
     }
     
     final JsonObject us = json.getJsonObject( "units_sold" );
@@ -327,7 +324,7 @@ public class SkuSalesDataRec
     if ( us != null )
     {
       b.setUnitsSoldLast30( json.getInt( "last_30_days", 0 ))
-       .setUnitsSoldLastUpdate( ISO8601Date.fromJetValueOrNull( json.getString( "last_update", "" )));
+       .setUnitsSoldLastUpdate( JetDate.fromJetValueOrNull( json.getString( "last_update", "" )));
     }
     
     final List<OfferRec> boList = new ArrayList<>();

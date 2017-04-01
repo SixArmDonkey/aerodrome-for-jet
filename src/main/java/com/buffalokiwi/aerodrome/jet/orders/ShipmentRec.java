@@ -15,7 +15,7 @@
 package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601Date;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.ShippingCarrier;
 import com.buffalokiwi.aerodrome.jet.ShippingMethod;
@@ -638,12 +638,12 @@ public class ShipmentRec implements Jsonable
       .setShipmentId( json.getString( "shipment_id", "" ))
       .setAltShipmentId( json.getString( "alt_shipment_id", "" ))
       .setTrackingNumber( json.getString( "shipment_tracking_number", "" ))
-      .setShipmentDate(ISO8601Date.fromJetValueOrNull( json.getString( "response_shipment_date", "" )))
+      .setShipmentDate( JetDate.fromJetValueOrNull( json.getString( "response_shipment_date", "" )))
       .setShippingMethod( ShippingMethod.fromText( json.getString( "response_shipping_method", "" )))
-      .setExpectedDeliveryDate(ISO8601Date.fromJetValueOrNull( json.getString( "expected_delivery_date", "" )))
+      .setExpectedDeliveryDate(JetDate.fromJetValueOrNull( json.getString( "expected_delivery_date", "" )))
       .setShipFromZip( json.getString( "ship_from_zip_code", "" ))
       .setCarrier( ShippingCarrier.fromText( json.getString( "carrier", "" )))
-      .setPickupDate(ISO8601Date.fromJetValueOrNull( json.getString( "carrier_pick_up_date", "" )))
+      .setPickupDate(JetDate.fromJetValueOrNull( json.getString( "carrier_pick_up_date", "" )))
       .setItems( items );
     
     final JsonObject rNote = json.getJsonObject( "redirect_notification" );
@@ -959,13 +959,13 @@ public class ShipmentRec implements Jsonable
       .add( "carrier", carrier.getText());
 
       if ( shipmentDate != null )
-        b.add( "response_shipment_date", shipmentDate.getDateString());
+        b.add( "response_shipment_date", shipmentDate.getDateString( JetDate.FMT_LOCAL_MICRO ));
 
       if ( expectedDeliveryDate != null )
-        b.add( "expected_delivery_date", expectedDeliveryDate.getDateString());
+        b.add( "expected_delivery_date", expectedDeliveryDate.getDateString( JetDate.FMT_LOCAL_MICRO ));
 
       if ( pickupDate != null )
-        b.add( "carrier_pick_up_date", pickupDate.getDateString());
+        b.add( "carrier_pick_up_date", pickupDate.getDateString( JetDate.FMT_LOCAL_MICRO ));
     }
     
     if ( items != null )

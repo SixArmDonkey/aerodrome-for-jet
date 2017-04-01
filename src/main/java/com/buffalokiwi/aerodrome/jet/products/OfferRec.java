@@ -16,14 +16,9 @@
 package com.buffalokiwi.aerodrome.jet.products;
 
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601Date;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.utils.Money;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import javax.json.JsonObject;
 
 /**
@@ -79,7 +74,7 @@ public class OfferRec
       json.getString( "shipping_method", "" ),
       Utils.jsonNumberToMoney( json.getJsonNumber( "item_price")),
       Utils.jsonNumberToMoney( json.getJsonNumber( "shipping_price" )),
-      ISO8601Date.fromJetValueOrNull( json.getString( "last_update", "" ))
+      JetDate.fromJetValueOrNull( json.getString( "last_update", "" ))
     );
   }
   

@@ -16,13 +16,10 @@ package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.AddressRec;
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601Date;
-import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.ShippingCarrier;
 import com.buffalokiwi.aerodrome.jet.Utils;
-import com.buffalokiwi.aerodrome.jet.products.ProductDate;
 import com.buffalokiwi.utils.Money;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -795,7 +792,7 @@ public class ReturnRec implements Jsonable
       .add( "reference_order_id", referenceOrderId )
       .add( "reference_return_authorization_id", referenceReturnAuthId )
       .add( "refund_without_return", refundWithoutReturn )
-      .add( "return_date", returnDate.getDateString())
+      .add( "return_date", returnDate.getDateString( JetDate.FMT_ZULU ))
       .add( "return_status", status.getText())
       .add( "shipping_carrier", carrier.getText())
       .add( "tracking_number", trackingNumber )

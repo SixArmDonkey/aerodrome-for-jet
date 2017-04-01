@@ -19,10 +19,10 @@ import com.buffalokiwi.api.APIException;
 import com.buffalokiwi.api.APIHttpClient;
 import com.buffalokiwi.api.PostFile;
 import com.buffalokiwi.aerodrome.jet.DefaultJetConfig;
-import com.buffalokiwi.aerodrome.jet.ISO8601Date;
 import com.buffalokiwi.aerodrome.jet.JetAPIAuth;
 import com.buffalokiwi.aerodrome.jet.JetAuthException;
 import com.buffalokiwi.aerodrome.jet.JetConfig;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.aerodrome.jet.orders.AckRequestItemRec;
 import com.buffalokiwi.aerodrome.jet.orders.AckRequestRec;
@@ -54,7 +54,6 @@ import javax.json.JsonObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.entity.ContentType;
-import com.buffalokiwi.aerodrome.jet.orders.ReturnReason;
 import com.buffalokiwi.aerodrome.jet.products.FNodeShippingRec;
 import com.buffalokiwi.aerodrome.jet.products.ProductVariationGroupRec;
 import com.buffalokiwi.aerodrome.jet.products.ReturnsExceptionRec;
@@ -70,7 +69,6 @@ import com.buffalokiwi.aerodrome.jet.orders.OrderItemRec;
 import com.buffalokiwi.aerodrome.jet.orders.RefundFeedback;
 import com.buffalokiwi.aerodrome.jet.orders.RefundReason;
 import com.buffalokiwi.aerodrome.jet.orders.ReturnItemRec;
-import com.buffalokiwi.aerodrome.jet.orders.ReturnMerchantSkuRec;
 import com.buffalokiwi.aerodrome.jet.orders.ReturnRec;
 import com.buffalokiwi.aerodrome.jet.orders.ReturnStatus;
 import com.buffalokiwi.aerodrome.jet.orders.ShipRequestRec;
@@ -80,6 +78,9 @@ import com.buffalokiwi.aerodrome.jet.products.BulkProductFileGenerator;
 import com.buffalokiwi.aerodrome.jet.settlement.IJetAPISettlement;
 import com.buffalokiwi.aerodrome.jet.settlement.JetAPISettlement;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 
@@ -724,10 +725,10 @@ public class Aerodrome
       final ShipmentRec shipment = new ShipmentRec.Builder()
         .setCarrier( order.getOrderDetail().getRequestShippingCarrier())
         .setTrackingNumber( "Z123456780123456" )
-        .setShipmentDate(new ISO8601Date())
-        .setExpectedDeliveryDate(new ISO8601Date( new Date( new Date().getTime() + ( 86400L * 2L ))))
+        .setShipmentDate( new JetDate())
+        .setExpectedDeliveryDate( new JetDate( ZonedDateTime.from( Instant.now()).withZoneSameInstant( ZoneId.systemDefault()).plusDays( 2 ), ZoneId.systemDefault().getRules().getOffset( Instant.now())))
         .setShipFromZip( "38473" )
-        .setPickupDate(new ISO8601Date())
+        .setPickupDate( new JetDate())
         .setItems( shipmentItems )
         .build();
 

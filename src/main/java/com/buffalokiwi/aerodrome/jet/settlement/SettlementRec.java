@@ -12,7 +12,6 @@
  */
 package com.buffalokiwi.aerodrome.jet.settlement;
 
-import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
@@ -63,12 +62,12 @@ public class SettlementRec implements Jsonable
     /**
      * The start date/time of the settlement report.
      */
-    private JetDate periodStart = new ISO8601UTCDate();
+    private JetDate periodStart = new JetDate();
 
     /**
      * The end date/time of the settlement report
      */
-    private JetDate periodEnd = new ISO8601UTCDate();
+    private JetDate periodEnd = new JetDate();
 
     /**
      * Order balance details 
@@ -348,9 +347,9 @@ public class SettlementRec implements Jsonable
         json.getString(  "settlement_state", "" )))
       .setCurrency( json.getString( "currency", "" ))
       .setUnavailableBalance( Utils.jsonNumberToMoney( json.getJsonNumber( "unavailable_balance" )))
-      .setPeriodStart( ISO8601UTCDate.fromJetValueOrNull( 
+      .setPeriodStart( JetDate.fromJetValueOrNull( 
         json.getString( "settlement_period_start", "" )))
-      .setPeriodEnd( ISO8601UTCDate.fromJetValueOrNull( 
+      .setPeriodEnd( JetDate.fromJetValueOrNull( 
         json.getString( "settlement_period_end", "" )))
       .setOrderBalance( Utils.jsonNumberToMoney( json.getJsonNumber( "order_balanace" )))
       .setReturnBalance( Utils.jsonNumberToMoney( json.getJsonNumber( "return_balance" )))
@@ -522,8 +521,8 @@ public class SettlementRec implements Jsonable
       .add( "settlement_state", state.getText())
       .add( "currency", currency )
       .add( "unavailable_balance", unavailableBalance.toString())
-      .add( "settlement_period_start", periodStart.getDateString())
-      .add( "settlement_period_end", periodEnd.getDateString())
+      .add( "settlement_period_start", periodStart.getDateString( JetDate.FMT_ZULU_MICRO ))
+      .add( "settlement_period_end", periodEnd.getDateString( JetDate.FMT_ZULU_MICRO ))
       .add( "order_balance", orderBalance.toString())
       .add( "return_balance", returnBalance.toString())
       .add( "jet_adjustment", jetAdjustment.toString())

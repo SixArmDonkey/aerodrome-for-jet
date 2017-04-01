@@ -15,7 +15,7 @@
 package com.buffalokiwi.aerodrome.jet.products;
 
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.ProductTaxCode;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
@@ -257,7 +257,7 @@ public class ProductRec implements Jsonable
      * ISO 8601 format: yyyy-MM-ddTHH:mm:ss.fffffff-HH:MM
      * Example: 1988-01-01T01:43:30.0000000-07:00
      */
-    private IJetDate startSellingDate = new ProductDate();
+    private IJetDate startSellingDate = new JetDate();
 
     /**
      * Manufacturer's suggested retail price or list price for the product.
@@ -2382,10 +2382,10 @@ public class ProductRec implements Jsonable
     
     out.producerId = json.getString( "producer_id", "" );
     out.shipsAlone = json.getBoolean( "ships_alone", false );
-    out.skuLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "sku_last_update", "" ));
-    out.inventoryLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "last_update", "" ));
-    out.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( json.getString( "price_last_update", "" ));
-    out.startSellingDate = ProductDate.fromJetValueOrNull( json.getString( "start_selling_date", "" ));
+    out.skuLastUpdate = JetDate.fromJetValueOrNull( json.getString( "sku_last_update", "" ));
+    out.inventoryLastUpdate = JetDate.fromJetValueOrNull( json.getString( "last_update", "" ));
+    out.priceLastUpdate = JetDate.fromJetValueOrNull( json.getString( "price_last_update", "" ));
+    out.startSellingDate = JetDate.fromJetValueOrNull( json.getString( "start_selling_date", "" ));
     out.isArchived = json.getBoolean( "is_archived", false );
     
     for ( final JsonObject o : Utils.jsonArrayToJsonObjectList( json.getJsonArray( "inventory_by_fulfillment_node" )))
@@ -2472,22 +2472,22 @@ public class ProductRec implements Jsonable
     if ( b.skuLastUpdate == null )
       this.skuLastUpdate = null;
     else
-      this.skuLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.skuLastUpdate.getDateString());
+      this.skuLastUpdate = b.skuLastUpdate;
     
     if ( b.inventoryLastUpdate == null )
       this.inventoryLastUpdate = null;
     else
-      this.inventoryLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.inventoryLastUpdate.getDateString());
+      this.inventoryLastUpdate = b.inventoryLastUpdate;
     
     if ( b.priceLastUpdate == null )
       this.priceLastUpdate = null;
     else
-      this.priceLastUpdate = ISO8601UTCDate.fromJetValueOrNull( b.priceLastUpdate.getDateString());
+      this.priceLastUpdate = b.priceLastUpdate;
     
     if ( b.startSellingDate == null )
       this.startSellingDate = null;
     else
-      this.startSellingDate = ProductDate.fromJetValueOrNull( b.startSellingDate.getDateString());
+      this.startSellingDate = b.startSellingDate;
     
     this.variations = b.variations;
     this.returnsExceptions = Collections.unmodifiableList( b.returnsExceptions );
@@ -2529,6 +2529,8 @@ public class ProductRec implements Jsonable
    */
   public IJetDate getStartSellingDate()
   {
+    if ( startSellingDate == null )
+      return new JetDate();
     return startSellingDate;
   }
   
@@ -3889,17 +3891,17 @@ public class ProductRec implements Jsonable
     out.isArchived = this.isArchived;
     
     try {
-      out.skuLastUpdate = new ISO8601UTCDate( this.skuLastUpdate.getDate());
+      out.skuLastUpdate = this.skuLastUpdate;
     } catch( Exception e ) {} //..intentional 
     try {
-      out.inventoryLastUpdate = new ISO8601UTCDate( this.inventoryLastUpdate.getDate());
+      out.inventoryLastUpdate = this.inventoryLastUpdate;
     } catch( Exception e ) {} //..intentional 
     try {
-      out.priceLastUpdate = new ISO8601UTCDate( this.priceLastUpdate.getDate());
+      out.priceLastUpdate = this.priceLastUpdate;
     } catch( Exception e ) {} //..intentional
     
     try {
-      out.startSellingDate = new ProductDate( this.startSellingDate.getDate());
+      out.startSellingDate = this.startSellingDate;
     } catch( Exception e ) {} //..do nothing
     
     out.variations = this.variations;

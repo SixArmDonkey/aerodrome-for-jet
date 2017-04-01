@@ -16,18 +16,33 @@ package com.buffalokiwi.aerodrome.jet;
 
 import com.buffalokiwi.api.APILog;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
-import java.util.Locale;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Represents a Date from a Jet API Response.
+ * A wrapper for all of the various date/time formats used within the Jet API.
  * 
- * Date time format:
- * yyyy-MM-dd'T'HH:mm:ss 
+ * A set of base formats have been included in the base configuration.
+ * 
+ * Formats:
+ * yyyy-MM-dd'T'HH:mm:ss
+ * yyyy-MM-dd'T'HH:mm:ss'Z'
+ * yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'
+ * yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX
  * 
  * 
  * @todo Remove all of this shit and replace it with the java 8 java.time stuff.
@@ -37,30 +52,94 @@ import org.apache.commons.logging.LogFactory;
 public class JetDate implements IJetDate 
 {  
   /**
-   * Default date format 
+   * Local time without timezone.
+   * If not specified, this will assume the offset to be ZoneId.systemDefault()
    */
-  private static final String DEFAULT_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";  
- 
+  public static final String FMT_LOCAL = "yyyy-MM-dd'T'HH:mm:ss";
+  
+  /**
+   * UTC 
+   */
+  public static final String FMT_ZULU = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+  
+  /**
+   * UTC with microseconds
+   */
+  public static final String FMT_ZULU_MICRO = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'";
+  
+  /**
+   * UTC with forced zeroed microseconds
+   */
+  public static final String FMT_ZULU_ZERO = "yyyy-MM-dd'T'HH:mm:ss'.0000000'Z";
+  
+  /**
+   * Local date/time with microseconds and timezone offset 
+   */
+  public static final String FMT_LOCAL_MICRO = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX";
+  
+  
+       
+  /**
+   * Available formats for the parser to try
+   */
+  private static final List<DateTimeFormatter> FORMATS = new CopyOnWriteArrayList<>();
+  
   /**
    * Logger 
    */
-  private static final Log LOG = LogFactory.getLog(ISO8601UTCDate.class );
+  private static final Log LOG = LogFactory.getLog( JetDate.class );
+
   
   /**
-   * Date string from jet 
+   * The zoned date and time to UTC
    */
-  private final String date;
+  private final ZonedDateTime date;
   
   /**
-   * The data date or the current date if it fails to format 
+   * The zone offset 
    */
-  private final Date javaDate;
+  private final ZoneOffset offset;
+  
+  /**
+   * Initialize the date/time formats used by Jet 
+   */
+  static {
+    FORMATS.add( DateTimeFormatter.ISO_ZONED_DATE_TIME );
+    FORMATS.add( DateTimeFormatter.ISO_OFFSET_DATE_TIME );
+    FORMATS.add( DateTimeFormatter.ISO_DATE_TIME );
+    FORMATS.add(  new DateTimeFormatterBuilder()
+      .appendPattern( FMT_LOCAL )
+      .appendFraction( ChronoField.MICRO_OF_SECOND, 0, 9, true )
+      .appendOffset( "+HH:MM", "Z" )
+      .toFormatter());
+    FORMATS.add(  new DateTimeFormatterBuilder()
+      .appendPattern( FMT_LOCAL )
+      .appendFraction( ChronoField.MICRO_OF_SECOND, 0, 9, true )
+      .appendOffset( "+HHMM", "+0000" )
+      .toFormatter());    
+    FORMATS.add( new DateTimeFormatterBuilder()
+      .appendPattern( FMT_LOCAL )
+      .toFormatter());
+  }
+  
+  
+  /**
+   * Add a custom date/time format to the list 
+   * @param format Format to add
+   */
+  public void addFormat( final DateTimeFormatter format )
+  {
+    if ( format == null )
+      throw new IllegalArgumentException( "format can't be null" );
+    
+    if ( !FORMATS.contains( format ))
+      FORMATS.add( format );
+  }
 
   
   /**
    * Attempt to take some value and turn it into a valid JetDate.
    * If it isn't valid, then this returns null.
-   * This will accept a date with a freakin' Z at the end.
    * 
    * @param value Jet value 
    * @return date or null
@@ -70,79 +149,83 @@ public class JetDate implements IJetDate
     if ( value == null || value.isEmpty())
       return null;
     
-    if ( value.endsWith( "Z" ))
-      value = value.substring( 0, value.length() - 1 );
-    
-    try {
-      return new JetDate( new SimpleDateFormat( 
-        DEFAULT_FORMAT, Locale.ENGLISH ).parse( value ));
-    } catch( ParseException e ) {
-      APILog.error( LOG, e, "Failed to parse date", value, "with format", 
-        DEFAULT_FORMAT );
-      return null;
+    for ( final DateTimeFormatter fmt : FORMATS )
+    {
+      try {
+        final TemporalAccessor t = fmt.parse( value );
+        
+        try {
+          return new JetDate( ZonedDateTime.from( t ), ZoneOffset.from( t ));          
+        } catch( DateTimeException e ) {
+          APILog.warn( LOG, e, "Failed to determine timezone.  Defaulting to local offset" );
+          final LocalDateTime local = LocalDateTime.from( t );
+          final ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset( Instant.now());
+          return new JetDate( ZonedDateTime.of( local, offset ), offset );
+        }
+      } catch( DateTimeParseException e ) {
+        //..do nothing, yet.
+      } 
     }
+    
+    
+    
+    
+    
+    //..Not found.  Log it and return null
+    APILog.error(  LOG, "Failed to parse date string:", value );
+    return null;
+  }
+
+  
+  
+  public JetDate( final ZonedDateTime zdt, final ZoneOffset offset )
+  {
+    if ( zdt == null )
+      throw new IllegalArgumentException( "zdt can't be null" );
+    else if ( offset == null )
+      throw new IllegalArgumentException( "offset can't be null" );    
+    else if ( !offset.equals( ZoneOffset.UTC ))
+      date = zdt.withZoneSameInstant( ZoneOffset.UTC );
+    else
+      date = zdt;
+    
+    this.offset = offset;
   }
   
   
+  
   /**
-   * Create a new JetDate set to now 
+   * Create a new JetDate set to now.
+   * This will use the local system offset
    */
   public JetDate()
   {
-    this( new Date());
+    this( Instant.now().atZone( ZoneId.systemDefault()), ZoneId.systemDefault().getRules().getOffset( Instant.now()));
   }
   
   
   /**
-   * Create a new JetDate
-   * @param date Date string
-   */
-  public JetDate( final String date )
-  {
-    this( date, DEFAULT_FORMAT );
-  }
-  
-  
-  /**
-   * Create a new JetDate
+   * Create a new JetDate using the local system offset 
    * @param date date to use 
    */
   public JetDate( final Date date )
   {
-    Utils.checkNull( date, "date" );
+    if ( date == null )
+      throw new IllegalArgumentException( "date can't be null" );
     
-    this.javaDate = new Date( date.getTime());
-    this.date = new SimpleDateFormat( DEFAULT_FORMAT, Locale.ENGLISH ).format( javaDate );    
-  }
-
-
-  /**
-   * Create a new JetDate
-   * @param date date to use 
-   * @param format format string
-   */
-  public JetDate( final Date date, final String format )
-  {
-    Utils.checkNull( date, "date" );
-    
-    this.javaDate = new Date( date.getTime());
-    this.date = new SimpleDateFormat( format, Locale.ENGLISH ).format( javaDate );    
+    this.date = date.toInstant().atZone( ZoneId.systemDefault());
+    offset = ZoneId.systemDefault().getRules().getOffset( date.toInstant());
   }
   
   
-  
   /**
-   * Create a new JetDate
-   * @param date Date
-   * @param format Format pattern 
+   * Retrieve the jet date in the local time zone
+   * @return zoned time
    */
-  public JetDate( final String date, final String format )
+  @Override
+  public ZonedDateTime getLocalDate()
   {
-    Utils.checkNull( date, "date cannot be null");
-    
-    this.date = date;
-    javaDate = formatDate( date, format ); 
-    
+    return date.withZoneSameInstant( ZoneId.systemDefault());
   }
 
   
@@ -152,58 +235,62 @@ public class JetDate implements IJetDate
    * @return date string 
    */
   @Override
-  public String getDateString()
+  public String getDateString( final String pattern )
   {
-    return date;
+    return date.format( DateTimeFormatter.ofPattern( pattern ));
   }
   
   
   /**
-   * Retrieve the date.
-   * Note: this can be incorrect if the formatter failed.
+   * Retrieve the local date as a string.
+   * This does NOT include zone information
+   * @return date/time
+   */
+  @Override
+  public String getLocalDateString()
+  {
+    return date.withZoneSameInstant( offset ).format(  DateTimeFormatter.ofPattern( FMT_LOCAL ));
+  }
+  
+  
+  
+  /**
+   * Retrieve the date in UTC.
    * @return  Date
    */
   @Override
   public Date getDate()
   {
-    return javaDate;
+    return new Date( date.toInstant().getEpochSecond());
   }
   
   
   /**
-   * Convert this date into some sql representation.
-   * This effectively drops timezone information.
+   * Convert whatever date this is to the system zone
+   * @return system date/time
+   */
+  @Override
+  public Date toLocalDate()
+  {
+    return new Date( date.withZoneSameInstant( ZoneId.systemDefault()).toInstant().getEpochSecond());
+  }
+  
+  
+  /**
+   * Converts the internal UTC date/time to a timestamp.
+   * The returned Timestamp will always be UTC.
    * @return timestamp
    */
   @Override
   public Timestamp toSqlTimestamp()
   {
-    return new Timestamp( javaDate.getTime());
-  }
-  
-  
-  
-  /**
-   * Attempt to format the date using the formatter.
-   * @param date Date string
-   * @param format Format pattern
-   * @return Formatted Date or now 
-   */
-  private Date formatDate( final String date, final String format )
-  {
-    try {
-      return ( new SimpleDateFormat( 
-        format, Locale.ENGLISH )).parse( date );      
-    } catch( ParseException e ) {
-      APILog.error( LOG, e, "Failed to parse date", date, "with format", format );
-      return new Date( 0 );
-    }    
+    return new Timestamp( date.toInstant().getEpochSecond());
   }
   
   
   @Override
   public String toString()
   {
-    return getDateString();
+    return getDateString( FMT_ZULU_MICRO );
   }
 }

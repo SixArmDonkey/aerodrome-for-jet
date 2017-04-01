@@ -15,7 +15,7 @@
 package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.IJetDate;
-import com.buffalokiwi.aerodrome.jet.ISO8601UTCDate;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.ShippingCarrier;
 import com.buffalokiwi.aerodrome.jet.ShippingMethod;
@@ -70,8 +70,8 @@ public class OrderDetailRec implements Jsonable
       ShippingCarrier.fromText( json.getString( "request_shipping_carrier", "" )),
       ShippingMethod.fromText( json.getString( "request_shipping_method", "" )),
       ShippingServiceLevel.fromText( json.getString( "request_service_level", "" )),
-      new ISO8601UTCDate( json.getString( "request_ship_by", "" )),
-      new ISO8601UTCDate( json.getString( "request_delivery_by", "" ))
+      JetDate.fromJetValueOrNull( json.getString( "request_ship_by", "" )),
+      JetDate.fromJetValueOrNull( json.getString( "request_delivery_by", "" ))
     );
   }
   
@@ -171,8 +171,8 @@ public class OrderDetailRec implements Jsonable
       .add( "request_shipping_carrier", requestShippingCarrier.getText())
       .add( "request_shipping_method", requestShippingMethod.getText())
       .add( "request_service_level", requestServiceLevel.getText())
-      .add( "request_ship_by", requestShipBy.getDateString())
-      .add( "request_delivery_by", requestDeliveryBy.getDateString())
+      .add( "request_ship_by", requestShipBy.getDateString( JetDate.FMT_ZULU ))
+      .add( "request_delivery_by", requestDeliveryBy.getDateString( JetDate.FMT_ZULU ))
       .build();
   }
   

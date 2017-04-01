@@ -2225,6 +2225,5 @@ public class DefaultJetConfig implements JetConfig
     return uriGetTaggedOrders.replace( "{status}", status )
       .replace( "{tag}", tag )
       .replace( "{include}", (include) ? "true" : "false" );
-  }
-  
+  }  
 }

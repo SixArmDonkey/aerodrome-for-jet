@@ -15,6 +15,7 @@
 package com.buffalokiwi.aerodrome.jet;
 
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 
@@ -34,12 +35,19 @@ public interface IJetDate
   public Date getDate();
 
   /**
-   * Retrieve the exact string retrieved from the jet api response that
+   * Retrieve the exact string retrieved from the jet api response that 
    * represents a date.
-   * @return date string
+   * @return date string 
    */
-  public String getDateString();  
+  public String getDateString( final String pattern ); 
   
+  
+  /**
+   * Retrieve the local date as a string.
+   * This does NOT include zone information
+   * @return date/time
+   */
+  public String getLocalDateString();
   
   /**
    * Convert this date into some sql representation.
@@ -47,4 +55,16 @@ public interface IJetDate
    * @return timestamp
    */
   public Timestamp toSqlTimestamp();
+  
+  /**
+   * Retrieve the jet date in the local time zone
+   * @return zoned time
+   */
+  public ZonedDateTime getLocalDate();  
+  
+  /**
+   * Convert whatever date this is to the system zone
+   * @return system date/time
+   */
+  public Date toLocalDate();  
 }
