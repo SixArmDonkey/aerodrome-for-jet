@@ -50,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  * @author John Quinn
  */
 public class JetDate implements IJetDate 
-{  
+{
   /**
    * Local time without timezone.
    * If not specified, this will assume the offset to be ZoneId.systemDefault()
@@ -76,8 +76,6 @@ public class JetDate implements IJetDate
    * Local date/time with microseconds and timezone offset 
    */
   public static final String FMT_LOCAL_MICRO = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX";
-  
-  
        
   /**
    * Available formats for the parser to try
@@ -88,7 +86,6 @@ public class JetDate implements IJetDate
    * Logger 
    */
   private static final Log LOG = LogFactory.getLog( JetDate.class );
-
   
   /**
    * The zoned date and time to UTC
@@ -99,6 +96,7 @@ public class JetDate implements IJetDate
    * The zone offset 
    */
   private final ZoneOffset offset;
+  
   
   /**
    * Initialize the date/time formats used by Jet 
@@ -116,7 +114,7 @@ public class JetDate implements IJetDate
       .appendPattern( FMT_LOCAL )
       .appendFraction( ChronoField.MICRO_OF_SECOND, 0, 9, true )
       .appendOffset( "+HHMM", "+0000" )
-      .toFormatter());    
+      .toFormatter());
     FORMATS.add( new DateTimeFormatterBuilder()
       .appendPattern( FMT_LOCAL )
       .toFormatter());
@@ -250,8 +248,7 @@ public class JetDate implements IJetDate
   public String getLocalDateString()
   {
     return date.withZoneSameInstant( offset ).format(  DateTimeFormatter.ofPattern( FMT_LOCAL ));
-  }
-  
+  }  
   
   
   /**
@@ -261,7 +258,7 @@ public class JetDate implements IJetDate
   @Override
   public Date getDate()
   {
-    return new Date( date.toInstant().getEpochSecond());
+    return Date.from( date.toInstant());
   }
   
   
@@ -272,7 +269,7 @@ public class JetDate implements IJetDate
   @Override
   public Date toLocalDate()
   {
-    return new Date( date.withZoneSameInstant( ZoneId.systemDefault()).toInstant().getEpochSecond());
+    return Date.from( date.withZoneSameInstant( ZoneId.systemDefault()).toInstant());
   }
   
   
@@ -284,7 +281,7 @@ public class JetDate implements IJetDate
   @Override
   public Timestamp toSqlTimestamp()
   {
-    return new Timestamp( date.toInstant().getEpochSecond());
+    return new Timestamp( getDate().getTime());
   }
   
   
