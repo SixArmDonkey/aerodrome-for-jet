@@ -12,11 +12,11 @@
 [![TaxonomyAPI](https://img.shields.io/badge/Taxonomy%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#taxonomy-api)
 [![SettlementAPI](https://img.shields.io/badge/Settlement%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#settlement-api)
 
-
-### Don't want to code it yourself?  Try Aerodrome Pro! 
+---
+## Don't want to code it yourself?  Try Aerodrome Pro! 
 Aerodrome Professional is a complete graphical implementation of every feature on Jet.  
 [Get it today!](https://www.buffalokiwi.com)
-
+---
 
 The source is completely documented, check out the JavaDoc here: https://sixarmdonkey.github.io/aerodrome-for-jet/ .
 
