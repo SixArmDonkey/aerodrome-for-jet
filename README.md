@@ -420,47 +420,53 @@ or simply streaming some json file through the library.
 
 ```java
 //..First create an upload library instance 
-JetAPIBulkProductUpload up = new JetAPIBulkProductUpload( client, config );
+ 
+    final JetAPIBulkProductUpload up = new JetAPIBulkProductUpload( client, config );
     
-//...Create a list of products to be uploaded 
-List<ProductRec> products = new ArrayList<>();
-products.add( getTestProduct());
+    List<ProductRec> products = new ArrayList<>();
+    products.add( getTestProduct());
     
-//..The local filename to write the bulk product data to
-File file = new File( "/path/to/merchant-skus.json.gz" );
+    //..The local filename to write the bulk product data to
+    final File file = new File( "/home/john/jetproducttext.json.gz" );
+    
+    try ( final BulkProductFileGenerator gen = new BulkProductFileGenerator( file )) 
+    {      
+      //..Write the product json to a gzip file
+      for ( final ProductRec pRec : products )
+      {
+        gen.writeLine( pRec );
+      }
+    } catch( IOException e ) {
+      fail( "Failed to open output file", 0, e );
+    }
+     
+    try {
+      //..Get authorization to upload a file
+      final BulkUploadAuthRec uploadToken = up.getUploadToken();
+      
+      //..Sends the authorized gzip file to the url specified in the uploadToken response.
+      up.sendAuthorizedFile( uploadToken.getUrl(), new PostFile( file, ContentType.create( "application/x-gzip" ), "gzip", uploadToken.getJetFileId()));
+      
+      //..If you want to add an additional file to an existing authorization token/processing batch on jet, create a new PostFile instance for the new file
+      final PostFile pf = new PostFile( file, ContentType.DEFAULT_BINARY, "gzip", file.getName());
+      
+      //..Post the request for a file addition to 
+      JsonObject addRes = up.sendPostUploadedFiles( uploadToken.getUrl(), pf.getFilename(), BulkUploadFileType.MERCHANT_SKUS ).getJsonObject();
+      
+      //..Send the next file up to the batch 
+      up.sendAuthorizedFile( addRes.getString( "url" ), pf );
+      
+      //..Get some stats for an uploaded file 
+      up.getJetFileId( uploadToken.getJetFileId());
+      
+      //..And get some stats for the other uploaded file.
+      up.getJetFileId( addRes.getString( "jet_file_id" ));
+      
+    } catch( Exception e ) {
+      fail( "Failed to bulk", 0, e );
+    }
+    
 
-//..Write the product json to a gzip file
-up.generateBulkSkuUploadFile( products, file );
-
-//..Get authorization to upload a file
-BulkUploadAuthRec uploadToken = up.getUploadToken();
-
-//..Sends the authorized gzip file to the url specified in the uploadToken response.
-up.sendAuthorizedFile( 
-  uploadToken.getUrl(), //..Authorization url from jet 
-  new PostFile( //..Create an object to upload a file 
-    file, //..Local filename 
-    ContentType.create( "application/x-gzip" ), //..content type
-    "gzip", //..Content encoding
-    uploadToken.getJetFileId() //..The jet file id to use (from jet)
-));
-```
-
-
-If you want to add an additional file to an existing authorization 
-token/processing batch on jet, create a new PostFile instance for the new file
-
-
-```java
-
-PostFile pf = new PostFile( file, ContentType.DEFAULT_BINARY, "gzip", file.getName());
-
-//..Post the request for a file addition to 
-JsonObject addRes = up.sendPostUploadedFiles( 
-  uploadToken.getUrl(), pf, BulkUploadFileType.MERCHANT_SKUS ).getJsonObject();
-
-//..Send the next file up to the batch 
-up.sendAuthorizedFile( addRes.getString( "url" ), pf );
 ```
 
 Then you can retrieve the status for any of the uploads
