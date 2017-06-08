@@ -16,10 +16,10 @@
 ### Don't want to code it yourself?  Try Aerodrome Pro! 
 
 Aerodrome Professional is a complete graphical implementation of every feature on Jet.  
-[Get it today!](https://www.buffalokiwi.com)
+[Get it today!](http://buffalokiwi.com)
 
 
-[![Aerodrome Professional](https://static.wixstatic.com/media/52d235_60448c10ad0949c592cb4b307067cadf~mv2.png/v1/fill/w_454,h_204,al_c,usm_0.66_1.00_0.01/52d235_60448c10ad0949c592cb4b307067cadf~mv2.png)](https://www.buffalokiwi.com)
+[![Aerodrome Professional](http://buffalokiwi.com/public/images/aerodrome-logo.png)](http://buffalokiwi.com)
 
 ---
 
