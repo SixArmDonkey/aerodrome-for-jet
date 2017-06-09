@@ -289,7 +289,7 @@ for( FNodeInventoryRec node : inventory.getNodes())
   int quantity = node.getQuantity()
 }
 ```
-
+ 
 
 ### 8: Get Product Variations
 
