@@ -153,12 +153,12 @@ public class JetDate implements IJetDate
         final TemporalAccessor t = fmt.parse( value );
         
         try {
-          return new JetDate( ZonedDateTime.from( t ), ZoneOffset.from( t ));          
+          return new JetDate( ZonedDateTime.from( t ));//, ZoneOffset.from( t ));          
         } catch( DateTimeException e ) {
           APILog.warn( LOG, e, "Failed to determine timezone.  Defaulting to local offset" );
           final LocalDateTime local = LocalDateTime.from( t );
           final ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset( Instant.now());
-          return new JetDate( ZonedDateTime.of( local, offset ), offset );
+          return new JetDate( ZonedDateTime.of( local, offset ));//, offset );
         }
       } catch( DateTimeParseException e ) {
         //..do nothing, yet.
@@ -176,18 +176,14 @@ public class JetDate implements IJetDate
 
   
   
-  public JetDate( final ZonedDateTime zdt, final ZoneOffset offset )
+  public JetDate( final ZonedDateTime zdt )
   {
     if ( zdt == null )
       throw new IllegalArgumentException( "zdt can't be null" );
-    else if ( offset == null )
-      throw new IllegalArgumentException( "offset can't be null" );    
-    else if ( !offset.equals( ZoneOffset.UTC ))
-      date = zdt.withZoneSameInstant( ZoneOffset.UTC );
-    else
-      date = zdt;
     
-    this.offset = offset;
+    date = zdt;
+    
+    this.offset = zdt.getOffset();
   }
   
   
@@ -198,7 +194,7 @@ public class JetDate implements IJetDate
    */
   public JetDate()
   {
-    this( Instant.now().atZone( ZoneId.systemDefault()), ZoneId.systemDefault().getRules().getOffset( Instant.now()));
+    this( Instant.now().atZone( ZoneId.systemDefault()));//, ZoneId.systemDefault().getRules().getOffset( Instant.now()));
   }
   
   

@@ -726,7 +726,7 @@ public class Aerodrome
         .setCarrier( order.getOrderDetail().getRequestShippingCarrier())
         .setTrackingNumber( "Z123456780123456" )
         .setShipmentDate( new JetDate())
-        .setExpectedDeliveryDate( new JetDate( ZonedDateTime.from( Instant.now()).withZoneSameInstant( ZoneId.systemDefault()).plusDays( 2 ), ZoneId.systemDefault().getRules().getOffset( Instant.now())))
+        .setExpectedDeliveryDate( new JetDate( ZonedDateTime.from( Instant.now()).withZoneSameInstant( ZoneId.systemDefault()).plusDays( 2 )))
         .setShipFromZip( "38473" )
         .setPickupDate( new JetDate())
         .setItems( shipmentItems )
