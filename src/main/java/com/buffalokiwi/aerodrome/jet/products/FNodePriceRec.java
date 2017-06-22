@@ -49,11 +49,9 @@ public class FNodePriceRec implements Jsonable
     if ( node == null )
       throw new IllegalArgumentException( "node cannot be null" );
     
-    JsonNumber n = node.getJsonNumber(  "fulfillment_node_price" );
-    
     return new FNodePriceRec(
       node.getString( "fulfillment_node_id", "0" ),
-      Utils.jsonNumberToMoney( n ) 
+      Utils.jsonNumberToMoney( node, "fulfillment_node_price" ) 
     );
   }
 

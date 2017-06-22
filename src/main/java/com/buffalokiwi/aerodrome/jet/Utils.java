@@ -390,11 +390,40 @@ public class Utils
   }
   
   
+  public static Money jsonNumberToMoney( final JsonObject json, final String property )
+  {
+    if ( json == null || property == null || property.isEmpty())
+      return new Money();
+    
+    try {
+      return jsonNumberToMoney( json.getJsonNumber( property ));
+    } catch( Exception e ) {
+      return new Money();
+    }
+  }
+  
+  
+  
+  
+  
   public static BigDecimal jsonNumberToBigDecimal( final JsonNumber n, final int defaultValue )
   {
     if ( n == null )
       return new BigDecimal( defaultValue );
     
     return n.bigDecimalValue();
+  }
+  
+  
+  public static BigDecimal jsonNumberToBigDecimal( final JsonObject json, final String property, final int defaultValue )
+  {
+    if ( json == null || property == null || property.isEmpty())
+      return new BigDecimal( defaultValue );
+    
+    try {
+      return jsonNumberToBigDecimal( json.getJsonNumber( property ), defaultValue );
+    } catch( Exception e ) {
+      return new BigDecimal( defaultValue );
+    }
   }
 }

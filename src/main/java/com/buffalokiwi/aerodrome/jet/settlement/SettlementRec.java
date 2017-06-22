@@ -346,15 +346,15 @@ public class SettlementRec implements Jsonable
       .setState( SettlementState.fromText( 
         json.getString(  "settlement_state", "" )))
       .setCurrency( json.getString( "currency", "" ))
-      .setUnavailableBalance( Utils.jsonNumberToMoney( json.getJsonNumber( "unavailable_balance" )))
+      .setUnavailableBalance( Utils.jsonNumberToMoney( json, "unavailable_balance" ))
       .setPeriodStart( JetDate.fromJetValueOrNull( 
         json.getString( "settlement_period_start", "" )))
       .setPeriodEnd( JetDate.fromJetValueOrNull( 
         json.getString( "settlement_period_end", "" )))
-      .setOrderBalance( Utils.jsonNumberToMoney( json.getJsonNumber( "order_balanace" )))
-      .setReturnBalance( Utils.jsonNumberToMoney( json.getJsonNumber( "return_balance" )))
-      .setJetAdjustment( Utils.jsonNumberToMoney( json.getJsonNumber( "jet_adjustment" )))
-      .setSettlementValue( Utils.jsonNumberToMoney( json.getJsonNumber( "settlement_value" )));
+      .setOrderBalance( Utils.jsonNumberToMoney( json, "order_balanace" ))
+      .setReturnBalance( Utils.jsonNumberToMoney( json, "return_balance" ))
+      .setJetAdjustment( Utils.jsonNumberToMoney( json, "jet_adjustment" ))
+      .setSettlementValue( Utils.jsonNumberToMoney( json, "settlement_value" ));
     
     final JsonObject od = json.getJsonObject( "order_balance_details" );
     if ( od != null )

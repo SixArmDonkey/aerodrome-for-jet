@@ -72,7 +72,7 @@ public class ProductPriceRec implements Jsonable
     }
     
     return new ProductPriceRec(
-      Utils.jsonNumberToMoney( json.getJsonNumber( "price" )),
+      Utils.jsonNumberToMoney( json, "price" ),
       JetDate.fromJetValueOrNull( json.getString( "price_last_update", "" )),
       nodes
     );

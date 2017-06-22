@@ -26,6 +26,13 @@ import javax.json.JsonObjectBuilder;
 
 /**
  * Represents an item in a shipment 
+ * 
+ * A note about shipment_item_id: 
+ * 
+ * While this property is still sent by Jet, they do not want it 
+ * sent back.  Hopefully they do not remove shipment_item_id entirely, but just
+ * be aware that it is not currently listed in any documentation online, and 
+ * it may be generally unsafe to rely on it.
  * @author John Quinn
  */
 public class ShipmentItemRec implements Jsonable
@@ -33,6 +40,7 @@ public class ShipmentItemRec implements Jsonable
     
   /**
    * Jet's unique identifier for an item in a shipment.
+   * @deprecated 
    */
   private final String itemId;
     
@@ -82,6 +90,7 @@ public class ShipmentItemRec implements Jsonable
   {
     /**
      * Jet's unique identifier for an item in a shipment.
+     * @deprecated
      */
     private String itemId = "";
     
@@ -128,6 +137,7 @@ public class ShipmentItemRec implements Jsonable
      * Set Jet's unique identifier for an item in a shipment.
      * @param itemId the itemId to set
      * @return this
+     * @deprecated
      */
     public Builder setItemId( final String itemId )
     { 
@@ -311,6 +321,7 @@ public class ShipmentItemRec implements Jsonable
 
     /**
      * @return the itemId
+     * @deprecated
      */
     public String getItemId()
     {
@@ -460,6 +471,7 @@ public class ShipmentItemRec implements Jsonable
   /**
    * Get Jet's unique identifier for an item in a shipment.
    * @return the itemId
+   * @deprecated
    */
   public String getItemId() 
   {
@@ -541,7 +553,7 @@ public class ShipmentItemRec implements Jsonable
   public JsonObject toJSON()
   {
     final JsonObjectBuilder out = Json.createObjectBuilder()
-      .add( "shipment_item_id", itemId )
+      //.add( "shipment_item_id", itemId ) //..Removed by jet
       .add( "alt_shipment_item_id", altItemId )
       .add( "merchant_sku", merchantSku )
       .add( "response_shipment_sku_quantity", quantity )

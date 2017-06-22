@@ -165,13 +165,13 @@ public class OrderDetailRec extends BalanceDetailRec
     Utils.checkNull( json, "json" );
     
     return new Builder()
-      .setMerchantPrice( Utils.jsonNumberToMoney( json.getJsonNumber( "merchant_price")))
-      .setVariableCommission( Utils.jsonNumberToMoney( json.getJsonNumber( "jet_variable_commission")))
-      .setFixedCommission( Utils.jsonNumberToMoney( json.getJsonNumber( "fixed_commission")))
-      .setTax( Utils.jsonNumberToMoney( json.getJsonNumber( "tax" )))
-      .setShippingTax( Utils.jsonNumberToMoney( json.getJsonNumber( "shipping_tax" )))
-      .setMerchantReturnCharge( Utils.jsonNumberToMoney( json.getJsonNumber( "merchant_return_charge" )))
-      .setReturnFee( Utils.jsonNumberToMoney( json.getJsonNumber( "return_processing_fee" )))
+      .setMerchantPrice( Utils.jsonNumberToMoney( json, "merchant_price"))
+      .setVariableCommission( Utils.jsonNumberToMoney( json, "jet_variable_commission"))
+      .setFixedCommission( Utils.jsonNumberToMoney( json, "fixed_commission"))
+      .setTax( Utils.jsonNumberToMoney( json, "tax" ))
+      .setShippingTax( Utils.jsonNumberToMoney( json, "shipping_tax" ))
+      .setMerchantReturnCharge( Utils.jsonNumberToMoney( json, "merchant_return_charge" ))
+      .setReturnFee( Utils.jsonNumberToMoney( json, "return_processing_fee" ))
       .build();
   }
   

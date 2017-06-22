@@ -72,8 +72,8 @@ public class OfferRec
     
     return new OfferRec(
       json.getString( "shipping_method", "" ),
-      Utils.jsonNumberToMoney( json.getJsonNumber( "item_price")),
-      Utils.jsonNumberToMoney( json.getJsonNumber( "shipping_price" )),
+      Utils.jsonNumberToMoney( json, "item_price" ),
+      Utils.jsonNumberToMoney( json, "shipping_price" ),
       JetDate.fromJetValueOrNull( json.getString( "last_update", "" ))
     );
   }

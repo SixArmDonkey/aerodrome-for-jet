@@ -2330,26 +2330,26 @@ public class ProductRec implements Jsonable
     out.setMfrPartNumber( json.getString( "mfr_part_number", "" ));
     out.setProductDescription( json.getString( "product_description", "" ));
     out.setBullets( loadStringArray( json.getJsonArray( "bullets" )));
-    out.setNumberUnitsForPricePerUnit( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "number_units_for_price_per_unit" ) , 1 ));
+    out.setNumberUnitsForPricePerUnit( Utils.jsonNumberToBigDecimal( json, "number_units_for_price_per_unit", 1 ));
     out.setTypeOfUnitForPricePerUnit( json.getString( "type_of_unit_for_price_per_unit", "each" ));
-    out.setShippingWeightPounds( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "shipping_weight_pounds" ), 0 ));
-    out.setPackageLengthInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_length_inches" ), 0 ));
-    out.setPackageWidthInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_width_inches" ), 0 ));
-    out.setPackageHeightInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "package_height_inches" ), 0 ));
-    out.setDisplayLengthInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_length_inches" ), 0 ));
-    out.setDisplayWidthInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_width_inches" ), 0 ));
-    out.setDisplayHeightInches( Utils.jsonNumberToBigDecimal( json.getJsonNumber( "display_height_inches" ), 0 ));
+    out.setShippingWeightPounds( Utils.jsonNumberToBigDecimal( json, "shipping_weight_pounds", 0 ));
+    out.setPackageLengthInches( Utils.jsonNumberToBigDecimal( json, "package_length_inches", 0 ));
+    out.setPackageWidthInches( Utils.jsonNumberToBigDecimal( json, "package_width_inches", 0 ));
+    out.setPackageHeightInches( Utils.jsonNumberToBigDecimal( json, "package_height_inches", 0 ));
+    out.setDisplayLengthInches( Utils.jsonNumberToBigDecimal( json, "display_length_inches", 0 ));
+    out.setDisplayWidthInches( Utils.jsonNumberToBigDecimal( json, "display_width_inches", 0 ));
+    out.setDisplayHeightInches( Utils.jsonNumberToBigDecimal( json, "display_height_inches", 0 ));
     out.setProp65( json.getBoolean( "prop_65", false ));
     out.setLegalDisclaimerDescription( json.getString( "legal_disclaimer_description", "" ));
     out.setCpsiaStatements( loadCPSIA( json.getJsonArray( "cpsia_cautionary_statements" )));
     out.setCountryOfOrigin( json.getString( "country_of_origin", "" ));
     out.setSafetyWarning( json.getString( "safety_warning", "" ));
     out.setFulfillmentTime( json.getInt( "fulfillment_time", 1 ));
-    out.setMsrp( Utils.jsonNumberToMoney( json.getJsonNumber( "msrp" )));
-    out.setMapPrice( Utils.jsonNumberToMoney( json.getJsonNumber( "map_price" )));
+    out.setMsrp( Utils.jsonNumberToMoney( json, "msrp" ));
+    out.setMapPrice( Utils.jsonNumberToMoney( json, "map_price" ));
     out.setMapImplementation( MAPType.fromJet( json.getString( "map_implementation", MAPType.NO_RESTRICTIONS.getType())));
     out.setProductTaxCode( ProductTaxCode.fromText( json.getString( "product_tax_code", "" )));
-    out.setNoReturnFeeAdj( Utils.jsonNumberToMoney( json.getJsonNumber( "no_return_fee_adjustment" )));
+    out.setNoReturnFeeAdj( Utils.jsonNumberToMoney( json, "no_return_fee_adjustment" ));
     out.setExcludeFromFeeAdjustments( json.getBoolean( "exclude_from_fee_adjustments", false ));
     out.setAttributesNodeSpecific( loadAttrNodeSpecific( json.getJsonArray( "attributes_node_specific" )));
     out.setMainImageUrl( json.getString( "main_image_url", "" ));
@@ -2357,7 +2357,7 @@ public class ProductRec implements Jsonable
     out.setAlternateImages( loadAltImages( json.getJsonArray( "alternate_images" )));
     out.setAzItemTypeKeyword( json.getString( "amazon_item_type_keyword", "" ));
     out.setCategoryPath( json.getString( "category_path", "" ));
-    out.setPrice( Utils.jsonNumberToMoney( json.getJsonNumber( "price" )));
+    out.setPrice( Utils.jsonNumberToMoney( json, "price" ));
     
     
     //..Deprecated or removed?    
@@ -2376,7 +2376,7 @@ public class ProductRec implements Jsonable
     out.merchantSkuId = json.getString( "merchant_sku_id", "" );    
     
     //..I'm not sure why this is here.
-    final Money m2 = Utils.jsonNumberToMoney( json.getJsonNumber( "msrp2" ));
+    final Money m2 = Utils.jsonNumberToMoney( json, "msrp2" );
     if ( out.getMsrp().lessThanEqualToZero() && m2.greaterThanZero())
       out.setMsrp( m2 );
     
@@ -3597,7 +3597,7 @@ public class ProductRec implements Jsonable
     {
       final JsonObject o = a.getJsonObject( i );
       out.add( new SkuAttributeRec( 
-        Utils.jsonNumberToBigDecimal( o.getJsonNumber("attribute_id" ), 0 ).longValue(), 
+        Utils.jsonNumberToBigDecimal( o, "attribute_id", 0 ).longValue(), 
         o.getString( "attribute_value", "" ), 
         o.getString( "attribute_value_unit", "" ))
       );

@@ -223,7 +223,7 @@ public class AttrRec implements Jsonable
     Utils.checkNull( json, "json" );
     
     final Builder b = new Builder()
-      .setId( Utils.getJsonNumber( json.getJsonNumber( "attribute_id" )).longValue())
+      .setId( Utils.jsonNumberToBigDecimal( json, "attribute_id", 0 ).longValue())
       .setDescription( json.getString( "attribute_description", "" ))
       .setFreeText( json.getBoolean( "free_text", false ))
       .setVariant( json.getBoolean( "variant", false ))

@@ -230,11 +230,11 @@ public class NodeRec
     Utils.checkNull( json, "json" );
     
     return new Builder()
-      .setJetNodeId( Utils.getJsonNumber( json.getJsonNumber( "jet_node_id" )).longValue())
+      .setJetNodeId( Utils.jsonNumberToBigDecimal( json, "jet_node_id", 0 ).longValue())
       .setJetNodeName( json.getString( "jet_node_name", "" ))
       .setJetNodePath( json.getString( "jet_node_path", "" ))
-      .setAmazonNodeId( Utils.getJsonNumber( json.getJsonNumber( "amazon_node_id" )).longValue())
-      .setJetParentNodeId( Utils.getJsonNumber( json.getJsonNumber( "parent_id" )).longValue())
+      .setAmazonNodeId( Utils.jsonNumberToBigDecimal( json, "amazon_node_id", 0 ).longValue())
+      .setJetParentNodeId( Utils.jsonNumberToBigDecimal( json, "parent_id", 0 ).longValue())
       .setJetLevel( JetLevel.fromText( json.getInt(  "jet_level", 0 )))
       .setTaxCode( ProductTaxCode.fromText( json.getString(  "suggested_tax_code" )))
       .setActive( json.getBoolean( "active", true ))

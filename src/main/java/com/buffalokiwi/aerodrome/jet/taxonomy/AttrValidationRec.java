@@ -57,8 +57,8 @@ public class AttrValidationRec implements Jsonable
     
     return new AttrValidationRec(
       json.getString( "data_type", "" ),
-      json.getJsonNumber( "min_value" ).longValue(),
-      json.getJsonNumber( "max_value" ).longValue()
+      Utils.jsonNumberToBigDecimal( json, "min_value", 0 ).longValue(),
+      Utils.jsonNumberToBigDecimal( json, "max_value", 0 ).longValue()
     );
   }
   

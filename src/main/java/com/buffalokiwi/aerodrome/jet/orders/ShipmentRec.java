@@ -32,7 +32,15 @@ import javax.json.JsonObjectBuilder;
 
 
 /**
- * Represents a shipment of something to somewhere 
+ * Represents a shipment of something to somewhere.
+ *  
+ * A note about shipment_id: 
+ * 
+ * While this property is still sent by Jet, they do not want it 
+ * sent back.  Hopefully they do not remove shipment_id entirely, but just
+ * be aware that it is not currently listed in any documentation online, and 
+ * it may be generally unsafe to rely on it.
+ * 
  * @author John Quinn
  */
 public class ShipmentRec implements Jsonable
@@ -40,6 +48,7 @@ public class ShipmentRec implements Jsonable
   /**
    * Jet's unique ID for a given shipment. This is not currently supported in 
    * any workflow.
+   * @deprecated
    */
   private final String shipmentId;
   
@@ -122,6 +131,7 @@ public class ShipmentRec implements Jsonable
     /**
      * Jet's unique ID for a given shipment. This is not currently supported 
      * in any workflow.
+     * @deprecated
      */
     private String shipmentId = "";
   
@@ -519,6 +529,7 @@ public class ShipmentRec implements Jsonable
     
     /**
      * @return the shipmentId
+     * @deprecated
      */
     public String getShipmentId()
     {
@@ -763,6 +774,7 @@ public class ShipmentRec implements Jsonable
    * Get Jet's unique ID for a given shipment. This is not currently supported 
    * in any workflow.
    * @return the shipmentId
+   * @deprecated
    */
   public String getShipmentId() 
   {
@@ -947,7 +959,7 @@ public class ShipmentRec implements Jsonable
   public JsonObject toJSON()
   {
     final JsonObjectBuilder b = Json.createObjectBuilder()
-      .add( "shipment_id", shipmentId )
+      //.add( "shipment_id", shipmentId )
       .add( "alt_shipment_id", altShipmentId );
     
     //..Only add shipment info if this has a tracking number 

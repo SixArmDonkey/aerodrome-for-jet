@@ -471,7 +471,7 @@ public class ReturnRec implements Jsonable
       .setAltReturnAuthId( json.getString( "alt_return_authorization_id", "" ))
       .setMerchantOrderId( json.getString( "merchant_order_id", "" ))
       .setMerchantReturnAuthId( json.getString( "merchant_return_authorization_id", "" ))
-      .setMerchantReturnCharge( Utils.jsonNumberToMoney( json.getJsonNumber( "merchant_return_charge" )))
+      .setMerchantReturnCharge( Utils.jsonNumberToMoney( json, "merchant_return_charge" ))
       .setReferenceOrderId( json.getString( "reference_order_id", "" ))
       .setReferenceReturnAuthId( json.getString( "reference_return_authorization_id", "" ))
       .setRefundWithoutReturn( json.getBoolean( "refund_without_return", false ))

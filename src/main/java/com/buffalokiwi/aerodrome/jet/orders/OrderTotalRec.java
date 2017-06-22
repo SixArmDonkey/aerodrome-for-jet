@@ -76,9 +76,9 @@ public class OrderTotalRec
     
     return new OrderTotalRec(
       ItemPriceRec.fromJson( json.getJsonObject( "item_price" )),
-      Utils.jsonNumberToMoney( json.getJsonNumber( "item_fees" )),
+      Utils.jsonNumberToMoney( json, "item_fees" ),
       adj,
-      Utils.jsonNumberToMoney( json.getJsonNumber( "regulatory_fees" ))      
+      Utils.jsonNumberToMoney( json, "regulatory_fees" )
     );
   }
   

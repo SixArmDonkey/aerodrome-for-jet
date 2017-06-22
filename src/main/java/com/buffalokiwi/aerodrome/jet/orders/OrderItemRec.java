@@ -483,10 +483,10 @@ public class OrderItemRec
       .setAdjReason( json.getString( "adjustment_reason", "" ))
       .setTaxCode( json.getString( "item_tax_code", "" ))
       .setUrl( json.getString( "url", "" ))
-      .setPriceAdj( Utils.jsonNumberToMoney( json.getJsonNumber( "price_adjustment" )))
-      .setFees( Utils.jsonNumberToMoney( json.getJsonNumber( "item_fees" )))
+      .setPriceAdj( Utils.jsonNumberToMoney( json, "price_adjustment" ))
+      .setFees( Utils.jsonNumberToMoney( json, "item_fees" ))
       .setTaxInfo( json.getString( "tax_info", "" )) //..This might not work...
-      .setRegFees( Utils.jsonNumberToMoney( json.getJsonNumber( "regulatory_fees" )))
+      .setRegFees( Utils.jsonNumberToMoney( json, "regulatory_fees" ))
       .setAdjustments( jsonToFeeAdj( json.getJsonArray( "fee_adjustments" )))
       .setItemAckStatus( ItemAckStatus.fromText( 
         json.getString( "order_item_acknowledgement_status", "" )));
