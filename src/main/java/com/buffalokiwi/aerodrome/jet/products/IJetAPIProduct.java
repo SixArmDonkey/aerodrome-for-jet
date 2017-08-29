@@ -46,6 +46,23 @@ public interface IJetAPIProduct extends IJetAPI {
    */
   public boolean addProduct( final ProductRec product ) throws APIException, JetException, ValidateException;
 
+  
+  /**
+   * Add/update a product within the jet catalog.
+   * Using original, modified will only send data to the appropriate endpoints.
+   * This can be used to help reduce the chances of having a product be sent
+   * back into the "under review" state.
+   * @param product Product to add
+   * @return Success
+   * @throws JetException if there is an error from the jet api
+   * @throws APIException if there is some sort of error with the api 
+   * library itself. A network issue, etc.
+   * @throws ValidateException if the product fails pre-submit validation
+   */
+  //@Override
+  public boolean addProduct( final ProductRec original, final ProductRec modified ) throws APIException, JetException, ValidateException;
+  
+  
   /**
    * Archive a product sku.
    *

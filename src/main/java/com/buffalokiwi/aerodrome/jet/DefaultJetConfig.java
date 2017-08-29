@@ -1359,8 +1359,7 @@ public class DefaultJetConfig implements JetConfig
     this.host = b.host;
     this.user = b.user;
     this.pass = b.pass;
-    this.lockHost = b.lockHost;
-    this.maxDownloadSize = b.maxDownloadSize;
+   
     this.uriToken = b.uriToken;
     this.uriAuthTest = b.uriAuthTest;
     this.merchantId = b.merchantId;
@@ -1371,6 +1370,9 @@ public class DefaultJetConfig implements JetConfig
     this.uriAddProductShipException = b.uriAddProductShipException;
     this.uriGetProduct = b.uriGetProduct;
     this.uriGetProductPrice = b.uriGetProductPrice;    
+    
+    this.lockHost = b.lockHost;
+    this.maxDownloadSize = b.maxDownloadSize;    
     this.readTimeout = b.readTimeout;
     this.acceptHeaderValue = b.acceptHeaderValue;
     this.acceptLanguageHeaderValue = b.acceptLanguageHeaderValue;
@@ -1432,17 +1434,6 @@ public class DefaultJetConfig implements JetConfig
   
   
   /**
-   * Get the returns exception url 
-   * @param sku sku 
-   * @return url 
-   */
-  @Override
-  public String getProductReturnsExceptionUrl( final String sku )
-  {
-    return uriReturnsException.replace( "{sku}", sku );
-  }
-  
-  /**
    * Retrieve the read timeout in milliseconds 
    * @return 
    */
@@ -1486,6 +1477,17 @@ public class DefaultJetConfig implements JetConfig
     return allowUntrustedSSL;
   }
   
+  
+  /**
+   * Get the returns exception url 
+   * @param sku sku 
+   * @return url 
+   */
+  @Override
+  public String getProductReturnsExceptionUrl( final String sku )
+  {
+    return uriReturnsException.replace( "{sku}", sku );
+  }
 
   /**
    * Retrieve the Jet API merchant id

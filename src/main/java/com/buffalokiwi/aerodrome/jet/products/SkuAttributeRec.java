@@ -15,6 +15,7 @@
 package com.buffalokiwi.aerodrome.jet.products;
 
 import com.buffalokiwi.aerodrome.jet.Jsonable;
+import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
@@ -132,6 +133,45 @@ public class SkuAttributeRec implements Jsonable
     this.val = val;
     this.unit = unit;
     this.name = name;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 41 * hash + (int) ( this.id ^ ( this.id >>> 32 ) );
+    hash = 41 * hash + Objects.hashCode( this.val );
+    hash = 41 * hash + Objects.hashCode( this.unit );
+  //  hash = 41 * hash + Objects.hashCode( this.name );
+    return hash;
+  }
+
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final SkuAttributeRec other = (SkuAttributeRec) obj;
+    if ( this.id != other.id ) {
+      return false;
+    }
+    if ( !Objects.equals( this.val, other.val ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.unit, other.unit ) ) {
+      return false;
+    }
+  //  if ( !Objects.equals( this.name, other.name ) ) {
+  //    return false;
+   // }
+    return true;
   }
   
   

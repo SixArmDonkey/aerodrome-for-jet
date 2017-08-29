@@ -19,6 +19,7 @@ import com.buffalokiwi.aerodrome.jet.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
@@ -107,6 +108,54 @@ public class ReturnsExceptionRec
       new ArrayList<>( returnLocationIds ));
     this.returnShippingMethods = Collections.unmodifiableList( 
       new ArrayList<>( returnShippingMethods ));
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 5;
+    hash = 17 * hash + this.timeToReturn;
+    hash = 17 * hash + Objects.hashCode( this.returnLocationIds );
+    hash = 17 * hash + Objects.hashCode( this.returnShippingMethods );
+    return hash;
+  }
+
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final ReturnsExceptionRec other = (ReturnsExceptionRec) obj;
+    if ( this.timeToReturn != other.timeToReturn ) {
+      return false;
+    }
+    
+    if ( this.returnLocationIds.size() != other.returnLocationIds.size())
+      return false;
+    
+    if ( this.returnShippingMethods.size() != other.returnShippingMethods.size())
+      return false;
+    
+    for ( final String id : this.returnLocationIds )
+    {
+      if ( !other.returnLocationIds.contains( id ))
+        return false;
+    }
+    
+    for ( final ShippingMethod method : this.returnShippingMethods )
+    {
+      if ( !other.returnShippingMethods.contains( method ))
+        return false;
+    }
+    
+    return true;
   }
   
   

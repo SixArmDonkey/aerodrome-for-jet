@@ -14,7 +14,6 @@
 
 package com.buffalokiwi.aerodrome.jet;
 
-import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import javax.json.Json;
 import javax.json.JsonObject;

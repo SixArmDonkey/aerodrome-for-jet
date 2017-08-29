@@ -99,6 +99,65 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
     return true;
   }
 
+  
+
+  /**
+   * Add/update a product within the jet catalog.
+   * Using original, modified will only send data to the appropriate endpoints.
+   * This can be used to help reduce the chances of having a product be sent
+   * back into the "under review" state.
+   * @param original Original and unmodified product
+   * @param modified Product modifications being sent 
+   * @return Success
+   * @throws JetException if there is an error from the jet api
+   * @throws APIException if there is some sort of error with the api 
+   * library itself. A network issue, etc.
+   * @throws ValidateException if the product fails pre-submit validation
+   */
+  @Override
+  public boolean addProduct( final ProductRec original, final ProductRec modified ) throws APIException, JetException, ValidateException
+  {
+    if ( original == null || modified == null )
+      throw new IllegalArgumentException( "original and modified must not be null" );
+    
+    modified.validate();
+    
+    //..Diff the records
+    final ProductDiff comp = new ProductDiff( original, modified );
+    
+    if ( comp.shouldUpdateAll() || comp.shouldUpdateSku())
+      return addProduct( modified );
+    
+    if ( comp.shouldUpdatePrice())
+    {
+      //..Add the price
+      sendPutProductPrice( modified );
+    }
+
+    if ( comp.shouldUpdateInventory())
+    {
+      //..Add some inventory
+      sendPutProductInventory( modified );
+    }
+    
+    if ( comp.shouldUpdateShippingExceptions())
+    {
+      sendPutProductShippingExceptions( modified.getMerchantSku(), modified.getShippingExceptionNodes());
+    }
+    
+    if ( comp.shouldUpdateReturnsExceptions())
+    {
+      sendPutReturnsException( modified.getMerchantSku(), modified.getAllReturnLocationIds());
+    }
+    
+    if ( comp.shouldUpdateVariations())
+    {
+      sendPutProductVariation( modified.getVariations());
+    }
+    
+    return false;
+  }
+  
 
   /**
    * Adds a product sku.

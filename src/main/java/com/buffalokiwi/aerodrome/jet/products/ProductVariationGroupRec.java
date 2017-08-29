@@ -19,6 +19,7 @@ import com.buffalokiwi.aerodrome.jet.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -242,6 +243,62 @@ public class ProductVariationGroupRec implements Jsonable
     this.variationRefinements = Collections.unmodifiableList( new ArrayList<>( variationRefinements ));
     this.childSkus = Collections.unmodifiableList( new ArrayList<>( childSkus ));
     this.relationship = relationship;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 7;
+    hash = 17 * hash + Objects.hashCode( this.parentSku );
+    hash = 17 * hash + Objects.hashCode( this.variationRefinements );
+    hash = 17 * hash + Objects.hashCode( this.childSkus );
+    hash = 17 * hash + Objects.hashCode( this.groupTitle );
+    hash = 17 * hash + Objects.hashCode( this.relationship );
+    return hash;
+  }
+
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final ProductVariationGroupRec other = (ProductVariationGroupRec) obj;
+    if ( !Objects.equals( this.parentSku, other.parentSku ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.groupTitle, other.groupTitle ) ) {
+      return false;
+    }
+    if ( this.relationship != other.relationship ) {
+      return false;
+    }
+    
+    if ( this.variationRefinements.size() != other.variationRefinements.size())
+      return false;
+    
+    if ( this.childSkus.size() != other.childSkus.size())
+      return false;
+    
+    for ( final Long l : variationRefinements )
+    {
+      if ( !other.variationRefinements.contains( l ))
+        return false;
+    }
+    
+    for ( final String s : childSkus )
+    {
+      if ( !other.childSkus.contains( s ))
+        return false;
+    }
+    
+    return true;
   }
   
   

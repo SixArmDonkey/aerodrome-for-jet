@@ -3929,6 +3929,7 @@ public class ProductRec implements Jsonable
     return hash;
   }
 
+  
   @Override
   public boolean equals( Object obj )
   {
@@ -3945,6 +3946,208 @@ public class ProductRec implements Jsonable
     if ( !Objects.equals( this.merchantSku, other.merchantSku ) ) {
       return false;
     }
+    return true;
+  }
+  
+
+  /**
+   * Compare equality of two ProductRec instances attributes.
+   * This will only compare attributes for the "SKU Upload" API endpoint. 
+   * 
+   * This does NOT compare by merchantSku like equals() does, as updating
+   * sku's is technically allowed.
+   * 
+   * @param obj Object to compare 
+   * @return 
+   */
+  public boolean attributeEquals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final ProductRec other = (ProductRec) obj;
+    if ( this.browseNodeId != other.browseNodeId ) {
+      return false;
+    }
+    if ( this.multipackQuantity != other.multipackQuantity ) {
+      return false;
+    }
+    if ( this.fulfillmentTime != other.fulfillmentTime ) {
+      return false;
+    }
+    if ( this.prop65 != other.prop65 ) {
+      return false;
+    }
+    if ( this.shipsAlone != other.shipsAlone ) {
+      return false;
+    }
+    if ( this.excludeFromFeeAdjustments != other.excludeFromFeeAdjustments ) {
+      return false;
+    }
+    if ( !Objects.equals( this.title, other.title ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.azItemTypeKeyword, other.azItemTypeKeyword ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.categoryPath, other.categoryPath ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.asin, other.asin ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.brand, other.brand ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.manufacturer, other.manufacturer ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.mfrPartNumber, other.mfrPartNumber ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.productDescription, other.productDescription ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.typeOfUnitForPricePerUnit, other.typeOfUnitForPricePerUnit ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.legalDisclaimerDescription, other.legalDisclaimerDescription ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.countryOfOrigin, other.countryOfOrigin ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.safetyWarning, other.safetyWarning ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.jetRetailSku, other.jetRetailSku ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.mainImageUrl, other.mainImageUrl ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.swatchImageUrl, other.swatchImageUrl ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.merchantSku, other.merchantSku ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.correlationId, other.correlationId ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.merchantSkuId, other.merchantSkuId ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.producerId, other.producerId ) ) {
+      return false;
+    }
+
+    if ( !Objects.equals( this.numberUnitsForPricePerUnit, other.numberUnitsForPricePerUnit ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.shippingWeightPounds, other.shippingWeightPounds ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.packageLengthInches, other.packageLengthInches ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.packageWidthInches, other.packageWidthInches ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.packageHeightInches, other.packageHeightInches ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.displayLengthInches, other.displayLengthInches ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.displayWidthInches, other.displayWidthInches ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.displayHeightInches, other.displayHeightInches ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.startSellingDate, other.startSellingDate ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.msrp, other.msrp ) ) {
+      return false;
+    }
+    if ( !Objects.equals( this.mapPrice, other.mapPrice ) ) {
+      return false;
+    }
+    if ( this.mapImplementation != other.mapImplementation ) {
+      return false;
+    }
+    
+    //..An empty product tax code can be considered to be a "Generic Taxable Product"
+    
+    
+      
+    if ( this.productTaxCode != other.productTaxCode ) 
+    {
+      if ( this.productTaxCode.equals( ProductTaxCode.NO_VALUE ) && !other.productTaxCode.equals( ProductTaxCode.GENERIC_TAXABLE ))
+        return false;
+    }
+    if ( !Objects.equals( this.noReturnFeeAdj, other.noReturnFeeAdj ) ) {
+      return false;
+    }
+    
+    if ( this.cpsiaStatements.size() != other.cpsiaStatements.size())
+      return false;
+    
+    if ( this.productCodes.size() != other.productCodes.size())
+      return false;
+    
+    if ( this.bullets.size() != other.bullets.size())
+      return false;
+        
+    
+    if ( this.attributesNodeSpecific.size() != other.attributesNodeSpecific.size())
+      return false;
+    
+    if ( this.alternateImages.size() != other.alternateImages.size())
+      return false;
+    
+    for ( final CPSIA c : this.cpsiaStatements )
+    {
+      if ( !other.cpsiaStatements.contains( c ))
+        return false;
+    }
+    
+    
+    for ( final SkuAttributeRec attr : this.attributesNodeSpecific )
+    {
+      if ( !other.attributesNodeSpecific.contains( attr ))
+        return false;
+    }
+    
+    for ( final ProductImageSlot slot : this.alternateImages.keySet())
+    {
+      if ( !other.alternateImages.containsKey( slot ))
+        return false;
+      
+      if ( !other.alternateImages.get( slot ).equals( this.alternateImages.get( slot )))
+        return false;
+    }
+    
+    for ( final ProductCodeRec code : this.productCodes )
+    {
+      if ( !other.productCodes.contains( code ))
+        return false;
+    }
+    
+    for ( final String bullet : this.bullets )
+    {
+      if ( !other.bullets.contains( bullet ))
+        return false;
+    }
+    
     return true;
   }
 }

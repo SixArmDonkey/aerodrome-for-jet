@@ -53,6 +53,10 @@ public enum ProductImageSlot
   }
   
   
+  /**
+   * Check to see if this is a 1-8 slot and not main or swatch
+   * @return 
+   */
   public boolean isNumeric()
   {
     return slot != 0;

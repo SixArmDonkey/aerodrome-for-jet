@@ -15,8 +15,6 @@
 package com.buffalokiwi.aerodrome.jet.products;
 
 import com.buffalokiwi.aerodrome.jet.Jsonable;
-import com.buffalokiwi.aerodrome.jet.ShippingMethod;
-import com.buffalokiwi.aerodrome.jet.ShippingServiceLevel;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,9 +112,16 @@ public class FNodeShippingRec implements Jsonable
     if ( !Objects.equals( this.nodeId, other.nodeId ) ) {
       return false;
     }
-    if ( !Objects.equals( this.data, other.data ) ) {
+    
+    if ( this.data.size() != other.data.size())
       return false;
+    
+    for ( final ShippingExceptionRec r : this.data )
+    {
+      if ( !other.data.contains( r ))
+        return false;
     }
+    
     return true;
   }
   

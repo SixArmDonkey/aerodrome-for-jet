@@ -18,6 +18,7 @@ import com.buffalokiwi.api.APILog;
 import java.sql.Timestamp;
 import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -51,6 +52,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JetDate implements IJetDate 
 {
+  /**
+   * A standard American style date
+   */
+  public static final String FMT_STD = "MM/dd/yyyy";
+  
   /**
    * Local time without timezone.
    * If not specified, this will assume the offset to be ZoneId.systemDefault()
@@ -116,7 +122,10 @@ public class JetDate implements IJetDate
       .appendOffset( "+HHMM", "+0000" )
       .toFormatter());
     FORMATS.add( new DateTimeFormatterBuilder()
-      .appendPattern( FMT_LOCAL )
+      .appendPattern( FMT_LOCAL )      
+      .toFormatter());
+    FORMATS.add( new DateTimeFormatterBuilder()
+      .appendPattern( FMT_STD )
       .toFormatter());
   }
   
@@ -132,6 +141,19 @@ public class JetDate implements IJetDate
     
     if ( !FORMATS.contains( format ))
       FORMATS.add( format );
+  }
+  
+  
+  private static TemporalAccessor parseDate( final DateTimeFormatter fmt, final String value )
+  {
+    //..Check for fmt_std by value length
+    if ( value.trim().length() < 11 )
+    {
+      LocalDate d = LocalDate.parse( value, fmt );
+      return d.atStartOfDay( ZoneId.systemDefault());
+    }
+    
+    return fmt.parse( value );
   }
 
   
@@ -150,8 +172,7 @@ public class JetDate implements IJetDate
     for ( final DateTimeFormatter fmt : FORMATS )
     {
       try {
-        final TemporalAccessor t = fmt.parse( value );
-        
+        final TemporalAccessor t = parseDate( fmt, value );
         try {
           return new JetDate( ZonedDateTime.from( t ));//, ZoneOffset.from( t ));          
         } catch( DateTimeException e ) {

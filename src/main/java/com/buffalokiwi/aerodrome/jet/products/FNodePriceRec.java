@@ -17,6 +17,7 @@ package com.buffalokiwi.aerodrome.jet.products;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.utils.Money;
+import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
@@ -37,6 +38,35 @@ public class FNodePriceRec implements Jsonable
    * The price of the merchant SKU at the fulfillment node level
    */
   private final Money price;
+
+  @Override
+  public int hashCode()
+  {
+    int hash = 5;
+    hash = 11 * hash + Objects.hashCode( this.nodeId );
+    hash = 11 * hash + Objects.hashCode( this.price );
+    return hash;
+  }
+
+  @Override
+  public boolean equals( Object obj )
+  {
+    if ( this == obj ) {
+      return true;
+    }
+    if ( obj == null ) {
+      return false;
+    }
+    if ( getClass() != obj.getClass() ) {
+      return false;
+    }
+    final FNodePriceRec other = (FNodePriceRec) obj;
+    if ( !Objects.equals( this.nodeId, other.nodeId ) ) {
+      return false;
+    }
+    
+    return Objects.equals( this.price, other.price );
+  }
   
   
   /**
