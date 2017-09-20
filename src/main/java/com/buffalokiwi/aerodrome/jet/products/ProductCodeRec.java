@@ -19,7 +19,9 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 /**
- * Product Codes attached to this product
+ * Product Codes attached to this product.
+ * 
+ * Warning: ASIN is NOT a valid product code type for standard_product_codes 
  * @author John Quinn
  */
 public class ProductCodeRec implements Comparable, Jsonable
@@ -35,6 +37,7 @@ public class ProductCodeRec implements Comparable, Jsonable
    * <li>If standard_product_code_type is 'ISBN-10' - must be 10 digits</li>
    * <li>If standard_product_code_type is 'ISBN-13' - must be 13 digits</li>
    * <li>If standard_product_code_type is'UPC' - must be 12 digits</li>
+   * <li>If standard_product_code_type is 'ASIN' - must be 10 digits.  NOTE: this is not a valid product code type.</li>
    * </ul>
    */
   private final String standardProductCode;
@@ -92,7 +95,12 @@ public class ProductCodeRec implements Comparable, Jsonable
         if ( code.length() != 12 )
           throw new IllegalArgumentException( "code must be 12 digits" );
       break;
-
+      
+      case ASIN:
+        if ( code.length() != 10 )
+          throw new IllegalArgumentException( "code must be 10 digits" );
+      break;
+      
       default:
         throw new IllegalArgumentException( "Unsupported product code type" );
     }

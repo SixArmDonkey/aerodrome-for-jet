@@ -14,6 +14,7 @@
 
 package com.buffalokiwi.api;
 
+import java.net.URI;
 import java.util.List;
 import javax.json.JsonException;
 import javax.json.JsonObject;
@@ -32,7 +33,7 @@ public interface IAPIResponse
    * Retrieve the content length
    * @return length
    */
-  int getContentLength();
+  public int getContentLength();
 
   /**
    * Retrieve the response as a parsed JsonObject
@@ -43,44 +44,51 @@ public interface IAPIResponse
    * @throws javax.json.stream.JsonParsingException if a JSON object cannot
    *     be created due to incorrect representation
    */
-  JsonObject getJsonObject() throws JsonException, JsonParsingException;
+  public JsonObject getJsonObject() throws JsonException, JsonParsingException;
 
   /**
    * Retrieve the protocol version
    * @return version
    */
-  ProtocolVersion getProtocolVersion();
+  public ProtocolVersion getProtocolVersion();
 
   /**
    * Retrieve the response content character set name
    * @return charset name
    */
-  String getResponseCharsetName();
+  public String getResponseCharsetName();
 
   /**
    * Retrieve the response content
    * @return content
    */
-  String getResponseContent();
+  public String getResponseContent();
 
   /**
    * Retrieve the status line
    * @return status
    */
-  StatusLine getStatusLine();
+  public StatusLine getStatusLine();
 
   /**
    * Access the response headers list
    * @return headers
    */
-  List<Header> headers();
+  public List<Header> headers();
+  
+  /**
+   * Retrieve the redirect chain
+   * @return 301/302 redirects as part of this request 
+   */
+  public List<URI> getRedirectLocations();
+  
 
   /**
    * Find out if the last request was a failure
    * Code is 400-599
    * @return is fail
    */
-  boolean isFailure();
+  public boolean isFailure();
 
   /**
    * A crude way to see if a response might have json in it.
@@ -88,32 +96,24 @@ public interface IAPIResponse
    *
    * @return might be json
    */
-  boolean isJson();
+  public boolean isJson();
 
   /**
    * Find out if the last request was a failure due to client input.
    * Code: 400-499
    * @return is fail
    */
-  boolean isRequestFail();
+  public boolean isRequestFail();
 
   /**
    * Find out if the last request returned a 500 range error.
    * @return is server failure
    */
-  boolean isServerFailure();
+  public boolean isServerFailure();
 
   /**
    * Find out if the last request was successful
    * @return request successful
    */
-  boolean isSuccess();
-
-  /**
-   * Set the HTTP response content and character set.
-   * @param content Content
-   * @param charset character set name
-   */
-  void setContent(final String content, final String charset);
-  
+  public boolean isSuccess();
 }

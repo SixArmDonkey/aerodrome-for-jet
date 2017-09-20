@@ -26,7 +26,13 @@ public enum ProductCodeType
   EAN( "EAN", 1 ),
   ISBN( "ISBN-10", 4 ),
   ISBN13( "ISBN-13", 3 ),
-  UPC( "UPC", 2 );
+  UPC( "UPC", 2 ),
+  
+  /**
+   * This is not a valid product code.  Do not send this value under
+   * standard_product_codes.
+   */
+  ASIN( "ASIN", 5 );
 
   /**
    * Type
@@ -38,7 +44,7 @@ public enum ProductCodeType
    */
   private final int sort;
 
-  private static ProductCodeType[] values = values();
+  private final static ProductCodeType[] values = values();
   
   /**
    * Attempt to retrieve a ProductCodeType by text value 

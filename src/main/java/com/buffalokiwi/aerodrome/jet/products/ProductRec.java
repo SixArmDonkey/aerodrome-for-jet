@@ -856,10 +856,29 @@ public class ProductRec implements Jsonable
      */
     public Builder setProductCode( ProductCodeRec productCode ) {
       Utils.checkNull( productCode, "productCode" );
+      
+      if ( productCode.getProductCodeType().equals( ProductCodeType.ASIN ))
+      {
+        this.asin = productCode.getProductCode();
+        removeASIN();
+      }
+      
       if ( !productCode.getProductCode().isEmpty())
         this.productCodes.add( productCode );
       
       return this;
+    }
+    
+    
+    
+    private void removeASIN()
+    {
+      for ( int i = productCodes.size() - 1; i >= 0; i-- )
+      {
+        final ProductCodeRec rec = productCodes.get( i );
+        if ( rec.getProductCodeType().equals( ProductCodeType.ASIN ))
+          productCodes.remove( i );
+      }
     }
 
 
@@ -879,7 +898,11 @@ public class ProductRec implements Jsonable
      */
     public Builder setAsin(String asin) {
       Utils.checkNull( asin, "asin" );
+      
+      //..This is set again in setProductCode
       this.asin = asin;
+      
+      setProductCode( new ProductCodeRec( asin, ProductCodeType.ASIN ));
       return this;
     }
 
@@ -3641,7 +3664,7 @@ public class ProductRec implements Jsonable
 
     for ( ProductCodeRec code : productCodes )
     {
-      if ( code == null )
+      if ( code == null || code.getProductCodeType().equals( ProductCodeType.ASIN ))
         continue;
 
       obj.add( code.toJSON());
@@ -3801,6 +3824,7 @@ public class ProductRec implements Jsonable
   /**
    * Turn this into a builder.
    * Object references in lists are passed with a deep copy.
+   * @todo Use setters for these assignments.
    * @return builder
    */
   public Builder toBuilder()
@@ -3817,7 +3841,7 @@ public class ProductRec implements Jsonable
       out.productCodes.add( r.createCopy());
     }
     
-    out.asin = this.asin;
+    out.setAsin( this.asin );
     out.multipackQuantity = this.multipackQuantity;
     out.brand = this.brand;
     out.manufacturer = this.manufacturer;

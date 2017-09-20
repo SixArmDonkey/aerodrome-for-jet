@@ -54,7 +54,7 @@ public interface IApi
    */
   public IAPIResponse post(final String url, final List<NameValuePair> formData) 
     throws APIException;
-
+  
   
   /**
    * Perform a post-based request to some endpoint
@@ -159,5 +159,4 @@ public interface IApi
   
   public IAPIResponse put(final String url, final PostFile file, 
     Map<String, String> headers) throws APIException;
-  
 }

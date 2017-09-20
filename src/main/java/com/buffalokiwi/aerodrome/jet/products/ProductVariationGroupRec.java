@@ -348,6 +348,15 @@ public class ProductVariationGroupRec implements Jsonable
   }
           
   
+  /**
+   * Test to see if this record contains anything more than a parent sku
+   * @return more than a sku?
+   */
+  public boolean hasMoreThanASku()
+  {
+    return !( variationRefinements.isEmpty() || childSkus.isEmpty() || groupTitle.isEmpty());
+  }
+  
   
   /**
    * Retrieve the JSON object for this

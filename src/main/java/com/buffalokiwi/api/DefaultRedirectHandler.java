@@ -19,6 +19,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
 
 /**
@@ -27,7 +28,7 @@ import org.apache.http.protocol.HttpContext;
  *
  * @author John Quinn
  */
-public class DefaultRedirectHandler extends DefaultRedirectStrategy
+public class DefaultRedirectHandler extends LaxRedirectStrategy
 {
   /**
    * The User-Agent to use (if any)

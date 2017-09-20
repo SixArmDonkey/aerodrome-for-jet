@@ -17,6 +17,9 @@ package com.buffalokiwi.api;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonException;
@@ -46,6 +49,11 @@ public class APIResponse implements IAPIResponse
    * APIResponse hedaers
    */
   private final List<Header> headers;
+  
+  /**
+   * The 301/302 redirect chain
+   */
+  private final List<URI> redirectLocations;
 
   /**
    * APIResponse content length
@@ -80,10 +88,9 @@ public class APIResponse implements IAPIResponse
   {    
     for ( final Constructor<?> c: type.getConstructors())
     {
-      if ( c.getParameterCount() == 3 )
+      if ( c.getParameterCount() == 6 )
       {
-        final T r = (T)c.newInstance( that.getProtocolVersion(), that.getStatusLine(), that.headers());
-        r.setContent( that.getResponseContent(), that.getResponseCharsetName());
+        final T r = (T)c.newInstance( that.getProtocolVersion(), that.getStatusLine(), that.headers(), that.getRedirectLocations(), that.getResponseContent(), that.getResponseCharsetName());
         return r;
       }
     }
@@ -93,6 +100,35 @@ public class APIResponse implements IAPIResponse
     throw new NoSuchMethodException( "Failed to locate constructor in class " + type );
   }
   
+  
+  /**
+   * Create a new Response instance.
+   * This must contain the response from some http request
+   * @param pv protocol version
+   * @param status status line
+   * @param headers response headers
+   */
+  public APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers, final List<URI> redirectLocations, final String content, final String charset )
+  {
+    protocolVersion = pv;
+    this.status = status;
+    
+    if ( headers != null )
+      this.headers = Collections.unmodifiableList( headers );
+    else
+      this.headers = Collections.unmodifiableList( new ArrayList<Header>());
+    
+    if ( redirectLocations != null )
+      this.redirectLocations = Collections.unmodifiableList( redirectLocations );
+    else
+      this.redirectLocations = Collections.unmodifiableList( new ArrayList<URI>());
+    
+    this.content = ( content == null ) ? "" : content;
+    this.charset = ( charset == null) ? "" : charset;
+    
+    processHeaders();
+  }  
+  
 
   /**
    * Create a new Response instance.
@@ -101,12 +137,9 @@ public class APIResponse implements IAPIResponse
    * @param status status line
    * @param headers response headers
    */
-  public APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers )
+  public APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers, final String content, final String charset )
   {
-    protocolVersion = pv;
-    this.status = status;
-    this.headers = headers;
-    processHeaders();
+    this( pv, status, headers, null, content, charset );
   }
 
 
@@ -141,6 +174,17 @@ public class APIResponse implements IAPIResponse
   {
     return headers;
   }
+  
+  
+  /**
+   * Retrieve the redirect chain
+   * @return 301/302 redirects as part of this request 
+   */
+  @Override
+  public List<URI> getRedirectLocations()
+  {
+    return redirectLocations;
+  }
 
 
   /**
@@ -151,19 +195,6 @@ public class APIResponse implements IAPIResponse
   public int getContentLength()
   {
     return contentLength;
-  }
-
-
-  /**
-   * Set the HTTP response content and character set.
-   * @param content Content
-   * @param charset character set name
-   */
-  @Override
-  public void setContent( final String content, final String charset )
-  {
-    this.content = content;
-    this.charset = charset;
   }
 
 

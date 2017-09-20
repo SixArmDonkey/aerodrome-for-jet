@@ -18,6 +18,7 @@ import com.buffalokiwi.api.APILog;
 import com.buffalokiwi.api.APIResponse;
 import com.buffalokiwi.api.IAPIResponse;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import javax.json.JsonArray;
@@ -161,11 +162,11 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
    * @param status
    * @param headers 
    */
-  public JetAPIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers )
+  public JetAPIResponse( final ProtocolVersion pv, final StatusLine status, 
+    final List<Header> headers, final List<URI> redirectLocations, 
+    final String content, final String charset )
   {
-    super( pv, status, headers );
-    
-    
+    super( pv, status, headers, redirectLocations, content, charset );
   }
   
   

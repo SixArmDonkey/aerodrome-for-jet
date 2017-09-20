@@ -34,6 +34,6 @@ public class APIFailure extends APIResponse
    */
   APIFailure( final ProtocolVersion pv, final StatusLine status, final List<Header> headers )
   {
-    super( pv, status, headers );
+    super( pv, status, headers, null, "", "" );
   }
 }

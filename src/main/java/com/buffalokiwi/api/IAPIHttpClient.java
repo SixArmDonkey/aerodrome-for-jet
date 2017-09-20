@@ -80,4 +80,5 @@ public interface IAPIHttpClient
    */
   public boolean isGzipAllowed();
   
+  
 }

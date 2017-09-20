@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -47,6 +48,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.RedirectLocations;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
@@ -63,11 +65,6 @@ public class API implements IApi
    * This can be overridden by setMaxDownloadSize()
    */
   private final static long MAX_DOWNLOAD_SIZE = 1024 * 2048;
-  
-  /**
-   * Valid methods 
-   */
-  public static enum REQUEST_TYPE { GET, POST, PUT, DELETE };
 
   /**
    * Client context
@@ -171,7 +168,7 @@ public class API implements IApi
     throws APIException
   {
     //..Execute
-    return executeRequest( createRequest( REQUEST_TYPE.GET, url, headers ));
+    return executeRequest( createRequest( HttpMethod.GET, url, headers ));
   }
 
 
@@ -189,6 +186,9 @@ public class API implements IApi
     return post( url, formData, null, null );
   }
 
+  
+  
+  
 
   /**
    * Perform a post-based request to some endpoint
@@ -275,7 +275,7 @@ public class API implements IApi
       throws APIException
   {
     final HttpPost post = (HttpPost)createRequest( 
-      REQUEST_TYPE.POST, url, headers );
+      HttpMethod.POST, url, headers );
     
     //..Create a multi-part form data entity
     final MultipartEntityBuilder b = MultipartEntityBuilder.create();
@@ -325,7 +325,7 @@ public class API implements IApi
   {
     //..Get the post request
     final HttpPost post = (HttpPost)createRequest( 
-      REQUEST_TYPE.POST, url, headers );
+      HttpMethod.POST, url, headers );
 
 
     if ( payload != null )
@@ -360,7 +360,7 @@ public class API implements IApi
   {
     //..Create the new put request
     final HttpPost post = (HttpPost)createRequest( 
-      REQUEST_TYPE.POST, url, headers );
+      HttpMethod.POST, url, headers );
 
     //..Set the put payload
     post.setEntity( new InputStreamEntity( payload, contentLength, contentType ));
@@ -387,7 +387,7 @@ public class API implements IApi
     if ( file.hasContentEncoding())
       entity.setContentEncoding( file.getContentEncoding());
     
-    final HttpPost post = (HttpPost)createRequest( REQUEST_TYPE.POST, url, headers );
+    final HttpPost post = (HttpPost)createRequest( HttpMethod.POST, url, headers );
     post.setEntity( entity );
     APILog.trace( LOG, entity.toString());
     
@@ -426,7 +426,7 @@ public class API implements IApi
   {
     //..Create the new put request
     final HttpPut put = (HttpPut)createRequest( 
-      REQUEST_TYPE.PUT, url, headers );
+      HttpMethod.PUT, url, headers );
 
     //..Set the put payload
     try {
@@ -461,7 +461,7 @@ public class API implements IApi
   {
     //..Create the new put request
     final HttpPut put = (HttpPut)createRequest( 
-      REQUEST_TYPE.PUT, url, headers );
+      HttpMethod.PUT, url, headers );
 
     //..Set the put payload
     put.setEntity( new InputStreamEntity( payload, contentLength, contentType ));
@@ -490,7 +490,7 @@ public class API implements IApi
     
     //..Create the new put request
     final HttpPut put = (HttpPut)createRequest( 
-      REQUEST_TYPE.PUT, url, headers );
+      HttpMethod.PUT, url, headers );
 
     //..Set the put payload
     put.setEntity( entity );
@@ -511,7 +511,7 @@ public class API implements IApi
    * @return the request 
    * @throws APIException  
    */
-  private HttpUriRequest createRequest( REQUEST_TYPE type, 
+  private HttpUriRequest createRequest( HttpMethod type, 
     final String url, final Map<String,String> headers ) throws APIException
   {
     switch( type )
@@ -642,18 +642,23 @@ public class API implements IApi
               .getCharset();
           
           if ( cs != null )
-            charset = cs.displayName();          
+            charset = cs.displayName();
         } catch( ParseException | UnsupportedCharsetException e ) {
           //..No nothing, use defaults
         }
 
         if (( charset == null ) || ( charset.isEmpty())) charset = "UTF-8";
 
+        //..Get content length header 
+        
+        final Header[] clen = response.getHeaders( "Content-Length" );
+        final int contentLength = ( clen.length > 0 ) ? Integer.valueOf( clen[0].getValue()) : 0;
+        
         //..Process the stream
         try ( final InputStream in = entity.getContent()) {
-          final IAPIResponse res = processEntity( 
-            createResponseObject( response ), in, charset 
-          );
+          final String content = processEntity( in, contentLength, charset );
+          final IAPIResponse res = createResponseObject( response, content, charset );
+          
           
           APILog.debug( LOG, 
             String.valueOf( res.getStatusLine().getStatusCode()), 
@@ -673,7 +678,7 @@ public class API implements IApi
       }
       else
       {        
-        final IAPIResponse res = createResponseObject( response );   
+        final IAPIResponse res = createResponseObject( response, "", "" );   
         APILog.debug( LOG, 
           String.valueOf( res.getStatusLine().getStatusCode()), 
           res.getStatusLine().getReasonPhrase(), 
@@ -698,12 +703,23 @@ public class API implements IApi
    * Retrieves the status and version number information from the response
    * @param response Response to pull data from
    */
-  private IAPIResponse createResponseObject( final HttpResponse response )
+  private IAPIResponse createResponseObject( final HttpResponse response, final String content, final String charset )
   {
+    final RedirectLocations locations = ((RedirectLocations)context.getAttribute( HttpClientContext.REDIRECT_LOCATIONS ));
+    
+    final List<URI> redirectLocations = new ArrayList<>();
+    if ( locations != null )
+    {
+      redirectLocations.addAll( locations.getAll());
+    }
+    
     return new APIResponse(
       response.getProtocolVersion(),
       response.getStatusLine(),
-      new ArrayList<>( Arrays.asList( response.getAllHeaders()))
+      new ArrayList<>( Arrays.asList( response.getAllHeaders())),
+      redirectLocations,
+      content,
+      charset
     );
   }
 
@@ -715,8 +731,7 @@ public class API implements IApi
    * @param entity
    * @throws BrowserException
    */
-  private IAPIResponse processEntity( final IAPIResponse res, 
-     final InputStream in, final String charset ) throws APIException
+  private String processEntity( final InputStream in, final int contentLength, final String charset ) throws APIException
   {
     //..Buffer dat ish
     try ( BufferedInputStream content = new BufferedInputStream( in ))
@@ -731,8 +746,7 @@ public class API implements IApi
       int bytesRead;
 
       //..Create a new html buffer to store the data
-      final StringBuilder htmlBuffer = new StringBuilder( 
-         res.getContentLength());
+      final StringBuilder htmlBuffer = new StringBuilder( contentLength );
 
       //..Read the bytes
       while (( bytesRead = content.read( bytes )) != -1 )
@@ -753,19 +767,16 @@ public class API implements IApi
       {
         final String buff = htmlBuffer.toString();
         APILog.trace( LOG, buff );
-        res.setContent( buff, charset );
+        return buff;
       }
       else
-        res.setContent( htmlBuffer.toString(), charset );
+        return htmlBuffer.toString();
 
     } catch( IOException e ) {
       //..Oh noes!
       throw new APIException( "Failed to process content stream.  " 
         + e.getMessage(), e );
     }
-
-    //..Return the results
-    return res;
   }
 
 
