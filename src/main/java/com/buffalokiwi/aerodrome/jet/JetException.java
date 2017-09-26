@@ -114,6 +114,24 @@ public class JetException extends APIException
   {
     return response;
   }
+  
+  
+
+    /**
+     * Returns the detail message string of this throwable.
+     *
+     * @return  the detail message string of this {@code Throwable} instance
+     *          (which may be {@code null}).
+     */
+    @Override
+    public String getMessage()
+    {
+      final StringBuilder s = new StringBuilder();
+      s.append( super.getMessage());
+      s.append( implodeMessages( "\n " ));
+      return s.toString();
+    }
+  
 
   /**
    * Retrieve the API Error messages
