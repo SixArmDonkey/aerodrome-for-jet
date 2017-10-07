@@ -136,41 +136,6 @@ public class JetAPIOrder extends JetAPI implements IJetAPIOrder
   
   
   /**
-   * Poll jet for directed cancel uri's
-   * @return response
-   * @throws APIException
-   * @throws JetException
-   * @deprecated
-   */
-  @Override
-  public IJetAPIResponse sendPollDirectedCancel()
-    throws APIException, JetException
-  {
-    return get(
-      config.getGetOrderDirectCancelUrl(),
-      getJSONHeaderBuilder().build()
-    );
-  }
-  
-  
-  /**
-   * Poll jet for direct cancel uri's and return the list of tokens 
-   * @param includePath Toggle including full uri 
-   * @return list 
-   * @throws APIException
-   * @throws JetException 
-   * @deprecated
-   */
-  @Override
-  public List<String> getDirectCancelTokens( final boolean includePath )
-    throws APIException, JetException
-  {
-    return jsonArrayToTokenList( sendPollDirectedCancel()
-      .getJsonObject().getJsonArray( "order_urls" ), includePath );    
-  }
-  
-  
-  /**
    * Retrieve details about an order 
    * @param jetOrderId Jet order id (need to poll for these first)
    * @return api response 

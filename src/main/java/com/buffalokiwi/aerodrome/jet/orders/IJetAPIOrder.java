@@ -34,18 +34,7 @@ public interface IJetAPIOrder extends IJetAPI, IJetOrder
   public IJetAPIResponse sendPollOrders( final OrderStatus status )
     throws APIException, JetException;
   
-  
-  /**
-   * Poll jet for directed cancel uri's
-   * @return response
-   * @throws APIException
-   * @throws JetException
-   * @deprecated
-   */
-  public IJetAPIResponse sendPollDirectedCancel()
-    throws APIException, JetException;
-  
-  
+ 
   /**
    * Retrieve details about an order 
    * @param jetOrderId Jet order id (need to poll for these first)

@@ -49,6 +49,11 @@ import org.apache.commons.logging.LogFactory;
 public class APIDate implements IAPIDate 
 {
   /**
+   * Standard local date format without the T 
+   */
+  public static final String FMT_STD = "yyyy-MM-dd HH:mm:ss";
+  
+  /**
    * Local time without timezone.
    * If not specified, this will assume the offset to be ZoneId.systemDefault()
    */
@@ -114,6 +119,9 @@ public class APIDate implements IAPIDate
       .toFormatter());
     FORMATS.add( new DateTimeFormatterBuilder()
       .appendPattern( FMT_LOCAL )
+      .toFormatter());
+    FORMATS.add( new DateTimeFormatterBuilder()
+      .appendPattern( FMT_STD )
       .toFormatter());
   }
   

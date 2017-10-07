@@ -25,17 +25,6 @@ import java.util.List;
  */
 public interface IJetOrder 
 {
-
-  /**
-   * Poll jet for direct cancel uri's and return the list of tokens
-   * @param includePath Toggle including full uri
-   * @return list
-   * @throws APIException
-   * @throws JetException
-   * @deprecated
-   */
-  public List<String> getDirectCancelTokens(final boolean includePath) throws APIException, JetException;
-
   /**
    * Retrieve details about an order
    * @param jetOrderId Jet order id (need to poll for these first)

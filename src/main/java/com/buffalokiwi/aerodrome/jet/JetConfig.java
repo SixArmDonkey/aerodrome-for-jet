@@ -20,7 +20,7 @@ import java.util.Date;
  *
  * @author john
  */
-public interface JetConfig 
+public interface JetConfig<R extends JetConfig, B extends JetConfig.Builder> extends IBuildableObject<R,B>
 {
   /**
    * Retrieve the max download size 
@@ -377,14 +377,6 @@ public interface JetConfig
    * @return url
    */
   public String getGetOrdersUrl( final String status );
-  
-  /**
-   * This provides a list of order url's that can be used to retrieve order
-   * details I think.  
-   * @return url
-   * @deprecated
-   */
-  public String getGetOrderDirectCancelUrl();
   
   
   /**
