@@ -53,6 +53,13 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
    */
   public static class Builder<T extends Builder, R extends JetConfig> extends BuildableObject.Builder<T,R> 
   {
+    
+    
+    /**
+     * A simple flag for if this builder has been modified or not 
+     */
+    protected boolean isModified = false;
+    
 
     /**
      * Jet API Hostname
@@ -325,6 +332,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       Utils.checkNullEmpty( url, "Settlement Days Url cannot be empty" );
       this.getSettlementDaysUrl = url;
+      isModified = true;
       return getReference();
     }
 
@@ -338,6 +346,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       Utils.checkNullEmpty( url, "Settlement Report Url cannot be empty" );
       this.getSettlementReportUrl = url;
+      isModified = true;
       return getReference();
     }
     
@@ -351,6 +360,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.host = host;
       APILog.debug( LOG, "Using Host: ", host );
+      isModified = true;
       return getReference();
     }
 
@@ -364,6 +374,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.user = user;
       APILog.debug( LOG, "Using User: ", user );
+      isModified = true;
       return getReference();
     }
 
@@ -377,6 +388,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.pass = pass;
       APILog.debug( LOG, "Using Pass: *****" );
+      isModified = true;
       return getReference();
     }
 
@@ -390,6 +402,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       lockHost = on;
       APILog.debug(LOG, "lockHost set to ", ( isLockHost() ) ? " true " : " false" );
+      isModified = true;
       return getReference();
     }
 
@@ -403,6 +416,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       maxDownloadSize = size;
       APILog.debug( LOG, "maxDownloadSize set to", String.valueOf( size ));
+      isModified = true;
       return getReference();
     }
 
@@ -416,6 +430,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.merchantId = merchantId;
       APILog.debug( LOG, "Using merchant Id: ", merchantId );
+      isModified = true;
       return getReference();
     }
 
@@ -430,6 +445,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
       this.uriToken = uriToken;
 
       APILog.debug( LOG, "Authentication URI set to: ", uriToken );
+      isModified = true;
       return getReference();
     }
 
@@ -443,6 +459,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriAuthTest = uriAuthTest;
       APILog.debug( LOG, "Authentication test URI set to: ", uriAuthTest );
+      isModified = true;
       return getReference();
     }
 
@@ -460,6 +477,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriAddProduct = uriAddProduct;
       APILog.debug( LOG, "Send product SKU URI set to: ", uriAddProduct );
+      isModified = true;
       return getReference();
     }
 
@@ -475,6 +493,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriArchiveSku = uriArchiveSku;
       APILog.debug( LOG, "Send archive sku URI set to: ", uriArchiveSku );
+      isModified = true;
       return getReference();    
     }
 
@@ -488,6 +507,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriAddProductImage = uriAddProductImage;
       APILog.debug( LOG, "Send product image URI set to", uriAddProductImage );
+      isModified = true;
       return getReference();
     }
 
@@ -501,6 +521,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriAddProductPrice = uriAddProductPrice;
       APILog.debug( LOG, "Send product price URI set to: ", uriAddProductPrice );
+      isModified = true;
       return getReference();
     }
 
@@ -514,6 +535,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriAddProductInventory = uriAddProductInventory;
       APILog.debug( LOG, "Send product inventory URI set to: ", uriAddProductInventory );
+      isModified = true;
       return getReference();
     }
 
@@ -527,6 +549,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriAddProductShipException = uriAddProductShipException;
       APILog.debug( LOG, "Send product shipping exceptions URI set to: ", uriAddProductShipException );
+      isModified = true;
       return getReference();
     }
 
@@ -540,6 +563,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriGetProduct = uriGetProduct;
       APILog.debug( LOG, "Get product URI set to ", uriGetProduct );
+      isModified = true;
       return getReference();
     }
 
@@ -553,6 +577,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriGetProductPrice = uriGetProductPrice;
       APILog.debug( LOG, "Get product price uri set to: ", uriGetProductPrice );
+      isModified = true;
       return getReference();
     }
 
@@ -566,6 +591,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriAddProductVariation = uriAddProductVariation;
       APILog.debug( LOG, "Add product variation uri set to:", uriAddProductVariation );
+      isModified = true;
       return getReference();
     }
 
@@ -579,6 +605,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriReturnsException = uriReturnException;
       APILog.debug( LOG, "Add product return exception uri set to: ", uriReturnException );
+      isModified = true;
       return getReference();
     }
 
@@ -593,6 +620,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriGetProductInventory = uriGetProductInventory;
       APILog.debug( LOG, "Get product inventory uri set to: ", uriGetProductInventory );
+      isModified = true;
       return getReference();
     }
 
@@ -606,6 +634,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriGetProductVariation = uriGetProductVariation;
       APILog.debug( LOG, "Get product variation uri set to: ", uriGetProductVariation );
+      isModified = true;
       return getReference();
     }
 
@@ -619,6 +648,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriGetProductShippingException = uriGetProductShippingException;
       APILog.debug( LOG, "Get product shipping exceptions uri set to: ", uriGetProductShippingException );
+      isModified = true;
       return getReference();
     }
 
@@ -632,6 +662,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriGetProductReturnsException = uriGetProductReturnsException;
       APILog.debug( LOG, "Get product returns exceptions uri set to: ", uriGetProductReturnsException );
+      isModified = true;
       return getReference();
     }
 
@@ -645,6 +676,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriGetSkuList = uriGetSkuList;
       APILog.debug( LOG, "Get product sku list uri set to: ", uriGetSkuList );
+      isModified = true;
       return getReference();
     }
 
@@ -658,6 +690,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       this.uriGetProductSalesData = uriGetProductSalesData;
       APILog.debug( LOG, "Get product sales data uri set to: ", uriGetProductSalesData );
+      isModified = true;
       return getReference();
     }  
 
@@ -671,6 +704,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       readTimeout = timeout;
       APILog.debug( LOG, "Read timeout set to: ", String.valueOf( timeout ));
+      isModified = true;
       return getReference();
     }
 
@@ -689,6 +723,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
 
       acceptHeaderValue = value;
       APILog.debug( LOG, "Accept header set to: ", value );
+      isModified = true;
       return getReference();
     }
 
@@ -707,6 +742,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
 
       acceptLanguageHeaderValue = value;
       APILog.debug( LOG, "Accept-Language header set to: ", value );
+      isModified = true;
       return getReference();
     }
 
@@ -722,6 +758,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
 
       if ( allow )
         APILog.debug( LOG, "Allow Untrusted SSL is enabled" );
+      isModified = true;
       return getReference();
     }
 
@@ -747,20 +784,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetOrdersUrl( final String uri )
     {
       this.uriGetOrders = uri;
-      return getReference();
-    }
-
-
-    /**
-     * This provides a list of order url's that can be used to retrieve order
-     * details I think.  
-     * @param uri The uri
-     * @return builder
-     * @deprecated
-     */
-    public T setGetOrderDirectCancelUrl( final String uri )
-    {
-      this.uriGetDirectedCancel = uri;
+      isModified = true;
       return getReference();
     }
 
@@ -775,6 +799,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetOrderDetailUrl( final String uri )
     {
       this.uriGetOrderDetail = uri;
+      isModified = true;
       return getReference();
     }
 
@@ -789,6 +814,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setPutOrderAcknowledgeUrl( final String uri )
     {
       this.uriPutOrderAck = uri;
+      isModified = true;
       return getReference();
     }
 
@@ -803,6 +829,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setPutOrderShipNotificationUrl( final String uri )
     {
       this.uriPutOrderShipped = uri;
+      isModified = true;
       return getReference();
     }  
     
@@ -820,6 +847,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setPutTagOrderUrl( final String uri )
     {
       this.uriPutTagOrder = uri;
+      isModified = true;
       return getReference();
     }
     
@@ -840,6 +868,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetTaggedOrdersUrl( final String uri )
     {
       this.uriGetTaggedOrders = uri;
+      isModified = true;
       return getReference();
     }
 
@@ -861,6 +890,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       APILog.debug( LOG, "Bulk product file id URI set to:", uriGetBulkJetFileId );
       this.uriGetBulkJetFileId = uriGetBulkJetFileId;
+      isModified = true;
       return getReference();
     }
 
@@ -871,6 +901,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       APILog.debug( LOG, "Post bulk file upload URI set to:", uriPostBulkUploadedFiles );
       this.uriPostBulkUploadedFiles = uriPostBulkUploadedFiles;
+      isModified = true;
       return getReference();
     }
 
@@ -880,6 +911,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setUriGetBulkUploadToken(String uriGetBulkUploadToken) {
       APILog.debug( LOG, "Get bulk file upload token URI set to:", uriGetBulkUploadToken );
       this.uriGetBulkUploadToken = uriGetBulkUploadToken;
+      isModified = true;
       return getReference();
     }
     
@@ -892,6 +924,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetReturnsUrl( final String url )
     {
       APILog.debug( LOG, "Get returns url set to:", url );
+      isModified = true;
       getReturnsUrl = url;
       return getReference();
     }
@@ -905,6 +938,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetReturnDetailUrl( final String url )
     {
       APILog.debug( LOG, "Get return detail url set to:", url );
+      isModified = true;
       getReturnDetailUrl = url;
       return getReference();
     }
@@ -917,6 +951,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setPutCompleteReturnUrl( final String url )
     {
       APILog.debug( LOG, "Put return complete url set to:", url );
+      isModified = true;
       putReturnCompleteUrl = url;
       return getReference();
     }
@@ -929,6 +964,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetRefundDetailUrl( final String getRefundDetailUrl )
     {
       APILog.debug( LOG, "Get refund detail url set to", getRefundDetailUrl );
+      isModified = true;
       this.getRefundDetailUrl = getRefundDetailUrl;
       return getReference();
     }
@@ -941,6 +977,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetRefundByStatusUrl( final String getRefundByStatusUrl )
     {
       APILog.debug( LOG, "Get refund list url set to", getRefundByStatusUrl );
+      isModified = true;
       this.getRefundByStatusUrl = getRefundByStatusUrl;
       return getReference();
     }
@@ -953,6 +990,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setPostRefundUrl( final String postRefundUrl )
     {
       APILog.debug( LOG, "Create new refund url set to", postRefundUrl );
+      isModified = true;
       this.postRefundUrl = postRefundUrl;
       return getReference();
     }
@@ -965,6 +1003,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetTaxonomyNodeUrl( final String getTaxonomyNodeUrl )
     {      
       this.getTaxonomyNodeUrl = getTaxonomyNodeUrl;
+      isModified = true;
       return getReference();
     }
 
@@ -977,6 +1016,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     public T setGetTaxonomyDetailUrl( final String getTaxonomyDetailUrl )
     {
       this.getTaxonomyDetailUrl = getTaxonomyDetailUrl;
+      isModified = true;
       return getReference();
     }
 
@@ -988,6 +1028,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
      */
     public T setGetTaxonomyAttrUrl( final String getTaxonomyAttrUrl )
     {
+      isModified = true;
       this.getTaxonomyAttrUrl = getTaxonomyAttrUrl;
       return getReference();
     }
@@ -1387,6 +1428,10 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     }    
     
     
+    public boolean isModified()
+    {
+      return isModified;
+    }
   }  
   
   
@@ -2660,6 +2705,7 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     b.getSettlementReportUrl = this.getSettlementReportUrl;
     b.uriPutTagOrder = this.uriPutTagOrder;
     b.uriGetTaggedOrders = this.uriGetTaggedOrders;    
+    b.isModified = false;
     
     return (B)b;
   }
