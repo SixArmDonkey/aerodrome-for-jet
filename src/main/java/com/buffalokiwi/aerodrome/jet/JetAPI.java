@@ -239,6 +239,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return post( url, payload, tryLogin( e, headers ));
       }            
     } catch( Exception e ) {
+      APILog.trace( LOG, e );
       notifyErrorHandlers( response, e );
       throw e;
     }    

@@ -41,12 +41,13 @@ public enum ShipExceptionType
    * The product cannot be shipped using the shipping method or shipping
    * level provided
    */
-  RESTRICTED( "restricted" ),
+  RESTRICTED( "restricted" );
   
   /**
    * The product will be priced normally under the Jet.com pricing algorithm. 
+   * This was removed from Jet.
    */
-  INCLUDE( "include" );
+  //INCLUDE( "include" );
 
   /**
    * Jet value

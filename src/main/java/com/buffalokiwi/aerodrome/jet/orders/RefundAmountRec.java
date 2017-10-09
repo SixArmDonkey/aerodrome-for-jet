@@ -178,6 +178,10 @@ public class RefundAmountRec implements Jsonable
   }
   
   
+  /**
+   * @param price
+   * @return 
+   */
   public static RefundAmountRec fromItemPriceRec( final ItemPriceRec price )
   {
     Utils.checkNull( price, "price" );

@@ -72,7 +72,7 @@ public class ShippingExceptionRec implements Jsonable
      * or restrictively (not including) via the shipping level of shipping
      * method provided
      */
-    private ShipExceptionType shippingExceptionType = ShipExceptionType.INCLUDE;
+    private ShipExceptionType shippingExceptionType = ShipExceptionType.EXCLUSIVE;
 
     /**
      * Generic descriptions of shipment delivery times

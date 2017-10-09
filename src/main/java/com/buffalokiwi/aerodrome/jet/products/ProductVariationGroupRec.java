@@ -101,12 +101,13 @@ public class ProductVariationGroupRec implements Jsonable
     /**
      * A variation group
      */
-    VARIATION( "Variation" ), 
+    VARIATION( "Variation" );
     
     /**
      * An accessory group
+     * The accessory type has been removed from Jet.
      */
-    ACCESSORY( "Accessory" );
+    //ACCESSORY( "Accessory" );
     
     /**
      * Text

@@ -14,6 +14,8 @@
 
 package com.buffalokiwi.aerodrome.jet.orders;
 
+import com.buffalokiwi.aerodrome.jet.BuildableObject;
+import com.buffalokiwi.aerodrome.jet.IBuildableObject;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.utils.Money;
@@ -29,7 +31,7 @@ import javax.json.JsonObjectBuilder;
  * Represents an item that is being returned 
  * @author John Quinn
  */
-public class ReturnItemRec implements Jsonable
+public class ReturnItemRec<R extends ReturnItemRec, B extends ReturnItemRec.Builder> extends BuildableObject<R,B> implements Jsonable
 {
   /**
    * Some non-jet id 
@@ -50,11 +52,6 @@ public class ReturnItemRec implements Jsonable
    * Quantity of the given item that was returned 
    */
   private final int qtyReturned;
-
-  /**
-   * Quantity of the given item that was returned 
-   */
-  private final int totalQtyReturned;  
   
   /**
    * Quantity of the given item that was refunded
@@ -101,7 +98,7 @@ public class ReturnItemRec implements Jsonable
   /**
    * Instance builder
    */
-  public static class Builder
+  public static class Builder<T extends Builder, R extends ReturnItemRec> extends BuildableObject.Builder<T,R>
   {
     /**
      * Some non-jet id 
@@ -122,11 +119,6 @@ public class ReturnItemRec implements Jsonable
      * Quantity of the given item that was returned 
      */
     private int qtyReturned = 0;
-    
-    /**
-     * Quantity of the given item that was returned 
-     */
-    private int totalQtyReturned = 0;
     
     /**
      * Quantity of the given item that was refunded
@@ -169,13 +161,13 @@ public class ReturnItemRec implements Jsonable
     private RefundAmountRec requestedRefundAmount = null;
     
     
-    public Builder setId( final int id )
+    public T setId( final int id )
     {
       if ( id < 0 )
         throw new IllegalArgumentException( "id can't be less than zero" );
       
       this.id = id;
-      return this;
+      return getReference();
     }
     
     
@@ -184,11 +176,11 @@ public class ReturnItemRec implements Jsonable
      * @param orderItemId the orderItemId to set
      * @return this
      */
-    public Builder setOrderItemId( final String orderItemId )
+    public T setOrderItemId( final String orderItemId )
     {
       Utils.checkNull( orderItemId, "orderItemId" );
       this.orderItemId = orderItemId;
-      return this;
+      return getReference();
     }
 
 
@@ -199,11 +191,11 @@ public class ReturnItemRec implements Jsonable
      * @param altOrderItemId the altOrderItemId to set
      * @return this
      */
-    public Builder setAltOrderItemId( final String altOrderItemId )
+    public T setAltOrderItemId( final String altOrderItemId )
     {
       Utils.checkNull( altOrderItemId, "altOrderItemId" );
       this.altOrderItemId = altOrderItemId;
-      return this;
+      return getReference();
     }
 
 
@@ -212,7 +204,7 @@ public class ReturnItemRec implements Jsonable
      * @param qtyReturned the qtyReturned to set
      * @return this
      */
-    public Builder setQtyReturned( final int qtyReturned )
+    public T setQtyReturned( final int qtyReturned )
     {
       if ( qtyReturned < 0 )
       {
@@ -221,7 +213,7 @@ public class ReturnItemRec implements Jsonable
       }
       
       this.qtyReturned = qtyReturned;
-      return this;
+      return getReference();
     }
 
 
@@ -230,7 +222,7 @@ public class ReturnItemRec implements Jsonable
      * @param orderReturnRefundQty the orderReturnRefundQty to set
      * @return this
      */
-    public Builder setOrderReturnRefundQty( final int orderReturnRefundQty )
+    public T setOrderReturnRefundQty( final int orderReturnRefundQty )
     {
       if ( orderReturnRefundQty < 0 )
       {
@@ -239,7 +231,7 @@ public class ReturnItemRec implements Jsonable
       }
       
       this.orderReturnRefundQty = orderReturnRefundQty;
-      return this;
+      return getReference();
     }
 
 
@@ -248,11 +240,11 @@ public class ReturnItemRec implements Jsonable
      * @param feedback the feedback to set
      * @return this
      */
-    public Builder setFeedback( final RefundFeedback feedback )
+    public T setFeedback( final RefundFeedback feedback )
     {
       Utils.checkNull( feedback, "feedback" );
       this.feedback = feedback;
-      return this;
+      return getReference();
     }
 
 
@@ -262,11 +254,11 @@ public class ReturnItemRec implements Jsonable
      * @param notes the notes to set
      * @return this
      */
-    public Builder setNotes( final String notes )
+    public T setNotes( final String notes )
     {
       Utils.checkNull( notes, "notes" );
       this.notes = notes;
-      return this;
+      return getReference();
     }
 
 
@@ -275,19 +267,16 @@ public class ReturnItemRec implements Jsonable
      * @param amount the amount to set
      * @return this
      */
-    public Builder setAmount( final RefundAmountRec amount )
+    public T setAmount( final RefundAmountRec amount )
     {
       Utils.checkNull( amount, "amount" );
       this.amount = amount;
-      return this;
+      return getReference();
     }
     
-    public Builder setTotalQtyReturned( final int qty )
+    public T setTotalQtyReturned( final int qty )
     {
-      if ( qty < 0 )
-        throw new IllegalArgumentException( "qty must be greater than or equal to zero" );
-      this.totalQtyReturned = qty;
-      return this;
+      return setQtyReturned( qty );
     }
     
     
@@ -296,7 +285,8 @@ public class ReturnItemRec implements Jsonable
      * Build the object
      * @return instance
      */
-    public ReturnItemRec build()
+    @Override
+    public R build()
     {
       if ( this.getAmount() == null )
         this.amount = new RefundAmountRec();
@@ -304,47 +294,47 @@ public class ReturnItemRec implements Jsonable
       if ( this.getRequestedRefundAmount() == null )
         this.requestedRefundAmount = new RefundAmountRec();
       
-      return new ReturnItemRec( this );
+      return (R)new ReturnItemRec( Builder.class, this );
     }
 
     /**
      * @param merchantSku the merchantSku to set
      */
-    public Builder setMerchantSku( String merchantSku )
+    public T setMerchantSku( String merchantSku )
     {
       Utils.checkNull( merchantSku, "merchantSku" );
       this.merchantSku = merchantSku;
-      return this;
+      return getReference();
     }
 
     /**
      * @param merchantSkuTitle the merchantSkuTitle to set
      */
-    public Builder setMerchantSkuTitle( String merchantSkuTitle )
+    public T setMerchantSkuTitle( String merchantSkuTitle )
     {
       Utils.checkNull( merchantSkuTitle, "merchantSkuTitle" );
       this.merchantSkuTitle = merchantSkuTitle;
-      return this;
+      return getReference();
     }
 
     /**
      * @param returnReason the returnReason to set
      */
-    public Builder setReturnReason( ReturnReason returnReason )
+    public T setReturnReason( ReturnReason returnReason )
     {
       Utils.checkNull( returnReason, "returnReason" );
       this.returnReason = returnReason;
-      return this;
+      return getReference();
     }
 
     /**
      * @param requestedRefundAmount the requestedRefundAmount to set
      */
-    public Builder setRequestedRefundAmount( RefundAmountRec requestedRefundAmount )
+    public T setRequestedRefundAmount( RefundAmountRec requestedRefundAmount )
     {
       Utils.checkNull( requestedRefundAmount, "requestedRefundAmount" );
       this.requestedRefundAmount = requestedRefundAmount;
-      return this;
+      return getReference();
     }
 
     /**
@@ -384,7 +374,7 @@ public class ReturnItemRec implements Jsonable
      */
     public int getTotalQtyReturned()
     {
-      return totalQtyReturned;
+      return getQtyReturned();
     }
 
     /**
@@ -540,8 +530,9 @@ public class ReturnItemRec implements Jsonable
    * Constructor
    * @param b builder instance 
    */
-  protected ReturnItemRec( final Builder b )
+  protected ReturnItemRec( final Class<? extends Builder> builderClass, final Builder b )
   {
+    super( builderClass, b );
     if ( b.getAmount() == null )
       this.amount = new RefundAmountRec();
     else
@@ -561,14 +552,14 @@ public class ReturnItemRec implements Jsonable
     this.merchantSku = b.getMerchantSku();
     this.merchantSkuTitle = b.getMerchantSkuTitle();
     this.returnReason = b.getReturnReason();
-    this.totalQtyReturned = b.getTotalQtyReturned();
     this.id = b.getId();
   }
   
   
-  public Builder toBuilder()
+  @Override
+  public B toBuilder()
   {
-    final Builder b = new Builder();
+    final Builder b = (Builder)super.toBuilder();
     if ( this.amount == null )
       b.amount = new RefundAmountRec();
     else
@@ -588,10 +579,9 @@ public class ReturnItemRec implements Jsonable
     b.merchantSku = this.merchantSku;
     b.merchantSkuTitle = this.merchantSkuTitle;
     b.returnReason = this.returnReason;
-    b.totalQtyReturned = this.totalQtyReturned;
     b.id = this.id;
     
-    return b;
+    return (B)b;
   }
   
   
@@ -639,7 +629,7 @@ public class ReturnItemRec implements Jsonable
    */
   public int getTotalQtyReturned()
   {
-    return totalQtyReturned;
+    return getQtyReturned();
   }
   
   

@@ -25,7 +25,7 @@ import javax.json.JsonValue;
  * 
  * @author john
  */
-public class RefundItemRec extends ReturnItemRec
+public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Builder> extends ReturnItemRec<R,B>
 {
   /**
    * The reason the customer initiated the return.
@@ -42,7 +42,7 @@ public class RefundItemRec extends ReturnItemRec
   private final String refundAuthId;
   
   
-  public static class Builder extends ReturnItemRec.Builder
+  public static class Builder<T extends Builder, R extends RefundItemRec> extends ReturnItemRec.Builder<T,R>
   {
 
     /**
@@ -60,28 +60,28 @@ public class RefundItemRec extends ReturnItemRec
     private CreatedRefundReason createdRefundReason = CreatedRefundReason.NONE;
 
     
-    public Builder setRefundAuthId( final String id )
+    public T setRefundAuthId( final String id )
     {
       Utils.checkNull( id, "id" );
       refundAuthId = id;
-      return this;
+      return getReference();
     }
     
     
-    public Builder setCreatedRefundReason( final CreatedRefundReason reason )
+    public T setCreatedRefundReason( final CreatedRefundReason reason )
     {
       Utils.checkNull( reason, "reason" );
       this.createdRefundReason = reason;
-      return this;
+      return getReference();
     }
     
     
     
     @Override
-    public Builder setId( final int id )
+    public T setId( final int id )
     {
       super.setId( id );
-      return this;
+      return getReference();
     }    
     
     public String getRefundAuthId()
@@ -89,12 +89,12 @@ public class RefundItemRec extends ReturnItemRec
       return refundAuthId;
     }
     
-    public Builder setRefundId( final int id )
+    public T setRefundId( final int id )
     {
       if ( id < 0 )
         throw new IllegalArgumentException( "id can't be less than zero" );
       this.refundId = id;
-      return this;
+      return getReference();
     }
     
    
@@ -104,10 +104,10 @@ public class RefundItemRec extends ReturnItemRec
      * @return this
      */
     @Override
-    public Builder setOrderItemId( final String orderItemId )
+    public T setOrderItemId( final String orderItemId )
     {
       super.setOrderItemId( orderItemId );
-      return this;
+      return getReference();
     }
 
 
@@ -119,10 +119,10 @@ public class RefundItemRec extends ReturnItemRec
      * @return this
      */
     @Override
-    public Builder setAltOrderItemId( final String altOrderItemId )
+    public T setAltOrderItemId( final String altOrderItemId )
     {
       super.setAltOrderItemId( altOrderItemId );
-      return this;
+      return getReference();
     }
 
 
@@ -132,10 +132,10 @@ public class RefundItemRec extends ReturnItemRec
      * @return this
      */
     @Override
-    public Builder setQtyReturned( final int qtyReturned )
+    public T setQtyReturned( final int qtyReturned )
     {
       super.setQtyReturned( qtyReturned );
-      return this;
+      return getReference();
     }
 
 
@@ -145,10 +145,10 @@ public class RefundItemRec extends ReturnItemRec
      * @return this
      */
     @Override
-    public Builder setOrderReturnRefundQty( final int orderReturnRefundQty )
+    public T setOrderReturnRefundQty( final int orderReturnRefundQty )
     {
       super.setOrderReturnRefundQty( orderReturnRefundQty );
-      return this;
+      return getReference();
     }
 
 
@@ -158,10 +158,10 @@ public class RefundItemRec extends ReturnItemRec
      * @return this
      */
     @Override
-    public Builder setFeedback( final RefundFeedback feedback )
+    public T setFeedback( final RefundFeedback feedback )
     {
       super.setFeedback( feedback );
-      return this;
+      return getReference();
     }
 
 
@@ -172,10 +172,10 @@ public class RefundItemRec extends ReturnItemRec
      * @return this
      */
     @Override
-    public Builder setNotes( final String notes )
+    public T setNotes( final String notes )
     {
       super.setNotes( notes );
-      return this;
+      return getReference();
     }
 
 
@@ -185,21 +185,21 @@ public class RefundItemRec extends ReturnItemRec
      * @return this
      */
     @Override
-    public Builder setAmount( final RefundAmountRec amount )    
+    public T setAmount( final RefundAmountRec amount )    
     {
       super.setAmount( amount );
-      return this;
+      return getReference();
     }
     
     
     /**
      * The reason the customer initiated the return.
      */
-    public Builder setRefundReason( final RefundReason refundReason )
+    public T setRefundReason( final RefundReason refundReason )
     {
       Utils.checkNull( refundReason, "refundReason" );
       this.refundReason = refundReason;
-      return this;
+      return getReference();
     }
   
     
@@ -208,9 +208,9 @@ public class RefundItemRec extends ReturnItemRec
      * @return instance
      */
     @Override
-    public RefundItemRec build()
+    public R build()
     {
-      return new RefundItemRec( this );
+      return (R)new RefundItemRec( Builder.class, this );
     }  
 
     /**
@@ -271,16 +271,30 @@ public class RefundItemRec extends ReturnItemRec
   
   
   
+  /**
+   * Convert an order item to a refund item. 
+   * This will multiply all of the itemprice amounts by quantity shipped.
+   * @param from
+   * @return 
+   */
   public static RefundItemRec.Builder fromOrderItemRec( final OrderItemRec from )
   {
     Utils.checkNull( from, "from" );
     
     final Builder b = new Builder();
+    
     b.setOrderItemId( from.getOrderItemId());
     b.setAltOrderItemId( from.getAltOrderItemId());
     b.setOrderReturnRefundQty( from.getRequestOrderQty());
     b.setQtyReturned( from.getRequestOrderQty());
     b.setAmount( RefundAmountRec.fromItemPriceRec( from.getItemPrice()));
+    
+    final RefundAmountRec.Builder rb = b.getAmount().toBuilder();
+      b.setAmount( rb.setPrincipal( from.getItemPrice().getPrice().times( from.getRequestOrderQty()))
+        .setTax( from.getItemPrice().getItemTax().times( from.getRequestOrderQty()))
+        .setShippingCost( from.getItemPrice().getShippingPrice().times( from.getRequestOrderQty()))
+        .setShippingTax( from.getItemPrice().getItemTax().times( from.getRequestOrderQty())).build());
+    
     
     return b;      
   }
@@ -291,9 +305,9 @@ public class RefundItemRec extends ReturnItemRec
    * Constructor 
    * @param b builder 
    */
-  protected RefundItemRec( final Builder b )
+  protected RefundItemRec( final Class<? extends Builder> builderClass, final Builder b )
   {
-    super( b );
+    super( builderClass, b );
     this.refundReason = b.getRefundReason();
     this.refundId = b.getRefundId();
     this.refundAuthId = b.getRefundAuthId();
@@ -302,29 +316,13 @@ public class RefundItemRec extends ReturnItemRec
   
   
   @Override
-  public Builder toBuilder()
+  public B toBuilder()
   {
-    final ReturnItemRec.Builder r = super.toBuilder();
-    final Builder b = new Builder();
-    b.setAmount( r.getAmount());
-    b.setRequestedRefundAmount( r.getRequestedRefundAmount());
-    b.setOrderItemId( r.getOrderItemId());
-    b.setAltOrderItemId( r.getAltOrderItemId());
-    b.setQtyReturned( r.getQtyReturned());
-    b.setOrderReturnRefundQty( r.getOrderReturnRefundQty());
-    b.setFeedback( r.getFeedback());
-    b.setNotes( r.getNotes());
-    b.setMerchantSku( r.getMerchantSku());
-    b.setMerchantSkuTitle( r.getMerchantSkuTitle());
-    b.setReturnReason( r.getReturnReason());
-    b.setTotalQtyReturned( r.getTotalQtyReturned());
-    b.setId( r.getId());
-    b.refundReason = this.refundReason;
-    b.refundId = this.refundId;
-    b.refundAuthId = this.refundAuthId;
-    b.createdRefundReason = this.createdRefundReason;
-    return b;
-        
+    return (B)super.toBuilder()
+    .setRefundReason( this.refundReason )
+    .setRefundId( this.refundId )
+    .setRefundAuthId( this.refundAuthId )
+    .setCreatedRefundReason( this.createdRefundReason );        
   }
   
   

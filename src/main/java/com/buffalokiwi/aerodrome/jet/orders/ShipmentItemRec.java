@@ -37,13 +37,6 @@ import javax.json.JsonObjectBuilder;
  */
 public class ShipmentItemRec implements Jsonable
 {
-    
-  /**
-   * Jet's unique identifier for an item in a shipment.
-   * @deprecated 
-   */
-  private final String itemId;
-    
   /**
    * Optional seller supplied ID for an item in a specific shipment. If this 
    * value is specified with Jet's shipment_item_id, Jet will map the two IDs 
@@ -320,15 +313,6 @@ public class ShipmentItemRec implements Jsonable
     }    
 
     /**
-     * @return the itemId
-     * @deprecated
-     */
-    public String getItemId()
-    {
-      return itemId;
-    }
-
-    /**
      * @return the altItemId
      */
     public String getAltItemId()
@@ -397,7 +381,6 @@ public class ShipmentItemRec implements Jsonable
     Utils.checkNull( item, "item" );
     
     return new Builder()
-     .setItemId( item.getOrderItemId())
      .setAltItemId( item.getAltOrderItemId())
      .setMerchantSku( item.getMerchantSku())
      .setQuantity( item.getRequestOrderQty())
@@ -414,7 +397,6 @@ public class ShipmentItemRec implements Jsonable
   {
     Utils.checkNull( json, "json" );
     final Builder b = new Builder()
-      .setItemId( json.getString( "shipment_item_id", "" ))
       .setAltItemId( json.getString( "alt_shipment_item_id", "" ))
       .setMerchantSku( json.getString( "merchant_sku", "" ))
       .setQuantity( json.getInt( "response_shipment_sku_quantity", 0 ))
@@ -441,7 +423,6 @@ public class ShipmentItemRec implements Jsonable
   private ShipmentItemRec( final Builder b )
   {
     Utils.checkNull( b, "b" );
-    this.itemId = b.getItemId();
     this.altItemId = b.getAltItemId();
     this.merchantSku = b.getMerchantSku();
     this.quantity = b.getQuantity();
@@ -455,7 +436,6 @@ public class ShipmentItemRec implements Jsonable
   public Builder toBuilder()
   {
     final Builder b = new Builder();
-    b.itemId = this.itemId;
     b.altItemId = this.altItemId;
     b.merchantSku = this.merchantSku;
     b.quantity = this.quantity;
@@ -468,16 +448,6 @@ public class ShipmentItemRec implements Jsonable
   }
   
   
-  /**
-   * Get Jet's unique identifier for an item in a shipment.
-   * @return the itemId
-   * @deprecated
-   */
-  public String getItemId() 
-  {
-    return itemId;
-  }
-
   /**
    * Get Optional seller supplied ID for an item in a specific shipment. If 
    * this value is specified with Jet's shipment_item_id, Jet will map the 
@@ -553,7 +523,6 @@ public class ShipmentItemRec implements Jsonable
   public JsonObject toJSON()
   {
     final JsonObjectBuilder out = Json.createObjectBuilder()
-      //.add( "shipment_item_id", itemId ) //..Removed by jet
       .add( "alt_shipment_item_id", altItemId )
       .add( "merchant_sku", merchantSku )
       .add( "response_shipment_sku_quantity", quantity )

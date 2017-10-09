@@ -35,6 +35,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.xml.bind.ValidationException;
 
 
 /**
@@ -864,7 +865,10 @@ public class ProductRec implements Jsonable
       }
       
       if ( !productCode.getProductCode().isEmpty())
+      {
+        
         this.productCodes.add( productCode );
+      }
       
       return this;
     }
@@ -1826,7 +1830,10 @@ public class ProductRec implements Jsonable
       if ( fNodePrices == null )
         this.fNodePrices.clear();
       else
-        this.fNodePrices.addAll( fNodePrices );
+      {
+        fNodePrices.forEach(v -> setfNodePrices( v ));
+        //this.fNodePrices.addAll( fNodePrices );
+      }
       return this;
     }
 
@@ -1836,6 +1843,13 @@ public class ProductRec implements Jsonable
      */
     public Builder setfNodePrices( FNodePriceRec fNodePrices) {
       Utils.checkNull( fNodePrices, "fNodePrices" );
+      
+      for ( final FNodePriceRec rec : this.fNodePrices )
+      {
+        if ( rec.getNodeId().equals( fNodePrices.getNodeId()))
+          throw new IllegalArgumentException( "This product already contains pricing for node " + fNodePrices.getNodeId());
+      }
+      
       this.fNodePrices.add( fNodePrices );
       return this;
     }
@@ -1856,7 +1870,10 @@ public class ProductRec implements Jsonable
       if ( fNodeInventory == null )
         this.fNodeInventory.clear();
       else
-        this.fNodeInventory.addAll( fNodeInventory );
+      {
+        fNodeInventory.forEach(v -> setfNodeInventory( v ));
+        //this.fNodeInventory.addAll( fNodeInventory );
+      }
       return this;
     }
 
@@ -1866,6 +1883,13 @@ public class ProductRec implements Jsonable
      */
     public Builder setfNodeInventory( FNodeInventoryRec fNodeInventory) {
       Utils.checkNull( fNodeInventory, "fNodeInventory" );
+      
+      for ( final FNodeInventoryRec rec : this.fNodeInventory )
+      {
+        if ( rec.getNodeId().equals(  fNodeInventory.getNodeId()))
+          throw new IllegalArgumentException( "This product already contains inventory for node " + fNodeInventory.getNodeId());
+      }
+      
       this.fNodeInventory.add( fNodeInventory );
       return this;
     }
@@ -3336,7 +3360,9 @@ public class ProductRec implements Jsonable
     else if ( !mfrPartNumber.isEmpty() && mfrPartNumber.length() > 50 )
       throw new ValidateException( "mfrPartNumber cannot be more than 50 characters" );
     
-    if ( mapImplementation.equals( MAPType.LOGGED_IN ))
+    if ( mapImplementation.equals( MAPType.NONE ))
+      throw new ValidateException( "MAP Type is required" );
+    else if ( mapImplementation.equals( MAPType.LOGGED_IN ))
     {
       if ( mapPrice.lessThanEqualToZero())
         throw new ValidateException( "When map implementation is Logged In (102), you must specify a map price" );      
