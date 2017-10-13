@@ -15,10 +15,8 @@
 package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.BuildableObject;
-import com.buffalokiwi.aerodrome.jet.IBuildableObject;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
-import com.buffalokiwi.utils.Money;
 import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
