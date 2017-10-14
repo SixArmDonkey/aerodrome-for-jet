@@ -607,6 +607,25 @@ public class OrderItemRec
     return itemPrice;
   }
   
+  
+  /**
+   * This will return (item price * qty)
+   * @return 
+   */
+  public Money getQtyPrice()
+  {
+    final int qty = getRequestOrderQty() - getRequestOrderCancelQty();
+    
+    return getItemPrice().getPrice().times(( qty < 0 ) ? 0 : qty );
+  }
+  
+  
+  public Money getQtyShippingPrice()
+  {
+    final int qty = getRequestOrderQty() - getRequestOrderCancelQty();
+    return getItemPrice().getShippingPrice().times(( qty < 0 ) ? 0 : qty );
+  }
+  
 
   /**
    * Get The quanitity of the given merchant SKU that should be cancelled; 
@@ -736,6 +755,11 @@ public class OrderItemRec
       .build();
   }
   
+  
+  public Money getTotalAmountToJet()
+  {
+    return getFees().plus( getRegFees()).plus( adjustments.stream().map( v -> v.getValue()).reduce( new Money(), Money::plus ));
+  }
   
   
   @Override

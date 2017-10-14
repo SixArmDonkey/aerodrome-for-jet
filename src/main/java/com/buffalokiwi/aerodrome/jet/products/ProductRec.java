@@ -1866,13 +1866,15 @@ public class ProductRec implements Jsonable
      * Fulfillment node inventory
      * @param fNodeInventory the fNodeInventory to set
      */
-    public Builder setfNodeInventory(List<FNodeInventoryRec> fNodeInventory) {
-      if ( fNodeInventory == null )
+    public Builder setfNodeInventory( final List<FNodeInventoryRec> iList ) {
+      if ( iList == null )
         this.fNodeInventory.clear();
       else
       {
-        fNodeInventory.forEach(v -> setfNodeInventory( v ));
-        //this.fNodeInventory.addAll( fNodeInventory );
+        for ( final FNodeInventoryRec rec : iList )
+        {
+          setfNodeInventory( rec );
+        }
       }
       return this;
     }
