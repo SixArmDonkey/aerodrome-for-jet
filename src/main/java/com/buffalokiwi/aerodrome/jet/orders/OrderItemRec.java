@@ -609,12 +609,22 @@ public class OrderItemRec
   
   
   /**
+   * Retrieve the quantity of the item to ship.  This can be zero.
+   * @return quantity to ship 
+   */
+  public int getQty()
+  {
+    return getRequestOrderQty() - getRequestOrderCancelQty();
+  }
+  
+  
+  /**
    * This will return (item price * qty)
    * @return 
    */
   public Money getQtyPrice()
   {
-    final int qty = getRequestOrderQty() - getRequestOrderCancelQty();
+    final int qty = getQty();
     
     return getItemPrice().getPrice().times(( qty < 0 ) ? 0 : qty );
   }
@@ -622,7 +632,7 @@ public class OrderItemRec
   
   public Money getQtyShippingPrice()
   {
-    final int qty = getRequestOrderQty() - getRequestOrderCancelQty();
+    final int qty = getQty();
     return getItemPrice().getShippingPrice().times(( qty < 0 ) ? 0 : qty );
   }
   

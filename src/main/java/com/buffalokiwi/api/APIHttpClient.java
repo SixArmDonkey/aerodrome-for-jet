@@ -407,6 +407,7 @@ public class APIHttpClient implements IAPIHttpClient
  
     //..Shutdown the connection pool
     POOL.shutdown();
+    
   }
 
 

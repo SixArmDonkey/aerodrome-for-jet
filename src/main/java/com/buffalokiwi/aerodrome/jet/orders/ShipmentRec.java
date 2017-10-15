@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -911,6 +912,27 @@ public class ShipmentRec implements Jsonable
   {
     return redirectNotification;
   }
+  
+  
+  /**
+   * Retrieve the sum of items shipped within this shipment
+   * @return total items shipped
+   */
+  public int getTotalItemsShipped()
+  {
+    return items.stream().mapToInt( v -> v.getQuantity()).sum();
+  }
+  
+  
+  /**
+   * Retrieve the sum of items cancelled within this shipment 
+   * @return items cancelled
+   */
+  public int getTotalItemsCancelled()
+  {
+    return items.stream().mapToInt( v -> v.getCancelQuantity()).sum();
+  }
+  
   
   
   /**

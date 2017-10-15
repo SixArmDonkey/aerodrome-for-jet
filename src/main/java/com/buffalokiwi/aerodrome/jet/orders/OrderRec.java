@@ -1390,6 +1390,39 @@ public class OrderRec implements Jsonable
   }
   
   
+  /**
+   * Retrieve the sum of items shipped for all shipments within this order
+   * @return total items shipped
+   */
+  public int getTotalItemsShipped()
+  {
+    return shipments.stream().mapToInt( v -> v.getTotalItemsShipped()).sum();
+  }
+  
+  
+  /**
+   * Retrieve the sum of items cancelled for all shipments within this order.
+   * @return total items cancelled
+   */
+  public int getTotalItemsCancelled()
+  {
+    return shipments.stream().mapToInt( v -> v.getTotalItemsCancelled()).sum();
+  }
+  
+  
+  
+  /**
+   * Test to see if any items have been shipped or not.  This tests the count of
+   * items shipped within the shipments list connected to this order.  This does 
+   * NOT take order status into consideration.
+   * @return getTotalItemsShipped() > 0 
+   */
+  public boolean hasShippedItems()
+  {
+    return getTotalItemsShipped() > 0;
+  }
+  
+  
   
   /**
    * Turn the shipments array into a JsonArray 

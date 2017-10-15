@@ -331,10 +331,17 @@ public class ShipmentItemRec implements Jsonable
     /**
      * @return the quantity
      */
-    public int getQuantity()
+    public int getRequestedQuantity()
     {
       return quantity;
     }
+    
+    
+    public int getQuantity()
+    {
+      return quantity - cancelQuantity;
+    }
+    
 
     /**
      * @return the cancelQuantity
