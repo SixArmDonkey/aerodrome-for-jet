@@ -18,11 +18,14 @@ import com.buffalokiwi.aerodrome.jet.ShippingMethod;
 import com.buffalokiwi.aerodrome.jet.ShippingServiceLevel;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
+import com.buffalokiwi.api.APILog;
 import com.buffalokiwi.utils.Money;
 import java.util.Objects;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -32,6 +35,8 @@ import javax.json.JsonObjectBuilder;
  */
 public class ShippingExceptionRec implements Jsonable
 {
+  private final static Log LOG = LogFactory.getLog( ShippingExceptionRec.class );
+  
   public static class Builder
   {
     /**
@@ -378,12 +383,22 @@ public class ShippingExceptionRec implements Jsonable
   {
     Utils.checkNull( o, "o" );
     
+    ShipExceptionType ex = ShipExceptionType.EXCLUSIVE;
+    
+    try {
+      ex = ShipExceptionType.fromText( o.getString( "shipping_exception_type", "" ));
+    } catch( IllegalArgumentException e ) {
+      APILog.info( LOG, e, "Product found with incorrect shipping exception type" );
+      //..do nothing, it's set to exclusive.
+      //..The old include method can sometimes be returned from old products.
+    }
+    
     return new ShippingExceptionRec(
       ShippingServiceLevel.fromText( o.getString( "service_level", "" )),
       ShippingMethod.fromText( o.getString( "shipping_method", "" )),
       ShipOverrideType.fromText( o.getString( "override_type", "" )),
       Utils.jsonNumberToMoney( o, "shipping_charge_amount" ),
-      ShipExceptionType.fromText( o.getString( "shipping_exception_type", "" ))
+      ex 
     );    
   }
 

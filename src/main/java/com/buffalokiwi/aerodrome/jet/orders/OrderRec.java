@@ -22,6 +22,7 @@ import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
+import com.buffalokiwi.utils.Money;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

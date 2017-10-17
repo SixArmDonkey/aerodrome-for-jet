@@ -243,9 +243,10 @@ public class JetAPIOrder extends JetAPI implements IJetAPIOrder
     
     for ( final OrderItemRec item : curRec.getOrderItems())
     {
-      shipmentItems.add( ShipmentItemRec.fromOrderItem( item )
-       .setQuantity( 0 )
-       .setCancelQuantity( item.getRequestOrderQty()).build());
+      final ShipmentItemRec.Builder sRec = ShipmentItemRec.fromOrderItem( item );
+      sRec.setQuantity( 0 );
+      sRec.setCancelQuantity( item.getQty());
+      shipmentItems.add( sRec.build());
     }
     
     shipments.add( new ShipmentRec.Builder()

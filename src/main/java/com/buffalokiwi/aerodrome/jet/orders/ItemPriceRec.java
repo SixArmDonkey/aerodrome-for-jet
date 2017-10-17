@@ -141,6 +141,19 @@ public class ItemPriceRec implements Jsonable
   
   
   /**
+   * Retrieve the total.  
+   * @return price + ship price - tax - ship tax
+   */
+  public Money getTotal()
+  {
+    return getPrice()
+      .plus( getShippingPrice())
+      .minus( getItemTax())
+      .minus( getShippingTax());
+  }
+  
+  
+  /**
    * Convert this object into jet json 
    * @return json 
    */

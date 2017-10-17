@@ -118,7 +118,7 @@ public class ShipmentItemRec implements Jsonable
     /**
      * The number of days the customer has to return the shipment item
      */
-    private int returnDays = 0;
+    private int returnDays = 7;
     
     /**
      * In the event the item is returned, the location the item would go back.
@@ -432,7 +432,7 @@ public class ShipmentItemRec implements Jsonable
     Utils.checkNull( b, "b" );
     this.altItemId = b.getAltItemId();
     this.merchantSku = b.getMerchantSku();
-    this.quantity = b.getQuantity();
+    this.quantity = b.getRequestedQuantity();
     this.cancelQuantity = b.getCancelQuantity();
     this.rmaNumber = b.getRmaNumber();
     this.returnDays = b.getReturnDays();

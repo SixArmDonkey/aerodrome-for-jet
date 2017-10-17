@@ -19,6 +19,7 @@ import com.buffalokiwi.utils.Money;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -145,6 +146,41 @@ public class OrderTotalRec
   }
   
   
+  /**
+   * Retrieve the sum of all fee adjustment records 
+   * @return sum
+   */
+  public Money getFeeAdjustmentSum()
+  {
+    if ( adjustments.isEmpty())
+      return new Money();
+    
+    return adjustments.stream().map( v -> v.getValue()).reduce((a,b) -> a.plus( b )).get();
+  }
+  
+  
+  /**
+   * Retrieve the sum paid to Jet for this order.
+   * @return total
+   */
+  public Money getFeeTotal()
+  {
+    return getItemFees().plus( getRegFees()).plus( getFeeAdjustmentSum());
+  }
+  
+  
+  /**
+   * Retrieve the monetary value of this order.
+   * This is the sum of all items + sum of shipping value - tax - shipping tax - 
+   * sum of all fees paid to jet.
+   * @return value 
+   */
+  public Money getOrderValue()
+  {
+    return itemPrice.getTotal().minus(  getFeeTotal());
+  }
+
+            
   /**
    * Turn this into a json object for jet api 
    * @return jet json 
