@@ -283,6 +283,7 @@ public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Buil
     
     final Builder b = new Builder();
     
+    b.setMerchantSku( from.getMerchantSku());
     b.setOrderItemId( from.getOrderItemId());
     b.setAltOrderItemId( from.getAltOrderItemId());
     b.setOrderReturnRefundQty( from.getRequestOrderQty());
