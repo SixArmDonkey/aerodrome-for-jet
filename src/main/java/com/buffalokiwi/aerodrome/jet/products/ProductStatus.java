@@ -29,7 +29,7 @@ public enum ProductStatus
   /**
    * he product is listed on Jet.com and can be purchased by a customer
    */
-  AVAILABLE( "Available For Purchase" ),
+  AVAILABLE( "Available for Purchase" ),
 
   /**
    * More data is needed to list the product on Jet.com

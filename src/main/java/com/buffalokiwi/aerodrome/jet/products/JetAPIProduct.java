@@ -538,7 +538,14 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
       ProductPriceRec p = getProductPrice( sku );
       b.setfNodePrices( p.getFulfillmentNodes());
     } catch( Exception e ) {
-      System.err.println( e );
+      APILog.error(  LOG, e, "Failed to retrieve product prices for", sku );
+    }
+    
+    try {
+      ProductInventoryRec i = getProductInventory( sku );
+      b.setfNodeInventory( i.getNodes());
+    } catch( Exception e ) {
+      APILog.error(  LOG, e, "Failed to retrieve product inventory for", sku );
     }
     
     b.setVariations( getProductVariations( sku ));
