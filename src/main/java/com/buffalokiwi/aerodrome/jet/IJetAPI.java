@@ -15,11 +15,12 @@
 package com.buffalokiwi.aerodrome.jet;
 
 import com.buffalokiwi.api.APIException;
-import com.buffalokiwi.api.APIResponse;
+import com.buffalokiwi.api.IAPIResponse;
 import com.buffalokiwi.api.IApi;
 import com.buffalokiwi.api.PostFile;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.apache.http.entity.ContentType;
 
 /**
@@ -61,8 +62,18 @@ public interface IJetAPI extends IApi
    */
   public JetHeaderBuilder getPlainHeaderBuilder();
   
+  
+  /**
+   * Add an error handler callback.
+   * @param handler 
+   */
   public void setErrorHandler( IJetErrorHandler handler );
           
+  /**
+   * Add a rate limit handler 
+   * @param handler 
+   */
+  public void setRateLimitHandler( final Consumer<IAPIResponse> handler );
 
   /**
    * Send arbitrary post data to some endpoint

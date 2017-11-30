@@ -12,7 +12,7 @@
  * PARTICULAR PURPOSE.
  */
 
-package com.buffalokiwi.aerodrome.jet.products;
+package com.buffalokiwi.aerodrome.jet;
 
 /**
  * The product status retrieved from Jet

@@ -236,7 +236,7 @@ public class NodeRec
       .setAmazonNodeId( Utils.jsonNumberToBigDecimal( json, "amazon_node_id", 0 ).longValue())
       .setJetParentNodeId( Utils.jsonNumberToBigDecimal( json, "parent_id", 0 ).longValue())
       .setJetLevel( JetLevel.fromText( json.getInt(  "jet_level", 0 )))
-      .setTaxCode( ProductTaxCode.fromText( json.getString(  "suggested_tax_code" )))
+      .setTaxCode( ProductTaxCode.fromText( json.getString(  "suggested_tax_code", "" )))
       .setActive( json.getBoolean( "active", true ))
       .build();
   }

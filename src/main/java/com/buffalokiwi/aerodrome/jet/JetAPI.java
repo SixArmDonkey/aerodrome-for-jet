@@ -21,16 +21,20 @@ import com.buffalokiwi.api.APILog;
 import com.buffalokiwi.api.IAPIHttpClient;
 import com.buffalokiwi.api.IAPIResponse;
 import com.buffalokiwi.api.PostFile;
+import com.buffalokiwi.api.ResponseCode;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -68,6 +72,17 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   private final AtomicBoolean isReauth = new AtomicBoolean( false );
   
   /**
+   * A global rate limit callback for if any of the api methods receive a 
+   * too many requests response
+   */
+  private final List<Consumer<IAPIResponse>> rateLimitHandlers = new CopyOnWriteArrayList<>();
+  
+  /**
+   * Delay threads for this long before retrying the previous rate limited request
+   */
+  private static final long RATE_LIMIT_DELAY = 5000L;
+  
+  /**
    * Logger 
    */
   private static final Log LOG = LogFactory.getLog( JetAPI.class );
@@ -75,8 +90,8 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   private static final ReentrantLock authLock = new ReentrantLock();
   
   private static final AtomicInteger reauthAttempts = new AtomicInteger( 0 );
-
-  private static final List<IJetErrorHandler> errorHandlers = Collections.synchronizedList( new ArrayList<IJetErrorHandler>());
+  
+  private static final List<IJetErrorHandler> errorHandlers = new CopyOnWriteArrayList<>();
   
   
   /**
@@ -96,9 +111,18 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
 
   
   @Override
-  public void setErrorHandler( IJetErrorHandler handler )
+  public void setErrorHandler( final IJetErrorHandler handler )
   {
+    Utils.checkNull( handler, "handler" );
     errorHandlers.add( handler );
+  }
+  
+  
+  @Override
+  public void setRateLimitHandler( final Consumer<IAPIResponse> handler )
+  {
+    Utils.checkNull( handler, "handler" );
+    rateLimitHandlers.add( handler );
   }
   
   
@@ -411,6 +435,16 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return Collections.unmodifiableMap( newHeaders );
       } catch( JetAuthException authE ) {
         throw new JetException( "Failed to reauthenticate", authE );
+      }
+    }
+    else if ( e.getResponse().getStatusLine().getStatusCode() == ResponseCode.TOO_MANY_REQUESTS.getCode())
+    {
+      try {
+        rateLimitHandlers.forEach( c -> c.accept( e.getResponse()));
+        Thread.sleep( RATE_LIMIT_DELAY );
+        return headers;
+      } catch( InterruptedException ex ) {
+        throw e;
       }
     }    
     else

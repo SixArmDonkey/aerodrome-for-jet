@@ -14,6 +14,7 @@
 
 package com.buffalokiwi.aerodrome.jet.products;
 
+import com.buffalokiwi.aerodrome.jet.reports.SkuSalesDataRec;
 import com.buffalokiwi.aerodrome.jet.JetAPI;
 import com.buffalokiwi.api.APIException;
 import com.buffalokiwi.api.APILog;

@@ -12,7 +12,7 @@
  * PARTICULAR PURPOSE.
  */
 
-package com.buffalokiwi.aerodrome.jet.products;
+package com.buffalokiwi.aerodrome.jet.reports;
 
 import com.buffalokiwi.aerodrome.jet.IJetDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;

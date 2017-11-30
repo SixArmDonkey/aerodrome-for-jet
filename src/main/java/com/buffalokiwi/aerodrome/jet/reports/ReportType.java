@@ -19,6 +19,11 @@ package com.buffalokiwi.aerodrome.jet.reports;
 public enum ReportType
 {
   /**
+   * Unused 
+   */
+  NONE( "" ),
+  
+  /**
    * Will return the status and substatuses of all SKUs in merchant catalog
    */
   PRODUCT_STATUS( "ProductStatus" ),
@@ -26,14 +31,14 @@ public enum ReportType
   /**
    * Assuming this is sales data, it is undocumented on jet.
    */
-  SALES_DATA( "SalesData" ),
+  SALES_DATA( "SalesData" );
   
   /**
    * The settlement details report pulls a csv report for all sales and refunds 
    * in a settlement period. The request body is a settlement ID, which can be 
    * retrieved after polling for a list of links. 
    */
-  SETTLEMENT_DETAIL( "SettlementDetails" );
+  //SETTLEMENT_DETAIL( "SettlementDetails" );
   
 
   /**

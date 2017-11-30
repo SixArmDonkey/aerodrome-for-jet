@@ -20,6 +20,11 @@ package com.buffalokiwi.aerodrome.jet.reports;
 public enum ReportStatus
 {
   /**
+   * Unused for Jet 
+   */
+  NONE( "" ),
+  
+  /**
    * the report has been requested by the merchant and is in queue
    */
   REQUESTED( "Requested" ),

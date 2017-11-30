@@ -14,6 +14,7 @@
 
 package com.buffalokiwi.aerodrome.jet.products;
 
+import com.buffalokiwi.aerodrome.jet.reports.OfferRec;
 import com.buffalokiwi.aerodrome.jet.Utils;
 import java.text.ParseException;
 import java.util.ArrayList;

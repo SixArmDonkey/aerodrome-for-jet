@@ -14,6 +14,8 @@
 
 package com.buffalokiwi.aerodrome.jet.products;
 
+import com.buffalokiwi.aerodrome.jet.ProductStatus;
+import com.buffalokiwi.aerodrome.jet.ProductSubStatus;
 import com.buffalokiwi.aerodrome.jet.IJetDate;
 import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.ProductTaxCode;

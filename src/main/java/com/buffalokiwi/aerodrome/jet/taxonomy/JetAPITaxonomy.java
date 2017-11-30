@@ -84,7 +84,7 @@ public class JetAPITaxonomy extends JetAPI implements IJetAPITaxonomy
     throws APIException, JetException
   {
     return get(
-      config.getGetTaxonomyNodesUrl( "2016", offset, limit ),
+      config.getGetTaxonomyNodesUrl( "2017", offset, limit ),
       getJSONHeaderBuilder().build()
     );
   }
@@ -155,7 +155,11 @@ public class JetAPITaxonomy extends JetAPI implements IJetAPITaxonomy
   public NodeRec getNodeDetail( final String nodeId )
     throws APIException, JetException
   {
-    return NodeRec.fromJson( sendGetNodeDetail( nodeId ).getJsonObject());
+    final IJetAPIResponse response = sendGetNodeDetail( nodeId );
+    if ( response == null )
+      throw new JetException( "Taxonomy detail query returned null" );
+    
+    return NodeRec.fromJson( response.getJsonObject());
   }
   
   
