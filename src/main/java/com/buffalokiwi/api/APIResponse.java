@@ -15,6 +15,7 @@
 package com.buffalokiwi.api;
 
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -26,6 +27,8 @@ import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.stream.JsonParsingException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
@@ -35,6 +38,8 @@ import org.apache.http.StatusLine;
  */
 public class APIResponse implements IAPIResponse
 {
+  private static final Log LOG = LogFactory.getLog( APIResponse.class );
+  
   /**
    * APIResponse protocol version
    */
@@ -70,6 +75,7 @@ public class APIResponse implements IAPIResponse
    */
   private String charset = "";
   
+  private byte[] bytes;
   
   
   /**
@@ -90,7 +96,7 @@ public class APIResponse implements IAPIResponse
     {
       if ( c.getParameterCount() == 6 )
       {
-        final T r = (T)c.newInstance( that.getProtocolVersion(), that.getStatusLine(), that.headers(), that.getRedirectLocations(), that.getResponseContent(), that.getResponseCharsetName());
+        final T r = (T)c.newInstance( that.getProtocolVersion(), that.getStatusLine(), that.headers(), that.getRedirectLocations(), that.getBytes(), that.getResponseCharsetName());
         return r;
       }
     }
@@ -108,7 +114,7 @@ public class APIResponse implements IAPIResponse
    * @param status status line
    * @param headers response headers
    */
-  public APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers, final List<URI> redirectLocations, final String content, final String charset )
+  public APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers, final List<URI> redirectLocations, final byte[] content, final String charset )
   {
     protocolVersion = pv;
     this.status = status;
@@ -116,15 +122,27 @@ public class APIResponse implements IAPIResponse
     if ( headers != null )
       this.headers = Collections.unmodifiableList( headers );
     else
-      this.headers = Collections.unmodifiableList( new ArrayList<Header>());
+      this.headers = Collections.unmodifiableList( new ArrayList<>());
     
     if ( redirectLocations != null )
       this.redirectLocations = Collections.unmodifiableList( redirectLocations );
     else
-      this.redirectLocations = Collections.unmodifiableList( new ArrayList<URI>());
+      this.redirectLocations = Collections.unmodifiableList( new ArrayList<>());
     
-    this.content = ( content == null ) ? "" : content;
     this.charset = ( charset == null) ? "" : charset;
+    
+    if ( !this.charset.isEmpty())
+    {
+      try {
+        this.content = ( content == null ) ? "" : new String( content, 0, content.length, charset );
+      } catch( UnsupportedEncodingException e ) {
+        APILog.error( LOG, e, "Failed to create response string" );
+        this.content = "";
+      }
+      bytes = new byte[0];
+    }
+    else
+      this.bytes = content;
     
     processHeaders();
   }  
@@ -137,9 +155,25 @@ public class APIResponse implements IAPIResponse
    * @param status status line
    * @param headers response headers
    */
-  public APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers, final String content, final String charset )
+  public APIResponse( final ProtocolVersion pv, final StatusLine status, final List<Header> headers, final byte[] content, final String charset )
   {
     this( pv, status, headers, null, content, charset );
+  }
+  
+  
+  @Override
+  public byte[] getBytes()
+  {    
+    if ( !content.isEmpty())
+    {
+      try {
+        return content.getBytes( charset );
+      } catch( UnsupportedEncodingException e ) {
+        return content.getBytes();
+      }
+    }
+    else
+      return bytes;
   }
 
 

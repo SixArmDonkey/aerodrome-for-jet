@@ -20,7 +20,12 @@ import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.api.APIException;
 
 /**
- *
+ * The bulk reporting API.
+ * 
+ * Note: after calling createReport(), there will be a delay until the 
+ * report has started processing.  Until that time, Jet will return a 404 for 
+ * a potentially valid report id.
+ * 
  * @author John Quinn
  */
 public interface IJetAPIReport 

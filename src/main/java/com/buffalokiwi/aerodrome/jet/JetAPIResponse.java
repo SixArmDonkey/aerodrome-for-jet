@@ -53,6 +53,7 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
     FORBIDDEN( 403, "Forbidden" ),
     NOT_FOUND( 404, "Not Found" ),
     METHOD_NOT_ALLOWED( 405, "Method Not Allowed" ),
+    TOO_MANY_REQUESTS( 429, "Too Many Requests" ),
     INTERNAL_SERVER_ERROR( 500, "Internal Server Error" ),
     UNAVAILABLE( 503, "Unavailable" );
 
@@ -164,7 +165,7 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
    */
   public JetAPIResponse( final ProtocolVersion pv, final StatusLine status, 
     final List<Header> headers, final List<URI> redirectLocations, 
-    final String content, final String charset )
+    final byte[] content, final String charset )
   {
     super( pv, status, headers, redirectLocations, content, charset );
   }

@@ -27,7 +27,10 @@ import org.apache.commons.logging.LogFactory;
 
 
 /**
- * A Buildable Object 
+ * The bulk reporting feature allows the merchant to request a report which 
+ * will return to the merchant a JSON file with the requested information. 
+ * Jet.com will use this to pass data to the retailer
+ * 
  * @param <R> Subclass Type
  * @param <B> Inner builder subclass type 
  * 
@@ -101,6 +104,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The Jet defined merchant ID associated with the merchant account
      * @param merchantId the merchantId to set
      */
     public T setMerchantId( String merchantId )
@@ -112,6 +116,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The Jet defined report ID associated with the report requested
      * @param reportId the reportId to set
      */
     public T setReportId( String reportId )
@@ -123,6 +128,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
     
 
     /**
+     * The date the report was requested
      * @param requestedDate the requestedDate to set
      */
     public T setRequestedDate( IJetDate requestedDate )
@@ -133,6 +139,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
     
     /**
+     * The current status of the report
      * @param status the status to set
      */
     public T setStatus( ReportStatus status )
@@ -144,6 +151,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
     
     /**
+     * The type of report requested.
      * @param type the type to set
      */
     public T setType( ReportType type )
@@ -155,6 +163,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
     
     /**
+     * The date-time the report started processing
      * @param processingStart the processingStart to set
      */
     public T setProcessingStart( IJetDate processingStart )
@@ -165,6 +174,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The date-time the report ended processing
      * @param processingEnd the processingEnd to set
      */
     public T setProcessingEnd( IJetDate processingEnd )
@@ -175,6 +185,8 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The date the report will no longer be accessible for download. A new 
+     * report will need to be requested
      * @param reportExpDate the reportExpDate to set
      */
     public T setReportExpDate( IJetDate reportExpDate )
@@ -185,6 +197,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The URL where the report can be downloaded
      * @param reportUrl the reportUrl to set
      */
     public T setReportUrl( String reportUrl )
@@ -197,6 +210,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
     
 
     /**
+     * The type of report requested.
      * @return the type
      */
     public ReportType getType()
@@ -206,6 +220,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
     
     /**
+     * The date the report was requested
      * @return the requestedDate
      */
     public IJetDate getRequestedDate()
@@ -215,6 +230,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The Jet defined merchant ID associated with the merchant account
      * @return the merchantId
      */
     public String getMerchantId()
@@ -224,6 +240,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The Jet defined report ID associated with the report requested
      * @return the reportId
      */
     public String getReportId()
@@ -233,6 +250,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
     
 
     /**
+     * The current status of the report
      * @return the status
      */
     public ReportStatus getStatus()
@@ -242,6 +260,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
     
     /**
+     * The date-time the report started processing
      * @return the processingStart
      */
     public IJetDate getProcessingStart()
@@ -251,6 +270,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The date-time the report ended processing
      * @return the processingEnd
      */
     public IJetDate getProcessingEnd()
@@ -260,6 +280,8 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The date the report will no longer be accessible for download. A 
+     * new report will need to be requested
      * @return the reportExpDate
      */
     public IJetDate getReportExpDate()
@@ -269,6 +291,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
 
 
     /**
+     * The URL where the report can be downloaded
      * @return the reportUrl
      */
     public String getReportUrl()
@@ -422,6 +445,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   
   
   /**
+   * The type of report requested
    * @return the type
    */
   public ReportType getType()
@@ -430,6 +454,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   }
 
   /**
+   * The date the report was requested
    * @return the requestedDate
    */
   public IJetDate getRequestedDate()
@@ -439,6 +464,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   
   
   /**
+   * The Jet defined merchant ID associated with the merchant account
    * @return the merchantId
    */
   public String getMerchantId()
@@ -448,6 +474,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   
   
   /**
+   * The Jet defined report ID associated with the report requested
    * @return the reportId
    */
   public String getReportId()
@@ -456,6 +483,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   }
 
   /**
+   * The current status of the report
    * @return the status
    */
   public ReportStatus getStatus()
@@ -464,6 +492,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   }
 
   /**
+   * The date-time the report started processing
    * @return the processingStart
    */
   public IJetDate getProcessingStart()
@@ -473,6 +502,7 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   
 
   /**
+   * The date-time the report ended processing
    * @return the processingEnd
    */
   public IJetDate getProcessingEnd()
@@ -482,6 +512,8 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   
   
   /**
+   * The date the report will no longer be accessible for download. A new 
+   * report will need to be requested
    * @return the reportExpDate
    */
   public IJetDate getReportExpDate()
@@ -491,10 +523,21 @@ public class ReportStatusRec<R extends ReportStatusRec, B extends ReportStatusRe
   
   
   /**
+   * The URL where the report can be downloaded
    * @return the reportUrl
    */
   public String getReportUrl()
   {
     return reportUrl;
   }  
+  
+  
+  /**
+   * If the report is complete and ready for download or marked as failed.
+   * @return is done
+   */
+  public boolean isDone()
+  {
+    return !getStatus().equals( ReportStatus.REQUESTED );
+  }
 }

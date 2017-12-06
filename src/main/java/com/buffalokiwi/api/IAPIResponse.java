@@ -35,6 +35,8 @@ public interface IAPIResponse
    */
   public int getContentLength();
 
+  public byte[] getBytes();
+  
   /**
    * Retrieve the response as a parsed JsonObject
    * @return response

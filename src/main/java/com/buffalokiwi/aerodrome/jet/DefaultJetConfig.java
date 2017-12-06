@@ -316,6 +316,15 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
      */
     private String getSettlementReportUrl = "/settlement/report/{settlement_id}";
     
+    /**
+     * Create new report url
+     */
+    private String postCreateReportUrl = "/reports/{report_type}";
+    
+    /**
+     * retrieve report status url
+     */
+    private String getReportStatusUrl = "/reports/state/{report_id}";
     
     /**
      * Get the log 
@@ -1034,6 +1043,26 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     }
     
     
+    public T setPostCreateReportUrl( final String url )
+    {
+      isModified = true;
+      this.postCreateReportUrl = url;
+      return getReference();
+    }
+    
+    
+    public T setGetReportStatusUrl( final String url )
+    {
+      isModified = true;
+      this.getReportStatusUrl = url;
+      return getReference();
+    }
+    
+    
+    
+    
+    
+    
 
     /**
      * @return the host
@@ -1432,6 +1461,33 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     {
       return isModified;
     }
+    
+    
+    /**
+     * URL for creating a new report.
+     * 
+     * ProductStatus will create a report with all product statuses 
+     * SalesData will create a bulk sales data report for all of the products 
+     * 
+     * @return Url 
+     */
+    public String getPostCreateReportUrl()
+    {
+      return postCreateReportUrl;
+    }
+
+    
+    /**
+     * URL for retrieving a report status 
+     * @return Url
+     */
+    public String getGetReportStatusUrl()
+    {
+      return getReportStatusUrl;
+    }
+    
+    
+    
   }  
   
   
@@ -1710,6 +1766,16 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
   private final String getSettlementReportUrl;
   
   /**
+   * Create report url
+   */
+  private final String postCreateReportUrl;
+  
+  /**
+   * Retrieve report status url 
+   */
+  private final String getReportStatusUrl;
+  
+  /**
    * Test a string for null and empty and 
    * throw an IllegalArgumentException if null or empty
    * @param s String to test
@@ -1736,9 +1802,9 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     super( builderClass, b );
     Utils.checkNull( b, "b" );
     
-    //...Obviously this is designed to work with the xml configuration file.
-    //..These errors could get weird if someone writes a different configuration 
-    //..implementation...
+    /**
+     * The following makes no sense. 
+     */
     checkStringEmpty(b.getHost(), "jet.host cannot be empty" );
     checkStringEmpty(b.getUser(), "jet.username cannot be empty" );
     checkStringEmpty(b.getPass(), "jet.password cannot be empty" );
@@ -1784,6 +1850,8 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     checkStringEmpty(b.getGetSettlementReportUrl(), "getSettlementReportUrl cannot be empty" );
     checkStringEmpty(b.getUriGetTaggedOrders(), "uriGetTaggedOrders cannot be emoty" );
     checkStringEmpty(b.getUriPutTagOrder(), "uriPutTagOrder cannot be empty" );
+    checkStringEmpty( b.getPostCreateReportUrl(), "postCreateReportUrl cannot be empty" );
+    checkStringEmpty( b.getGetReportStatusUrl(), "getReportStatusUrl cannot be empty" );
     
     
     if ( b.getReadTimeout() < 0 )
@@ -1842,6 +1910,8 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     this.getSettlementReportUrl = b.getGetSettlementReportUrl();
     this.uriPutTagOrder = b.getUriPutTagOrder();
     this.uriGetTaggedOrders = b.getUriGetTaggedOrders();
+    this.postCreateReportUrl = b.getPostCreateReportUrl();
+    this.getReportStatusUrl = b.getGetReportStatusUrl();
   }
   
   
@@ -2652,6 +2722,36 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
   }  
   
   
+  /**
+   * URL for creating a new report.
+   * 
+   * ProductStatus will create a report with all product statuses 
+   * SalesData will create a bulk sales data report for all of the products 
+   * 
+   * @param reportType Valid Values: ProductStatus, SalesData, SettlementDetails
+   * @return Url 
+   */
+  @Override
+  public String getPostCreateReportUrl( final String reportType )
+  {
+    Utils.checkNullEmpty( reportType, "reportType" );
+    return postCreateReportUrl.replace(  "{report_type}", reportType );
+  }
+  
+  /**
+   * URL for retrieving a report status 
+   * @param reportId Id returned by the create report api request 
+   * @return Url
+   */
+  @Override
+  public String getGetReportStatusUrl( final String reportId )
+  {
+    Utils.checkNullEmpty( reportId, "reportId" );
+    return getReportStatusUrl.replace( "{report_id}", reportId );
+  }
+  
+  
+  
   @Override
   public B toBuilder()
   {
@@ -2705,6 +2805,8 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
     b.getSettlementReportUrl = this.getSettlementReportUrl;
     b.uriPutTagOrder = this.uriPutTagOrder;
     b.uriGetTaggedOrders = this.uriGetTaggedOrders;    
+    b.postCreateReportUrl = this.postCreateReportUrl;
+    b.getReportStatusUrl = this.getReportStatusUrl;    
     b.isModified = false;
     
     return (B)b;

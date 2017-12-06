@@ -19,11 +19,12 @@ import com.buffalokiwi.aerodrome.jet.IJetAPIResponse;
 import com.buffalokiwi.aerodrome.jet.JetAPI;
 import com.buffalokiwi.aerodrome.jet.JetConfig;
 import com.buffalokiwi.aerodrome.jet.JetException;
+import com.buffalokiwi.aerodrome.jet.Utils;
 import com.buffalokiwi.api.APIException;
 import com.buffalokiwi.api.IAPIHttpClient;
 
 /**
- *
+ * Bulk Reporting API 
  * @author John Quinn
  */
 public class JetAPIReport extends JetAPI implements IJetAPIReport 
@@ -77,10 +78,11 @@ public class JetAPIReport extends JetAPI implements IJetAPIReport
    * @throws JetException
    * @throws APIException 
    */
+  @Override
   public String createReport( final ReportType type )
     throws JetException, APIException
   {
-    return "";
+    return sendPostNewReport( type ).getJsonObject().getString( "report_id", "" );
   }
   
   
@@ -94,10 +96,11 @@ public class JetAPIReport extends JetAPI implements IJetAPIReport
    * @throws JetException
    * @throws APIException 
    */  
+  @Override
   public ReportStatusRec getReportStatus( final String reportId )
     throws JetException, APIException
   {
-    return null;
+    return ReportStatusRec.fromJSON( reportId, sendGetReportStatus( reportId ).getJsonObject());
   }
   
   
@@ -110,13 +113,16 @@ public class JetAPIReport extends JetAPI implements IJetAPIReport
    * @throws JetException
    * @throws APIException 
    */
+  @Override
   public IJetAPIResponse sendPostNewReport( final ReportType type ) 
     throws JetException, APIException
   {
-    //Utils.checkNull( type, "type" );
-    
-//    post( config.get, formData )
-    return null;
+    Utils.checkNull( type, "type" );
+    return post( 
+      config.getPostCreateReportUrl( type.getText()), 
+      "", 
+      getJSONHeaderBuilder().build()
+    );
   }
   
   
@@ -129,9 +135,14 @@ public class JetAPIReport extends JetAPI implements IJetAPIReport
    * @throws JetException
    * @throws APIException 
    */
+  @Override
   public IJetAPIResponse sendGetReportStatus( final String reportId )
     throws JetException, APIException
   {
-    return null;
+    Utils.checkNullEmpty( reportId, "reportId" );
+    return get( 
+      config.getGetReportStatusUrl( reportId ), 
+      getJSONHeaderBuilder().build()
+    );
   }
 }

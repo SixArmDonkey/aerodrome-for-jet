@@ -549,6 +549,25 @@ public interface JetConfig<R extends JetConfig, B extends JetConfig.Builder> ext
   public String getGetSettlementReportUrl( final String id );
   
   ////////////// END SETTLEMENT //////////////////////////////////////////////
+  ////////////// START REPORT   //////////////////////////////////////////////
   
   
+  /**
+   * URL for creating a new report.
+   * 
+   * ProductStatus will create a report with all product statuses 
+   * SalesData will create a bulk sales data report for all of the products 
+   * 
+   * @param reportType Valid Values: ProductStatus, SalesData, SettlementDetails
+   * @return Url 
+   */
+  public String getPostCreateReportUrl( final String reportType );
+  
+  /**
+   * URL for retrieving a report status 
+   * @param reportId Id returned by the create report api request 
+   * @return Url
+   */
+  public String getGetReportStatusUrl( final String reportId );
+  ////////////// END REPORT     //////////////////////////////////////////////
 }

@@ -16,6 +16,8 @@ package com.buffalokiwi.api;
 
 import org.apache.http.client.utils.URIBuilder;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -635,7 +637,7 @@ public class API implements IApi
       if ( entity != null )
       {
         //..Get the charset
-        String charset = "UTF-8";
+        String charset = "";
 
         try {
           java.nio.charset.Charset cs = ContentType.getOrDefault( entity )
@@ -647,7 +649,17 @@ public class API implements IApi
           //..No nothing, use defaults
         }
 
-        if (( charset == null ) || ( charset.isEmpty())) charset = "UTF-8";
+        if (( charset == null ) || ( charset.isEmpty())) 
+        {
+          charset = "UTF-8";
+          
+          final Header[] headers = response.getHeaders( "Content-Type" );
+          if ( headers.length > 0 )
+          {
+            if ( headers[0].getValue().equals( "application/octet-stream" ))
+              charset = "";
+          }          
+        }
 
         //..Get content length header 
         
@@ -656,9 +668,18 @@ public class API implements IApi
         
         //..Process the stream
         try ( final InputStream in = entity.getContent()) {
-          final String content = processEntity( in, contentLength, charset );
-          final IAPIResponse res = createResponseObject( response, content, charset );
+          final byte[] content = processEntity( in, contentLength );
           
+          //..set the character set used to create the htmlBuffer
+          if ( LOG.isTraceEnabled())
+          {
+            if ( !charset.isEmpty())
+              APILog.trace( LOG, new String( content, 0, content.length, charset ));
+            else
+              APILog.trace( LOG, new String( content ));
+          }
+          
+          final IAPIResponse res = createResponseObject( response, content, charset );
           
           APILog.debug( LOG, 
             String.valueOf( res.getStatusLine().getStatusCode()), 
@@ -670,6 +691,7 @@ public class API implements IApi
           return res;
           
         } catch( RuntimeException e ) {
+          APILog.error( LOG, e );
           //..Abort
           get.abort();
 
@@ -678,7 +700,7 @@ public class API implements IApi
       }
       else
       {        
-        final IAPIResponse res = createResponseObject( response, "", "" );   
+        final IAPIResponse res = createResponseObject( response, null, "" );   
         APILog.debug( LOG, 
           String.valueOf( res.getStatusLine().getStatusCode()), 
           res.getStatusLine().getReasonPhrase(), 
@@ -689,6 +711,7 @@ public class API implements IApi
         return res;
       }
     } catch( IOException e ) {
+      APILog.error( LOG, e ) ;
       throw new APIException( 
         "Failed to retrieve entity content (IOException)", e );
     } finally {
@@ -703,7 +726,7 @@ public class API implements IApi
    * Retrieves the status and version number information from the response
    * @param response Response to pull data from
    */
-  private IAPIResponse createResponseObject( final HttpResponse response, final String content, final String charset )
+  private IAPIResponse createResponseObject( final HttpResponse response, final byte[] content, final String charset )
   {
     final RedirectLocations locations = ((RedirectLocations)context.getAttribute( HttpClientContext.REDIRECT_LOCATIONS ));
     
@@ -731,7 +754,7 @@ public class API implements IApi
    * @param entity
    * @throws BrowserException
    */
-  private String processEntity( final InputStream in, final int contentLength, final String charset ) throws APIException
+  private byte[] processEntity( final InputStream in, final int contentLength ) throws APIException
   {
     //..Buffer dat ish
     try ( BufferedInputStream content = new BufferedInputStream( in ))
@@ -746,31 +769,27 @@ public class API implements IApi
       int bytesRead;
 
       //..Create a new html buffer to store the data
-      final StringBuilder htmlBuffer = new StringBuilder( contentLength );
+      //final StringBuilder htmlBuffer = new StringBuilder( contentLength );
 
-      //..Read the bytes
-      while (( bytesRead = content.read( bytes )) != -1 )
-      {
-        //..Increment the total bytes read
-        totalBytes += bytesRead;
+      try ( final ByteArrayOutputStream byteStream = new ByteArrayOutputStream( contentLength )) {
 
-        //..Append the bytes read to the buffer
-        htmlBuffer.append( new String( bytes, 0, bytesRead, charset ));
+        //..Read the bytes
+        while (( bytesRead = content.read( bytes )) != -1 )
+        {
+          //..Increment the total bytes read
+          totalBytes += bytesRead;
 
-        //..Break on max download size
-        if ( totalBytes >= maxDownloadSize )
-          break;
+          //..Append the bytes read to the buffer
+          byteStream.write( bytes, 0, bytesRead );
+          //htmlBuffer.append( new String( bytes, 0, bytesRead, charset ));
+
+          //..Break on max download size
+          if ( totalBytes >= maxDownloadSize )
+            break;
+        }
+
+        return byteStream.toByteArray();
       }
-
-      //..set the character set used to create the htmlBuffer
-      if ( LOG.isTraceEnabled())
-      {
-        final String buff = htmlBuffer.toString();
-        APILog.trace( LOG, buff );
-        return buff;
-      }
-      else
-        return htmlBuffer.toString();
 
     } catch( IOException e ) {
       //..Oh noes!
