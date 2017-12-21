@@ -22,10 +22,11 @@ import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
 import com.buffalokiwi.aerodrome.jet.Utils;
-import com.buffalokiwi.utils.Money;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -1270,6 +1271,16 @@ public class OrderRec implements Jsonable
    */
   public List<ShipmentRec> getShipments() {
     return shipments;
+  }
+  
+  
+  /**
+   * Retrieve a list of sku's contained within the order 
+   * @return sku list 
+   */
+  public Collection<String> getItemSkus()
+  {
+    return orderItems.stream().map( v -> v.getMerchantSku()).collect( Collectors.toSet());
   }
   
 

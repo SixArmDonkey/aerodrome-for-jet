@@ -37,7 +37,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.xml.bind.ValidationException;
 
 
 /**
@@ -3247,7 +3246,7 @@ public class ProductRec implements Jsonable
    * Retrieve the JSON required for the merchant sku operation
    * @return json
    */
-  public synchronized JsonObject toSkuJson()
+  public JsonObject toSkuJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
       .add( "product_title", title )
@@ -3268,7 +3267,7 @@ public class ProductRec implements Jsonable
    * Retrieve the json needed for an image upload
    * @return json
    */
-  public synchronized JsonObject toImageJson()
+  public JsonObject toImageJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder();
     if ( !mainImageUrl.isEmpty())
@@ -3288,7 +3287,7 @@ public class ProductRec implements Jsonable
    * Retrieve the json for the set price operation
    * @return json
    */
-  public synchronized JsonObject toPriceJson()
+  public JsonObject toPriceJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
       .add( "price", price.asBigDecimal());
@@ -3304,7 +3303,7 @@ public class ProductRec implements Jsonable
    * Retrieve the json for the set inventory quantity operation
    * @return set inventory
    */
-  public synchronized JsonObject toInventoryJson()
+  public JsonObject toInventoryJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder();
 
@@ -3322,7 +3321,7 @@ public class ProductRec implements Jsonable
    * Retrieve the json for the shipping exceptions operation
    * @return json
    */
-  public synchronized JsonObject toShipExceptionJson()
+  public JsonObject toShipExceptionJson()
   {
     JsonObjectBuilder o = Json.createObjectBuilder();
 
@@ -3338,7 +3337,7 @@ public class ProductRec implements Jsonable
    * @return is mostly valid 
    * @throws ValidateException 
    */
-  public synchronized void validate() throws ValidateException
+  public void validate() throws ValidateException
   {
     //..Start Required
     
@@ -3398,7 +3397,7 @@ public class ProductRec implements Jsonable
    * @return JSON object for Jet
    */
   @Override
-  public synchronized JsonObject toJSON()
+  public JsonObject toJSON()
   {
     JsonObjectBuilder o = Json.createObjectBuilder()
       .add( "product_title", title )

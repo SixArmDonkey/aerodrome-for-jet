@@ -14,14 +14,16 @@
 
 package com.buffalokiwi.aerodrome.jet.products;
 
+import com.buffalokiwi.aerodrome.jet.IJetDate;
+import com.buffalokiwi.aerodrome.jet.JetDate;
 import com.buffalokiwi.aerodrome.jet.Jsonable;
+import com.buffalokiwi.api.IAPIDate;
+import static java.lang.Character.FORMAT;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -39,12 +41,6 @@ import javax.json.JsonObjectBuilder;
 public class ProductInventoryRec implements Jsonable
 {
   /**
-   * A format for converting jet dates to a date
-   */
-  private final SimpleDateFormat FORMAT = new SimpleDateFormat( 
-    "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSX", Locale.ENGLISH );    
-  
-  /**
    * An array of fulfillment nodes to set inventory
    */
   private final List<FNodeInventoryRec> nodes;
@@ -52,7 +48,7 @@ public class ProductInventoryRec implements Jsonable
   /**
    * The last update
    */
-  private final Date lastUpdate;
+  private final IJetDate lastUpdate;
   
   
   /**
@@ -96,9 +92,9 @@ public class ProductInventoryRec implements Jsonable
    
     this.nodes = Collections.unmodifiableList( new ArrayList<>( nodes ));
     if ( lastUpdate == null || lastUpdate.isEmpty())
-      this.lastUpdate = new Date();
+      this.lastUpdate = null;
     else
-      this.lastUpdate = FORMAT.parse( lastUpdate );
+      this.lastUpdate = JetDate.fromJetValueOrNull( lastUpdate );
   }
   
   
@@ -138,10 +134,29 @@ public class ProductInventoryRec implements Jsonable
   
   
   /**
+   * Attempt to retrieve an FNodeInventoryRec with the specified nodeId.
+   * If none is available, this returns null.
+   * @param nodeId Fulfillment node id 
+   * @return inventory or null 
+   */
+  public FNodeInventoryRec getInventoryByNode( final String nodeId )
+  {
+    for ( final FNodeInventoryRec rec : nodes )
+    {
+      if ( rec.getNodeId().equals( nodeId ))
+        return rec;
+    }
+    
+    return null;
+  }
+  
+  
+  
+  /**
    * Retrive the last update
    * @return date
    */
-  public Date getLastUpdate()
+  public IJetDate getLastUpdate()
   {
     return lastUpdate;
   }

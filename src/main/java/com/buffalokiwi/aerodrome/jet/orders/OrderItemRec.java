@@ -610,6 +610,7 @@ public class OrderItemRec
   
   /**
    * Retrieve the quantity of the item to ship.  This can be zero.
+   * THis is getRequestOrderQty() - getRequestOrderCancelQty()
    * @return quantity to ship 
    */
   public int getQty()

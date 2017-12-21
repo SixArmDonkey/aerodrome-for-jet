@@ -22,6 +22,7 @@ import com.buffalokiwi.api.IAPIHttpClient;
 import com.buffalokiwi.aerodrome.jet.IJetAPIResponse;
 import com.buffalokiwi.aerodrome.jet.JetConfig;
 import com.buffalokiwi.aerodrome.jet.JetException;
+import com.buffalokiwi.aerodrome.jet.Utils;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -268,17 +269,45 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
    */
   @Override
   public IJetAPIResponse sendPutProductInventory( final ProductRec product )
-      throws APIException, JetException
+    throws JetException, APIException
   {
-    APILog.info( LOG, "Sending", product.getMerchantSku(), "inventory" );
+    return sendPutProductInventory( product.getMerchantSku(), product.getfNodeInventory());
+  }
+  
+  
+  
+  /**
+   * Adds product quantity and inventory data
+   * @param product product data
+   * @return success
+   * @throws APIException
+   * @throws JetException
+   */
+  @Override
+  public IJetAPIResponse sendPutProductInventory( final String sku, final List<FNodeInventoryRec> nodes )
+    throws JetException, APIException
+  {
+    Utils.checkNull( sku, "sku" );
+    Utils.checkNull( nodes, "nodes" );
     
+    APILog.info( LOG, "Sending", sku, "inventory" );
+    
+    final JsonObjectBuilder o = Json.createObjectBuilder();
+
+    if ( !nodes.isEmpty())
+    {
+      final JsonArrayBuilder a = Json.createArrayBuilder();
+      nodes.forEach( v -> a.add( v.toJSON()));
+      o.add( "fulfillment_nodes", a.build());
+    }
+
     final IJetAPIResponse response = put(
-      config.getAddProductInventoryUrl( product.getMerchantSku()),
-      product.toInventoryJson().toString(),
+      config.getAddProductInventoryUrl( sku ),
+      o.build().toString(),
       getJSONHeaderBuilder().build()
     );
 
-    return response;
+    return response;    
   }
   
   

@@ -328,8 +328,20 @@ public interface IJetAPIProduct extends IJetAPI {
    * @throws APIException
    * @throws JetException
    */
- public  IJetAPIResponse sendPutProductInventory( final ProductRec product ) throws APIException, JetException;
+  public IJetAPIResponse sendPutProductInventory( final ProductRec product ) throws APIException, JetException;
 
+  /**
+   * Adds product quantity and inventory data
+   * @param sku Product sku
+   * @param nodes Inventory for each fulfillment node 
+   * @return success
+   * @throws APIException
+   * @throws JetException
+   */
+  public IJetAPIResponse sendPutProductInventory( final String sku, final List<FNodeInventoryRec> nodes )
+    throws JetException, APIException;
+ 
+ 
   /**
    * Adds product price data
    * @param product
