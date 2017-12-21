@@ -220,7 +220,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return JetAPIResponse.createFromAPIResponse( response );
       } catch( JetException e ) {
         //..try again
-        return get( url, tryLogin( e, headers ));
+        return get( url, processJetException( e, headers ));
       }            
     } catch( Exception e ) {
       notifyErrorHandlers( response, e );
@@ -260,7 +260,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return JetAPIResponse.createFromAPIResponse( response );
       } catch( JetException e ) {
         //..try again
-        return post( url, payload, tryLogin( e, headers ));
+        return post( url, payload, processJetException( e, headers ));
       }            
     } catch( Exception e ) {
       APILog.trace( LOG, e );
@@ -290,7 +290,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return JetAPIResponse.createFromAPIResponse( response );
       } catch( JetException e ) {
         //..try again
-        return post( url, payload, contentLength, contentType, tryLogin( e, headers ));
+        return post( url, payload, contentLength, contentType, processJetException( e, headers ));
       }      
     } catch( Exception e ) {
       notifyErrorHandlers( response, e );
@@ -309,7 +309,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return JetAPIResponse.createFromAPIResponse( response );
       } catch( JetException e ) {
         //..try again
-        return post( url, file, tryLogin( e, headers ));
+        return post( url, file, processJetException( e, headers ));
       }      
     } catch( Exception e ) {
       notifyErrorHandlers( response, e );
@@ -336,7 +336,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return JetAPIResponse.createFromAPIResponse( response );
       } catch( JetException e ) {
         //..try again
-        return put( url, payload, tryLogin( e, headers ));
+        return put( url, payload, processJetException( e, headers ));
       }      
     } catch( Exception e ) {
       notifyErrorHandlers( response, e );
@@ -365,7 +365,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return JetAPIResponse.createFromAPIResponse( response );
       } catch( JetException e ) {
         //..try again
-        return put( url, payload, contentLength, contentType, tryLogin( e, headers ));
+        return put( url, payload, contentLength, contentType, processJetException( e, headers ));
       }
     } catch( Exception e ) {
       notifyErrorHandlers( response, e );
@@ -386,7 +386,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
         return JetAPIResponse.createFromAPIResponse( response );
       } catch( JetException e ) {
         //..try again
-        return put( url, file, tryLogin( e, headers ));
+        return put( url, file, processJetException( e, headers ));
       }
     } catch( Exception e ) {
       notifyErrorHandlers( response, e );
@@ -397,7 +397,8 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   
   
   /**
-   * Take a jet exception, check the auth state and attempt a reauth..
+   * For JetExceptions: There might be an authorization or a rate limit 
+   * issue, which can be fixed in this method.
    * This throws an exception on failure.
    * No exception is success.
    * @param e exception
@@ -405,7 +406,7 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
    * @throws APIException
    * @throws JetException 
    */
-  private Map<String,String> tryLogin( final JetException e, final Map<String,String> headers ) throws APIException, JetException
+  private Map<String,String> processJetException( final JetException e, final Map<String,String> headers ) throws APIException, JetException
   {
     final IAPIResponse response = e.getResponse();
     if ( response == null )
@@ -413,43 +414,72 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     else if ( response.getStatusLine().getStatusCode() 
       == JetAPIResponse.ResponseCode.UNAUTHORIZED.getCode())
     {
-      if ( reauthAttempts.get() >= 5 )
-      {
-        //..This should be considered a fatal exception
-        throw new JetException( "5 attempts to reauthenticate have failed; I'm not going to try again.", e );
-      }
-      
-      reauthAttempts.incrementAndGet();
-      
-      //..The request was unauthorized, try to re-authenticate
-      try {
-        login();
-        //..success
-        reauthAttempts.set( 0 );
-        
-        Map<String,String> newHeaders = new HashMap<>( headers );
-        
-        //..Add the new auth header for this request 
-        newHeaders.put( "Authorization", config.getAuthorizationHeaderValue());
-        
-        return Collections.unmodifiableMap( newHeaders );
-      } catch( JetAuthException authE ) {
-        throw new JetException( "Failed to reauthenticate", authE );
-      }
+      return tryLogin( e, headers );
     }
     else if ( e.getResponse().getStatusLine().getStatusCode() == ResponseCode.TOO_MANY_REQUESTS.getCode())
     {
-      try {
-        rateLimitHandlers.forEach( c -> c.accept( e.getResponse()));
-        Thread.sleep( RATE_LIMIT_DELAY );
-        return headers;
-      } catch( InterruptedException ex ) {
-        throw e;
-      }
+      return doRateLimit( e, headers );
     }    
     else
       throw e;
+  }
+  
+  
+  /**
+   * Call any rate limit handlers 
+   * @param e
+   * @param headers
+   * @return
+   * @throws JetException 
+   */
+  private Map<String,String> doRateLimit( final JetException e, final Map<String,String> headers ) throws JetException
+  {
+    try {
+      rateLimitHandlers.forEach( c -> c.accept( e.getResponse()));
+      Thread.sleep( RATE_LIMIT_DELAY );
+      return headers;
+    } catch( InterruptedException ex ) {
+      throw e;
+    }    
+  }
+  
+  
+  
+  /**
+   * Attempt to log in.
+   * @param e
+   * @param headers
+   * @return
+   * @throws JetException
+   * @throws APIException 
+   */
+  private Map<String,String> tryLogin( final JetException e, final Map<String,String> headers ) throws JetException, APIException
+  {
+    if ( reauthAttempts.get() >= 5 )
+    {
+      //..This should be considered a fatal exception
+      throw new JetException( "5 attempts to reauthenticate have failed; I'm not going to try again.", e );
+    }
 
+    reauthAttempts.incrementAndGet();
+
+    
+    try {
+      //..Try to re-authenticate
+      login();
+      
+      //..success
+      reauthAttempts.set( 0 );
+
+      Map<String,String> newHeaders = new HashMap<>( headers );
+
+      //..Add the new auth header for this request 
+      newHeaders.put( "Authorization", config.getAuthorizationHeaderValue());
+
+      return Collections.unmodifiableMap( newHeaders );
+    } catch( JetAuthException authE ) {
+      throw new JetException( "Failed to reauthenticate", authE );
+    }    
   }
   
   

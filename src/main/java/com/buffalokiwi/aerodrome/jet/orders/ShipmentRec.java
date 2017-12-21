@@ -596,7 +596,7 @@ public class ShipmentRec implements Jsonable
      * @return the pickupDate
      */
     public IJetDate getPickupDate()
-    {
+    {      
       return pickupDate;
     }
 
