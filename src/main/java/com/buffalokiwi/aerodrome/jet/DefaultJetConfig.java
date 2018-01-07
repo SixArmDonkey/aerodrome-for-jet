@@ -1806,11 +1806,8 @@ public class DefaultJetConfig<R extends JetConfig, B extends JetConfig.Builder> 
      * The following makes no sense. 
      */
     checkStringEmpty(b.getHost(), "jet.host cannot be empty" );
-    checkStringEmpty(b.getUser(), "jet.username cannot be empty" );
-    checkStringEmpty(b.getPass(), "jet.password cannot be empty" );
     checkStringEmpty(b.getUriToken(), "jet.uri.token cannot be empty" );
     checkStringEmpty(b.getUriAuthTest(), "jet.uri.authTest cannot be empty" );
-    checkStringEmpty(b.getMerchantId(), "jet.merchantId cannot be empty" );
     checkStringEmpty(b.getUriAddProduct(),"jet.uri.products.put.sku cannot be empty" );
     checkStringEmpty(b.getUriAddProductImage(),"jet.uri.products.put.image cannot be empty" );
     checkStringEmpty(b.getUriAddProductPrice(),"jet.uri.products.put.price cannot be empty" );

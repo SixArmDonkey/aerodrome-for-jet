@@ -299,12 +299,12 @@ public class APIHttpClient implements IAPIHttpClient
   /**
    * The HTTP Client connection manager
    */
-  private static final PoolingHttpClientConnectionManager POOL = new PoolingHttpClientConnectionManager();
+  private final PoolingHttpClientConnectionManager POOL = new PoolingHttpClientConnectionManager();
   
   /**
    * The idle connection monitor thread
    */  
-  private static final IdleConnectionMonitorThread MONITOR = new IdleConnectionMonitorThread( POOL );
+  private final IdleConnectionMonitorThread MONITOR = new IdleConnectionMonitorThread( POOL );
   
   /**
    * The user agent string to use
@@ -351,18 +351,7 @@ public class APIHttpClient implements IAPIHttpClient
    * The HttpClient 
    */
   private CloseableHttpClient client = null;
- 
-  
-  /**
-   * Static Init
-   */
-  static 
-  {
-    //..Set the pool defaults
-    POOL.setMaxTotal( DEFAULT_MAX_TOTAL );
-    POOL.setDefaultMaxPerRoute( DEFAULT_MAX_PER_ROUTE );
-  }
-  
+
 
   /**
    * Create a new APIHttpClient instance 
@@ -386,6 +375,10 @@ public class APIHttpClient implements IAPIHttpClient
     final String host,
     final long crawlDelay ) throws URISyntaxException
   {
+    //..Set the pool defaults
+    POOL.setMaxTotal( DEFAULT_MAX_TOTAL );
+    POOL.setDefaultMaxPerRoute( DEFAULT_MAX_PER_ROUTE );
+    
     this.host = new URIBuilder( host );
     this.readTimeout = readTimeout;
     this.accept = accept;
@@ -400,7 +393,7 @@ public class APIHttpClient implements IAPIHttpClient
   /**
    * Shutdown the underlying connection manager
    */
-  public static synchronized void shutdownConnectionManager()
+  public synchronized void shutdownConnectionManager()
   {
     //..Shutdown the monitor thread
     MONITOR.shutdown();
