@@ -16,7 +16,6 @@ package com.buffalokiwi.api;
 
 import org.apache.http.client.utils.URIBuilder;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +39,7 @@ import org.apache.http.client.RedirectException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -62,11 +62,13 @@ import org.apache.http.util.EntityUtils;
  */
 public class API implements IApi
 {
+  private static final Log LOG = LogFactory.getLog(API.class );
+   
   /**
    * The download size to specify (in bytes) if the length is not specified.
    * This can be overridden by setMaxDownloadSize()
    */
-  private final static long MAX_DOWNLOAD_SIZE = 1024 * 2048;
+  private final static long MAX_DOWNLOAD_SIZE = -1L;//1024 * 2048;
 
   /**
    * Client context
@@ -87,11 +89,6 @@ public class API implements IApi
    * Set this to true to autofill the hostname for any uri's. 
    */
   protected final boolean lockHost;
-  
-  /**
-   * Logger instance 
-   */
-  private final static Log LOG = LogFactory.getLog( API.class );
 
 
   /**
@@ -106,6 +103,8 @@ public class API implements IApi
     this.client = client;
     this.maxDownloadSize = MAX_DOWNLOAD_SIZE;
     this.lockHost = true;
+    
+    APILog.info( LOG, "Built using Aerodrome Open Source - http://www.buffalokiwi.com" );
   }
   
   
@@ -505,6 +504,128 @@ public class API implements IApi
   }  
 
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @return response
+   * @throws APIException
+   */
+  @Override
+  public IAPIResponse patch( final String url, final String payload )
+      throws APIException
+  {
+    return patch( url, payload, null );
+  }
+
+
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  @Override
+  public IAPIResponse patch( final String url, final String payload, 
+    final Map<String,String> headers ) throws APIException
+  {
+    //..Create the new patch request
+    final HttpPatch patch = (HttpPatch)createRequest( 
+      HttpMethod.PATCH, url, headers );
+
+    //..Set the patch payload
+    try {
+      patch.setEntity( new StringEntity( payload ));
+      
+      APILog.trace( LOG, payload );
+      
+    } catch( UnsupportedEncodingException e ) {
+      throw new APIException( 
+        "Unsupported payload encoding, cannot create StringEntity", e );
+    }
+
+    //..Execute the request
+    return executeRequest( patch );
+  }
+  
+  
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param contentLength the length of the payload
+   * @param contentType the type of data in payload 
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  @Override
+  public IAPIResponse patch( final String url, final InputStream payload,
+    final long contentLength, final ContentType contentType, 
+    final Map<String,String> headers ) throws APIException
+  {
+    //..Create the new patch request
+    final HttpPatch patch = (HttpPatch)createRequest( 
+      HttpMethod.PUT, url, headers );
+
+    //..Set the patch payload
+    patch.setEntity( new InputStreamEntity( payload, contentLength, contentType ));
+
+    APILog.trace( LOG, payload );
+
+    //..Execute the request
+    return executeRequest( patch );
+  }
+  
+  
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param file file to send 
+   * @param headers additional headers 
+   * @return response 
+   * @throws APIException 
+   */
+  @Override
+  public IAPIResponse patch( final String url, final PostFile file, Map<String,String> headers ) throws APIException
+  {
+    final FileEntity entity = new FileEntity( file.getFile(), file.getContentType());
+    if ( file.hasContentEncoding())
+      entity.setContentEncoding( file.getContentEncoding());
+    
+    //..Create the new patch request
+    final HttpPatch patch = (HttpPatch)createRequest( 
+      HttpMethod.PUT, url, headers );
+
+    //..Set the patch payload
+    patch.setEntity( entity );
+
+    APILog.trace( LOG, entity.toString());
+
+    //..Execute the request
+    return executeRequest( patch );
+    
+  }  
+  
+  
+  
+  
+  
   /**
    * A factory method for creating a new request and adding headers 
    * @param type Type of request
@@ -544,6 +665,13 @@ public class API implements IApi
         //..Add any extra headers
         addHeaders( put, headers );
       return put;
+      
+      
+      case PATCH:
+        final HttpPatch patch = new HttpPatch( stringToURI( url ));
+        
+        addHeaders( patch, headers );
+      return patch;     
       
 
       case DELETE:
@@ -784,7 +912,7 @@ public class API implements IApi
           //htmlBuffer.append( new String( bytes, 0, bytesRead, charset ));
 
           //..Break on max download size
-          if ( totalBytes >= maxDownloadSize )
+          if ( maxDownloadSize > -1 && totalBytes >= maxDownloadSize )
             break;
         }
 

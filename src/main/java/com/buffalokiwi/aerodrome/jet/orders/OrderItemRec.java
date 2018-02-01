@@ -479,7 +479,10 @@ public class OrderItemRec
       .setMerchantSku( json.getString( "merchant_sku", "" ))
       .setTitle( json.getString( "product_title", "" ))
       .setRequestOrderQty( json.getInt( "request_order_quantity", 0 ))
+            
+      //..This appears to have been removed.  I don't know if jet still returns this value or not.
       .setRequestOrderCancelQty( json.getInt( "request_order_cancel_qty", 0 ))
+            
       .setAdjReason( json.getString( "adjustment_reason", "" ))
       .setTaxCode( json.getString( "item_tax_code", "" ))
       .setUrl( json.getString( "url", "" ))

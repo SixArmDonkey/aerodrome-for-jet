@@ -301,7 +301,7 @@ public class JetAPIProduct extends JetAPI implements IJetAPIProduct
       o.add( "fulfillment_nodes", a.build());
     }
 
-    final IJetAPIResponse response = put(
+    final IJetAPIResponse response = patch(
       config.getAddProductInventoryUrl( sku ),
       o.build().toString(),
       getJSONHeaderBuilder().build()

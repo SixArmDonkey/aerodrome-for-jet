@@ -396,6 +396,88 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
   }
   
   
+
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  @Override
+  public IJetAPIResponse patch( final String url, final String payload, 
+    final Map<String,String> headers ) throws APIException, JetException
+  {  
+    IAPIResponse response = null;
+    try {
+      response = super.patch( url, payload, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return patch( url, payload, processJetException( e, headers ));
+      }      
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }    
+  }
+  
+  
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  @Override
+  public IJetAPIResponse patch( final String url, final InputStream payload,
+    final long contentLength, final ContentType contentType, 
+    final Map<String,String> headers ) throws APIException, JetException
+  {
+    IAPIResponse response = null;
+    try {
+      response = super.patch( url, payload, contentLength, contentType, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return patch( url, payload, contentLength, contentType, processJetException( e, headers ));
+      }
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }    
+      
+  }
+  
+  
+  @Override
+  public IJetAPIResponse patch( final String url, final PostFile file, 
+          Map<String,String> headers ) throws APIException, JetException 
+  {
+    IAPIResponse response = null;
+    try {
+      response = super.patch( url, file, headers );
+      try {
+        return JetAPIResponse.createFromAPIResponse( response );
+      } catch( JetException e ) {
+        //..try again
+        return patch( url, file, processJetException( e, headers ));
+      }
+    } catch( Exception e ) {
+      notifyErrorHandlers( response, e );
+      throw e;
+    }    
+
+  }  
+  
+  
+  
+  
   /**
    * For JetExceptions: There might be an authorization or a rate limit 
    * issue, which can be fixed in this method.
@@ -586,6 +668,21 @@ public class JetAPI extends API implements IJetAPI, IJetAPIAuth
     return get( config.getAuthTestURL(), getPlainHeaderBuilder().build())
       .getResponseContent().equals( AUTH_TEST_RESPONSE );    
   }    
+  
+  
+  
+  public void getFulfillmentNodes() throws Exception
+  {
+    IJetAPIResponse res = get( "/setup/fulfillmentNodes", getJSONHeaderBuilder().build());
+    System.out.println( res );
+  }
+  
+  
+  public void getReturnNodes() throws Exception
+  {
+    IJetAPIResponse res = get( "/setup/returnsLocations", getJSONHeaderBuilder().build());
+    System.out.println( res );
+  }
   
   
   /**

@@ -15,10 +15,13 @@
 package com.buffalokiwi.api;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 /**
  * Interface for the core API Library 
@@ -159,4 +162,53 @@ public interface IApi
   
   public IAPIResponse put(final String url, final PostFile file, 
     Map<String, String> headers) throws APIException;
+  
+  
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @return response
+   * @throws APIException
+   */
+  public IAPIResponse patch( final String url, final String payload )
+      throws APIException;
+
+
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  public IAPIResponse patch( final String url, final String payload, 
+    final Map<String,String> headers ) throws APIException;
+  
+  
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param payload Payload to send
+   * @param contentLength the length of the payload
+   * @param contentType the type of data in payload 
+   * @param headers additional headers to send
+   * @return response
+   * @throws APIException
+   */
+  public IAPIResponse patch( final String url, final InputStream payload,
+    final long contentLength, final ContentType contentType, 
+    final Map<String,String> headers ) throws APIException;
+  
+  
+  /**
+   * Perform a patch-based request to some endpoint
+   * @param url URL
+   * @param file file to send 
+   * @param headers additional headers 
+   * @return response 
+   * @throws APIException 
+   */
+  public IAPIResponse patch( final String url, final PostFile file, Map<String,String> headers ) throws APIException;  
 }

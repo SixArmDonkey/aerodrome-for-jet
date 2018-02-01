@@ -342,5 +342,4 @@ public class JetAPIResponse extends APIResponse implements IJetAPIResponse
   {
     return getStatusLine().getStatusCode() == ResponseCode.UNAVAILABLE.getCode();
   }
-  
 }

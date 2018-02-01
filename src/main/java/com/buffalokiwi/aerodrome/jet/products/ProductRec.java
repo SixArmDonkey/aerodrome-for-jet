@@ -1845,11 +1845,19 @@ public class ProductRec implements Jsonable
     public Builder setfNodePrices( FNodePriceRec fNodePrices) {
       Utils.checkNull( fNodePrices, "fNodePrices" );
       
-      for ( final FNodePriceRec rec : this.fNodePrices )
+      int index = -1;
+      for ( int i = 0; i < this.fNodePrices.size(); i++ )
       {
+        final FNodePriceRec rec = this.fNodePrices.get( i );
         if ( rec.getNodeId().equals( fNodePrices.getNodeId()))
-          throw new IllegalArgumentException( "This product already contains pricing for node " + fNodePrices.getNodeId());
+        {
+          index = i;
+          break;
+        }
       }
+      
+      if ( index > -1 )
+        this.fNodePrices.remove( index );
       
       this.fNodePrices.add( fNodePrices );
       return this;
@@ -1887,11 +1895,21 @@ public class ProductRec implements Jsonable
     public Builder setfNodeInventory( FNodeInventoryRec fNodeInventory) {
       Utils.checkNull( fNodeInventory, "fNodeInventory" );
       
-      for ( final FNodeInventoryRec rec : this.fNodeInventory )
+      int index = -1;
+      for ( int i = 0; i < this.fNodeInventory.size(); i++ )
       {
+        final FNodeInventoryRec rec = this.fNodeInventory.get( i );
+        
         if ( rec.getNodeId().equals(  fNodeInventory.getNodeId()))
-          throw new IllegalArgumentException( "This product already contains inventory for node " + fNodeInventory.getNodeId());
+        {
+          index = i;
+          break;
+        }
+          //throw new IllegalArgumentException( "This product already contains inventory for node " + fNodeInventory.getNodeId());
       }
+      
+      if ( index > -1 )
+        this.fNodeInventory.remove( index );
       
       this.fNodeInventory.add( fNodeInventory );
       return this;
