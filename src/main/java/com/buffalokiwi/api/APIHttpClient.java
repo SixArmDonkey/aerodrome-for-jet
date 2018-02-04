@@ -1,5 +1,5 @@
 /**
- * This file is part of the Aerodrome package, and is subject to the 
+ * This file is part of the BuffaloKiwi API package, and is subject to the 
  * terms and conditions defined in file 'LICENSE', which is part 
  * of this source code package.
  *
@@ -21,6 +21,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -34,12 +35,13 @@ import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
@@ -60,7 +62,7 @@ public class APIHttpClient implements IAPIHttpClient
     /**
      * Default user agent 
      */
-    public static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (compatible; Aerodrome/1.0; +http://www.buffalokiwi.com)";
+    public static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (compatible; BuffaloKiwiAPI/1.0; +http://www.buffalokiwi.com)";
 
     /**
      * Default socket read timeout 
@@ -127,6 +129,8 @@ public class APIHttpClient implements IAPIHttpClient
      */
     private long crawlDelay = DEFAULT_CRAWL_DELAY;
     
+    private long maxDownloadSize = -1L;
+    
     /**
      * Some hostname
      */
@@ -145,6 +149,22 @@ public class APIHttpClient implements IAPIHttpClient
 
       userAgent = ua;
       return this;
+    }
+    
+    
+    public APIHttpClient.Builder setMaxDownloadSize( final long size )
+    {
+      if ( size < -1 )
+        throw new IllegalArgumentException( "size must be greater than -1" );
+      
+      maxDownloadSize = size;
+      return this;
+    }
+    
+    
+    public long getMaxDownloadSize()
+    {
+      return maxDownloadSize;
     }
 
     
@@ -275,7 +295,8 @@ public class APIHttpClient implements IAPIHttpClient
         allowgzip, 
         allowUntrustedSSL, 
         host,
-        crawlDelay 
+        crawlDelay,
+        maxDownloadSize
       );
       
       //..Create the new shared client to use 
@@ -351,6 +372,8 @@ public class APIHttpClient implements IAPIHttpClient
    * The HttpClient 
    */
   private CloseableHttpClient client = null;
+  
+  private final long maxDownloadSize;
 
 
   /**
@@ -373,12 +396,14 @@ public class APIHttpClient implements IAPIHttpClient
     final boolean allowgzip,
     final boolean allowUntrustedSSL,
     final String host,
-    final long crawlDelay ) throws URISyntaxException
+    final long crawlDelay,
+    final long maxDownloadSize ) throws URISyntaxException
   {
     //..Set the pool defaults
     POOL.setMaxTotal( DEFAULT_MAX_TOTAL );
     POOL.setDefaultMaxPerRoute( DEFAULT_MAX_PER_ROUTE );
     
+    this.maxDownloadSize = maxDownloadSize;
     this.host = new URIBuilder( host );
     this.readTimeout = readTimeout;
     this.accept = accept;
@@ -403,6 +428,14 @@ public class APIHttpClient implements IAPIHttpClient
     
   }
 
+  
+  @Override
+  public long getMaxDownloadSize()
+  {
+    return maxDownloadSize;
+  }
+  
+  
 
   /**
    * Retrieve the user agent
@@ -551,6 +584,17 @@ public class APIHttpClient implements IAPIHttpClient
     return new ConnectionKeepAliveStrategy() {
       @Override
       public long getKeepAliveDuration( HttpResponse hr, HttpContext hc ) {
+        final HeaderElementIterator it = new BasicHeaderElementIterator( hr.headerIterator( HTTP.CONN_KEEP_ALIVE ));
+        
+        while ( it.hasNext()) 
+        {
+          final HeaderElement he = it.nextElement();
+          final String param = he.getName();
+          final String value = he.getValue();
+          if ( value != null && param.equalsIgnoreCase( "timeout" )) 
+            return Long.parseLong( value ) * 1000;
+        }
+        
         return readTimeout;
       }};
   }

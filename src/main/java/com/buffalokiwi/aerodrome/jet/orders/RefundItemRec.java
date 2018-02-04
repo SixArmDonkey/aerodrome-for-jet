@@ -13,7 +13,10 @@
 package com.buffalokiwi.aerodrome.jet.orders;
 
 import com.buffalokiwi.aerodrome.jet.Utils;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -41,6 +44,7 @@ public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Buil
   
   private final String refundAuthId;
   
+  private final MRefundFeedback feedback;
   
   public static class Builder<T extends Builder, R extends RefundItemRec> extends ReturnItemRec.Builder<T,R>
   {
@@ -49,6 +53,7 @@ public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Buil
      * The reason for the refund
      */
     private RefundReason refundReason = RefundReason.NONE;
+    private MRefundFeedback feedback = MRefundFeedback.NONE;
     
     private int refundId = 0;
     private String refundAuthId = "";
@@ -59,6 +64,29 @@ public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Buil
      */
     private CreatedRefundReason createdRefundReason = CreatedRefundReason.NONE;
 
+    /**
+     * The reason this refund is less than the full amount.
+     * @param feedback the feedback to set
+     * @return this
+     */
+    public T setMFeedback( final MRefundFeedback feedback )
+    {
+      Utils.checkNull( feedback, "feedback" );
+      this.feedback = feedback;
+      return getReference();
+    }    
+    
+    
+    /**
+     * Retrieve the feedback used for merchant initiated refunds.. 
+     * This is used with the create endpoint.
+     * @return the feedback
+     */
+    public MRefundFeedback getMFeedback()
+    {
+      return feedback;
+    }    
+    
     
     public T setRefundAuthId( final String id )
     {
@@ -313,6 +341,7 @@ public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Buil
     this.refundId = b.getRefundId();
     this.refundAuthId = b.getRefundAuthId();
     this.createdRefundReason = b.getCreatedRefundReason();
+    this.feedback = b.getMFeedback();
   }
   
   
@@ -323,6 +352,7 @@ public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Buil
     .setRefundReason( this.refundReason )
     .setRefundId( this.refundId )
     .setRefundAuthId( this.refundAuthId )
+    .setMFeedback( this.feedback )
     .setCreatedRefundReason( this.createdRefundReason );        
   }
   
@@ -355,6 +385,17 @@ public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Buil
     return refundAuthId;
   }
   
+
+  /**
+   * Retrieve the feedback used for merchant initiated refunds.. 
+   * This is used with the create endpoint.
+   * @return the feedback
+   */
+  public MRefundFeedback getMFeedback()
+  {
+    return feedback;
+  }    
+    
   
   /**
    * Turn this into jet json
@@ -365,14 +406,17 @@ public class RefundItemRec<R extends RefundItemRec, B extends RefundItemRec.Buil
   {
     final JsonObjectBuilder b = Json.createObjectBuilder();
     
-    for ( Map.Entry<String,JsonValue> entry : super.toJSON().entrySet())
+    final Set<Map.Entry<String,JsonValue>> entries = super.toJSON().entrySet();
+    final List<Map.Entry<String,JsonValue>> toRemove = new ArrayList<>();
+    
+    
+    for ( Map.Entry<String,JsonValue> entry : entries )
     {
-      if ( entry.getKey().equals( "return_refund_feedback" ))
-        b.add( "refund_feedback", entry.getValue());
-      else
+      if ( !entry.getKey().equals( "return_refund_feedback" ))
         b.add( entry.getKey(), entry.getValue());
     }
     
+    b.add( "refund_feedback", getMFeedback().getText());        
     b.add( "refund_reason", refundReason.getText());
     
     return b.build();

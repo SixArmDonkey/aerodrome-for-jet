@@ -345,8 +345,6 @@ public class RefundRec implements Jsonable
     for ( final OrderItemRec item : order.getOrderItems())
     {
       itemsToRefund.add( RefundItemRec.fromOrderItemRec( item )
-        .setFeedback( RefundFeedback.OPENED )
-        .setNotes( "Some notes about the refund" )
         .build());
     }
 

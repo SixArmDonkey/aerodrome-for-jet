@@ -1,5 +1,5 @@
 /**
- * This file is part of the Aerodrome package, and is subject to the 
+ * This file is part of the BuffaloKiwi API package, and is subject to the 
  * terms and conditions defined in file 'LICENSE', which is part 
  * of this source code package.
  *
@@ -79,6 +79,9 @@ public interface IAPIHttpClient
    * @return can use gzip
    */
   public boolean isGzipAllowed();
+  
+  
+  public long getMaxDownloadSize();
   
   
 }

@@ -545,7 +545,7 @@ public class Aerodrome
           returnItems.add( m.toBuilder()
             //..Set some custom attributes for jet 
             //..Any property can be overridden
-            .setFeedback( RefundFeedback.OPENED )
+            .setFeedback( RefundFeedback.ITEM_DAMAGED )
             .setNotes( "Some of my notes about this return" )
             .build() //..Build the item and add it to the list 
           );

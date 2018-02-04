@@ -12,11 +12,9 @@
  */
 package com.buffalokiwi.aerodrome.jet.orders;
 
-import com.buffalokiwi.aerodrome.jet.IJetAPIResponse;
 import com.buffalokiwi.aerodrome.jet.JetException;
 import com.buffalokiwi.api.APIException;
 import java.util.List;
-import com.buffalokiwi.aerodrome.jet.orders.IJetReturn;
 
 
 /**

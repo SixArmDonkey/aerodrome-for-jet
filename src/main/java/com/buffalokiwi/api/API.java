@@ -1,5 +1,5 @@
 /**
- * This file is part of the Aerodrome package, and is subject to the 
+ * This file is part of the BuffaloKiwi API package, and is subject to the 
  * terms and conditions defined in file 'LICENSE', which is part 
  * of this source code package.
  *
@@ -68,7 +68,7 @@ public class API implements IApi
    * The download size to specify (in bytes) if the length is not specified.
    * This can be overridden by setMaxDownloadSize()
    */
-  private final static long MAX_DOWNLOAD_SIZE = -1L;//1024 * 2048;
+  private final static long MAX_DOWNLOAD_SIZE = 1024 * 2048;
 
   /**
    * Client context
@@ -101,10 +101,8 @@ public class API implements IApi
       throw new IllegalArgumentException( "client cannot be null" );
     
     this.client = client;
-    this.maxDownloadSize = MAX_DOWNLOAD_SIZE;
+    this.maxDownloadSize = client.getMaxDownloadSize();
     this.lockHost = true;
-    
-    APILog.info( LOG, "Built using Aerodrome Open Source - http://www.buffalokiwi.com" );
   }
   
   
@@ -119,7 +117,7 @@ public class API implements IApi
       throw new IllegalArgumentException( "client cannot be null" );
         
     this.client = client;    
-    this.maxDownloadSize = MAX_DOWNLOAD_SIZE;
+    this.maxDownloadSize = client.getMaxDownloadSize();
     this.lockHost = lockHost;
   }
   
@@ -206,59 +204,6 @@ public class API implements IApi
     return post( url, formData, files, null );
   }
 
- 
-  /**
-   * This will take a list of files, and attach them to the 
-   * MultipartEntityBuilder instance
-   * @param files Files to add
-   * @param builder builder 
-   */
-  private void setMultipartFileData( final Map<String,PostFile> files, 
-    final MultipartEntityBuilder builder )
-  {
-    //..Check for input files
-    if ( files == null || builder == null )
-      return;    
-    
-    for ( final String name : files.keySet())
-    {
-      //..Ensure the file exists
-      final PostFile pf = files.get( name );
-
-      if ( !pf.getFile().exists())
-      {
-        throw new IllegalArgumentException( 
-          pf.getFile() + " (" + pf.getFilename() 
-            + ") does not exist; cannot upload non-existent file." );
-      }
-
-      APILog.trace( LOG, "Added file", pf.getFile(), "(", pf.getFilename(), ")" );
-
-      builder.addBinaryBody( name, pf.getFile(), pf.getContentType(), pf.getFilename());
-    }
-  }
-  
-  
-  /**
-   * This will take a list of key/value pairs and add them to the entity 
-   * builder instance.
-   * @param formData data to add
-   * @param builder builder instance 
-   */
-  private void setMultipartFormData( final List<NameValuePair> formData,
-    final MultipartEntityBuilder builder )
-  {
-    if ( formData == null )
-      return;
-    
-    for ( final NameValuePair pair : formData )
-    {
-      //..Add the text
-      builder.addTextBody( pair.getName(), pair.getValue());
-
-      APILog.trace( LOG, pair.getName(), ":", pair.getValue());
-    }
-  }
   
     
   /**
@@ -502,129 +447,64 @@ public class API implements IApi
     return executeRequest( put );
     
   }  
-
-  
-  
-  
-  
-  
-  
-  
-  
   
   
   
 
-
-
+ 
   /**
-   * Perform a patch-based request to some endpoint
-   * @param url URL
-   * @param payload Payload to send
-   * @return response
-   * @throws APIException
+   * This will take a list of files, and attach them to the 
+   * MultipartEntityBuilder instance
+   * @param files Files to add
+   * @param builder builder 
    */
-  @Override
-  public IAPIResponse patch( final String url, final String payload )
-      throws APIException
+  private void setMultipartFileData( final Map<String,PostFile> files, 
+    final MultipartEntityBuilder builder )
   {
-    return patch( url, payload, null );
-  }
+    //..Check for input files
+    if ( files == null || builder == null )
+      return;    
+    
+    for ( final String name : files.keySet())
+    {
+      //..Ensure the file exists
+      final PostFile pf = files.get( name );
 
+      if ( !pf.getFile().exists())
+      {
+        throw new IllegalArgumentException( 
+          pf.getFile() + " (" + pf.getFilename() 
+            + ") does not exist; cannot upload non-existent file." );
+      }
 
-  /**
-   * Perform a patch-based request to some endpoint
-   * @param url URL
-   * @param payload Payload to send
-   * @param headers additional headers to send
-   * @return response
-   * @throws APIException
-   */
-  @Override
-  public IAPIResponse patch( final String url, final String payload, 
-    final Map<String,String> headers ) throws APIException
-  {
-    //..Create the new patch request
-    final HttpPatch patch = (HttpPatch)createRequest( 
-      HttpMethod.PATCH, url, headers );
+      APILog.trace( LOG, "Added file", pf.getFile(), "(", pf.getFilename(), ")" );
 
-    //..Set the patch payload
-    try {
-      patch.setEntity( new StringEntity( payload ));
-      
-      APILog.trace( LOG, payload );
-      
-    } catch( UnsupportedEncodingException e ) {
-      throw new APIException( 
-        "Unsupported payload encoding, cannot create StringEntity", e );
+      builder.addBinaryBody( name, pf.getFile(), pf.getContentType(), pf.getFilename());
     }
-
-    //..Execute the request
-    return executeRequest( patch );
   }
   
   
   /**
-   * Perform a patch-based request to some endpoint
-   * @param url URL
-   * @param payload Payload to send
-   * @param contentLength the length of the payload
-   * @param contentType the type of data in payload 
-   * @param headers additional headers to send
-   * @return response
-   * @throws APIException
+   * This will take a list of key/value pairs and add them to the entity 
+   * builder instance.
+   * @param formData data to add
+   * @param builder builder instance 
    */
-  @Override
-  public IAPIResponse patch( final String url, final InputStream payload,
-    final long contentLength, final ContentType contentType, 
-    final Map<String,String> headers ) throws APIException
+  private void setMultipartFormData( final List<NameValuePair> formData,
+    final MultipartEntityBuilder builder )
   {
-    //..Create the new patch request
-    final HttpPatch patch = (HttpPatch)createRequest( 
-      HttpMethod.PUT, url, headers );
-
-    //..Set the patch payload
-    patch.setEntity( new InputStreamEntity( payload, contentLength, contentType ));
-
-    APILog.trace( LOG, payload );
-
-    //..Execute the request
-    return executeRequest( patch );
-  }
-  
-  
-  /**
-   * Perform a patch-based request to some endpoint
-   * @param url URL
-   * @param file file to send 
-   * @param headers additional headers 
-   * @return response 
-   * @throws APIException 
-   */
-  @Override
-  public IAPIResponse patch( final String url, final PostFile file, Map<String,String> headers ) throws APIException
-  {
-    final FileEntity entity = new FileEntity( file.getFile(), file.getContentType());
-    if ( file.hasContentEncoding())
-      entity.setContentEncoding( file.getContentEncoding());
+    if ( formData == null )
+      return;
     
-    //..Create the new patch request
-    final HttpPatch patch = (HttpPatch)createRequest( 
-      HttpMethod.PUT, url, headers );
+    for ( final NameValuePair pair : formData )
+    {
+      //..Add the text
+      builder.addTextBody( pair.getName(), pair.getValue());
 
-    //..Set the patch payload
-    patch.setEntity( entity );
-
-    APILog.trace( LOG, entity.toString());
-
-    //..Execute the request
-    return executeRequest( patch );
-    
+      APILog.trace( LOG, pair.getName(), ":", pair.getValue());
+    }
   }  
-  
-  
-  
-  
+
   
   /**
    * A factory method for creating a new request and adding headers 
@@ -655,7 +535,6 @@ public class API implements IApi
 
         //..Add any additional headers
         addHeaders( post, headers );          
-
       return post;
 
       
@@ -671,7 +550,7 @@ public class API implements IApi
         final HttpPatch patch = new HttpPatch( stringToURI( url ));
         
         addHeaders( patch, headers );
-      return patch;     
+      return patch;
       
 
       case DELETE:
@@ -926,6 +805,12 @@ public class API implements IApi
     }
   }
 
+  
+  protected void processResponse( final IAPIResponse response ) throws Exception
+  {
+    //..Do nothing
+  }
+  
 
   /**
    * Execute a HttpRequest
@@ -940,10 +825,120 @@ public class API implements IApi
     try ( final CloseableHttpResponse response = client.getClient()
       .execute( hr, context )) 
     {
-      return processResponse( response, hr );
+      final IAPIResponse res = processResponse( response, hr );
+      processResponse( res );
+      return res;
     } catch( IOException e ) {
-      APILog.trace( LOG, e );
+      APILog.error( LOG, e );
       throw new APIException( "Failed to make request\n" + e.getMessage(), e );
+    } catch( Exception e ) {
+      APILog.error( LOG, e );
+      throw new APIException( e.getMessage(), e );
     }
   }
+  
+    /**
+     * Perform a patch-based request to some endpoint
+     * @param url URL
+     * @param payload Payload to send
+     * @return response
+     * @throws APIException
+     */
+    @Override
+    public IAPIResponse patch( final String url, final String payload )
+        throws APIException
+    {
+      return patch( url, payload, null );
+    }
+
+
+    /**
+     * Perform a patch-based request to some endpoint
+     * @param url URL
+     * @param payload Payload to send
+     * @param headers additional headers to send
+     * @return response
+     * @throws APIException
+     */
+    @Override
+    public IAPIResponse patch( final String url, final String payload, 
+      final Map<String,String> headers ) throws APIException
+    {
+      //..Create the new patch request
+      final HttpPatch patch = (HttpPatch)createRequest( 
+        HttpMethod.PATCH, url, headers );
+
+      //..Set the patch payload
+      try {
+        patch.setEntity( new StringEntity( payload ));
+
+        APILog.trace( LOG, payload );
+
+      } catch( UnsupportedEncodingException e ) {
+        throw new APIException( 
+          "Unsupported payload encoding, cannot create StringEntity", e );
+      }
+
+      //..Execute the request
+      return executeRequest( patch );
+    }
+
+
+    /**
+     * Perform a patch-based request to some endpoint
+     * @param url URL
+     * @param payload Payload to send
+     * @param contentLength the length of the payload
+     * @param contentType the type of data in payload 
+     * @param headers additional headers to send
+     * @return response
+     * @throws APIException
+     */
+    @Override
+    public IAPIResponse patch( final String url, final InputStream payload,
+      final long contentLength, final ContentType contentType, 
+      final Map<String,String> headers ) throws APIException
+    {
+      //..Create the new patch request
+      final HttpPatch patch = (HttpPatch)createRequest( 
+        HttpMethod.PUT, url, headers );
+
+      //..Set the patch payload
+      patch.setEntity( new InputStreamEntity( payload, contentLength, contentType ));
+
+      APILog.trace( LOG, payload );
+
+      //..Execute the request
+      return executeRequest( patch );
+    }
+
+
+    /**
+     * Perform a patch-based request to some endpoint
+     * @param url URL
+     * @param file file to send 
+     * @param headers additional headers 
+     * @return response 
+     * @throws APIException 
+     */
+    @Override
+    public IAPIResponse patch( final String url, final PostFile file, Map<String,String> headers ) throws APIException
+    {
+      final FileEntity entity = new FileEntity( file.getFile(), file.getContentType());
+      if ( file.hasContentEncoding())
+        entity.setContentEncoding( file.getContentEncoding());
+
+      //..Create the new patch request
+      final HttpPatch patch = (HttpPatch)createRequest( 
+        HttpMethod.PUT, url, headers );
+
+      //..Set the patch payload
+      patch.setEntity( entity );
+
+      APILog.trace( LOG, entity.toString());
+
+      //..Execute the request
+      return executeRequest( patch );
+
+  } 
 }
