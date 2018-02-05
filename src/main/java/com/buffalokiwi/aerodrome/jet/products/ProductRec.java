@@ -431,6 +431,33 @@ public class ProductRec implements Jsonable
       
       return new ProductRec( this );
     }
+
+    @Override
+    public int hashCode()
+    {
+      int hash = 7;
+      hash = 53 * hash + Objects.hashCode( this.merchantSku );
+      return hash;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+      if ( this == obj ) {
+        return true;
+      }
+      if ( obj == null ) {
+        return false;
+      }
+      if ( getClass() != obj.getClass() ) {
+        return false;
+      }
+      final Builder other = (Builder) obj;
+      if ( !Objects.equals( this.merchantSku, other.merchantSku ) ) {
+        return false;
+      }
+      return true;
+    }
     
     
     private void fixCPSIA()
@@ -451,6 +478,26 @@ public class ProductRec implements Jsonable
         cpsiaStatements.add( CPSIA.NO_WARNING );
       }      
     }
+    
+
+    /**
+     * Retrieve a total count across all fulfillment nodes.
+     * @return Total inventory
+     */
+    public int getTotalInventory()
+    {
+      if ( fNodeInventory == null )
+        return 0;
+
+      int total = 0;
+      for ( FNodeInventoryRec rec : fNodeInventory )
+      {
+        if ( rec != null )
+          total += rec.getQuantity();
+      }
+
+      return total;
+    }    
     
     
     public Builder setMerchantSkuId( final String id )
@@ -1036,6 +1083,17 @@ public class ProductRec implements Jsonable
       this.bullets.add( bullet );
     }
 
+    
+      /**
+       * If this is an archived sku.
+       * @return is archived.
+       */
+      public boolean isArchived()
+      {
+        return isArchived;
+      }
+    
+    
 
     /**
      * Merchant SKU feature description
