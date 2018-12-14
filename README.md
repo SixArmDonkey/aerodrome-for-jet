@@ -3,14 +3,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-[![Authentication](https://img.shields.io/badge/Authentication-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#quick-start-guide)
-[![ProductAPI](https://img.shields.io/badge/Product%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#product-api)
-[![BulkProductAPI](https://img.shields.io/badge/Bulk%20Product%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#bulk-product-upload-api)
-[![OrdersAPI](https://img.shields.io/badge/Orders%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#1-check-for-orders)
-[![ReturnsAPI](https://img.shields.io/badge/Returns%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#returns-api)
-[![RefundssAPI](https://img.shields.io/badge/Refunds%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#refund-api)
-[![TaxonomyAPI](https://img.shields.io/badge/Taxonomy%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#taxonomy-api)
-[![SettlementAPI](https://img.shields.io/badge/Settlement%20API-working-yellowgreen.svg)](https://github.com/SixArmDonkey/aerodrome-for-jet#settlement-api)
+
 
 ---
 ### Don't want to code it yourself?  Try Aerodrome Pro! 
